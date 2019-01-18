@@ -1,0 +1,23 @@
+Grim Hex    [ Buy ] Sell   99999999 UEC
+----------------------------------------
+/Delivery_Locations|  ../Available_Items
+[ Cuttles Black ]  |  commodity    price
+-------------------+--------------------
+Total Cargo   1246 |1 Aluminium        2
+Empty Cargo     46 |2 Beryl           10
+-------------------+3 Diamond        127
+                   |4 Chlorium         8
+                   |5 Spirits          5
+
+
+
+
+
+
+
+
+--------------------+-------------------
+                        0 SCU for 0 UEC
+                      --[]-------------
+
+                          [Cancel] [OK]
