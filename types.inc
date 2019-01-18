@@ -4,7 +4,7 @@
 
     TLoc = record
         locname: string;
-        loctype: TLocType;
+        loctype: byte;
     end;
 
     TShip = record

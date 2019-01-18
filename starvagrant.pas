@@ -18,14 +18,12 @@ var
   oldvbl, olddli: pointer;
 
   strings: array [0..0] of word absolute STRINGS_ADDRESS;
-
+  locations: array [0..0] of word absolute LOCATIONS_ADDRESS;
+  items: array [0..0] of word absolute ITEMS_ADDRESS;
 
 
   current_menu: Byte;
   player: TPlayer;
-  locations: array [0..NUMBEROFLOCATIONS] of string;
-  items: array [0..NUMBEROFITEMS] of string;
-
 
 
 procedure ClrLine;
@@ -36,20 +34,10 @@ ClrLine clears the current line, starting from the position 1, to the end of the
 The cursor doesn't move.
 *)
 begin
-   FillChar( pointer(word(DPeek(88)+1)+WhereY*40-41), byte(41-byte(1)), 0);   
-   //FillByte(pointer(VIDEO_RAM_ADDRESS+(WhereY*40)), 40, 0);
-   //ClrEol;
-end;
+   FillChar( pointer(word(DPeek(88)+1)+WhereY*40-41), byte(41-byte(1)), 0);
 
-function CharArrayToStr(a: array [0..255] of char): string;
-var
-   res: string = '';
-   i: integer;
-begin
-  for i:=low(a) to High(a) do
-    //res:=res+a[i];
-    concat(res, a[i]);
-  Result:=res;
+   //FillByte(pointer(VIDEO_RAM_ADDRESS+(WhereY*TXTCOL)), TXTCOL, 0);
+   //ClrEol;
 end;
 
 {
@@ -84,35 +72,15 @@ begin
   Writeln (s);
 end;
 }
-procedure LoadItems;
-var
-  i: byte;
-  s: string;
-  itemstrings: array [0..0] of word absolute ITEMS_ADDRESS;
 
+function IntToStr(val:integer): string; overload;
 begin
-
-    for i:=0 to NUMBEROFITEMS do
-      begin
-        //s:=NullTermToString(itemstrings[i]);
-        //items[i]:=s;
-        items[i]:=NullTermToString(itemstrings[i]);
-      end;
+  Str(val,Result);
 end;
 
-procedure LoadLocations;
-var
-  i: byte;
-  s: string;
-  locationstrings: array [0..0] of word absolute LOCATIONS_ADDRESS;
-
+function WordToStr(val:longword): string; overload;
 begin
-
-  for i:=0 to NUMBEROFLOCATIONS do
-    begin
-      locations[i]:=NullTermToString(locationstrings[i]);
-      //writeln (locations[i]);
-    end;
+  Str(val,Result);
 end;
 
 procedure generateworld;
@@ -134,7 +102,7 @@ end;
 procedure console_navigation;
 begin
   GotoXy(1,1);ClrLine;
-  writeln ('L: ',locations[player.loc]);
+  writeln ('L: ',NullTermToString(locations[player.loc]));
   GotoXy(1,2);ClrLine;
   writeln ('#########################');
   GotoXy(1,3); ClrLine;
@@ -159,22 +127,36 @@ procedure console_trade;
 var y: byte;
     uec: string;
 begin
+  SetIntVec(iDLI, @dlic);
+  SetIntVec(iVBL, @vblc);
   SDLSTL := DISPLAY_LIST_ADDRESS_CONSOLE;
-  For y:=1 to 40 do
+  colbk:=$06;
+  For y:=1 to TXTCOL do
     begin
       GotoXy(1,y); ClrLine;
     end;
   GotoXy(1,1);
-  Str(player.uec,uec);
+  uec:= concat(IntToStr(player.uec) , ' UEC');
   //Write (locations[player.loc], ' [Buy] Sell '); WriteRightAligned(10,uec + ' UEC'); writeln;
-  Writeln (locations[0], ' [Buy] Sell ', player.uec,' UEC');
+  // Writeln (NullTermToString(locations[player.loc]), ' [Buy] Sell ', player.uec,' UEC');
+  Write (NullTermToString(locations[player.loc]), ' [Buy] Sell '); WriteRightAligned(8,uec);
   GotoXy(1,2);
-  Writeln ('----------------------------------------');
-  Writeln ('/Delivery_Locations | ../Available_Items');
-  Writeln ('[ Cuttles Black ]   | commodity    price');
-  Writeln ('--------------------+-------------------');
-  writeln;
-  Writeln ('--------------------+-------------------');
+  Write ('----------------------------------------');
+  GotoXy(1,3);
+  Write ('/Delivery_Locations | ../Available_Items');
+  GotoXy(1,4);
+  Write ('[ Cuttles Black ]   | commodity    price');
+  GotoXy(1,5);
+  Write ('--------------------+-------------------');
+  write ('Total Cargo '); WriteRightAligned(9,'46 |');writeln;
+  write ('Empty Cargo '); WriteRightAligned(9,'46 |');writeln;
+  GotoXy(1,8);
+  Write ('--------------------+-------------------');
+  GotoXy(1,19);
+  Write ('--------------------+-------------------');
+  GotoXy(1,23);
+  WriteRightAligned(40,'[Cancel] [OK]');
+
 
   repeat
     //pause;
@@ -190,6 +172,8 @@ end;
 
 procedure menu;
 begin
+  SetIntVec(iDLI, @dli1);
+  SetIntVec(iVBL, @vbl);
   SDLSTL := DISPLAY_LIST_ADDRESS_MENU;
 
   GotoXy(15,1);ClrLine;
@@ -222,12 +206,11 @@ end;
 procedure title;
 var str : string;
 begin
+  SetIntVec(iDLI, @dli1);
+  SetIntVec(iVBL, @vbl);
+
   SDLSTL := DISPLAY_LIST_ADDRESS_MENU;
-  // Colors:
-  //color0:=$00;
-  //color2:=$02; //vdarkgrey
-  //color3:=$FC;
-  //color4:=$00; Backgroud frame Color
+
 
   str:= NullTermToString(strings[1]); // New game
   GotoXy(15,1);ClrLine;
@@ -317,21 +300,15 @@ begin
   msx.init(0); //pause;
 
 }
-  // vbl interrupt
+  // save old vbl and dli interrupt
   GetIntVec(iVBL, oldvbl);
-  SetIntVec(iVBL, @vbl);
+  GetIntVec(iDLI, olddli);
   nmien:= $c0;
 
-  //display list interrupt
-  GetIntVec(iDLI, olddli);
-  SetIntVec(iDLI, @dli1);
+  //SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
+  chbas:= Hi(CHARSET_ADDRESS);
 
-  //SetCharset (Hi(CHARSET_ADDRESS));
-  //chbas:= Hi(CHARSET_ADDRESS);
-  //CHBASE:= Hi(CHARSET_ADDRESS);
 
-  LoadLocations;
-  LoadItems;
 
   current_menu := MENU_TITLE;
   repeat
@@ -348,7 +325,7 @@ begin
   until FALSE;
 
   // restore system
-  SetIntVec(iVBL, @oldvbl);
+  SetIntVec(iVBL, oldvbl);
   SetIntVec(iDLI, olddli);
   nmien:= $40;
 
