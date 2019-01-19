@@ -18,8 +18,8 @@ ITEMS_ADDRESS = LOCATIONS_ADDRESS + $200;
 DISPLAY_LIST_ADDRESS_MENU = ITEMS_ADDRESS + $100;
 DISPLAY_LIST_ADDRESS_CONSOLE = DISPLAY_LIST_ADDRESS_MENU + $100;
 
-VIDEO_RAM_ADDRESS = DISPLAY_LIST_ADDRESS_CONSOLE + $100;
-
+TXT_ADDRESS = DISPLAY_LIST_ADDRESS_CONSOLE + $100;
+SCROLL_ADDRESS = $9000;
 
 GFX_ADDRESS = $7000;
 
@@ -31,8 +31,8 @@ RMT_MODULE_ADDRESS = RMT_PLAYER_ADDRESS + $800;
 // CHARSET_ADDRESS = RMT_MODULE_ADDRESS + $500;
 CHARSET_ADDRESS = $4000;
 
-//NUMBEROFLOCATIONS = 15; // number of locations defined in locations.asm. Needs to match.
-//NUMBEROFITEMS = 22; // number of items defined in items.asm. Needs to match.
+NUMBEROFLOCATIONS = 15; // number of locations defined in locations.asm. Needs to match.
+NUMBEROFITEMS = 22; // number of items defined in items.asm. Needs to match.
 TXTCOL = 40; // numer of columns in txt mode
 
 

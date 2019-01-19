@@ -20,11 +20,11 @@ var
   strings: array [0..0] of word absolute STRINGS_ADDRESS;
   locations: array [0..0] of word absolute LOCATIONS_ADDRESS;
   items: array [0..0] of word absolute ITEMS_ADDRESS;
-
-
+  {itemmatrix: array[0..NUMBEROFITEMS] of TPriceMatrix;
+  locationmatrix: array [0..NUMBEROFLOCATIONS] of itemmatrix;
+}
   current_menu: Byte;
   player: TPlayer;
-
 
 procedure ClrLine;
 (*
@@ -36,9 +36,75 @@ The cursor doesn't move.
 begin
    FillChar( pointer(word(DPeek(88)+1)+WhereY*40-41), byte(41-byte(1)), 0);
 
-   //FillByte(pointer(VIDEO_RAM_ADDRESS+(WhereY*TXTCOL)), TXTCOL, 0);
+   //FillByte(pointer(TXT_ADDRESS+(WhereY*TXTCOL)), TXTCOL, 0);
    //ClrEol;
 end;
+
+function IntToStr(a: integer): ^string; assembler;
+(*
+@description: Convert an integer value to a decimal string
+@param: a: integer
+@returns: pointer to string
+*)
+asm
+{	txa:pha
+	inx
+	@ValueToStr #@printINT
+	mwa #@buf Result
+	pla:tax
+};
+end;
+
+function Atascii2Antic(c: byte): byte; overload;
+begin
+    asm {
+        lda c
+        asl
+        php
+        cmp #2*$60
+        bcs @+
+        sbc #2*$20-1
+        bcs @+
+        adc #2*$60
+@       plp
+        ror
+        sta result;
+    };
+end;
+
+function Antic2Atascii(c: byte):byte;overload;
+begin
+    asm {
+        lda c
+        asl
+        php
+        cmp #2*$60
+        bcs @+
+        sbc #2*$40-1
+        bcs @+
+        adc #2*$60
+@       plp
+        ror
+        sta result;
+    };
+end;
+
+function Atascii2Antic(s: string):string;overload;
+var i:byte;
+begin
+    result[0]:=s[0];
+    for i:=1 to byte(s[0]) do
+        result[i]:=char(Atascii2Antic(byte(s[i])));
+end;
+
+function Antic2Atascii(s: string):string;overload;
+var i:byte;
+begin
+    result[0]:=s[0];
+    for i:=1 to byte(s[0]) do
+        result[i]:=char(Antic2Atascii(byte(s[i])));
+end;
+
 
 {
 procedure  WriteString( s : string; newline : boolean); overload;
@@ -73,27 +139,28 @@ begin
 end;
 }
 
-function IntToStr(val:integer): string; overload;
-begin
-  Str(val,Result);
-end;
-
-function WordToStr(val:longword): string; overload;
-begin
-  Str(val,Result);
-end;
 
 procedure generateworld;
 
 begin
-
+  {
+  locationmatrix[0].item[0].quantity:=0;
+  locationmatrix[0].item[0].price:=0;
+  locationmatrix[0].item[1].quantity:=0;
+  locationmatrix[0].item[1].price:=0;
+  locationmatrix[0].item[3].quantity:=10000;
+  locationmatrix[0].item[3].price:=2;
+  locationmatrix[0].item[4].quantity:=0;
+  locationmatrix[0].item[4].price:=0;
+  locationmatrix[0].item[5].quantity:=10000;
+  locationmatrix[0].item[5].price:=10;
+}
 end;
 
 procedure start;
 begin
   //msx.Sfx(3, 2, 24);
-
-  //generateworld;
+  generateworld;
   player.uec:= 5000;
   player.loc:= 0;
 
@@ -112,8 +179,8 @@ begin
   writeln (NullTermToString(strings[6])); // Back
   GotoXy(1,7); ClrLine;
   repeat
-    //pause;
-    //msx.play;
+    pause;
+    msx.play;
     if (keyPressed) then begin
       keyval := ReadKey;
       case keyval of
@@ -127,10 +194,12 @@ procedure console_trade;
 var y: byte;
     uec: string;
 begin
+  colbk:=$06;
+  COLOR2:=$06;
   SetIntVec(iDLI, @dlic);
   SetIntVec(iVBL, @vblc);
   SDLSTL := DISPLAY_LIST_ADDRESS_CONSOLE;
-  colbk:=$06;
+
   For y:=1 to TXTCOL do
     begin
       GotoXy(1,y); ClrLine;
@@ -139,17 +208,17 @@ begin
   uec:= concat(IntToStr(player.uec) , ' UEC');
   //Write (locations[player.loc], ' [Buy] Sell '); WriteRightAligned(10,uec + ' UEC'); writeln;
   // Writeln (NullTermToString(locations[player.loc]), ' [Buy] Sell ', player.uec,' UEC');
-  Write (NullTermToString(locations[player.loc]), ' [Buy] Sell '); WriteRightAligned(8,uec);
+  Write (NullTermToString(locations[player.loc]), ' [Buy] Sell '); WriteRightAligned(17,uec);
   GotoXy(1,2);
-  Write ('----------------------------------------');
+  Write ('--------------------+-------------------');
   GotoXy(1,3);
-  Write ('/Delivery_Locations | ../Available_Items');
+  Write ('/Delivery_Location  | ../Available_Items');
   GotoXy(1,4);
   Write ('[ Cuttles Black ]   | commodity    price');
   GotoXy(1,5);
   Write ('--------------------+-------------------');
-  write ('Total Cargo '); WriteRightAligned(9,'46 |');writeln;
-  write ('Empty Cargo '); WriteRightAligned(9,'46 |');writeln;
+  write ('Total Cargo '); WriteRightAligned(9,'46 |');writeln;  // mocap
+  write ('Empty Cargo '); WriteRightAligned(9,'46 |');writeln;  //mocap
   GotoXy(1,8);
   Write ('--------------------+-------------------');
   GotoXy(1,19);
@@ -159,8 +228,8 @@ begin
 
 
   repeat
-    //pause;
-    //msx.play;
+    pause;
+    msx.play;
     if (keyPressed) then begin
       keyval := ReadKey;
       case keyval of
@@ -188,8 +257,8 @@ begin
   GotoXy(1,7); ClrLine;
   keyval:=char(0);
   repeat
-    //pause;
-    //msx.play;
+    pause;
+    msx.play;
     if (keyPressed) then begin
       keyval := ReadKey;
       case keyval of
@@ -204,7 +273,11 @@ end;
 
 
 procedure title;
-var str : string;
+var
+  str: string;
+  count: byte = 3;
+  offset: byte = 0;
+
 begin
   SetIntVec(iDLI, @dli1);
   SetIntVec(iVBL, @vbl);
@@ -212,26 +285,24 @@ begin
   SDLSTL := DISPLAY_LIST_ADDRESS_MENU;
 
 
-  str:= NullTermToString(strings[1]); // New game
   GotoXy(15,1);ClrLine;
-  Writeln (str);
-  str:= NullTermToString(strings[2]); // Quit
+  Writeln (NullTermToString(strings[1])); // New game;
   GotoXy(15,2);ClrLine;
-  Writeln (str);
+  Writeln (NullTermToString(strings[2])); // Quit;
   GotoXy(1,3); ClrLine;
   GotoXy(1,4); ClrLine;
   GotoXy(1,5); ClrLine;
   GotoXy(1,6); ClrLine;
-  str:= NullTermToString(strings[0]); // Scroll
-  GotoXy(21,7); ClrLine;
+  str:= Atascii2Antic(NullTermToString(strings[0])); // Scroll
   //GotoXy(21,7); ClrLine;
-  Writeln (str);
-
+  //Writeln (str);
+  move(str[1],pointer(SCROLL_ADDRESS+42),sizeOf(str)); // copy text to vram
+  //move(str[1],pointer(TXT_ADDRESS+42),sizeOf(str)); // copy text to vram
 
   keyval:=char(0);
   repeat
-    //pause;
-    //msx.play;
+    pause;
+    msx.play;
     if (keyPressed) then begin
       keyval := ReadKey;
       case keyval of
@@ -241,20 +312,20 @@ begin
                 end;
       end;
     end;
-{
-    if count=0 then begin
-      count:=8;
-      poke(scrol+23, ptext^);
-      move(pointer(scrol+1), pointer(scrol), 23);
-      inc(ptext);
-      if ptext^=$ff then ptext:=pointer(stext);
+
+    if count = $ff then begin // $ff is one below zero
+        count := 3;
+        offset := (offset + 1) mod 80; // go trough 0-79
+        DL_PokeW(0, SCROLL_ADDRESS + offset); // set new memory offset
+        //DL_PokeW(107, TXT_ADDRESS + offset); // set new memory offset
     end;
 
     hscrol := count; // set hscroll
     dec(count);
+
     //blankSize := (blankSize + 1) and 15; // go trough 0-15
     //DL_Poke(10, blanks[blankSize]); // set new blankline height
-}
+
   until (keyval = KEY_QUIT) or (keyval = KEY_NEW);
 end;
 
@@ -288,18 +359,18 @@ MAIN LOOP
 begin
 
 
-  savmsc:= VIDEO_RAM_ADDRESS;
+  savmsc:= TXT_ADDRESS;
 
   lmargin:= 0;
   fade;
   CursorOff;
   // Initialize RMT player
-{
+
   msx.player:=pointer(RMT_PLAYER_ADDRESS);
   msx.modul:=pointer(RMT_MODULE_ADDRESS);
   msx.init(0); //pause;
 
-}
+
   // save old vbl and dli interrupt
   GetIntVec(iVBL, oldvbl);
   GetIntVec(iDLI, olddli);
@@ -329,6 +400,6 @@ begin
   SetIntVec(iDLI, olddli);
   nmien:= $40;
 
-  //msx.stop;
+  msx.stop;
   CursorOn;
 end.

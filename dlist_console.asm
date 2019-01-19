@@ -36,7 +36,7 @@ DL_JVB = %01000001; // Jump to begining
 
 dl_start
     dta DL_DLI + DL_BLANK8                              ; // 8 blank line
-    dta DL_MODE_40x24T2 + DL_LMS, a(VIDEO_RAM_ADDRESS)  ; // mode 0 line + text memory start
+    dta DL_MODE_40x24T2 + DL_LMS, a(TXT_ADDRESS)  ; // mode 0 line + text memory start
     :22 dta DL_MODE_40x24T2                             ; // 5x mode 0 line
     dta DL_MODE_40x24T2 + DL_HSCROLL                    ; //  mode 0 line
     dta DL_BLANK8                                       ; // 8 blank lines

@@ -58,9 +58,9 @@ asm {
 ;    mva 20 atari.colbk // blink background
 
 ;   *** RMT play routine
-;    lda MSX
-;    ldy MSX+1
-;    jsr RMT.TRMT.PLAY
+  ;  lda MSX
+  ;  ldy MSX+1
+  ;  jsr RMT.TRMT.PLAY
 
     mwa #dli1 ATARI.VDSLST
 
@@ -93,9 +93,9 @@ asm {
 ;    mva 20 atari.colbk // blink background
 
 ;   *** RMT play routine
-;    lda MSX
-;    ldy MSX+1
-;    jsr RMT.TRMT.PLAY
+  ;  lda MSX
+  ;  ldy MSX+1
+  ;  jsr RMT.TRMT.PLAY
 
     ; mwa #dlic ATARI.VDSLST
 
