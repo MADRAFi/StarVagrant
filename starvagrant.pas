@@ -1,6 +1,6 @@
 program StarVagrant;
 {$librarypath '../Libs/lib/';'../Libs/blibs/';'../Libs/base/'}
-uses atari, crt, rmt, b_utils, b_dl, b_system;
+uses atari, rmt, b_utils, b_system, b_crt, sysutils;
 
 
 const
@@ -12,7 +12,9 @@ type
 {$i 'interrupts.inc'}
 
 var
-  keyval: char = chr(0);
+//  keyval: char = chr(0);
+  keyval: byte = 0;
+
   msx: TRMT;
 
   oldvbl, olddli: pointer;
@@ -20,6 +22,11 @@ var
   strings: array [0..0] of word absolute STRINGS_ADDRESS;
   locations: array [0..0] of word absolute LOCATIONS_ADDRESS;
   items: array [0..0] of word absolute ITEMS_ADDRESS;
+  //itemprice: array [0..NUMBEROFLOCATIONS-1, 0..NUMBEROFITEMS-1] of byte;
+  //itemquantity: array [0..NUMBEROFLOCATIONS-1, 0..NUMBEROFITEMS-1] of word;
+  // itemmatrix: array [0..NUMBEROFLOCATIONS-1, 0..NUMBEROFITEMS-1] of boolean;
+  itemmatrix: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of boolean;
+
   {itemmatrix: array[0..NUMBEROFITEMS] of TPriceMatrix;
   locationmatrix: array [0..NUMBEROFLOCATIONS] of itemmatrix;
 }
@@ -34,27 +41,43 @@ ClrLine clears the current line, starting from the position 1, to the end of the
 The cursor doesn't move.
 *)
 begin
-   FillChar( pointer(word(DPeek(88)+1)+WhereY*40-41), byte(41-byte(1)), 0);
+   FillChar( pointer(word(DPeek(88)+1)+CRT_WhereY*40-41), byte(41-byte(1)), 0);
+   //FillChar( pointer(word(DPeek(88))+WhereY*TXTCOL-41), byte(TXTCOL), 0);
 
    //FillByte(pointer(TXT_ADDRESS+(WhereY*TXTCOL)), TXTCOL, 0);
    //ClrEol;
 end;
 
-function IntToStr(a: integer): ^string; assembler;
+procedure ClrSroll;
 (*
-@description: Convert an integer value to a decimal string
-@param: a: integer
-@returns: pointer to string
+@description:
+ClrLine clears the current line, starting from the position 1, to the end of the window.
+
+The cursor doesn't move.
 *)
-asm
-{	txa:pha
-	inx
-	@ValueToStr #@printINT
-	mwa #@buf Result
-	pla:tax
-};
+begin
+   FillChar(pointer(SCROLL_ADDRESS), byte(TXTCOL), 0);
+   //move(0,pointer(SCROLL_ADDRESS),255);
+   //FillByte(pointer(TXT_ADDRESS+(WhereY*TXTCOL)), TXTCOL, 0);
+   //ClrEol;
 end;
 
+// function IntToStr(a: integer): ^string; assembler;
+// (*
+// @description: Convert an integer value to a decimal string
+// @param: a: integer
+// @returns: pointer to string
+// *)
+// asm
+// {	txa:pha
+// 	inx
+// 	@ValueToStr #@printINT
+// 	mwa #@buf Result
+// 	pla:tax
+// };
+// end;
+
+(*
 function Atascii2Antic(c: byte): byte; overload;
 begin
     asm {
@@ -97,6 +120,7 @@ begin
         result[i]:=char(Atascii2Antic(byte(s[i])));
 end;
 
+
 function Antic2Atascii(s: string):string;overload;
 var i:byte;
 begin
@@ -104,7 +128,7 @@ begin
     for i:=1 to byte(s[0]) do
         result[i]:=char(Antic2Atascii(byte(s[i])));
 end;
-
+*)
 
 {
 procedure  WriteString( s : string; newline : boolean); overload;
@@ -114,9 +138,9 @@ var
 begin
   x:= WhereX;
   y:= WhereY;
-  GotoXy(1,y);
+  CRT_GotoXy(1,y);
   ClrEol;
-  GotoXy(x,y);
+  CRT_GotoXy(x,y);
 
   If (newline = FALSE) then
     Write (s)
@@ -131,9 +155,9 @@ var
 begin
   x:= WhereX;
   y:= WhereY;
-  GotoXy(1,y);
+  CRT_GotoXy(1,y);
   ClrEol;
-  GotoXy(x,y);
+  CRT_GotoXy(x,y);
 
   Writeln (s);
 end;
@@ -155,6 +179,15 @@ begin
   locationmatrix[0].item[5].quantity:=10000;
   locationmatrix[0].item[5].price:=10;
 }
+  // Location 0
+  itemmatrix[7]:=true;
+  itemmatrix[8]:=true;
+  itemmatrix[10]:=true;
+  itemmatrix[14]:=true;
+  itemmatrix[15]:=true;
+  itemmatrix[18]:=true;
+  itemmatrix[21]:=true;
+
 end;
 
 procedure start;
@@ -166,23 +199,43 @@ begin
 
 end;
 
+procedure ListItems(loc: byte);
+var
+  x: byte;
+  count:byte = 1;
+  offset: byte;
+
+begin
+  for x:=0 to NUMBEROFITEMS-1 do
+    begin
+      offset:=(NUMBEROFITEMS-1)*loc + x;
+      if itemmatrix[offset] = true then
+        begin
+          CRT_GotoXy(22,5+count);
+          write (count,' ',NullTermToString(items[x]));
+          inc(count);
+        end;
+    end;
+end;
+
+
 procedure console_navigation;
 begin
-  GotoXy(1,1);ClrLine;
+  CRT_GotoXy(1,1);ClrLine;
   writeln ('L: ',NullTermToString(locations[player.loc]));
-  GotoXy(1,2);ClrLine;
+  CRT_GotoXy(1,2);ClrLine;
   writeln ('#########################');
-  GotoXy(1,3); ClrLine;
-  GotoXy(1,4); ClrLine;
-  GotoXy(1,5); ClrLine;
-  GotoXy(15,6);ClrLine;
+  CRT_GotoXy(1,3); ClrLine;
+  CRT_GotoXy(1,4); ClrLine;
+  CRT_GotoXy(1,5); ClrLine;
+  CRT_GotoXy(15,6);ClrLine;
   writeln (NullTermToString(strings[6])); // Back
-  GotoXy(1,7); ClrLine;
+  CRT_GotoXy(1,7); ClrLine;
   repeat
     pause;
     msx.play;
-    if (keyPressed) then begin
-      keyval := ReadKey;
+    if (CRT_KeyPressed) then begin
+      keyval := CRT_ReadKey;
       case keyval of
         KEY_BACK: current_menu := MENU_MAIN;
       end;
@@ -193,6 +246,12 @@ end;
 procedure console_trade;
 var y: byte;
     uec: string;
+    mode: boolean = false;
+    modestr: string;
+    itemmax:byte;
+    curlocation: string;
+    l: byte = 0;
+
 begin
   colbk:=$06;
   COLOR2:=$06;
@@ -202,65 +261,94 @@ begin
 
   For y:=1 to TXTCOL do
     begin
-      GotoXy(1,y); ClrLine;
+      CRT_GotoXy(1,y); ClrLine;
     end;
-  GotoXy(1,1);
+  CRT_GotoXy(1,1);
   uec:= concat(IntToStr(player.uec) , ' UEC');
   //Write (locations[player.loc], ' [Buy] Sell '); WriteRightAligned(10,uec + ' UEC'); writeln;
   // Writeln (NullTermToString(locations[player.loc]), ' [Buy] Sell ', player.uec,' UEC');
-  Write (NullTermToString(locations[player.loc]), ' [Buy] Sell '); WriteRightAligned(17,uec);
-  GotoXy(1,2);
+{
+  if mode = false then
+    modestr:=concat('[','Buy'*,'] Sell');
+  else
+    modestr:=concat('Buy [','Sell*',']');
+  end;
+}
+  modestr:=concat('[','Buy'*);modestr:=concat(modestr,'] Sell');
+  curlocation:=NullTermToString(locations[player.loc]);
+  l:=Length(curlocation);
+
+  Write (curlocation, ' ',modestr,' '); WriteRightAligned(17,uec);
+  CRT_GotoXy(1,2);
   Write ('--------------------+-------------------');
-  GotoXy(1,3);
+  CRT_GotoXy(1,3);
   Write ('/Delivery_Location  | ../Available_Items');
-  GotoXy(1,4);
+  CRT_GotoXy(1,4);
   Write ('[ Cuttles Black ]   | commodity    price');
-  GotoXy(1,5);
+  CRT_GotoXy(1,5);
   Write ('--------------------+-------------------');
   write ('Total Cargo '); WriteRightAligned(9,'46 |');writeln;  // mocap
   write ('Empty Cargo '); WriteRightAligned(9,'46 |');writeln;  //mocap
-  GotoXy(1,8);
+  CRT_GotoXy(1,8);
+  Write ('--------------------+');
+  CRT_GotoXy(1,19);
   Write ('--------------------+-------------------');
-  GotoXy(1,19);
-  Write ('--------------------+-------------------');
-  GotoXy(1,23);
+  CRT_GotoXy(1,23);
   WriteRightAligned(40,'[Cancel] [OK]');
 
+  ListItems(player.loc);
 
   repeat
     pause;
     msx.play;
-    if (keyPressed) then begin
-      keyval := ReadKey;
+    if (CRT_keyPressed) then begin
+      keyval := CRT_ReadKey;
       case keyval of
         KEY_BACK: current_menu:=MENU_MAIN;
       end;
     end;
+    if (CRT_OptionPressed) then begin
+      mode:= not mode;
+      if (mode = false) then
+        CRT_Invert(1,l+1,3)
+      else
+        CRT_Invert(1,l+7,3);
+
+    end;
+
   until keyval = KEY_BACK;
 end;
 
 procedure menu;
+var
+    str: string;
+
 begin
   SetIntVec(iDLI, @dli1);
   SetIntVec(iVBL, @vbl);
   SDLSTL := DISPLAY_LIST_ADDRESS_MENU;
 
-  GotoXy(15,1);ClrLine;
+  CRT_GotoXy(15,1);ClrLine;
   Writeln (NullTermToString(strings[3])); // Navigation
-  GotoXy(15,2);ClrLine;
+  CRT_GotoXy(15,2);ClrLine;
   Writeln (NullTermToString(strings[4])); // Trade Console
-  GotoXy(15,3);ClrLine;
+  CRT_GotoXy(15,3);ClrLine;
   Writeln (NullTermToString(strings[6])); // Back
-  GotoXy(1,4); ClrLine;
-  GotoXy(1,5); ClrLine;
-  GotoXy(1,6); ClrLine;
-  GotoXy(1,7); ClrLine;
-  keyval:=char(0);
+  CRT_GotoXy(1,4); ClrLine;
+  CRT_GotoXy(1,5); ClrLine;
+  CRT_GotoXy(1,6); ClrLine;
+  //CRT_GotoXy(1,7); ClrLine;
+  //ClrSroll;
+  str:= '';
+  move(str[1],pointer(SCROLL_ADDRESS+42),sizeOf(str));
+  hscrol:=0; //stop scroll.
+
+  keyval:=0;
   repeat
     pause;
     msx.play;
-    if (keyPressed) then begin
-      keyval := ReadKey;
+    if (CRT_KeyPressed) then begin
+      keyval := CRT_ReadKey;
       case keyval of
       KEY_OPTION1: current_menu := MENU_NAV;
       KEY_OPTION2: current_menu := MENU_TRADE;
@@ -283,28 +371,28 @@ begin
   SetIntVec(iVBL, @vbl);
 
   SDLSTL := DISPLAY_LIST_ADDRESS_MENU;
+  //DL_Attach;
 
-
-  GotoXy(15,1);ClrLine;
+  CRT_GotoXy(15,1);ClrLine;
   Writeln (NullTermToString(strings[1])); // New game;
-  GotoXy(15,2);ClrLine;
+  CRT_GotoXy(15,2);ClrLine;
   Writeln (NullTermToString(strings[2])); // Quit;
-  GotoXy(1,3); ClrLine;
-  GotoXy(1,4); ClrLine;
-  GotoXy(1,5); ClrLine;
-  GotoXy(1,6); ClrLine;
+  CRT_GotoXy(1,3); ClrLine;
+  CRT_GotoXy(1,4); ClrLine;
+  CRT_GotoXy(1,5); ClrLine;
+  CRT_GotoXy(1,6); ClrLine;
   str:= Atascii2Antic(NullTermToString(strings[0])); // Scroll
-  //GotoXy(21,7); ClrLine;
+  //CRT_GotoXy(21,7); ClrLine;
   //Writeln (str);
   move(str[1],pointer(SCROLL_ADDRESS+42),sizeOf(str)); // copy text to vram
   //move(str[1],pointer(TXT_ADDRESS+42),sizeOf(str)); // copy text to vram
 
-  keyval:=char(0);
+  keyval:=0;
   repeat
     pause;
     msx.play;
-    if (keyPressed) then begin
-      keyval := ReadKey;
+    if (CRT_KeyPressed) then begin
+      keyval := CRT_ReadKey;
       case keyval of
         KEY_NEW: begin
                   start;
@@ -316,8 +404,8 @@ begin
     if count = $ff then begin // $ff is one below zero
         count := 3;
         offset := (offset + 1) mod 80; // go trough 0-79
-        DL_PokeW(0, SCROLL_ADDRESS + offset); // set new memory offset
-        //DL_PokeW(107, TXT_ADDRESS + offset); // set new memory offset
+        //DL_PokeW(114, SCROLL_ADDRESS + offset); // set new memory offset
+        dpoke(DISPLAY_LIST_ADDRESS_MENU + 114, SCROLL_ADDRESS + offset);
     end;
 
     hscrol := count; // set hscroll
@@ -341,11 +429,11 @@ var
 begin
   for i:=Low(fadecolors) to high(fadecolors)  do
     begin
-      TextBackground(fadecolors[i]);
-      delay(35);
+      //TextBackground(fadecolors[i]);
+      colbk:=fadecolors[i];
+      //Delay(35);
     end;
   //poke($2C6,$C4);
-  TextColor(COLOR_GRAY2);
 end;
 
 
@@ -363,7 +451,7 @@ begin
 
   lmargin:= 0;
   fade;
-  CursorOff;
+  //CursorOff;
   // Initialize RMT player
 
   msx.player:=pointer(RMT_PLAYER_ADDRESS);
@@ -401,5 +489,5 @@ begin
   nmien:= $40;
 
   msx.stop;
-  CursorOn;
+  //CursorOn;
 end.

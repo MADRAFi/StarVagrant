@@ -38,13 +38,22 @@ TXTCOL = 40; // numer of columns in txt mode
 
 
 // ***************************************************************************//
-KEY_OPTION1 = '1';
-KEY_OPTION2 = '2';
-KEY_OPTION3 = '3';
-KEY_OPTION4 = '4';
-KEY_BACK = 'b';
-KEY_QUIT = 'q';
-KEY_NEW = 'n';
+// KEY_OPTION1 = '1';
+// KEY_OPTION2 = '2';
+// KEY_OPTION3 = '3';
+// KEY_OPTION4 = '4';
+// KEY_BACK = 'b';
+// KEY_QUIT = 'q';
+// KEY_NEW = 'n';
+KEY_OPTION1 = 31;  // 1
+KEY_OPTION2 = 30;  // 2
+KEY_OPTION3 = 26;  // 3
+KEY_OPTION4 = 24;  // 4
+KEY_BACK = 21;    // b
+KEY_QUIT = 47;    // q
+KEY_NEW = 35;     // n
+
+
 
 //----------------------------------------------------------------------------//
 
