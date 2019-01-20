@@ -1,6 +1,6 @@
 program StarVagrant;
 {$librarypath '../Libs/lib/';'../Libs/blibs/';'../Libs/base/'}
-uses atari, crt, rmt, b_utils, b_dl, b_system;
+uses atari, crt, rmt, b_utils, b_system;
 
 
 const
@@ -20,6 +20,7 @@ var
   strings: array [0..0] of word absolute STRINGS_ADDRESS;
   locations: array [0..0] of word absolute LOCATIONS_ADDRESS;
   items: array [0..0] of word absolute ITEMS_ADDRESS;
+  //itemmatrix: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of boolean;
   {itemmatrix: array[0..NUMBEROFITEMS] of TPriceMatrix;
   locationmatrix: array [0..NUMBEROFLOCATIONS] of itemmatrix;
 }
@@ -155,6 +156,17 @@ begin
   locationmatrix[0].item[5].quantity:=10000;
   locationmatrix[0].item[5].price:=10;
 }
+
+  // Location 0
+  {
+  itemmatrix[7]:=true;
+  itemmatrix[8]:=true;
+  itemmatrix[10]:=true;
+  itemmatrix[14]:=true;
+  itemmatrix[15]:=true;
+  itemmatrix[18]:=true;
+  itemmatrix[21]:=true;
+}
 end;
 
 procedure start;
@@ -165,6 +177,25 @@ begin
   player.loc:= 0;
 
 end;
+
+// procedure ListItems(loc: byte);
+// var
+//   x: byte;
+//   count:byte = 1;
+//   offset: byte;
+//
+// begin
+//   for x:=0 to NUMBEROFITEMS-1 do
+//     begin
+//       offset:=(NUMBEROFITEMS-1)*loc + x;
+//       if itemmatrix[offset] = true then
+//         begin
+//           GotoXy(22,5+count);
+//           write (count,' ',NullTermToString(items[x]));
+//           inc(count);
+//         end;
+//     end;
+// end;
 
 procedure console_navigation;
 begin
@@ -193,9 +224,15 @@ end;
 procedure console_trade;
 var y: byte;
     uec: string;
+    {mode: boolean = false;
+    modestr: string;
+    itemmax:byte;
+    curlocation: string;
+    l: byte = 0;}
+
 begin
-  colbk:=$06;
-  COLOR2:=$06;
+  //colbk:=$06;
+  //COLOR2:=$06;
   SetIntVec(iDLI, @dlic);
   SetIntVec(iVBL, @vblc);
   SDLSTL := DISPLAY_LIST_ADDRESS_CONSOLE;
@@ -206,9 +243,16 @@ begin
     end;
   GotoXy(1,1);
   uec:= concat(IntToStr(player.uec) , ' UEC');
+
+  {modestr:=concat('[','Buy'*);modestr:=concat(modestr,'] Sell');
+  curlocation:=NullTermToString(locations[player.loc]);
+  l:=Length(curlocation);
+
   //Write (locations[player.loc], ' [Buy] Sell '); WriteRightAligned(10,uec + ' UEC'); writeln;
   // Writeln (NullTermToString(locations[player.loc]), ' [Buy] Sell ', player.uec,' UEC');
-  Write (NullTermToString(locations[player.loc]), ' [Buy] Sell '); WriteRightAligned(17,uec);
+  //Write (NullTermToString(locations[player.loc]), ' [Buy] Sell '); WriteRightAligned(17,uec);
+
+  Write (curlocation, ' ',modestr,' '); WriteRightAligned(17,uec);}
   GotoXy(1,2);
   Write ('--------------------+-------------------');
   GotoXy(1,3);
@@ -220,12 +264,13 @@ begin
   write ('Total Cargo '); WriteRightAligned(9,'46 |');writeln;  // mocap
   write ('Empty Cargo '); WriteRightAligned(9,'46 |');writeln;  //mocap
   GotoXy(1,8);
-  Write ('--------------------+-------------------');
+  Write ('--------------------+');
   GotoXy(1,19);
   Write ('--------------------+-------------------');
   GotoXy(1,23);
   WriteRightAligned(40,'[Cancel] [OK]');
 
+  //ListItems(player.loc);
 
   repeat
     pause;
@@ -240,6 +285,10 @@ begin
 end;
 
 procedure menu;
+
+var
+   str: string;
+
 begin
   SetIntVec(iDLI, @dli1);
   SetIntVec(iVBL, @vbl);
@@ -260,7 +309,7 @@ begin
   //scroll stop
   str:= '';
   move(str[1],pointer(SCROLL_ADDRESS+42),sizeOf(str));
-  hscrol:=0
+  hscrol:=0;
 
   repeat
     pause;
