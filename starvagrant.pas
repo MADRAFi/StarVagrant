@@ -322,25 +322,27 @@ end;
 procedure menu;
 var
     str: string;
+    i: byte;
 
 begin
   SetIntVec(iDLI, @dli1);
   SetIntVec(iVBL, @vbl);
   SDLSTL := DISPLAY_LIST_ADDRESS_MENU;
+  //CRT_Init;
 
-  CRT_GotoXy(14,0);ClrLine;
-  Writeln (NullTermToString(strings[3])); // Navigation
-  CRT_GotoXy(14,1);ClrLine;
-  Writeln (NullTermToString(strings[4])); // Trade Console
-  CRT_GotoXy(14,2);ClrLine;
-  Writeln (NullTermToString(strings[6])); // Back
-  CRT_GotoXy(0,3); ClrLine;
-  CRT_GotoXy(0,4); ClrLine;
-  CRT_GotoXy(0,5); ClrLine;
-  //CRT_GotoXy(1,7); ClrLine;
-  //ClrSroll;
-  str:= '';
-  move(str[1],pointer(SCROLL_ADDRESS+42),sizeOf(str));
+  for i:=0 to 6 do
+    CRT_ClearRow(i);
+
+  CRT_GotoXy(14,0);
+  CRT_Write (NullTermToString(strings[3])); // Navigation
+  CRT_GotoXy(14,1);
+  CRT_Write (NullTermToString(strings[4])); // Trade Console
+  CRT_GotoXy(14,2);
+  CRT_Write (NullTermToString(strings[6])); // Back
+
+
+  //str:= ''~;
+  //move(str[1],pointer(SCROLL_ADDRESS+42),sizeOf(str));
   hscrol:=0; //stop scroll.
 
   keyval:=0;
@@ -377,17 +379,9 @@ begin
     CRT_ClearRow(i);
 
   CRT_GotoXY(14,0);
-  //CRT_Write (NullTermToString(strings[1])); // New game;
-  CRT_Write('ABCDEFGHIJKLMNOPQRSTUWVXYZ');
+  CRT_Write (NullTermToString(strings[1])); // New game;
   CRT_GotoXY(14,1);
-  CRT_Write('abcdefghijklmnopqrstuwvxyz');
-  CRT_GotoXY(14,2);
-  CRT_WriteCentered('ABCDEFGHIJKLMNOPQRSTUWVXYZ');
-  CRT_GotoXY(14,3);
-  CRT_WriteCentered('abcdefghijklmnopqrstuwvxyz');
-  CRT_GotoXY(14,5);
-  CRT_WriteCentered('!@#$%^&*()_+1234567890-=');
-  //CRT_Write (NullTermToString(strings[2])); // Quit;
+  CRT_Write (NullTermToString(strings[2])); // Quit;
   str:= Atascii2Antic(NullTermToString(strings[0])); // Scroll
 
   move(str[1],pointer(SCROLL_ADDRESS+42),sizeOf(str)); // copy text to vram
@@ -409,7 +403,7 @@ begin
 
     if count = $ff then begin // $ff is one below zero
         count := 3;
-        offset := (offset + 1) mod 80; // go trough 0-79
+        offset := (offset + 1) mod 140; // go trough 0-79
         //DL_PokeW(114, SCROLL_ADDRESS + offset); // set new memory offset
         dpoke(DISPLAY_LIST_ADDRESS_MENU + 114, SCROLL_ADDRESS + offset);
     end;
@@ -457,12 +451,13 @@ begin
 
   lmargin:= 0;
   rmargin:= 0;
-  CRT_Init(TXT_ADDRESS);
+  CRT_Init;
+  //CRT_Init(TXT_ADDRESS);
 
   fade;
   //CursorOff;
-  // Initialize RMT player
 
+  // Initialize RMT player
   msx.player:=pointer(RMT_PLAYER_ADDRESS);
   msx.modul:=pointer(RMT_MODULE_ADDRESS);
   msx.init(0); //pause;
@@ -474,7 +469,7 @@ begin
   nmien:= $c0;
 
   //SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
-  //chbas:= Hi(CHARSET_ADDRESS);
+  chbas:= Hi(CHARSET_ADDRESS);
 
 
 
