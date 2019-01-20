@@ -256,6 +256,12 @@ begin
   GotoXy(1,6); ClrLine;
   GotoXy(1,7); ClrLine;
   keyval:=char(0);
+
+  //scroll stop
+  str:= '';
+  move(str[1],pointer(SCROLL_ADDRESS+42),sizeOf(str));
+  hscrol:=0
+
   repeat
     pause;
     msx.play;
@@ -316,8 +322,9 @@ begin
     if count = $ff then begin // $ff is one below zero
         count := 3;
         offset := (offset + 1) mod 80; // go trough 0-79
-        DL_PokeW(0, SCROLL_ADDRESS + offset); // set new memory offset
-        //DL_PokeW(107, TXT_ADDRESS + offset); // set new memory offset
+        //DL_PokeW(0, SCROLL_ADDRESS + offset); // set new memory offset
+        dpoke(DISPLAY_LIST_ADDRESS_MENU + 114, SCROLL_ADDRESS + offset);
+
     end;
 
     hscrol := count; // set hscroll
