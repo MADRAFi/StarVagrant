@@ -220,26 +220,28 @@ end;
 
 
 procedure console_navigation;
+var
+  y: byte;
+
 begin
-  CRT_GotoXy(0,0);ClrLine;
-  writeln ('L: ',NullTermToString(locations[player.loc]));
-  CRT_GotoXy(0,1);ClrLine;
-  writeln ('#########################');
-  CRT_GotoXy(0,2); ClrLine;
-  CRT_GotoXy(0,3); ClrLine;
-  CRT_GotoXy(0,4); ClrLine;
-  CRT_GotoXy(14,5);ClrLine;
-  writeln (NullTermToString(strings[6])); // Back
-  CRT_GotoXy(0,6); ClrLine;
+  for y:=0 to 6 do
+    CRT_ClearRow(y);
+
+  CRT_GotoXy(0,0);
+  CRT_write (concat('L: '~,NullTermToString(locations[player.loc])));
+  CRT_GotoXy(0,1);
+  CRT_write ('#########################'~);
+  CRT_GotoXy(14,5);
+  CRT_write (NullTermToString(strings[7])); // Back
+  CRT_GotoXy(0,6);
   repeat
     pause;
     msx.play;
-    if (CRT_KeyPressed) then begin
-      keyval := chr(CRT_ReadKey);
+      keyval := chr(CRT_ReadChar);
       case keyval of
         KEY_BACK: current_menu := MENU_MAIN;
       end;
-    end;
+
   until keyval = KEY_BACK;
 end;
 
@@ -259,10 +261,9 @@ begin
   SetIntVec(iVBL, @vblc);
   SDLSTL := DISPLAY_LIST_ADDRESS_CONSOLE;
 
-  For y:=1 to TXTCOL do
-    begin
-      CRT_GotoXy(0,y); ClrLine;
-    end;
+  for y:=0 to TXTCOL do
+    CRT_ClearRow(y);
+
   CRT_GotoXy(0,0);
   uec:= concat(IntToStr(player.uec) , ' UEC');
   //Write (locations[player.loc], ' [Buy] Sell '); WriteRightAligned(10,uec + ' UEC'); writeln;
@@ -278,42 +279,41 @@ begin
   curlocation:=NullTermToString(locations[player.loc]);
   l:=Length(curlocation);
 
-  Write (curlocation, ' ',modestr); WriteRightAligned(17,uec);
+  CRT_Write (concat(curlocation, ' '~));CRT_Write(modestr); WriteRightAligned(17,uec);
   CRT_GotoXy(0,1);
-  Write ('--------------------+-------------------');
-  CRT_GotoXy(0,2);
-  Write ('/Delivery_Location  | ../Available_Items');
+  CRT_Write ('--------------------+-------------------'~);
+{  CRT_GotoXy(0,2);
+  CRT_Write ('/Delivery_Location  | ../Available_Items'~);
   CRT_GotoXy(0,3);
-  Write ('[ Cuttles Black ]   | commodity    price');
+  CRT_Write ('[ Cuttles Black ]   | commodity    price'~);
   CRT_GotoXy(0,4);
-  Write ('--------------------+-------------------');
-  write ('Total Cargo '); WriteRightAligned(9,'46 |');writeln;  // mocap
-  write ('Empty Cargo '); WriteRightAligned(9,'46 |');writeln;  //mocap
+  CRT_Write ('--------------------+-------------------'~);
+  CRT_GotoXy(0,5);
+  CRT_write ('Total Cargo '~); WriteRightAligned(9,'46 |');  // mocap
+  CRT_GotoXy(0,6);
+  CRT_write ('Empty Cargo '~); WriteRightAligned(9,'46 |');  //mocap
   CRT_GotoXy(0,7);
-  Write ('--------------------+');
+  Write ('--------------------+'~);
   CRT_GotoXy(0,18);
-  Write ('--------------------+-------------------');
+  Write ('--------------------+-------------------'~);
   CRT_GotoXy(0,22);
   WriteRightAligned(TXTCOL,'[Cancel] [OK]');
 
   ListItems(player.loc);
-
+}
   repeat
     pause;
     msx.play;
-    if (CRT_keyPressed) then begin
-      keyval := chr(CRT_ReadKey);
+    keyval := chr(CRT_ReadChar);
       case keyval of
         KEY_BACK: current_menu:=MENU_MAIN;
       end;
-    end;
     if (CRT_OptionPressed) then begin
       mode:= not mode;
       if (mode = false) then
         CRT_Invert(0,l+1,5)
       else
         CRT_Invert(0,l+6,6);
-
     end;
 
   until keyval = KEY_BACK;
@@ -334,11 +334,14 @@ begin
     CRT_ClearRow(i);
 
   CRT_GotoXy(14,0);
+  //CRT_Write ('Navi'~);
   CRT_Write (NullTermToString(strings[3])); // Navigation
   CRT_GotoXy(14,1);
+  //CRT_Write ('Trade'~);
   CRT_Write (NullTermToString(strings[4])); // Trade Console
   CRT_GotoXy(14,2);
-  CRT_Write (NullTermToString(strings[6])); // Back
+  //CRT_Write ('Back'~);
+  CRT_Write (NullTermToString(strings[7])); // Back
 
 
   //str:= ''~;
@@ -349,13 +352,11 @@ begin
   repeat
     pause;
     msx.play;
-    if (CRT_KeyPressed) then begin
-      keyval := chr(CRT_ReadKey);
-      case keyval of
+    keyval := chr(CRT_ReadChar);
+    case keyval of
       KEY_OPTION1: current_menu := MENU_NAV;
       KEY_OPTION2: current_menu := MENU_TRADE;
       KEY_BACK: current_menu := MENU_TITLE;
-      end;
     end;
   until (keyval = KEY_BACK) or (keyval = KEY_OPTION1) or (keyval = KEY_OPTION2);
 end;
@@ -367,7 +368,7 @@ var
   str: string;
   count: byte = 3;
   offset: byte = 0;
-  i: byte;
+  y: byte;
 
 begin
   SetIntVec(iDLI, @dli1);
@@ -375,35 +376,37 @@ begin
 
   SDLSTL := DISPLAY_LIST_ADDRESS_MENU;
 
-  for i:=0 to 6 do
-    CRT_ClearRow(i);
+  for y:=0 to 6 do
+    CRT_ClearRow(y);
 
   CRT_GotoXY(14,0);
-  CRT_Write (NullTermToString(strings[1])); // New game;
+  //CRT_Write (Atascii2Antic(NullTermToString(strings[1]))); // New game;
+  CRT_Write('[N]ew Game'~);
   CRT_GotoXY(14,1);
-  CRT_Write (NullTermToString(strings[2])); // Quit;
-  str:= Atascii2Antic(NullTermToString(strings[0])); // Scroll
+  CRT_Write('[Q]uit'~);
+  //CRT_Write (NullTermToString(strings[2])); // Quit;
+
+  str:= Atascii2Antic(NullTermToString(strings[0])); // read scroll text
 
   move(str[1],pointer(SCROLL_ADDRESS+42),sizeOf(str)); // copy text to vram
 
 
   keyval:=chr(0);
   repeat
+
     pause;
     msx.play;
-    if (CRT_KeyPressed) then begin
-      keyval := chr(CRT_ReadKey);
-      case keyval of
-        KEY_NEW: begin
-                  start;
-                  current_menu := MENU_MAIN;
-                end;
-      end;
+    keyval := chr(CRT_ReadChar);
+    case keyval of
+      KEY_NEW: begin
+                start;
+                current_menu := MENU_MAIN;
+              end;
     end;
 
     if count = $ff then begin // $ff is one below zero
         count := 3;
-        offset := (offset + 1) mod 140; // go trough 0-79
+        offset := (offset + 1) mod 140;  // 140 = 2x string size
         //DL_PokeW(114, SCROLL_ADDRESS + offset); // set new memory offset
         dpoke(DISPLAY_LIST_ADDRESS_MENU + 114, SCROLL_ADDRESS + offset);
     end;
@@ -446,7 +449,6 @@ MAIN LOOP
 
 begin
 
-
   savmsc:= TXT_ADDRESS;
 
   lmargin:= 0;
@@ -484,14 +486,15 @@ begin
       MENU_TRADE: console_trade;
       //MENU_MAINT: console_maint;
     end;
-    if keyval = KEY_QUIT then break;
-  until FALSE;
+    //if keyval = KEY_QUIT then break;
+//until FALSE;
+until keyval = KEY_QUIT;
 
   // restore system
   SetIntVec(iVBL, oldvbl);
   SetIntVec(iDLI, olddli);
   nmien:= $40;
-
   msx.stop;
   //CursorOn;
+  SystemReset;
 end.
