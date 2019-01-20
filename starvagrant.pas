@@ -12,8 +12,8 @@ type
 {$i 'interrupts.inc'}
 
 var
-//  keyval: char = chr(0);
-  keyval: byte = 0;
+  keyval: char = chr(0);
+//  keyval: byte = 0;
 
   msx: TRMT;
 
@@ -235,7 +235,7 @@ begin
     pause;
     msx.play;
     if (CRT_KeyPressed) then begin
-      keyval := CRT_ReadKey;
+      keyval := chr(CRT_ReadKey);
       case keyval of
         KEY_BACK: current_menu := MENU_MAIN;
       end;
@@ -302,7 +302,7 @@ begin
     pause;
     msx.play;
     if (CRT_keyPressed) then begin
-      keyval := CRT_ReadKey;
+      keyval := chr(CRT_ReadKey);
       case keyval of
         KEY_BACK: current_menu:=MENU_MAIN;
       end;
@@ -345,12 +345,12 @@ begin
   //move(str[1],pointer(SCROLL_ADDRESS+42),sizeOf(str));
   hscrol:=0; //stop scroll.
 
-  keyval:=0;
+  keyval:=chr(0);
   repeat
     pause;
     msx.play;
     if (CRT_KeyPressed) then begin
-      keyval := CRT_ReadKey;
+      keyval := chr(CRT_ReadKey);
       case keyval of
       KEY_OPTION1: current_menu := MENU_NAV;
       KEY_OPTION2: current_menu := MENU_TRADE;
@@ -374,7 +374,7 @@ begin
   SetIntVec(iVBL, @vbl);
 
   SDLSTL := DISPLAY_LIST_ADDRESS_MENU;
-  //DL_Attach;
+
   for i:=0 to 6 do
     CRT_ClearRow(i);
 
@@ -387,12 +387,12 @@ begin
   move(str[1],pointer(SCROLL_ADDRESS+42),sizeOf(str)); // copy text to vram
 
 
-  keyval:=0;
+  keyval:=chr(0);
   repeat
     pause;
     msx.play;
     if (CRT_KeyPressed) then begin
-      keyval := CRT_ReadKey;
+      keyval := chr(CRT_ReadKey);
       case keyval of
         KEY_NEW: begin
                   start;
