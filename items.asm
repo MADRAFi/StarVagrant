@@ -25,51 +25,51 @@ items_list
 
 items
 item_0
-    dta d'Agricium',0
+    dta d'Agricium',$ff
 item_1
-    dta d'Agricult. Sup.',0
+    dta d'Agricult. Sup.',$ff
 item_2
-    dta d'Aluminum',0
+    dta d'Aluminum',$ff
 item_3
-    dta d'Astatine',0
+    dta d'Astatine',$ff
 item_4
-    dta d'Beryl',0
+    dta d'Beryl',$ff
 item_5
-    dta d'Chlorine',0
+    dta d'Chlorine',$ff
 item_6
-    dta d'Corundum',0
+    dta d'Corundum',$ff
 item_7
-    dta d'Diamond',0
+    dta d'Diamond',$ff
 item_8
-    dta d'Spirits',0
+    dta d'Spirits',$ff
 item_9
-    dta d'Fluorine',0
+    dta d'Fluorine',$ff
 item_10
-    dta d'Gold',0
+    dta d'Gold',$ff
 item_11
-    dta d'Hydrogen',0
+    dta d'Hydrogen',$ff
 item_12
-    dta d'Iodine',0
+    dta d'Iodine',$ff
 item_13
-    dta d'Laranite',0
+    dta d'Laranite',$ff
 item_14
-    dta d'Medical Sup.',0
+    dta d'Medical Sup.',$ff
 item_15
-    dta d'Processed Food',0
+    dta d'Processed Food',$ff
 item_16
-    dta d'Quartz',0
+    dta d'Quartz',$ff
 item_17
-    dta d'Scrap',0
+    dta d'Scrap',$ff
 item_18
-    dta d'Stims',0
+    dta d'Stims',$ff
 item_19
-    dta d'Titanium',0
+    dta d'Titanium',$ff
 item_20
-    dta d'Tungsten',0
+    dta d'Tungsten',$ff
 item_21
-    dta d'Waste',0
+    dta d'Waste',$ff
 item_22
-    dta d'Widow',0
+    dta d'Widow',$ff
 
  .print "ITEMS SIZE: ", *-items_list
  .print "ITEMS : ", items_list, "..", *

@@ -33,6 +33,15 @@ var
   current_menu: Byte;
   player: TPlayer;
 
+// procedure CRT_WriteRightAligned(w: byte; s: TString);
+// var len: byte;
+// begin
+// 	len := w - Length(s);
+//   CRT_Write(Atascii2Antic(Space(len)));
+//   CRT_Write(s);
+// end;
+
+{
 procedure ClrLine;
 (*
 @description:
@@ -47,7 +56,8 @@ begin
    //FillByte(pointer(TXT_ADDRESS+(WhereY*TXTCOL)), TXTCOL, 0);
    //ClrEol;
 end;
-
+}
+{
 procedure ClrSroll;
 (*
 @description:
@@ -61,7 +71,7 @@ begin
    //FillByte(pointer(TXT_ADDRESS+(WhereY*TXTCOL)), TXTCOL, 0);
    //ClrEol;
 end;
-
+}
 // function IntToStr(a: integer): ^string; assembler;
 // (*
 // @description: Convert an integer value to a decimal string
@@ -227,13 +237,10 @@ begin
   for y:=0 to 6 do
     CRT_ClearRow(y);
 
-  CRT_GotoXy(0,0);
-  CRT_write (concat('L: '~,NullTermToString(locations[player.loc])));
-  CRT_GotoXy(0,1);
-  CRT_write ('#########################'~);
-  CRT_GotoXy(14,5);
-  CRT_write (NullTermToString(strings[7])); // Back
-  CRT_GotoXy(0,6);
+  CRT_WriteXY (0,0,concat('L: '~,FFTermToString(locations[player.loc])));
+  CRT_WriteXY (0,1,'#########################'~);
+  CRT_WriteXY (14,5,FFTermToString(strings[7])); // Back
+
   repeat
     pause;
     msx.play;
@@ -247,9 +254,9 @@ end;
 
 procedure console_trade;
 var y: byte;
-    uec: string;
+    //uec: string;
     mode: boolean = false;
-    modestr: string;
+  //  modestr: string;
     itemmax:byte;
     curlocation: string;
     l: byte = 0;
@@ -260,47 +267,38 @@ begin
   SetIntVec(iDLI, @dlic);
   SetIntVec(iVBL, @vblc);
   SDLSTL := DISPLAY_LIST_ADDRESS_CONSOLE;
+  //CRT_Init;
 
-  for y:=0 to TXTCOL do
+  for y:=0 to CRT_screenWidth do
     CRT_ClearRow(y);
 
-  CRT_GotoXy(0,0);
-  uec:= concat(IntToStr(player.uec) , ' UEC');
+  //uec:= concat(IntToStr(player.uec) , ' UEC');
   //Write (locations[player.loc], ' [Buy] Sell '); WriteRightAligned(10,uec + ' UEC'); writeln;
   // Writeln (NullTermToString(locations[player.loc]), ' [Buy] Sell ', player.uec,' UEC');
-{
-  if mode = false then
-    modestr:=concat('[','Buy'*,'] Sell');
-  else
-    modestr:=concat('Buy [','Sell*',']');
-  end;
-}
-  modestr:=concat(' Buy '*,' Sell ');
-  curlocation:=NullTermToString(locations[player.loc]);
+
+//  modestr:=Atascii2Antic(concat(NullTermToString(strings[8]),NullTermToString(strings[9])));
+  curlocation:=FFTermToString(locations[player.loc]);
   l:=Length(curlocation);
 
-  CRT_Write (concat(curlocation, ' '~));CRT_Write(modestr); WriteRightAligned(17,uec);
-  CRT_GotoXy(0,1);
-  CRT_Write ('--------------------+-------------------'~);
-{  CRT_GotoXy(0,2);
-  CRT_Write ('/Delivery_Location  | ../Available_Items'~);
-  CRT_GotoXy(0,3);
-  CRT_Write ('[ Cuttles Black ]   | commodity    price'~);
-  CRT_GotoXy(0,4);
-  CRT_Write ('--------------------+-------------------'~);
-  CRT_GotoXy(0,5);
-  CRT_write ('Total Cargo '~); WriteRightAligned(9,'46 |');  // mocap
-  CRT_GotoXy(0,6);
-  CRT_write ('Empty Cargo '~); WriteRightAligned(9,'46 |');  //mocap
-  CRT_GotoXy(0,7);
-  Write ('--------------------+'~);
-  CRT_GotoXy(0,18);
-  Write ('--------------------+-------------------'~);
-  CRT_GotoXy(0,22);
-  WriteRightAligned(TXTCOL,'[Cancel] [OK]');
+  CRT_WriteXY(0,0,curlocation);
+  CRT_WriteXY((CRT_screenWidth div 2)-5,0,FFTermToString(strings[8])); // Buy
+  CRT_Write(FFTermToString(strings[9])); // Sell
+  CRT_WriteRightAligned(Atascii2Antic(concat(IntToStr(player.uec), ' UEC')));
+  CRT_WriteXY(0,1,'--------------------+-------------------'~);
+  CRT_WriteXY(0,2,concat(FFTermToString(strings[10]),'  |'~)); // Delivery
+  CRT_Write(FFTermToString(strings[11])); // Available items
+  CRT_WriteXY(0,3,'[ Cuttles Black ]   |'~);
+  CRT_Write(FFTermToString(strings[12]));CRT_WriteRightAligned(FFTermToString(strings[13])); // commodity price
+  CRT_WriteXY(0,4,'--------------------+-------------------'~);
+  CRT_WriteXY(0,5,FFTermToString(strings[14])); CRT_Write(' '~);CRT_WriteXY((CRT_screenWidth div 2)-4,5,'46 |'~);  // mocap
+  CRT_WriteXY(0,6,FFTermToString(strings[15])); CRT_Write(' '~);CRT_WriteXY((CRT_screenWidth div 2)-4,6,'46 |'~);  //mocap
+  CRT_WriteXY(0,7,'--------------------+'~);
+  CRT_WriteXY(0,18,'--------------------+-------------------'~);
+  CRT_GotoXY(0,22);
+  CRT_WriteRightAligned('[Cancel] [OK]'~); // mocap
 
-  ListItems(player.loc);
-}
+  //ListItems(player.loc);
+
   repeat
     pause;
     msx.play;
@@ -333,15 +331,9 @@ begin
   for i:=0 to 6 do
     CRT_ClearRow(i);
 
-  CRT_GotoXy(14,0);
-  //CRT_Write ('Navi'~);
-  CRT_Write (NullTermToString(strings[3])); // Navigation
-  CRT_GotoXy(14,1);
-  //CRT_Write ('Trade'~);
-  CRT_Write (NullTermToString(strings[4])); // Trade Console
-  CRT_GotoXy(14,2);
-  //CRT_Write ('Back'~);
-  CRT_Write (NullTermToString(strings[7])); // Back
+  CRT_WriteXY(14,0,FFTermToString(strings[3])); // Navigation
+  CRT_WriteXY(14,1,FFTermToString(strings[4])); // Trade Console
+  CRT_WriteXY(14,2,FFTermToString(strings[7])); // Back
 
 
   //str:= ''~;
@@ -379,14 +371,11 @@ begin
   for y:=0 to 6 do
     CRT_ClearRow(y);
 
-  CRT_GotoXY(14,0);
-  //CRT_Write (Atascii2Antic(NullTermToString(strings[1]))); // New game;
-  CRT_Write('[N]ew Game'~);
-  CRT_GotoXY(14,1);
-  CRT_Write('[Q]uit'~);
-  //CRT_Write (NullTermToString(strings[2])); // Quit;
+  CRT_WriteXY(14,0,FFTermToString(strings[1])); // New game;
+  CRT_WriteXY(14,1,FFTermToString(strings[2])); // Quit;
 
-  str:= Atascii2Antic(NullTermToString(strings[0])); // read scroll text
+  //str:= Atascii2Antic(NullTermToString(strings[0])); // read scroll text
+  str:= NullTermToString(strings[0]); // read scroll text
 
   move(str[1],pointer(SCROLL_ADDRESS+42),sizeOf(str)); // copy text to vram
 
@@ -476,6 +465,8 @@ begin
 
 
   current_menu := MENU_TITLE;
+  //current_menu := MENU_TRADE;
+
   repeat
     case current_menu of
       MENU_TITLE: begin

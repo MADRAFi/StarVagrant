@@ -16,13 +16,13 @@ RMT_MODULE_ADDRESS = RMT_PLAYER_ADDRESS + $800;
 GFX_ADDRESS = $8000;
 
 STRINGS_ADDRESS = GFX_ADDRESS + $2809;
-LOCATIONS_ADDRESS = STRINGS_ADDRESS + $100;
+LOCATIONS_ADDRESS = STRINGS_ADDRESS + $200;
 ITEMS_ADDRESS = LOCATIONS_ADDRESS + $200;
 
 
 NUMBEROFLOCATIONS = 15; // number of locations defined in locations.asm. Needs to match.
 NUMBEROFITEMS = 22; // number of items defined in items.asm. Needs to match.
-TXTCOL = 40; // numer of columns in txt mode
+//TXTCOL = 40; // numer of columns in txt mode
 
 
 
@@ -35,18 +35,7 @@ KEY_BACK = 'b';
 KEY_QUIT = 'q';
 KEY_NEW = 'n';
 
-// KEY_OPTION1 = 31;  // 1
-// KEY_OPTION2 = 30;  // 2
-// KEY_OPTION3 = 26;  // 3
-// KEY_OPTION4 = 24;  // 4
-// KEY_BACK = 21;    // b
-// KEY_QUIT = 47;    // q
-// KEY_NEW = 35;     // n
-
-
-
 //----------------------------------------------------------------------------//
-
 MENU_TITLE = 0;
 MENU_MAIN = 1;
 MENU_NAV = 2;

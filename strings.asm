@@ -9,29 +9,46 @@ strings_list
     dta a(txt_7)
     dta a(txt_8)
     dta a(txt_9)
+    dta a(txt_10)
+    dta a(txt_11)
+    dta a(txt_12)
+    dta a(txt_13)
+    dta a(txt_14)
+    dta a(txt_15)
 
 strings
 txt_0
-    dta c' v.0.1 (c) 2019 MADRAFi. Special thanks to Bocianu for support.',0
+    dta d'v.0.1 (c) 2019 MADRAFi. Special thanks to Bocianu for support. ',$ff
 txt_1
-    dta c'[N]ew Game'
+    dta d'[N]ew Game',$ff
 txt_2
-    dta d'[Q]uit'
+    dta d'[Q]uit',$ff
 txt_3
-    dta d'[1]_Navigation',0
+    dta d'[1] Navigation',$ff
 txt_4
-    dta d'[2]_Trade_Console',0
+    dta d'[2] Trade Console',$ff
 txt_5
-    dta d'[3]_Repair/Refuel Pad',0
+    dta d'[3] Repair/Refuel Pad',$ff
 txt_6
-    dta d'[4]_Ship_Hangar',0
+    dta d'[4] Ship Hangar',$ff
 txt_7
-    dta d'[B]_Back',0
+    dta d'[B] Back',$ff
 txt_8
-    dta c' Buy ',0
+    dta d' Buy '*,$ff
 txt_9
-    dta c' Sell ',0
-
+    dta d' Sell ',$ff
+txt_10
+    dta d'/Delivery_Location',$ff
+txt_11
+    dta d'../Available_Items',$ff
+txt_12
+    dta d'commodity',$ff
+txt_13
+    dta d'price',$ff
+txt_14
+    dta d'Total Cargo',$ff
+txt_15
+    dta d'Empty Cargo',$ff
 
  .print "STRINGS SIZE: ", *-strings_list
  .print "STRINGS : ", strings_list, "..", *
