@@ -202,7 +202,7 @@ end;
 procedure ListItems(loc: byte);
 var
   x: byte;
-  count:byte = 1;
+  count:byte = 0;
   offset: byte;
 
 begin
@@ -211,7 +211,7 @@ begin
       offset:=(NUMBEROFITEMS-1)*loc + x;
       if itemmatrix[offset] = true then
         begin
-          CRT_GotoXy(22,5+count);
+          CRT_GotoXy(21,5+count);
           write (count,' ',NullTermToString(items[x]));
           inc(count);
         end;
@@ -221,16 +221,16 @@ end;
 
 procedure console_navigation;
 begin
-  CRT_GotoXy(1,1);ClrLine;
+  CRT_GotoXy(0,0);ClrLine;
   writeln ('L: ',NullTermToString(locations[player.loc]));
-  CRT_GotoXy(1,2);ClrLine;
+  CRT_GotoXy(0,1);ClrLine;
   writeln ('#########################');
-  CRT_GotoXy(1,3); ClrLine;
-  CRT_GotoXy(1,4); ClrLine;
-  CRT_GotoXy(1,5); ClrLine;
-  CRT_GotoXy(15,6);ClrLine;
+  CRT_GotoXy(0,2); ClrLine;
+  CRT_GotoXy(0,3); ClrLine;
+  CRT_GotoXy(0,4); ClrLine;
+  CRT_GotoXy(14,5);ClrLine;
   writeln (NullTermToString(strings[6])); // Back
-  CRT_GotoXy(1,7); ClrLine;
+  CRT_GotoXy(0,6); ClrLine;
   repeat
     pause;
     msx.play;
@@ -253,17 +253,17 @@ var y: byte;
     l: byte = 0;
 
 begin
-  colbk:=$06;
-  COLOR2:=$06;
+  //colbk:=$06;
+  //COLOR2:=$06;
   SetIntVec(iDLI, @dlic);
   SetIntVec(iVBL, @vblc);
   SDLSTL := DISPLAY_LIST_ADDRESS_CONSOLE;
 
   For y:=1 to TXTCOL do
     begin
-      CRT_GotoXy(1,y); ClrLine;
+      CRT_GotoXy(0,y); ClrLine;
     end;
-  CRT_GotoXy(1,1);
+  CRT_GotoXy(0,0);
   uec:= concat(IntToStr(player.uec) , ' UEC');
   //Write (locations[player.loc], ' [Buy] Sell '); WriteRightAligned(10,uec + ' UEC'); writeln;
   // Writeln (NullTermToString(locations[player.loc]), ' [Buy] Sell ', player.uec,' UEC');
@@ -274,27 +274,27 @@ begin
     modestr:=concat('Buy [','Sell*',']');
   end;
 }
-  modestr:=concat('[','Buy'*);modestr:=concat(modestr,'] Sell');
+  modestr:=concat(' Buy '*,' Sell ');
   curlocation:=NullTermToString(locations[player.loc]);
   l:=Length(curlocation);
 
-  Write (curlocation, ' ',modestr,' '); WriteRightAligned(17,uec);
-  CRT_GotoXy(1,2);
+  Write (curlocation, ' ',modestr); WriteRightAligned(17,uec);
+  CRT_GotoXy(0,1);
   Write ('--------------------+-------------------');
-  CRT_GotoXy(1,3);
+  CRT_GotoXy(0,2);
   Write ('/Delivery_Location  | ../Available_Items');
-  CRT_GotoXy(1,4);
+  CRT_GotoXy(0,3);
   Write ('[ Cuttles Black ]   | commodity    price');
-  CRT_GotoXy(1,5);
+  CRT_GotoXy(0,4);
   Write ('--------------------+-------------------');
   write ('Total Cargo '); WriteRightAligned(9,'46 |');writeln;  // mocap
   write ('Empty Cargo '); WriteRightAligned(9,'46 |');writeln;  //mocap
-  CRT_GotoXy(1,8);
+  CRT_GotoXy(0,7);
   Write ('--------------------+');
-  CRT_GotoXy(1,19);
+  CRT_GotoXy(0,18);
   Write ('--------------------+-------------------');
-  CRT_GotoXy(1,23);
-  WriteRightAligned(40,'[Cancel] [OK]');
+  CRT_GotoXy(0,22);
+  WriteRightAligned(TXTCOL,'[Cancel] [OK]');
 
   ListItems(player.loc);
 
@@ -310,9 +310,9 @@ begin
     if (CRT_OptionPressed) then begin
       mode:= not mode;
       if (mode = false) then
-        CRT_Invert(1,l+1,3)
+        CRT_Invert(0,l+1,5)
       else
-        CRT_Invert(1,l+7,3);
+        CRT_Invert(0,l+6,6);
 
     end;
 
@@ -328,15 +328,15 @@ begin
   SetIntVec(iVBL, @vbl);
   SDLSTL := DISPLAY_LIST_ADDRESS_MENU;
 
-  CRT_GotoXy(15,1);ClrLine;
+  CRT_GotoXy(14,0);ClrLine;
   Writeln (NullTermToString(strings[3])); // Navigation
-  CRT_GotoXy(15,2);ClrLine;
+  CRT_GotoXy(14,1);ClrLine;
   Writeln (NullTermToString(strings[4])); // Trade Console
-  CRT_GotoXy(15,3);ClrLine;
+  CRT_GotoXy(14,2);ClrLine;
   Writeln (NullTermToString(strings[6])); // Back
-  CRT_GotoXy(1,4); ClrLine;
-  CRT_GotoXy(1,5); ClrLine;
-  CRT_GotoXy(1,6); ClrLine;
+  CRT_GotoXy(0,3); ClrLine;
+  CRT_GotoXy(0,4); ClrLine;
+  CRT_GotoXy(0,5); ClrLine;
   //CRT_GotoXy(1,7); ClrLine;
   //ClrSroll;
   str:= '';
@@ -365,6 +365,7 @@ var
   str: string;
   count: byte = 3;
   offset: byte = 0;
+  i: byte;
 
 begin
   SetIntVec(iDLI, @dli1);
@@ -372,20 +373,25 @@ begin
 
   SDLSTL := DISPLAY_LIST_ADDRESS_MENU;
   //DL_Attach;
+  for i:=0 to 6 do
+    CRT_ClearRow(i);
 
-  CRT_GotoXy(15,1);ClrLine;
-  Writeln (NullTermToString(strings[1])); // New game;
-  CRT_GotoXy(15,2);ClrLine;
-  Writeln (NullTermToString(strings[2])); // Quit;
-  CRT_GotoXy(1,3); ClrLine;
-  CRT_GotoXy(1,4); ClrLine;
-  CRT_GotoXy(1,5); ClrLine;
-  CRT_GotoXy(1,6); ClrLine;
+  CRT_GotoXY(14,0);
+  //CRT_Write (NullTermToString(strings[1])); // New game;
+  CRT_Write('ABCDEFGHIJKLMNOPQRSTUWVXYZ');
+  CRT_GotoXY(14,1);
+  CRT_Write('abcdefghijklmnopqrstuwvxyz');
+  CRT_GotoXY(14,2);
+  CRT_WriteCentered('ABCDEFGHIJKLMNOPQRSTUWVXYZ');
+  CRT_GotoXY(14,3);
+  CRT_WriteCentered('abcdefghijklmnopqrstuwvxyz');
+  CRT_GotoXY(14,5);
+  CRT_WriteCentered('!@#$%^&*()_+1234567890-=');
+  //CRT_Write (NullTermToString(strings[2])); // Quit;
   str:= Atascii2Antic(NullTermToString(strings[0])); // Scroll
-  //CRT_GotoXy(21,7); ClrLine;
-  //Writeln (str);
+
   move(str[1],pointer(SCROLL_ADDRESS+42),sizeOf(str)); // copy text to vram
-  //move(str[1],pointer(TXT_ADDRESS+42),sizeOf(str)); // copy text to vram
+
 
   keyval:=0;
   repeat
@@ -450,6 +456,9 @@ begin
   savmsc:= TXT_ADDRESS;
 
   lmargin:= 0;
+  rmargin:= 0;
+  CRT_Init(TXT_ADDRESS);
+
   fade;
   //CursorOff;
   // Initialize RMT player
@@ -465,7 +474,7 @@ begin
   nmien:= $c0;
 
   //SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
-  chbas:= Hi(CHARSET_ADDRESS);
+  //chbas:= Hi(CHARSET_ADDRESS);
 
 
 
