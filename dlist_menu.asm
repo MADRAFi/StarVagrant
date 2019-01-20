@@ -51,8 +51,6 @@ DL_JVB = %01000001; // Jump to begining
 ;}
 
 dl_start
-;    dta DL_DLI + DL_BLANK1                                        ; // 8 blank line
-;    dta DL_BLANK7
     dta DL_DLI + DL_BLANK8
     dta DL_MODE_160x192G4 + DL_LMS, a(GFX_ADDRESS)                ; // gfx line + graphics memory start
     :99 dta DL_MODE_160x192G4                                     ; // x graphics line
