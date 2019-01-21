@@ -62,7 +62,7 @@ begin
     if count = $ff then begin // $ff is one below zero
         count := 3;
         offset := (offset + 1) mod 140;  // 140 = 2x string size
-        dpoke(DISPLAY_LIST_ADDRESS_MENU + 114, SCROLL_ADDRESS + offset);
+        dpoke(DISPLAY_LIST_ADDRESS_MENU + 114, SCROLL_ADDRESS + offset); // 114 bytes for DLI lines
     end;
 
     hscrol := count; // set hscroll

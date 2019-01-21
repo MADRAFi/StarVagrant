@@ -52,9 +52,9 @@ txt_14
 txt_15
     dta d'Empty Cargo',$ff
 txt_16
-    dta d'[C]ancel',0
+    dta d'[C]ancel',$ff
 txt_17
-    dta d'[O]K',0
+    dta d'[O]K',$ff
 
 
 

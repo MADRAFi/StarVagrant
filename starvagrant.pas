@@ -5,6 +5,7 @@ uses atari, rmt, b_utils, b_system, b_crt, sysutils;
 
 const
 {$i 'const.inc'}
+  CURRENCY = ' UEC';
 type
 {$i 'types.inc'}
 {$r 'resources.rc'}
@@ -155,6 +156,8 @@ var
   finalprice: longword;
   price: byte;
   commission: shortreal = 0.05;
+  tmp: real;
+  //tmpstr: string= 'REAL:';
 
 begin
   count:=1;
@@ -162,32 +165,44 @@ begin
     begin
       offset:=(NUMBEROFITEMS-1)*loc + x;
       if itemmatrix[offset] = true then
+      begin
+        CRT_GotoXY(CRT_screenWidth div 2 + 1,4+count); //min count:=1 so we start at 4th row
+        str:= concat(Atascii2Antic(IntToStr(count)),' '~);
+        str:= concat(str,FFTermToString(items[x]));
+        CRT_Write(str);
+        price:=itemprice[offset];
+        if mode then
         begin
-          CRT_GotoXY(CRT_screenWidth div 2 + 1,4+count); //min count:=1 so we start at 4th row
-          str:= concat(Atascii2Antic(IntToStr(count)),' '~);
-          str:= concat(str,FFTermToString(items[x]));
-          CRT_Write(str);
-          price:=itemprice[offset];
-          case mode of
-            true: finalprice:=Trunc(price-(price*commission));
-            false: finalprice:=Trunc(price);
-          end;
-          CRT_WriteRightAligned(Atascii2Antic(IntToStr(finalprice)));
-          inc(count);
+          tmp:=price*(1-commission);
+          finalprice:=Trunc(tmp);
+        end
+        else
+        begin
+          finalprice:=price;
         end;
+        //CRT_WriteRightAligned('   '~);
+        //CRT_GotoXY(CRT_WhereX-3,4+count);
+        CRT_WriteRightAligned(Atascii2Antic(IntToStr(finalprice)));
+        //tmpstr:=concat(tmpstr,FloatToStr(tmp));
+        //tmpstr:=concat(tmpstr,' ');
+        inc(count);
+      end;
     end;
+  //CRT_GotoXY(0,19);
+  //CRT_WriteXY(0,19,Atascii2Antic(tmpstr));
 end;
 
 
 procedure console_navigation;
 var
   y: byte;
-
+  str: string;
 begin
   for y:=0 to 6 do
     CRT_ClearRow(y);
 
-  CRT_WriteXY(0,0,concat('L: '~,FFTermToString(locations[player.loc])));
+
+  CRT_WriteXY(0,0,concat('Location: '~,FFTermToString(locations[player.loc]))); //mocap
   CRT_WriteXY(0,1,'#########################'~);
   CRT_WriteXY(14,5,FFTermToString(strings[7])); // Back
 
@@ -236,7 +251,7 @@ begin
   CRT_WriteXY(0,0,str);
   CRT_WriteXY((CRT_screenWidth div 2)-5,0,FFTermToString(strings[8])); // Buy
   CRT_Write(FFTermToString(strings[9])); // Sell
-  CRT_WriteRightAligned(Atascii2Antic(concat(IntToStr(player.uec), ' UEC')));
+  CRT_WriteRightAligned(Atascii2Antic(concat(IntToStr(player.uec), CURRENCY)));
   CRT_WriteXY(0,1,'--------------------+-------------------'~);
   CRT_WriteXY(0,2,concat(FFTermToString(strings[10]),'  |'~)); // Delivery
   CRT_Write(FFTermToString(strings[11])); // Available items
@@ -420,27 +435,26 @@ MAIN LOOP
 begin
 
   savmsc:= TXT_ADDRESS;
-  SystemOff;
 
-  CRT_Init;
   lmargin:= 0;
   rmargin:= 0;
 
-  fade;
+  //fade;
 
+  //  SystemOff;
+  //  SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
+  chbas:= Hi(CHARSET_ADDRESS);
+
+  CRT_Init;
   // Initialize RMT player
-  msx.player:=pointer(RMT_PLAYER_ADDRESS);
-  msx.modul:=pointer(RMT_MODULE_ADDRESS);
-  msx.init(0);
+  //msx.player:=pointer(RMT_PLAYER_ADDRESS);
+  //msx.modul:=pointer(RMT_MODULE_ADDRESS);
+  //msx.init(0);
 
     // save old vbl and dli interrupt
   GetIntVec(iVBL, oldvbl);
   GetIntVec(iDLI, olddli);
   nmien:= $c0;
-
-  //SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
-  chbas:= Hi(CHARSET_ADDRESS);
-
 
 
   current_menu := MENU_TITLE;
@@ -464,7 +478,7 @@ until keyval = KEY_QUIT;
   SetIntVec(iVBL, oldvbl);
   SetIntVec(iDLI, olddli);
   nmien:= $40;
-  msx.stop;
-  //CursorOn;
+  //msx.stop;
+
   SystemReset;
 end.
