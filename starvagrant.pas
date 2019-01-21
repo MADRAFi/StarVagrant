@@ -117,7 +117,7 @@ begin
   locationmatrix[0].item[5].quantity:=10000;
   locationmatrix[0].item[5].price:=10;
 }
-  // Location 0
+  // Location 0 item * location
   itemmatrix[7]:=true;
   itemmatrix[8]:=true;
   itemmatrix[10]:=true;
@@ -145,6 +145,17 @@ begin
   player.uec:= 5000; // start cash
   player.loc:= 0; //start location Port Olisar
 
+end;
+
+procedure CRT_Window(x1,y1,x2,y2:byte);
+begin
+  CRT_leftMargin:=x1;
+  CRT_screenWidth:=x2-x1;
+  CRT_screenHeight:=y2-y1;
+  //CRT_Cursor:=CRT_vram+(x1*y1);
+  CRT_Cursor:=CRT_vram+(y1*DEFAULT_SCREENWIDTH)+x1;
+  CRT_size:=CRT_screenWidth*CRT_screenHeight;
+  //CRT_NewLine(y1);
 end;
 
 procedure ListItems(loc: byte; mode: boolean);
@@ -236,7 +247,7 @@ begin
   Waitframe;
   SDLSTL := DISPLAY_LIST_ADDRESS_CONSOLE;
   //CRT_Init;
-
+  //CRT_Window(0,0,40,24);
   for y:=0 to CRT_screenWidth do
     CRT_ClearRow(y);
 
@@ -270,6 +281,10 @@ begin
   //CRT_WriteRightAligned(concat(str,tmp));
 
   ListItems(player.loc,false);
+  CRT_Window(15,14,30,19);
+  CRT_WriteXY(0,0,'Row1'~);
+  CRT_WriteXY(0,1,'Row2'~);
+  CRT_WriteXY(0,2,'Row3'~);
 
   repeat
     //pause;
