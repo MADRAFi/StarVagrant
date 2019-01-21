@@ -145,24 +145,33 @@ begin
 
 end;
 
-procedure ListItems(loc: byte);
+procedure ListItems(loc: byte; mode: boolean);
 var
   x: byte;
   count:byte = 1;
   offset: byte;
   str: string;
+  finalprice: longword;
+  price: byte;
+  commission: shortreal = 0.05;
 
 begin
+  count:=1;
   for x:=0 to NUMBEROFITEMS-1 do
     begin
       offset:=(NUMBEROFITEMS-1)*loc + x;
       if itemmatrix[offset] = true then
         begin
-          CRT_GotoXY(CRT_screenWidth div 2 + 1,5+count);
+          CRT_GotoXY(CRT_screenWidth div 2 + 1,4+count); //min count:=1 so we start at 4th row
           str:= concat(Atascii2Antic(IntToStr(count)),' '~);
           str:= concat(str,FFTermToString(items[x]));
           CRT_Write(str);
-          CRT_WriteRightAligned(Atascii2Antic(IntToStr(itemprice[offset])));
+          price:=itemprice[offset];
+          case mode of
+            true: finalprice:=Trunc(price-(price*commission));
+            false: finalprice:=Trunc(price);
+          end;
+          CRT_WriteRightAligned(Atascii2Antic(IntToStr(finalprice)));
           inc(count);
         end;
     end;
@@ -196,6 +205,7 @@ procedure console_trade;
 var y: byte;
     //uec: string;
     mode: boolean = false;
+    toggled: boolean = false;
     str: string;
     //str,tmp: string;
     itemmax:byte;
@@ -243,29 +253,36 @@ begin
   //tmp:=FFTermToString(strings[17]);
   //CRT_WriteRightAligned(concat(str,tmp));
 
-
-  ListItems(player.loc);
+  ListItems(player.loc,false);
 
   repeat
-    pause;
-    msx.play;
-    keyval := chr(CRT_ReadChar);
+    //pause;
+    //msx.play;
+    Waitframe;
+    If (CRT_Keypressed) then
+    begin
+      keyval := chr(CRT_ReadChar);
       case keyval of
         KEY_BACK: current_menu:=MENU_MAIN;
       end;
-    if (CRT_OptionPressed) then
+    end;
+    if (CRT_OptionPressed) and (toggled=false) then
+    begin
+      l:=CRT_screenWidth div 2-5; // Buy text is 5 char on left from screen center
+      mode:= not mode;
+      if (mode = false) then
       begin
-        mode:= not mode;
-        if (mode = false) then
-        begin
-            CRT_Invert(0,l+1,5);
-            CRT_GotoXY(15,19);CRT_Write('MODE=FALSE'~);
-        end
-        else begin
-          CRT_Invert(0,l+6,6);
-          CRT_GotoXY(15,19);CRT_Write('MODE=TRUE'~);
-        end;
+          CRT_Invert(l,0,5);CRT_Invert(l+5,0,6);
+          ListItems(player.loc,false);
+      end
+      else begin
+        CRT_Invert(l,0,5);CRT_Invert(l+5,0,6);
+        ListItems(player.loc,true);
       end;
+      toggled:=true;
+    end
+    else
+      if (CRT_OptionPressed = false) then toggled:=false;
 
   until keyval = KEY_BACK;
 end;
