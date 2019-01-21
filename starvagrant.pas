@@ -7,9 +7,7 @@ const
 {$i 'const.inc'}
 type
 {$i 'types.inc'}
-
 {$r 'resources.rc'}
-{$i 'interrupts.inc'}
 
 var
   keyval: char = chr(0);
@@ -32,6 +30,9 @@ var
 }
   current_menu: Byte;
   player: TPlayer;
+
+
+{$i 'interrupts.inc'}
 
 
 {
@@ -191,8 +192,8 @@ begin
   CRT_WriteXY (14,5,FFTermToString(strings[7])); // Back
 
   repeat
-    pause;
-    msx.play;
+  //  pause;
+  //  msx.play;
       keyval := chr(CRT_ReadChar);
       case keyval of
         KEY_BACK: current_menu := MENU_MAIN;
@@ -247,8 +248,7 @@ begin
   CRT_WriteXY(0,18,'--------------------+-------------------'~);
   CRT_GotoXY(0,22);
   CRT_WriteRightAligned('[Cancel] [OK]'~);
-  //CRT_WriteRightAligned(concat(FFTermToString(strings[16]),' 2 opcja'~));
-  //CRT_WriteXY(0,22,concat(FFTermToString(strings[16]),FFTermToString(strings[17])));
+
   //str:=FFTermToString(strings[16]);
   //tmp:=FFTermToString(strings[17]);
   //CRT_WriteRightAligned(concat(str,tmp));
@@ -264,6 +264,7 @@ begin
       keyval := chr(CRT_ReadChar);
       case keyval of
         KEY_BACK: current_menu:=MENU_MAIN;
+
       end;
     end;
     if (CRT_OptionPressed) and (toggled=false) then
@@ -312,13 +313,16 @@ begin
 
   keyval:=chr(0);
   repeat
-    pause;
-    msx.play;
-    keyval := chr(CRT_ReadChar);
-    case keyval of
-      KEY_OPTION1: current_menu := MENU_NAV;
-      KEY_OPTION2: current_menu := MENU_TRADE;
-      KEY_BACK: current_menu := MENU_TITLE;
+  //  pause;
+  //  msx.play;
+    if CRT_Keypressed then
+    begin
+      keyval := chr(CRT_ReadChar);
+      case keyval of
+        KEY_OPTION1: current_menu := MENU_NAV;
+        KEY_OPTION2: current_menu := MENU_TRADE;
+        KEY_BACK: current_menu := MENU_TITLE;
+      end;
     end;
   until (keyval = KEY_BACK) or (keyval = KEY_OPTION1) or (keyval = KEY_OPTION2);
 end;
@@ -328,8 +332,8 @@ end;
 procedure title;
 var
   str: string;
-  count: byte = 3;
-  offset: byte = 0;
+  // count: byte = 3;
+  // offset: byte = 0;
   y: byte;
 
 begin
@@ -345,33 +349,38 @@ begin
   CRT_WriteXY(14,1,FFTermToString(strings[2])); // Quit;
 
   //str:= Atascii2Antic(NullTermToString(strings[0])); // read scroll text
-  str:= NullTermToString(strings[0]); // read scroll text
+  str:= FFTermToString(strings[0]); // read scroll text
 
   move(str[1],pointer(SCROLL_ADDRESS+42),sizeOf(str)); // copy text to vram
 
 
   keyval:=chr(0);
   repeat
-
     pause;
-    msx.play;
-    keyval := chr(CRT_ReadChar);
-    case keyval of
-      KEY_NEW: begin
-                start;
-                current_menu := MENU_MAIN;
-              end;
+    //msx.play;
+    if CRT_Keypressed then
+    begin
+      keyval := chr(CRT_ReadChar);
+      case keyval of
+        KEY_NEW: begin
+                  start;
+                  current_menu := MENU_MAIN;
+                end;
+        'z': msx.Sfx(2,2,24);
+        'x': msx.Sfx(3,2,10);
+        'c': msx.Sfx(3, 2, 24);
+      end;
     end;
 
-    if count = $ff then begin // $ff is one below zero
-        count := 3;
-        offset := (offset + 1) mod 140;  // 140 = 2x string size
-        //DL_PokeW(114, SCROLL_ADDRESS + offset); // set new memory offset
-        dpoke(DISPLAY_LIST_ADDRESS_MENU + 114, SCROLL_ADDRESS + offset);
-    end;
-
-    hscrol := count; // set hscroll
-    dec(count);
+    // if count = $ff then begin // $ff is one below zero
+    //     count := 3;
+    //     offset := (offset + 1) mod 140;  // 140 = 2x string size
+    //     //DL_PokeW(114, SCROLL_ADDRESS + offset); // set new memory offset
+    //     dpoke(DISPLAY_LIST_ADDRESS_MENU + 114, SCROLL_ADDRESS + offset);
+    // end;
+    //
+    // hscrol := count; // set hscroll
+    // dec(count);
 
     //blankSize := (blankSize + 1) and 15; // go trough 0-15
     //DL_Poke(10, blanks[blankSize]); // set new blankline height
@@ -391,7 +400,6 @@ var
 begin
   for i:=Low(fadecolors) to high(fadecolors)  do
     begin
-      //TextBackground(fadecolors[i]);
       colbk:=fadecolors[i];
       //Delay(35);
     end;
@@ -413,7 +421,6 @@ begin
   lmargin:= 0;
   rmargin:= 0;
   CRT_Init;
-  //CRT_Init(TXT_ADDRESS);
 
   fade;
   //CursorOff;
@@ -421,10 +428,9 @@ begin
   // Initialize RMT player
   msx.player:=pointer(RMT_PLAYER_ADDRESS);
   msx.modul:=pointer(RMT_MODULE_ADDRESS);
-  msx.init(0); //pause;
+  msx.init(0);
 
-
-  // save old vbl and dli interrupt
+    // save old vbl and dli interrupt
   GetIntVec(iVBL, oldvbl);
   GetIntVec(iDLI, olddli);
   nmien:= $c0;

@@ -50,7 +50,12 @@ procedure dli3;assembler;interrupt;
         };
 end;
 
-procedure vbl;assembler;interrupt;
+procedure vbl;interrupt;
+var
+  count: byte = 3;
+  offset: byte = 0;
+
+begin
 asm {
     phr ; store registers
 
@@ -58,15 +63,29 @@ asm {
 ;    mva 20 atari.colbk // blink background
 
 ;   *** RMT play routine
-  ;  lda MSX
-  ;  ldy MSX+1
-  ;  jsr RMT.TRMT.PLAY
+;    lda MSX
+;    ldy MSX+1
+;    jsr RMT.TRMT.PLAY
+};
+
+    if count = $ff then begin // $ff is one below zero
+        count := 3;
+        offset := (offset + 1) mod 140;  // 140 = 2x string size
+        dpoke(DISPLAY_LIST_ADDRESS_MENU + 114, SCROLL_ADDRESS + offset);
+    end;
+
+    hscrol := count; // set hscroll
+    dec(count);
+
+  msx.play;
+  //Waitframe;
+asm {
 
     mwa #dli1 ATARI.VDSLST
 
     plr ; restore registers
     jmp $E462 ; jump to system VBL handler
-  };
+};
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
