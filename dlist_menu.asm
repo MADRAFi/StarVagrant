@@ -34,22 +34,6 @@ DL_JVB = %01000001; // Jump to begining
 
 ; and declare display list itself
 
-;(*** DISPLAY LIST DEFINITION ***)
-;{
-;DL_Init(DISPLAY_LIST_ADDRESS);
-;DL_Push(DL_BLANK8);                                   // 8 blank line
-;DL_Push(DL_MODE_160x192G4 + DL_LMS, GFX_ADDRESS);       // gfx line + graphics memory start
-;DL_Push(DL_MODE_160x192G4,99);                          // x graphics line
-;DL_Push(DL_BLANK8);                                     // 8 blank lines
-;DL_Push(DL_MODE_40x24T2 + DL_LMS, VIDEO_RAM_ADDRESS);   // mode 0 line + text memory start
-;DL_Push(DL_MODE_40x24T2,5);                               // 5x mode 0 line
-;DL_Push(DL_BLANK8);                                   // 2x 8 blank lines
-;DL_Push(DL_MODE_40x24T2 + DL_HSCROLL);                  //  mode 0 line
-;DL_Push(DL_BLANK8);                                     // 8 blank lines
-;DL_PUSH(DL_JVB,DISPLAY_LIST_ADDRESS);                   // jump to beginning
-;DL_Start;                                               // Set & Start custom Display List
-;}
-
 dl_start
     dta DL_DLI + DL_BLANK8                                        ; // 8 blank line
     dta DL_MODE_160x192G4 + DL_LMS, a(GFX_ADDRESS)                ; // gfx line + graphics memory start

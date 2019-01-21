@@ -56,18 +56,9 @@ var
   offset: byte = 0;
 
 begin
-asm {
-    phr ; store registers
-
-;   *** example test routine
-;    mva 20 atari.colbk // blink background
-
-;   *** RMT play routine
-;    lda MSX
-;    ldy MSX+1
-;    jsr RMT.TRMT.PLAY
-};
-
+  asm {
+        phr ; store registers
+  };
     if count = $ff then begin // $ff is one below zero
         count := 3;
         offset := (offset + 1) mod 140;  // 140 = 2x string size
@@ -77,15 +68,22 @@ asm {
     hscrol := count; // set hscroll
     dec(count);
 
-  msx.play;
+  //msx.play;
   //Waitframe;
-asm {
+  asm {
+    ;   *** example test routine
+    ;    mva 20 atari.colbk // blink background
 
-    mwa #dli1 ATARI.VDSLST
+    ;   *** RMT play routine
+    ;    lda MSX
+    ;    ldy MSX+1
+    ;    jsr RMT.TRMT.PLAY
 
-    plr ; restore registers
-    jmp $E462 ; jump to system VBL handler
-};
+      mwa #dli1 ATARI.VDSLST
+
+      plr ; restore registers
+      jmp $E462 ; jump to system VBL handler
+  };
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -104,21 +102,22 @@ procedure dlic;assembler;interrupt;
         };
 end;
 
-procedure vblc;assembler;interrupt;
-asm {
-    phr ; store registers
+procedure vblc;interrupt;
+begin
+  asm {
+      phr ; store registers
+  };
 
-;   *** example test routine
-;    mva 20 atari.colbk // blink background
+  asm {
+  ;   *** example test routine
+  ;    mva 20 atari.colbk // blink background
 
-;   *** RMT play routine
-  ;  lda MSX
-  ;  ldy MSX+1
-  ;  jsr RMT.TRMT.PLAY
+  ;   *** RMT play routine
+    ;  lda MSX
+    ;  ldy MSX+1
+    ;  jsr RMT.TRMT.PLAY
 
-    ; mwa #dlic ATARI.VDSLST
-
-    plr ; restore registers
-    jmp $E462 ; jump to system VBL handler
+      plr ; restore registers
+      jmp $E462 ; jump to system VBL handler
   };
 end;

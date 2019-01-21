@@ -141,8 +141,8 @@ procedure start;
 begin
   //msx.Sfx(3, 2, 24);
   generateworld;
-  player.uec:= 5000;
-  player.loc:= 0;
+  player.uec:= 5000; // start cash
+  player.loc:= 0; //start location Port Olisar
 
 end;
 
@@ -187,9 +187,9 @@ begin
   for y:=0 to 6 do
     CRT_ClearRow(y);
 
-  CRT_WriteXY (0,0,concat('L: '~,FFTermToString(locations[player.loc])));
-  CRT_WriteXY (0,1,'#########################'~);
-  CRT_WriteXY (14,5,FFTermToString(strings[7])); // Back
+  CRT_WriteXY(0,0,concat('L: '~,FFTermToString(locations[player.loc])));
+  CRT_WriteXY(0,1,'#########################'~);
+  CRT_WriteXY(14,5,FFTermToString(strings[7])); // Back
 
   repeat
   //  pause;
@@ -218,6 +218,7 @@ begin
   //COLOR2:=$06;
   SetIntVec(iDLI, @dlic);
   SetIntVec(iVBL, @vblc);
+  Waitframe;
   SDLSTL := DISPLAY_LIST_ADDRESS_CONSOLE;
   //CRT_Init;
 
@@ -258,7 +259,6 @@ begin
   repeat
     //pause;
     //msx.play;
-    Waitframe;
     If (CRT_Keypressed) then
     begin
       keyval := chr(CRT_ReadChar);
@@ -296,6 +296,7 @@ var
 begin
   SetIntVec(iDLI, @dli1);
   SetIntVec(iVBL, @vbl);
+  Waitframe;
   SDLSTL := DISPLAY_LIST_ADDRESS_MENU;
   //CRT_Init;
 
@@ -307,9 +308,10 @@ begin
   CRT_WriteXY(14,2,FFTermToString(strings[7])); // Back
 
 
+  // erase scroll content
   //str:= ''~;
   //move(str[1],pointer(SCROLL_ADDRESS+42),sizeOf(str));
-  hscrol:=0; //stop scroll.
+  //hscrol:=0; //stop scroll.
 
   keyval:=chr(0);
   repeat
@@ -340,6 +342,7 @@ begin
   SetIntVec(iDLI, @dli1);
   SetIntVec(iVBL, @vbl);
 
+  Waitframe;
   SDLSTL := DISPLAY_LIST_ADDRESS_MENU;
 
   for y:=0 to 6 do
@@ -366,9 +369,9 @@ begin
                   start;
                   current_menu := MENU_MAIN;
                 end;
-        'z': msx.Sfx(2,2,24);
-        'x': msx.Sfx(3,2,10);
-        'c': msx.Sfx(3, 2, 24);
+        'z': msx.Sfx(1,2,24);
+        'x': msx.Sfx(2,2,10);
+        'c': msx.Sfx(3,2,24);
       end;
     end;
 
@@ -417,13 +420,13 @@ MAIN LOOP
 begin
 
   savmsc:= TXT_ADDRESS;
+  SystemOff;
 
+  CRT_Init;
   lmargin:= 0;
   rmargin:= 0;
-  CRT_Init;
 
   fade;
-  //CursorOff;
 
   // Initialize RMT player
   msx.player:=pointer(RMT_PLAYER_ADDRESS);
