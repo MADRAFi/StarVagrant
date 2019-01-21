@@ -26,20 +26,13 @@ var
   //itemquantity: array [0..NUMBEROFLOCATIONS-1, 0..NUMBEROFITEMS-1] of word;
   // itemmatrix: array [0..NUMBEROFLOCATIONS-1, 0..NUMBEROFITEMS-1] of boolean;
   itemmatrix: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of boolean;
-
+  itemprice: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of byte;
   {itemmatrix: array[0..NUMBEROFITEMS] of TPriceMatrix;
   locationmatrix: array [0..NUMBEROFLOCATIONS] of itemmatrix;
 }
   current_menu: Byte;
   player: TPlayer;
 
-// procedure CRT_WriteRightAligned(w: byte; s: TString);
-// var len: byte;
-// begin
-// 	len := w - Length(s);
-//   CRT_Write(Atascii2Antic(Space(len)));
-//   CRT_Write(s);
-// end;
 
 {
 procedure ClrLine;
@@ -72,73 +65,6 @@ begin
    //ClrEol;
 end;
 }
-// function IntToStr(a: integer): ^string; assembler;
-// (*
-// @description: Convert an integer value to a decimal string
-// @param: a: integer
-// @returns: pointer to string
-// *)
-// asm
-// {	txa:pha
-// 	inx
-// 	@ValueToStr #@printINT
-// 	mwa #@buf Result
-// 	pla:tax
-// };
-// end;
-
-(*
-function Atascii2Antic(c: byte): byte; overload;
-begin
-    asm {
-        lda c
-        asl
-        php
-        cmp #2*$60
-        bcs @+
-        sbc #2*$20-1
-        bcs @+
-        adc #2*$60
-@       plp
-        ror
-        sta result;
-    };
-end;
-
-function Antic2Atascii(c: byte):byte;overload;
-begin
-    asm {
-        lda c
-        asl
-        php
-        cmp #2*$60
-        bcs @+
-        sbc #2*$40-1
-        bcs @+
-        adc #2*$60
-@       plp
-        ror
-        sta result;
-    };
-end;
-
-function Atascii2Antic(s: string):string;overload;
-var i:byte;
-begin
-    result[0]:=s[0];
-    for i:=1 to byte(s[0]) do
-        result[i]:=char(Atascii2Antic(byte(s[i])));
-end;
-
-
-function Antic2Atascii(s: string):string;overload;
-var i:byte;
-begin
-    result[0]:=s[0];
-    for i:=1 to byte(s[0]) do
-        result[i]:=char(Antic2Atascii(byte(s[i])));
-end;
-*)
 
 {
 procedure  WriteString( s : string; newline : boolean); overload;
@@ -198,6 +124,16 @@ begin
   itemmatrix[18]:=true;
   itemmatrix[21]:=true;
 
+  // Prices
+  itemprice[7]:=127;
+  itemprice[8]:=5;
+  itemprice[10]:=99;
+  itemprice[14]:=10;
+  itemprice[15]:=2;
+  itemprice[18]:=100;
+  itemprice[21]:=1;
+
+
 end;
 
 procedure start;
@@ -212,8 +148,9 @@ end;
 procedure ListItems(loc: byte);
 var
   x: byte;
-  count:byte = 0;
+  count:byte = 1;
   offset: byte;
+  str: string;
 
 begin
   for x:=0 to NUMBEROFITEMS-1 do
@@ -221,8 +158,11 @@ begin
       offset:=(NUMBEROFITEMS-1)*loc + x;
       if itemmatrix[offset] = true then
         begin
-          CRT_GotoXy(21,5+count);
-          write (count,' ',NullTermToString(items[x]));
+          CRT_GotoXY(CRT_screenWidth div 2 + 1,5+count);
+          str:= concat(Atascii2Antic(IntToStr(count)),' '~);
+          str:= concat(str,FFTermToString(items[x]));
+          CRT_Write(str);
+          CRT_WriteRightAligned(Atascii2Antic(IntToStr(itemprice[offset])));
           inc(count);
         end;
     end;
@@ -256,9 +196,10 @@ procedure console_trade;
 var y: byte;
     //uec: string;
     mode: boolean = false;
-  //  modestr: string;
+    str: string;
+    //str,tmp: string;
     itemmax:byte;
-    curlocation: string;
+    //curlocation: string;
     l: byte = 0;
 
 begin
@@ -277,10 +218,10 @@ begin
   // Writeln (NullTermToString(locations[player.loc]), ' [Buy] Sell ', player.uec,' UEC');
 
 //  modestr:=Atascii2Antic(concat(NullTermToString(strings[8]),NullTermToString(strings[9])));
-  curlocation:=FFTermToString(locations[player.loc]);
-  l:=Length(curlocation);
-
-  CRT_WriteXY(0,0,curlocation);
+  //curlocation:=FFTermToString(locations[player.loc]);
+  //CRT_WriteXY(0,0,curlocation);
+  str:=FFTermToString(locations[player.loc]);
+  CRT_WriteXY(0,0,str);
   CRT_WriteXY((CRT_screenWidth div 2)-5,0,FFTermToString(strings[8])); // Buy
   CRT_Write(FFTermToString(strings[9])); // Sell
   CRT_WriteRightAligned(Atascii2Antic(concat(IntToStr(player.uec), ' UEC')));
@@ -290,14 +231,20 @@ begin
   CRT_WriteXY(0,3,'[ Cuttles Black ]   |'~);
   CRT_Write(FFTermToString(strings[12]));CRT_WriteRightAligned(FFTermToString(strings[13])); // commodity price
   CRT_WriteXY(0,4,'--------------------+-------------------'~);
-  CRT_WriteXY(0,5,FFTermToString(strings[14])); CRT_Write(' '~);CRT_WriteXY((CRT_screenWidth div 2)-4,5,'46 |'~);  // mocap
-  CRT_WriteXY(0,6,FFTermToString(strings[15])); CRT_Write(' '~);CRT_WriteXY((CRT_screenWidth div 2)-4,6,'46 |'~);  //mocap
+  CRT_WriteXY(0,5,FFTermToString(strings[14])); CRT_Write(' '~);CRT_WriteXY((CRT_screenWidth div 2)-3,5,'46 |'~);  // mocap
+  CRT_WriteXY(0,6,FFTermToString(strings[15])); CRT_Write(' '~);CRT_WriteXY((CRT_screenWidth div 2)-3,6,'46 |'~);  //mocap
   CRT_WriteXY(0,7,'--------------------+'~);
   CRT_WriteXY(0,18,'--------------------+-------------------'~);
   CRT_GotoXY(0,22);
-  CRT_WriteRightAligned('[Cancel] [OK]'~); // mocap
+  CRT_WriteRightAligned('[Cancel] [OK]'~);
+  //CRT_WriteRightAligned(concat(FFTermToString(strings[16]),' 2 opcja'~));
+  //CRT_WriteXY(0,22,concat(FFTermToString(strings[16]),FFTermToString(strings[17])));
+  //str:=FFTermToString(strings[16]);
+  //tmp:=FFTermToString(strings[17]);
+  //CRT_WriteRightAligned(concat(str,tmp));
 
-  //ListItems(player.loc);
+
+  ListItems(player.loc);
 
   repeat
     pause;
@@ -306,13 +253,19 @@ begin
       case keyval of
         KEY_BACK: current_menu:=MENU_MAIN;
       end;
-    if (CRT_OptionPressed) then begin
-      mode:= not mode;
-      if (mode = false) then
-        CRT_Invert(0,l+1,5)
-      else
-        CRT_Invert(0,l+6,6);
-    end;
+    if (CRT_OptionPressed) then
+      begin
+        mode:= not mode;
+        if (mode = false) then
+        begin
+            CRT_Invert(0,l+1,5);
+            CRT_GotoXY(15,19);CRT_Write('MODE=FALSE'~);
+        end
+        else begin
+          CRT_Invert(0,l+6,6);
+          CRT_GotoXY(15,19);CRT_Write('MODE=TRUE'~);
+        end;
+      end;
 
   until keyval = KEY_BACK;
 end;

@@ -15,6 +15,8 @@ strings_list
     dta a(txt_13)
     dta a(txt_14)
     dta a(txt_15)
+    dta a(txt_16)
+    dta a(txt_17)
 
 strings
 txt_0
@@ -49,6 +51,12 @@ txt_14
     dta d'Total Cargo',$ff
 txt_15
     dta d'Empty Cargo',$ff
+txt_16
+    dta d'[C]ancel',0
+txt_17
+    dta d'[O]K',0
+
+
 
  .print "STRINGS SIZE: ", *-strings_list
  .print "STRINGS : ", strings_list, "..", *
