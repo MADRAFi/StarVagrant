@@ -26,6 +26,8 @@ var
   // itemmatrix: array [0..NUMBEROFLOCATIONS-1, 0..NUMBEROFITEMS-1] of boolean;
   itemmatrix: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of boolean;
   itemprice: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of byte;
+  availableitems: array [0..11] of byte; // only 12 avaiable items
+
   {itemmatrix: array[0..NUMBEROFITEMS] of TPriceMatrix;
   locationmatrix: array [0..NUMBEROFLOCATIONS] of itemmatrix;
 }
@@ -158,7 +160,7 @@ begin
   //CRT_NewLine(y1);
 end;
 
-procedure ListItems(loc: byte; mode: boolean);
+procedure ListItemsOLD(loc: byte; mode: boolean);
 var
   x: byte;
   count:byte = 1;
@@ -203,6 +205,59 @@ begin
   //CRT_WriteXY(0,19,Atascii2Antic(tmpstr));
 end;
 
+procedure ListItems(mode: boolean);
+var
+  x: byte;
+  count:byte = 1;
+  str: string;
+  finalprice: longword;
+  price: byte;
+  commission: shortreal = 0.05;
+  itemindex: byte = 0;
+
+
+begin
+  count:=1;
+  for x:=0 to 11 do // max available items
+    begin
+      itemindex:=availableitems[x];
+      if itemindex > 0 then
+      begin
+        CRT_GotoXY(CRT_screenWidth div 2 + 1,4+count); //min count:=1 so we start at 4th row
+        str:= concat(Atascii2Antic(IntToStr(count)),' '~);
+        str:= concat(str,FFTermToString(items[itemindex]));
+        CRT_Write(str);
+        price:=itemprice[itemindex];
+        if mode then finalprice:=Trunc(price*(1-commission))
+        else finalprice:=price;
+
+        CRT_WriteRightAligned(Atascii2Antic(IntToStr(finalprice)));
+        inc(count);
+      end;
+    end;
+end;
+
+
+procedure LoadItems(loc: byte);
+var
+  x: byte;
+  count:byte = 0;
+  offset: byte = 0;
+
+begin
+  for x:=0 to NUMBEROFITEMS-1 do
+    begin
+      offset:=(NUMBEROFITEMS-1)*loc + x;
+      if itemmatrix[offset] = true then
+      begin
+        if count <= 11 then // max avaiable items
+        begin
+          availableitems[count]:=offset;
+          inc(count);
+        end;
+      end;
+    end;
+end;
 
 procedure console_navigation;
 var
@@ -238,6 +293,8 @@ var y: byte;
     itemmax:byte;
     //curlocation: string;
     l: byte = 0;
+    //availableitems:array[0..11] of Byte;
+
 
 begin
   //colbk:=$06;
@@ -280,11 +337,14 @@ begin
   //tmp:=FFTermToString(strings[17]);
   //CRT_WriteRightAligned(concat(str,tmp));
 
-  ListItems(player.loc,false);
-  CRT_Window(15,14,30,19);
-  CRT_WriteXY(0,0,'Row1'~);
-  CRT_WriteXY(0,1,'Row2'~);
-  CRT_WriteXY(0,2,'Row3'~);
+  LoadItems(player.loc);
+  ListItems(false);
+
+  // ListItems(availableitems,false);
+  // CRT_Window(15,14,30,19);
+  // CRT_WriteXY(0,0,'Row1'~);
+  // CRT_WriteXY(0,1,'Row2'~);
+  // CRT_WriteXY(0,2,'Row3'~);
 
   repeat
     //pause;
@@ -304,11 +364,11 @@ begin
       if (mode = false) then
       begin
           CRT_Invert(l,0,5);CRT_Invert(l+5,0,6);
-          ListItems(player.loc,false);
+          ListItems(false);
       end
       else begin
         CRT_Invert(l,0,5);CRT_Invert(l+5,0,6);
-        ListItems(player.loc,true);
+        ListItems(true);
       end;
       toggled:=true;
     end
@@ -495,5 +555,5 @@ until keyval = KEY_QUIT;
   nmien:= $40;
   //msx.stop;
 
-  SystemReset;
+  //SystemReset;
 end.
