@@ -24,6 +24,7 @@ NUMBEROFLOCATIONS = 15; // number of locations defined in locations.asm. Needs t
 NUMBEROFITEMS = 22; // number of items defined in items.asm. Needs to match.
 //TXTCOL = 40; // numer of columns in txt mode
 
+MAXAVAILABLEITEMS = 12;
 
 
 // ***************************************************************************//
@@ -34,6 +35,7 @@ KEY_OPTION4 = '4';
 KEY_BACK = 'b';
 KEY_QUIT = 'q';
 KEY_NEW = 'n';
+
 
 //----------------------------------------------------------------------------//
 MENU_TITLE = 0;

@@ -6,6 +6,11 @@ uses atari, rmt, b_utils, b_system, b_crt, sysutils;
 const
 {$i 'const.inc'}
   CURRENCY = ' UEC';
+  KEY_UP = Chr(28);
+  KEY_DOWN = Chr(29);
+  KEY_LEFT = Chr(30);
+  KEY_RIGHT = Chr(31);
+
 type
 {$i 'types.inc'}
 {$r 'resources.rc'}
@@ -259,6 +264,12 @@ begin
     end;
 end;
 
+function CheckItemPosition(newindex: Byte) : Boolean;
+begin
+  if (newindex <= MAXAVAILABLEITEMS) and (newindex >= 0) then Result:=true
+  else Result:=false;
+end;
+
 procedure console_navigation;
 var
   y: byte;
@@ -284,16 +295,14 @@ begin
 end;
 
 procedure console_trade;
-var y: byte;
-    //uec: string;
-    mode: boolean = false;
-    toggled: boolean = false;
-    str: string;
-    //str,tmp: string;
-    itemmax:byte;
-    //curlocation: string;
-    l: byte = 0;
-    //availableitems:array[0..11] of Byte;
+var
+  y: byte;
+  mode: boolean = false;
+  toggled: boolean = false;
+  str: string;
+  l: byte;
+  itemindex: byte = 0;
+
 
 
 begin
@@ -308,13 +317,6 @@ begin
   for y:=0 to CRT_screenWidth do
     CRT_ClearRow(y);
 
-  //uec:= concat(IntToStr(player.uec) , ' UEC');
-  //Write (locations[player.loc], ' [Buy] Sell '); WriteRightAligned(10,uec + ' UEC'); writeln;
-  // Writeln (NullTermToString(locations[player.loc]), ' [Buy] Sell ', player.uec,' UEC');
-
-//  modestr:=Atascii2Antic(concat(NullTermToString(strings[8]),NullTermToString(strings[9])));
-  //curlocation:=FFTermToString(locations[player.loc]);
-  //CRT_WriteXY(0,0,curlocation);
   str:=FFTermToString(locations[player.loc]);
   CRT_WriteXY(0,0,str);
   CRT_WriteXY((CRT_screenWidth div 2)-5,0,FFTermToString(strings[8])); // Buy
@@ -340,6 +342,12 @@ begin
   LoadItems(player.loc);
   ListItems(false);
 
+  //str:=FFTermToString(items[availableitems[0]]);
+  //l:=Length(str)+2; // 2 more chars for number and space
+  //CRT_Invert(CRT_screenWidth div 2+1,5,l);
+  CRT_Invert(CRT_screenWidth div 2+1,5,19); // selecting the whole row with items
+  itemindex:=0;
+
   // ListItems(availableitems,false);
   // CRT_Window(15,14,30,19);
   // CRT_WriteXY(0,0,'Row1'~);
@@ -354,7 +362,22 @@ begin
       keyval := chr(CRT_ReadChar);
       case keyval of
         KEY_BACK: current_menu:=MENU_MAIN;
-
+        KEY_UP:   begin
+                    Beep;
+                    if CheckItemPosition(itemindex-1) then
+                    begin
+                      Dec(itemindex);
+                      CRT_Invert(CRT_screenWidth div 2+1,itemindex,19); // selecting the whole row with items
+                    end;
+                  end;
+        KEY_DOWN: begin
+                    Beep;
+                    if CheckItemPosition(itemindex+1) then
+                    begin
+                      Inc(itemindex);
+                      CRT_Invert(CRT_screenWidth div 2+1,itemindex,19); // selecting the whole row with items
+                    end;
+                  end;
       end;
     end;
     if (CRT_OptionPressed) and (toggled=false) then
@@ -365,10 +388,14 @@ begin
       begin
           CRT_Invert(l,0,5);CRT_Invert(l+5,0,6);
           ListItems(false);
+          CRT_Invert(CRT_screenWidth div 2+1,5,19); // selecting the whole row with items
+          itemindex:=0;
       end
       else begin
         CRT_Invert(l,0,5);CRT_Invert(l+5,0,6);
         ListItems(true);
+        CRT_Invert(CRT_screenWidth div 2+1,5,19); // selecting the whole row with items
+        itemindex:=0;
       end;
       toggled:=true;
     end
