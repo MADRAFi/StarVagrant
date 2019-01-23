@@ -1,6 +1,6 @@
 program StarVagrant;
 {$librarypath '../Libs/lib/';'../Libs/blibs/';'../Libs/base/'}
-uses atari, rmt, b_utils, b_system, b_crt, sysutils;
+uses atari, b_utils, b_system, b_crt, sysutils;
 
 
 const
@@ -23,7 +23,7 @@ var
   keyval: char = chr(0);
 //  keyval: byte = 0;
 
-  msx: TRMT;
+  //msx: TRMT;
 
   oldvbl, olddli: pointer;
 
@@ -248,8 +248,11 @@ begin
   liststart:=(CRT_screenWidth div 2)+1;
   listwidth:=CRT_screenWidth-liststart;
 
-  Waitframe;
+
   DLISTL := DISPLAY_LIST_ADDRESS_CONSOLE;
+
+  Waitframe;
+
   EnableVBLI(@vblc);
   EnableDLI(@dlic);
 
@@ -343,8 +346,11 @@ var
 
 begin
 
-  Waitframe;
+
   DLISTL := DISPLAY_LIST_ADDRESS_MENU;
+
+  Waitframe;
+
   EnableVBLI(@vbl);
   EnableDLI(@dli1);
 
@@ -389,8 +395,9 @@ var
 begin
 
 
-  Waitframe;
+  
   DLISTL := DISPLAY_LIST_ADDRESS_MENU;
+  Waitframe;
   EnableVBLI(@vbl);
   EnableDLI(@dli1);
 

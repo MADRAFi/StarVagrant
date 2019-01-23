@@ -8,11 +8,11 @@ TXT_ADDRESS = DISPLAY_LIST_ADDRESS_CONSOLE + $100;
 SCROLL_ADDRESS = TXT_ADDRESS + $400; //$F0;
 // end at $4590
 
-RMT_PLAYER_ADDRESS = $7000; // begining of a new mem page
-RMT_MODULE_ADDRESS = RMT_PLAYER_ADDRESS + $800;
+//RMT_PLAYER_ADDRESS = $7000; // begining of a new mem page
+//RMT_MODULE_ADDRESS = RMT_PLAYER_ADDRESS + $800;
 // end at $6F8D
 
-// logo leghth $178D;
+// logo length $178D;
 GFX_ADDRESS = $8000;
 
 STRINGS_ADDRESS = GFX_ADDRESS + $2809;
@@ -22,9 +22,7 @@ ITEMS_ADDRESS = LOCATIONS_ADDRESS + $200;
 
 NUMBEROFLOCATIONS = 15; // number of locations defined in locations.asm. Needs to match.
 NUMBEROFITEMS = 22; // number of items defined in items.asm. Needs to match.
-//TXTCOL = 40; // numer of columns in txt mode
-
-MAXAVAILABLEITEMS = 12;
+MAXAVAILABLEITEMS = 12; // numer of cocnrunnet items displayed
 
 
 // ***************************************************************************//

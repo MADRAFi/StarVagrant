@@ -8,12 +8,12 @@ procedure dli1;assembler;interrupt;
         mva #$02 ATARI.colpf2
         mva #$0c ATARI.colpf3
         mva #$00 ATARI.colbk
-        mwa #DLI2 ATARI.VDSLST
-        lda #60
-@       cmp vcount
-        bpl @-
+;        lda #60
+;@       cmp vcount
+;        bpl @-
         mva #$00 ATARI.colpf2
-
+        ;mwa #DLI2 ATARI.VDSLST
+        mwa #DLI2 __dlivec
         pla
         };
 end;
@@ -27,7 +27,8 @@ procedure dli2;assembler;interrupt;
         mva #$0c ATARI.colpf1
         mva #$00 ATARI.colpf2
         mva #$00 ATARI.colpf3
-        mwa #DLI3 ATARI.VDSLST
+        ;mwa #DLI3 ATARI.VDSLST
+        mwa #DLI3 __dlivec
         pla
         };
 end;
@@ -79,7 +80,8 @@ begin
     ;    ldy MSX+1
     ;    jsr RMT.TRMT.PLAY
 
-      mwa #dli1 ATARI.VDSLST
+      ;mwa #dli1 ATARI.VDSLST
+      mwa #DLI1 __dlivec
 
       plr ; restore registers
   };
@@ -106,6 +108,7 @@ begin
   asm {
       phr ; store registers
       mwa #dlic ATARI.VDSLST
+      ;mwa #DLI2 __dlivec
       plr ; restore registers
   };
 end;
