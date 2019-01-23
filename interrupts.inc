@@ -82,7 +82,6 @@ begin
       mwa #dli1 ATARI.VDSLST
 
       plr ; restore registers
-      jmp $E462 ; jump to system VBL handler
   };
 end;
 
@@ -106,18 +105,7 @@ procedure vblc;interrupt;
 begin
   asm {
       phr ; store registers
-  };
-
-  asm {
-  ;   *** example test routine
-  ;    mva 20 atari.colbk // blink background
-
-  ;   *** RMT play routine
-    ;  lda MSX
-    ;  ldy MSX+1
-    ;  jsr RMT.TRMT.PLAY
-
+      mwa #dlic ATARI.VDSLST
       plr ; restore registers
-      jmp $E462 ; jump to system VBL handler
   };
 end;

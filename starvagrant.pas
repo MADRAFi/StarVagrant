@@ -247,14 +247,12 @@ var
 begin
   liststart:=(CRT_screenWidth div 2)+1;
   listwidth:=CRT_screenWidth-liststart;
-  //colbk:=$06;
-  //COLOR2:=$06;
-  // SetIntVec(iDLI, @dlic);
-  // SetIntVec(iVBL, @vblc);
+
   Waitframe;
-  SDLSTL := DISPLAY_LIST_ADDRESS_CONSOLE;
-  //CRT_Init;
-  //CRT_Window(0,0,40,24);
+  DLISTL := DISPLAY_LIST_ADDRESS_CONSOLE;
+  EnableVBLI(@vblc);
+  EnableDLI(@dlic);
+
   for y:=0 to CRT_screenWidth do
     CRT_ClearRow(y);
 
@@ -274,23 +272,15 @@ begin
   CRT_WriteXY(0,7,'--------------------+'~);
   CRT_WriteXY(0,18,'--------------------+-------------------'~);
   CRT_GotoXY(0,22);
-  CRT_WriteRightAligned('[Cancel] [OK]'~);
-
-  //str:=FFTermToString(strings[16]);
+  str:=concat(FFTermToString(strings[16]),' '~);
   //tmp:=FFTermToString(strings[17]);
-  //CRT_WriteRightAligned(concat(str,tmp));
+  CRT_WriteRightAligned(concat(str,FFTermToString(strings[17])));
+  // CRT_WriteRightAligned('[Cancel] [OK]'~);
 
   LoadItems(player.loc);
   ListItems(false);
-
-  //CRT_Invert(liststart,5,listwidth); // selecting the whole row with items
   itemindex:=0;
 
-  // ListItems(availableitems,false);
-  // CRT_Window(15,14,30,19);
-  // CRT_WriteXY(0,0,'Row1'~);
-  // CRT_WriteXY(0,1,'Row2'~);
-  // CRT_WriteXY(0,2,'Row3'~);
 
   repeat
     //pause;
@@ -352,11 +342,11 @@ var
     i: byte;
 
 begin
-  // SetIntVec(iDLI, @dli1);
-  // SetIntVec(iVBL, @vbl);
+
   Waitframe;
-  SDLSTL := DISPLAY_LIST_ADDRESS_MENU;
-  //CRT_Init;
+  DLISTL := DISPLAY_LIST_ADDRESS_MENU;
+  EnableVBLI(@vbl);
+  EnableDLI(@dli1);
 
   for i:=0 to 6 do
     CRT_ClearRow(i);
@@ -397,11 +387,12 @@ var
   y: byte;
 
 begin
-//  SetIntVec(iDLI, @dli1);
-//  SetIntVec(iVBL, @vbl);
+
 
   Waitframe;
-  SDLSTL := DISPLAY_LIST_ADDRESS_MENU;
+  DLISTL := DISPLAY_LIST_ADDRESS_MENU;
+  EnableVBLI(@vbl);
+  EnableDLI(@dli1);
 
 
   for y:=0 to 6 do
@@ -430,19 +421,6 @@ begin
                 end;
       end;
     end;
-
-    // if count = $ff then begin // $ff is one below zero
-    //     count := 3;
-    //     offset := (offset + 1) mod 140;  // 140 = 2x string size
-    //     //DL_PokeW(114, SCROLL_ADDRESS + offset); // set new memory offset
-    //     dpoke(DISPLAY_LIST_ADDRESS_MENU + 114, SCROLL_ADDRESS + offset);
-    // end;
-    //
-    // hscrol := count; // set hscroll
-    // dec(count);
-
-    //blankSize := (blankSize + 1) and 15; // go trough 0-15
-    //DL_Poke(10, blanks[blankSize]); // set new blankline height
 
   until (keyval = KEY_QUIT) or (keyval = KEY_NEW);
 end;
@@ -476,12 +454,7 @@ MAIN LOOP
 begin
   SystemOff;
   SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
-  //savmsc:=TXT_ADDRESS;
-  //  savmsc:= TXT_ADDRESS;
-
-
-  lmargin:= 0;
-  rmargin:= 0;
+  CRT_Init(TXT_ADDRESS);
 
   //fade;
 
@@ -489,18 +462,6 @@ begin
   //msx.player:=pointer(RMT_PLAYER_ADDRESS);
   //msx.modul:=pointer(RMT_MODULE_ADDRESS);
   //msx.init(0);
-
-    // save old vbl and dli interrupt
-  // GetIntVec(iVBL, oldvbl);
-  // GetIntVec(iDLI, olddli);
-  // nmien:= $c0;
-  //
-  //
-  //
-  // SetIntVec(iDLI, @dli1);
-  // SetIntVec(iVBL, @vbl);
-
-  CRT_Init;
 
   current_menu := MENU_TITLE;
   //current_menu := MENU_TRADE;
@@ -520,10 +481,6 @@ begin
 until keyval = KEY_QUIT;
 
   // restore system
-  // SetIntVec(iVBL, oldvbl);
-  // SetIntVec(iDLI, olddli);
-  // nmien:= $40;
-  //msx.stop;
 
   //SystemReset;
 end.
