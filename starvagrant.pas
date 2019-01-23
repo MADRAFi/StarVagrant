@@ -125,16 +125,16 @@ begin
 
 end;
 
-procedure CRT_Window(x1,y1,x2,y2:byte);
-begin
-  CRT_leftMargin:=x1;
-  CRT_screenWidth:=x2-x1;
-  CRT_screenHeight:=y2-y1;
-  //CRT_Cursor:=CRT_vram+(x1*y1);
-  CRT_Cursor:=CRT_vram+(y1*DEFAULT_SCREENWIDTH)+x1;
-  CRT_size:=CRT_screenWidth*CRT_screenHeight;
-  //CRT_NewLine(y1);
-end;
+// procedure CRT_Window(x1,y1,x2,y2:byte);
+// begin
+//   CRT_leftMargin:=x1;
+//   CRT_screenWidth:=x2-x1;
+//   CRT_screenHeight:=y2-y1;
+//   //CRT_Cursor:=CRT_vram+(x1*y1);
+//   CRT_Cursor:=CRT_vram+(y1*DEFAULT_SCREENWIDTH)+x1;
+//   CRT_size:=CRT_screenWidth*CRT_screenHeight;
+//   //CRT_NewLine(y1);
+// end;
 
 procedure ListItems(mode: boolean);
 const
@@ -248,13 +248,11 @@ begin
   liststart:=(CRT_screenWidth div 2)+1;
   listwidth:=CRT_screenWidth-liststart;
 
-
   DLISTL := DISPLAY_LIST_ADDRESS_CONSOLE;
-
   Waitframe;
-
   EnableVBLI(@vblc);
   EnableDLI(@dlic);
+
 
   for y:=0 to CRT_screenWidth do
     CRT_ClearRow(y);
@@ -345,14 +343,11 @@ var
     i: byte;
 
 begin
-
-
   DLISTL := DISPLAY_LIST_ADDRESS_MENU;
-
   Waitframe;
-
   EnableVBLI(@vbl);
   EnableDLI(@dli1);
+  //CRT_Init(TXT_ADDRESS);
 
   for i:=0 to 6 do
     CRT_ClearRow(i);
@@ -388,14 +383,9 @@ end;
 procedure title;
 var
   str: string;
-  // count: byte = 3;
-  // offset: byte = 0;
   y: byte;
 
 begin
-
-
-  
   DLISTL := DISPLAY_LIST_ADDRESS_MENU;
   Waitframe;
   EnableVBLI(@vbl);
@@ -445,7 +435,7 @@ begin
   for i:=Low(fadecolors) to high(fadecolors)  do
     begin
       colbk:=fadecolors[i];
-      //Delay(35);
+      Waitframe;
     end;
   //poke($2C6,$C4);
 end;
@@ -463,7 +453,7 @@ begin
   SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
   CRT_Init(TXT_ADDRESS);
 
-  //fade;
+  fade;
 
   // Initialize RMT player
   //msx.player:=pointer(RMT_PLAYER_ADDRESS);
