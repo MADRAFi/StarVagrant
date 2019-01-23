@@ -6,8 +6,12 @@ uses atari, rmt, b_utils, b_system, b_crt, sysutils;
 const
 {$i 'const.inc'}
   CURRENCY = ' UEC';
+{
   KEY_UP = Chr(28);
   KEY_DOWN = Chr(29);
+}
+  KEY_UP = 'o';
+  KEY_DOWN = 'l';
   KEY_LEFT = Chr(30);
   KEY_RIGHT = Chr(31);
 
@@ -75,39 +79,6 @@ begin
 end;
 }
 
-{
-procedure  WriteString( s : string; newline : boolean); overload;
-var
-  x, y : byte;
-
-begin
-  x:= WhereX;
-  y:= WhereY;
-  CRT_GotoXy(1,y);
-  ClrEol;
-  CRT_GotoXy(x,y);
-
-  If (newline = FALSE) then
-    Write (s)
-  else
-    Writeln (s);
-end;
-
-procedure  WriteString( s : string); overload;
-var
-  x, y : byte;
-
-begin
-  x:= WhereX;
-  y:= WhereY;
-  CRT_GotoXy(1,y);
-  ClrEol;
-  CRT_GotoXy(x,y);
-
-  Writeln (s);
-end;
-}
-
 
 procedure generateworld;
 
@@ -165,56 +136,15 @@ begin
   //CRT_NewLine(y1);
 end;
 
-procedure ListItemsOLD(loc: byte; mode: boolean);
-var
-  x: byte;
-  count:byte = 1;
-  offset: byte;
-  str: string;
-  finalprice: longword;
-  price: byte;
-  commission: shortreal = 0.05;
-  tmp: real;
-  //tmpstr: string= 'REAL:';
-
-begin
-  count:=1;
-  for x:=0 to NUMBEROFITEMS-1 do
-    begin
-      offset:=(NUMBEROFITEMS-1)*loc + x;
-      if itemmatrix[offset] = true then
-      begin
-        CRT_GotoXY(CRT_screenWidth div 2 + 1,4+count); //min count:=1 so we start at 4th row
-        str:= concat(Atascii2Antic(IntToStr(count)),' '~);
-        str:= concat(str,FFTermToString(items[x]));
-        CRT_Write(str);
-        price:=itemprice[offset];
-        if mode then
-        begin
-          tmp:=price*(1-commission);
-          finalprice:=Trunc(tmp);
-        end
-        else
-        begin
-          finalprice:=price;
-        end;
-        //CRT_WriteRightAligned('   '~);
-        //CRT_GotoXY(CRT_WhereX-3,4+count);
-        CRT_WriteRightAligned(Atascii2Antic(IntToStr(finalprice)));
-        //tmpstr:=concat(tmpstr,FloatToStr(tmp));
-        //tmpstr:=concat(tmpstr,' ');
-        inc(count);
-      end;
-    end;
-  //CRT_GotoXY(0,19);
-  //CRT_WriteXY(0,19,Atascii2Antic(tmpstr));
-end;
-
 procedure ListItems(mode: boolean);
+const
+  listwidth = 19;
+
 var
   x: byte;
   count:byte = 1;
   str: string;
+  pricestr: string;
   finalprice: longword;
   price: byte;
   commission: shortreal = 0.05;
@@ -235,8 +165,10 @@ begin
         price:=itemprice[itemindex];
         if mode then finalprice:=Trunc(price*(1-commission))
         else finalprice:=price;
-
-        CRT_WriteRightAligned(Atascii2Antic(IntToStr(finalprice)));
+        pricestr:=IntToStr(finalprice);
+        CRT_Write(Atascii2Antic(Space(listwidth-Length(str)-Length(pricestr))));
+        CRT_Write(Atascii2Antic(pricestr));
+        //CRT_WriteRightAligned(Atascii2Antic(IntToStr(finalprice)));
         inc(count);
       end;
     end;
@@ -250,6 +182,7 @@ var
   offset: byte = 0;
 
 begin
+  count:=0;
   for x:=0 to NUMBEROFITEMS-1 do
     begin
       offset:=(NUMBEROFITEMS-1)*loc + x;
@@ -266,7 +199,7 @@ end;
 
 function CheckItemPosition(newindex: Byte) : Boolean;
 begin
-  if (newindex <= MAXAVAILABLEITEMS) and (newindex >= 0) then Result:=true
+  if (newindex < MAXAVAILABLEITEMS) and (newindex >= 0) then Result:=true
   else Result:=false;
 end;
 
@@ -295,6 +228,9 @@ begin
 end;
 
 procedure console_trade;
+const
+  TOPMARGIN = 5;
+
 var
   y: byte;
   mode: boolean = false;
@@ -302,14 +238,17 @@ var
   str: string;
   l: byte;
   itemindex: byte = 0;
-
+  listwidth: byte = 19;
+  liststart: byte = 21;
 
 
 begin
+  liststart:=(CRT_screenWidth div 2)+1;
+  listwidth:=CRT_screenWidth-liststart;
   //colbk:=$06;
   //COLOR2:=$06;
-  SetIntVec(iDLI, @dlic);
-  SetIntVec(iVBL, @vblc);
+  // SetIntVec(iDLI, @dlic);
+  // SetIntVec(iVBL, @vblc);
   Waitframe;
   SDLSTL := DISPLAY_LIST_ADDRESS_CONSOLE;
   //CRT_Init;
@@ -319,7 +258,7 @@ begin
 
   str:=FFTermToString(locations[player.loc]);
   CRT_WriteXY(0,0,str);
-  CRT_WriteXY((CRT_screenWidth div 2)-5,0,FFTermToString(strings[8])); // Buy
+  CRT_WriteXY(listwidth-4,0,FFTermToString(strings[8])); // Buy
   CRT_Write(FFTermToString(strings[9])); // Sell
   CRT_WriteRightAligned(Atascii2Antic(concat(IntToStr(player.uec), CURRENCY)));
   CRT_WriteXY(0,1,'--------------------+-------------------'~);
@@ -328,8 +267,8 @@ begin
   CRT_WriteXY(0,3,'[ Cuttles Black ]   |'~);
   CRT_Write(FFTermToString(strings[12]));CRT_WriteRightAligned(FFTermToString(strings[13])); // commodity price
   CRT_WriteXY(0,4,'--------------------+-------------------'~);
-  CRT_WriteXY(0,5,FFTermToString(strings[14])); CRT_Write(' '~);CRT_WriteXY((CRT_screenWidth div 2)-3,5,'46 |'~);  // mocap
-  CRT_WriteXY(0,6,FFTermToString(strings[15])); CRT_Write(' '~);CRT_WriteXY((CRT_screenWidth div 2)-3,6,'46 |'~);  //mocap
+  CRT_WriteXY(0,5,FFTermToString(strings[14])); CRT_Write(' '~);CRT_WriteXY(listwidth-2,5,'46 |'~);  // mocap
+  CRT_WriteXY(0,6,FFTermToString(strings[15])); CRT_Write(' '~);CRT_WriteXY(listwidth-2,6,'46 |'~);  //mocap
   CRT_WriteXY(0,7,'--------------------+'~);
   CRT_WriteXY(0,18,'--------------------+-------------------'~);
   CRT_GotoXY(0,22);
@@ -342,10 +281,7 @@ begin
   LoadItems(player.loc);
   ListItems(false);
 
-  //str:=FFTermToString(items[availableitems[0]]);
-  //l:=Length(str)+2; // 2 more chars for number and space
-  //CRT_Invert(CRT_screenWidth div 2+1,5,l);
-  CRT_Invert(CRT_screenWidth div 2+1,5,19); // selecting the whole row with items
+  CRT_Invert(liststart,5,listwidth); // selecting the whole row with items
   itemindex:=0;
 
   // ListItems(availableitems,false);
@@ -363,38 +299,41 @@ begin
       case keyval of
         KEY_BACK: current_menu:=MENU_MAIN;
         KEY_UP:   begin
-                    Beep;
-                    if CheckItemPosition(itemindex-1) then
+                    if CheckItemPosition(itemindex-1) and (availableitems[itemindex-1] > 0) then
                     begin
+                      CRT_Invert(liststart,itemindex+TOPMARGIN,listwidth);
                       Dec(itemindex);
-                      CRT_Invert(CRT_screenWidth div 2+1,itemindex,19); // selecting the whole row with items
+                      CRT_Invert(liststart,itemindex+TOPMARGIN,listwidth); // selecting the whole row with items
                     end;
                   end;
         KEY_DOWN: begin
-                    Beep;
-                    if CheckItemPosition(itemindex+1) then
+                    if CheckItemPosition(itemindex+1) and (availableitems[itemindex+1] > 0) then
                     begin
+                      CRT_Invert(liststart,itemindex+TOPMARGIN,listwidth);
                       Inc(itemindex);
-                      CRT_Invert(CRT_screenWidth div 2+1,itemindex,19); // selecting the whole row with items
+                      CRT_Invert(liststart,itemindex+TOPMARGIN,listwidth); // selecting the whole row with items
                     end;
                   end;
       end;
+      str:=concat('itemindex=',IntToStr(itemindex));
+      CRT_WriteXY(0,19,Atascii2Antic(str));
     end;
+
     if (CRT_OptionPressed) and (toggled=false) then
     begin
-      l:=CRT_screenWidth div 2-5; // Buy text is 5 char on left from screen center
+      l:=liststart-6; // Buy text is x char on left from screen center
       mode:= not mode;
       if (mode = false) then
       begin
           CRT_Invert(l,0,5);CRT_Invert(l+5,0,6);
           ListItems(false);
-          CRT_Invert(CRT_screenWidth div 2+1,5,19); // selecting the whole row with items
+          CRT_Invert(liststart,5,listwidth); // selecting the whole row with items
           itemindex:=0;
       end
       else begin
         CRT_Invert(l,0,5);CRT_Invert(l+5,0,6);
         ListItems(true);
-        CRT_Invert(CRT_screenWidth div 2+1,5,19); // selecting the whole row with items
+        CRT_Invert(liststart,5,listwidth); // selecting the whole row with items
         itemindex:=0;
       end;
       toggled:=true;
@@ -411,8 +350,8 @@ var
     i: byte;
 
 begin
-  SetIntVec(iDLI, @dli1);
-  SetIntVec(iVBL, @vbl);
+  // SetIntVec(iDLI, @dli1);
+  // SetIntVec(iVBL, @vbl);
   Waitframe;
   SDLSTL := DISPLAY_LIST_ADDRESS_MENU;
   //CRT_Init;
@@ -456,11 +395,12 @@ var
   y: byte;
 
 begin
-  SetIntVec(iDLI, @dli1);
-  SetIntVec(iVBL, @vbl);
+//  SetIntVec(iDLI, @dli1);
+//  SetIntVec(iVBL, @vbl);
 
   Waitframe;
   SDLSTL := DISPLAY_LIST_ADDRESS_MENU;
+
 
   for y:=0 to 6 do
     CRT_ClearRow(y);
@@ -486,9 +426,6 @@ begin
                   start;
                   current_menu := MENU_MAIN;
                 end;
-        'z': msx.Sfx(1,2,24);
-        'x': msx.Sfx(2,2,10);
-        'c': msx.Sfx(3,2,24);
       end;
     end;
 
@@ -535,29 +472,33 @@ MAIN LOOP
 }
 
 begin
+  SystemOff;
+  SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
+  //savmsc:=TXT_ADDRESS;
+  //  savmsc:= TXT_ADDRESS;
 
-  savmsc:= TXT_ADDRESS;
 
   lmargin:= 0;
   rmargin:= 0;
 
   //fade;
 
-  //  SystemOff;
-  //  SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
-  chbas:= Hi(CHARSET_ADDRESS);
-
-  CRT_Init;
   // Initialize RMT player
   //msx.player:=pointer(RMT_PLAYER_ADDRESS);
   //msx.modul:=pointer(RMT_MODULE_ADDRESS);
   //msx.init(0);
 
     // save old vbl and dli interrupt
-  GetIntVec(iVBL, oldvbl);
-  GetIntVec(iDLI, olddli);
-  nmien:= $c0;
+  // GetIntVec(iVBL, oldvbl);
+  // GetIntVec(iDLI, olddli);
+  // nmien:= $c0;
+  //
+  //
+  //
+  // SetIntVec(iDLI, @dli1);
+  // SetIntVec(iVBL, @vbl);
 
+  CRT_Init;
 
   current_menu := MENU_TITLE;
   //current_menu := MENU_TRADE;
@@ -577,9 +518,9 @@ begin
 until keyval = KEY_QUIT;
 
   // restore system
-  SetIntVec(iVBL, oldvbl);
-  SetIntVec(iDLI, olddli);
-  nmien:= $40;
+  // SetIntVec(iVBL, oldvbl);
+  // SetIntVec(iDLI, olddli);
+  // nmien:= $40;
   //msx.stop;
 
   //SystemReset;
