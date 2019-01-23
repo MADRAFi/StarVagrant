@@ -139,6 +139,7 @@ end;
 procedure ListItems(mode: boolean);
 const
   listwidth = 19;
+  liststart = 21;
 
 var
   x: byte;
@@ -169,6 +170,7 @@ begin
         CRT_Write(Atascii2Antic(Space(listwidth-Length(str)-Length(pricestr))));
         CRT_Write(Atascii2Antic(pricestr));
         //CRT_WriteRightAligned(Atascii2Antic(IntToStr(finalprice)));
+        if count =1 then CRT_Invert(liststart,5,listwidth);
         inc(count);
       end;
     end;
@@ -281,7 +283,7 @@ begin
   LoadItems(player.loc);
   ListItems(false);
 
-  CRT_Invert(liststart,5,listwidth); // selecting the whole row with items
+  //CRT_Invert(liststart,5,listwidth); // selecting the whole row with items
   itemindex:=0;
 
   // ListItems(availableitems,false);
@@ -327,13 +329,13 @@ begin
       begin
           CRT_Invert(l,0,5);CRT_Invert(l+5,0,6);
           ListItems(false);
-          CRT_Invert(liststart,5,listwidth); // selecting the whole row with items
+//          CRT_Invert(liststart,5,listwidth); // selecting the whole row with items
           itemindex:=0;
       end
       else begin
         CRT_Invert(l,0,5);CRT_Invert(l+5,0,6);
         ListItems(true);
-        CRT_Invert(liststart,5,listwidth); // selecting the whole row with items
+//        CRT_Invert(liststart,5,listwidth); // selecting the whole row with items
         itemindex:=0;
       end;
       toggled:=true;
