@@ -6,6 +6,7 @@ uses atari, b_utils, b_system, b_crt, sysutils;
 const
 {$i 'const.inc'}
   CURRENCY = ' UEC';
+  COMMISSION = 0.05;
 {
   KEY_UP = Chr(28);
   KEY_DOWN = Chr(29);
@@ -33,16 +34,18 @@ var
   //itemprice: array [0..NUMBEROFLOCATIONS-1, 0..NUMBEROFITEMS-1] of byte;
   //itemquantity: array [0..NUMBEROFLOCATIONS-1, 0..NUMBEROFITEMS-1] of word;
   // itemmatrix: array [0..NUMBEROFLOCATIONS-1, 0..NUMBEROFITEMS-1] of boolean;
-  itemmatrix: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of boolean;
-  itemprice: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of byte;
-  availableitems: array [0..11] of byte; // only 12 avaiable items
+  itemmatrix: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of boolean;  // matrix where items are available
+  itemprice: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of Word;  // price matrix for items
+  itemquantity: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of Word; // quantities of items
+  availableitems: array [0..(MAXAVAILABLEITEMS-1)] of byte; // only 12 avaiable items
+
 
   {itemmatrix: array[0..NUMBEROFITEMS] of TPriceMatrix;
   locationmatrix: array [0..NUMBEROFLOCATIONS] of itemmatrix;
 }
   current_menu: Byte;
   player: TPlayer;
-
+//commission: shortreal = 0.05;
 
 {$i 'interrupts.inc'}
 
@@ -113,6 +116,14 @@ begin
   itemprice[18]:=100;
   itemprice[21]:=1;
 
+// quantity
+  itemquantity[7]:=100;
+  itemquantity[8]:=5000;
+  itemquantity[10]:=400;
+  itemquantity[14]:=10000;
+  itemquantity[15]:=65535;
+  itemquantity[18]:=100;
+  itemquantity[21]:=65535;
 
 end;
 
@@ -146,9 +157,8 @@ var
   count:byte = 1;
   str: string;
   pricestr: string;
-  finalprice: longword;
-  price: byte;
-  commission: shortreal = 0.05;
+  finalprice: word;
+  price: word;
   itemindex: byte = 0;
 
 
@@ -164,7 +174,7 @@ begin
         str:= concat(str,FFTermToString(items[itemindex]));
         CRT_Write(str);
         price:=itemprice[itemindex];
-        if mode then finalprice:=Trunc(price*(1-commission))
+        if mode then finalprice:=Trunc(price*(1-COMMISSION))
         else finalprice:=price;
         pricestr:=IntToStr(finalprice);
         CRT_Write(Atascii2Antic(Space(listwidth-Length(str)-Length(pricestr))));
@@ -181,7 +191,7 @@ procedure LoadItems(loc: byte);
 var
   x: byte;
   count:byte = 0;
-  offset: byte = 0;
+  offset: word = 0;
 
 begin
   count:=0;
@@ -190,7 +200,7 @@ begin
       offset:=(NUMBEROFITEMS-1)*loc + x;
       if itemmatrix[offset] = true then
       begin
-        if count <= 11 then // max avaiable items
+        if count <= MAXAVAILABLEITEMS-1 then // max avaiable items
         begin
           availableitems[count]:=offset;
           inc(count);
@@ -199,11 +209,41 @@ begin
     end;
 end;
 
-function CheckItemPosition(newindex: Byte) : Boolean;
+function CheckItemPosition(newindex : Byte) : Boolean;
 begin
   if (newindex < MAXAVAILABLEITEMS) and (newindex >= 0) then Result:=true
   else Result:=false;
 end;
+
+function GetItemPrice(itemindex : Byte; mode : Boolean): Word;
+// Get item price based on itemindex of available items mode is false for BUY and tru for SELL
+
+var
+  finalprice: word;
+  price: word;
+  offset: word;
+
+begin
+  offset:=availableitems[itemindex];
+  price:=itemprice[offset];
+  if mode then finalprice:=Trunc(price*(1-commission))
+  else finalprice:=price;
+  Result:= finalprice;
+end;
+
+function GetItemQuantity(itemindex : Byte): Word;
+// Get item quantity based on itemindex of available items
+
+var
+  offset: word;
+
+begin
+  offset:=availableitems[itemindex];
+  Result:=itemquantity[offset];
+end;
+
+
+
 
 procedure console_navigation;
 var
@@ -248,6 +288,7 @@ begin
   liststart:=(CRT_screenWidth div 2)+1;
   listwidth:=CRT_screenWidth-liststart;
 
+  Waitframe;
   DLISTL := DISPLAY_LIST_ADDRESS_CONSOLE;
   Waitframe;
   EnableVBLI(@vblc);
@@ -284,7 +325,7 @@ begin
 
 
   repeat
-    //pause;
+    Waitframe;
     //msx.play;
     If (CRT_Keypressed) then
     begin
@@ -309,6 +350,10 @@ begin
                   end;
       end;
       str:=concat('itemindex=',IntToStr(itemindex));
+      str:=concat(str,' cena=');
+      str:=concat(str,IntToStr(GetItemPrice(itemindex,mode)));
+      str:=concat(str,' ilosc=');
+      str:=concat(str,IntToStr(GetItemQuantity(itemindex)));
       CRT_WriteXY(0,19,Atascii2Antic(str));
     end;
 
@@ -343,6 +388,7 @@ var
     i: byte;
 
 begin
+  Waitframe;
   DLISTL := DISPLAY_LIST_ADDRESS_MENU;
   Waitframe;
   EnableVBLI(@vbl);
@@ -355,7 +401,6 @@ begin
   CRT_WriteXY(14,0,FFTermToString(strings[3])); // Navigation
   CRT_WriteXY(14,1,FFTermToString(strings[4])); // Trade Console
   CRT_WriteXY(14,2,FFTermToString(strings[7])); // Back
-
 
   // erase scroll content
   //str:= ''~;
@@ -397,6 +442,7 @@ begin
 
   CRT_WriteXY(14,0,FFTermToString(strings[1])); // New game;
   CRT_WriteXY(14,1,FFTermToString(strings[2])); // Quit;
+
 
   //str:= Atascii2Antic(NullTermToString(strings[0])); // read scroll text
   str:= FFTermToString(strings[0]); // read scroll text

@@ -15,7 +15,6 @@
     //cargo:
   end;
 
-
   TPlayer = record
     uec: Longword;
     loc: Byte; //TLoc;
@@ -26,8 +25,13 @@
     //   price: byte;
     //   quantity: word;
     // end;
-  TItem = record
-    itemindex: byte;
+
+  // TItem = record
+  //   itemindex: byte;
+  //   quantity: word;
+  //   price: byte;
+  // end;
+  TCargoSlot = record
+    cargoindex: byte;
     quantity: word;
-    price: byte;
   end;
