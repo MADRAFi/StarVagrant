@@ -9,10 +9,10 @@
 //    end;
 
   TShip = record
-    sname: Byte;
+    sname: string;//Byte;
     scu_max: Word;
     scu: Word;
-    //cargo:
+    cargo: array [0..MAXCARGOSLOTS-1] of Word;
   end;
 
   TPlayer = record
@@ -31,7 +31,7 @@
   //   quantity: word;
   //   price: byte;
   // end;
-  TCargoSlot = record
-    cargoindex: byte;
-    quantity: word;
-  end;
+  // TCargoSlot = record
+  //   cargoindex: byte;
+  //   quantity: word;
+  // end;

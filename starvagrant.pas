@@ -7,15 +7,18 @@ const
 {$i 'const.inc'}
   CURRENCY = ' UEC';
   COMMISSION = 0.05;
+
+  KEY_UP = 'o';
+  KEY_DOWN = 'l';
+  KEY_LEFT = 'j';
+  KEY_RIGHT = 'k';
+
 {
   KEY_UP = Chr(28);
   KEY_DOWN = Chr(29);
-}
-  KEY_UP = 'o';
-  KEY_DOWN = 'l';
   KEY_LEFT = Chr(30);
   KEY_RIGHT = Chr(31);
-
+}
 type
 {$i 'types.inc'}
 {$r 'resources.rc'}
@@ -26,18 +29,14 @@ var
 
   //msx: TRMT;
 
-  oldvbl, olddli: pointer;
-
   strings: array [0..0] of word absolute STRINGS_ADDRESS;
   locations: array [0..0] of word absolute LOCATIONS_ADDRESS;
   items: array [0..0] of word absolute ITEMS_ADDRESS;
-  //itemprice: array [0..NUMBEROFLOCATIONS-1, 0..NUMBEROFITEMS-1] of byte;
-  //itemquantity: array [0..NUMBEROFLOCATIONS-1, 0..NUMBEROFITEMS-1] of word;
-  // itemmatrix: array [0..NUMBEROFLOCATIONS-1, 0..NUMBEROFITEMS-1] of boolean;
+
   itemmatrix: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of boolean;  // matrix where items are available
   itemprice: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of Word;  // price matrix for items
   itemquantity: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of Word; // quantities of items
-  availableitems: array [0..(MAXAVAILABLEITEMS-1)] of byte; // only 12 avaiable items
+  availableitems: array [0..(MAXAVAILABLEITEMS-1)] of Word; // only 12 avaiable items
 
 
   {itemmatrix: array[0..NUMBEROFITEMS] of TPriceMatrix;
@@ -45,6 +44,8 @@ var
 }
   current_menu: Byte;
   player: TPlayer;
+  ship: TShip;
+
 //commission: shortreal = 0.05;
 
 {$i 'interrupts.inc'}
@@ -98,7 +99,8 @@ begin
   locationmatrix[0].item[5].quantity:=10000;
   locationmatrix[0].item[5].price:=10;
 }
-  // Location 0 item * location
+  // item * location
+  // Location 0
   itemmatrix[7]:=true;
   itemmatrix[8]:=true;
   itemmatrix[10]:=true;
@@ -107,7 +109,7 @@ begin
   itemmatrix[18]:=true;
   itemmatrix[21]:=true;
 
-  // Prices
+  // Prices location 0
   itemprice[7]:=127;
   itemprice[8]:=5;
   itemprice[10]:=99;
@@ -116,8 +118,8 @@ begin
   itemprice[18]:=100;
   itemprice[21]:=1;
 
-// quantity
-  itemquantity[7]:=100;
+// quantity location 0
+  itemquantity[7]:=10;
   itemquantity[8]:=5000;
   itemquantity[10]:=400;
   itemquantity[14]:=10000;
@@ -128,11 +130,22 @@ begin
 end;
 
 procedure start;
+var
+  x: byte;
+
 begin
   //msx.Sfx(3, 2, 24);
   generateworld;
   player.uec:= 5000; // start cash
   player.loc:= 0; //start location Port Olisar
+
+  //mocap starting ship
+  ship.sname:= 'Cutlas Black';
+  ship.scu_max:=46;
+  ship.scu:=0;
+
+  for x:=0 to MAXCARGOSLOTS-1 do
+    ship.cargo[x]:=0;
 
 end;
 
@@ -269,6 +282,18 @@ begin
   until keyval = KEY_BACK;
 end;
 
+procedure UpdateSelectedItem(selecteditemquantity:Word;selecteditemtotal:Longword);
+var
+  str: String;
+
+begin
+  str:= concat(IntToStr(selecteditemquantity),' SCU for ');
+  str:= concat(str,IntToStr(selecteditemtotal));
+  str:= concat(str,CURRENCY);
+  CRT_ClearRow(19);
+  CRT_WriteRightAligned(19,Atascii2Antic(str));
+end;
+
 procedure console_trade;
 const
   TOPMARGIN = 5;
@@ -282,11 +307,18 @@ var
   itemindex: byte = 0;
   listwidth: byte = 19;
   liststart: byte = 21;
+  currentitemindex: word;
+  currentitemquantity: word;
+  currentitemprice: word;
+  selecteditemtotal: longword;
+  selecteditemquantity: word;
+
 
 
 begin
   liststart:=(CRT_screenWidth div 2)+1;
   listwidth:=CRT_screenWidth-liststart;
+  selecteditemquantity:=0; // reset choosen quantity at start;
 
   Waitframe;
   DLISTL := DISPLAY_LIST_ADDRESS_CONSOLE;
@@ -315,7 +347,6 @@ begin
   CRT_WriteXY(0,18,'--------------------+-------------------'~);
   CRT_GotoXY(0,22);
   str:=concat(FFTermToString(strings[16]),' '~);
-  //tmp:=FFTermToString(strings[17]);
   CRT_WriteRightAligned(concat(str,FFTermToString(strings[17])));
   // CRT_WriteRightAligned('[Cancel] [OK]'~);
 
@@ -332,29 +363,55 @@ begin
       keyval := chr(CRT_ReadChar);
       case keyval of
         KEY_BACK: current_menu:=MENU_MAIN;
-        KEY_UP:   begin
-                    if CheckItemPosition(itemindex-1) and (availableitems[itemindex-1] > 0) then
-                    begin
-                      CRT_Invert(liststart,itemindex+TOPMARGIN,listwidth);
-                      Dec(itemindex);
-                      CRT_Invert(liststart,itemindex+TOPMARGIN,listwidth); // selecting the whole row with items
+        KEY_UP:     begin
+                      if CheckItemPosition(itemindex-1) and (availableitems[itemindex-1] > 0) then
+                      begin
+                        CRT_Invert(liststart,itemindex+TOPMARGIN,listwidth);
+                        Dec(itemindex);
+                        CRT_Invert(liststart,itemindex+TOPMARGIN,listwidth); // selecting the whole row with item
+                        currentitemquantity:=GetItemQuantity(itemindex);
+                        currentitemprice:=GetItemPrice(itemindex,mode);
+                        selecteditemtotal:=0;
+                        selecteditemquantity:=0;
+                        CRT_ClearRow(19);
+                      end;
                     end;
-                  end;
-        KEY_DOWN: begin
-                    if CheckItemPosition(itemindex+1) and (availableitems[itemindex+1] > 0) then
-                    begin
-                      CRT_Invert(liststart,itemindex+TOPMARGIN,listwidth);
-                      Inc(itemindex);
-                      CRT_Invert(liststart,itemindex+TOPMARGIN,listwidth); // selecting the whole row with items
+        KEY_DOWN:   begin
+                      if CheckItemPosition(itemindex+1) and (availableitems[itemindex+1] > 0) then
+                      begin
+                        CRT_Invert(liststart,itemindex+TOPMARGIN,listwidth);
+                        Inc(itemindex);
+                        CRT_Invert(liststart,itemindex+TOPMARGIN,listwidth); // selecting the whole row with item
+                        currentitemquantity:=GetItemQuantity(itemindex);
+                        currentitemprice:=GetItemPrice(itemindex,mode);
+                        selecteditemtotal:=0;
+                        selecteditemquantity:=0;
+                        CRT_ClearRow(19);
+                      end;
                     end;
-                  end;
+        KEY_LEFT:   begin
+                      if (selecteditemquantity > 0) then
+                      begin
+                        Dec(selecteditemquantity);
+                        selecteditemtotal:=selecteditemquantity * currentitemprice;
+                        UpdateSelectedItem(selecteditemquantity,selecteditemtotal);
+                      end;
+                    end;
+        KEY_RIGHT:  begin
+                      if (selecteditemquantity < currentitemquantity) and (selecteditemtotal + currentitemprice <= player.uec ) then
+                      begin
+                        Inc(selecteditemquantity);
+                        selecteditemtotal:=selecteditemquantity * currentitemprice;
+                        UpdateSelectedItem(selecteditemquantity,selecteditemtotal);
+                      end;
+                    end;
       end;
-      str:=concat('itemindex=',IntToStr(itemindex));
-      str:=concat(str,' cena=');
-      str:=concat(str,IntToStr(GetItemPrice(itemindex,mode)));
-      str:=concat(str,' ilosc=');
-      str:=concat(str,IntToStr(GetItemQuantity(itemindex)));
-      CRT_WriteXY(0,19,Atascii2Antic(str));
+      // str:=concat('itemindex=',IntToStr(itemindex));
+      // str:=concat(str,' cena=');
+      // str:=concat(str,IntToStr(GetItemPrice(itemindex,mode)));
+      // str:=concat(str,' ilosc=');
+      // str:=concat(str,IntToStr(GetItemQuantity(itemindex)));
+      // CRT_WriteXY(0,19,Atascii2Antic(str));
     end;
 
     if (CRT_OptionPressed) and (toggled=false) then
@@ -365,13 +422,11 @@ begin
       begin
           CRT_Invert(l,0,5);CRT_Invert(l+5,0,6);
           ListItems(false);
-//          CRT_Invert(liststart,5,listwidth); // selecting the whole row with items
           itemindex:=0;
       end
       else begin
         CRT_Invert(l,0,5);CRT_Invert(l+5,0,6);
         ListItems(true);
-//        CRT_Invert(liststart,5,listwidth); // selecting the whole row with items
         itemindex:=0;
       end;
       toggled:=true;
