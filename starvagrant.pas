@@ -140,7 +140,7 @@ begin
   player.loc:= 0; //start location Port Olisar
 
   //mocap starting ship
-  ship.sname:= 'Cutlas Black';
+  ship.sname:= 'Cuttlas Black';
   ship.scu_max:=46;
   ship.scu:=0;
 
@@ -312,10 +312,12 @@ var
   currentitemprice: word;
   selecteditemtotal: longword;
   selecteditemquantity: word;
+  stillPressed: Boolean;
 
 
 
 begin
+  stillPressed:= false;
   liststart:=(CRT_screenWidth div 2)+1;
   listwidth:=CRT_screenWidth-liststart;
   selecteditemquantity:=0; // reset choosen quantity at start;
@@ -338,11 +340,13 @@ begin
   CRT_WriteXY(0,1,'--------------------+-------------------'~);
   CRT_WriteXY(0,2,concat(FFTermToString(strings[10]),'  |'~)); // Delivery
   CRT_Write(FFTermToString(strings[11])); // Available items
-  CRT_WriteXY(0,3,'[ Cuttles Black ]   |'~);
+  CRT_WriteXY(0,3,'[ '~); CRT_Write(Atascii2Antic(ship.sname)); CRT_Write(' ]'~);CRT_WriteXY(liststart-2,3,' |'~);
   CRT_Write(FFTermToString(strings[12]));CRT_WriteRightAligned(FFTermToString(strings[13])); // commodity price
   CRT_WriteXY(0,4,'--------------------+-------------------'~);
-  CRT_WriteXY(0,5,FFTermToString(strings[14])); CRT_Write(' '~);CRT_WriteXY(listwidth-2,5,'46 |'~);  // mocap
-  CRT_WriteXY(0,6,FFTermToString(strings[15])); CRT_Write(' '~);CRT_WriteXY(listwidth-2,6,'46 |'~);  //mocap
+  CRT_WriteXY(0,5,FFTermToString(strings[14])); CRT_Write(' '~);
+  CRT_WriteXY(listwidth-2,5,Atascii2Antic(IntToStr(ship.scu_max))); CRT_Write(' |'~); //CRT_WriteXY(listwidth-2,5,'46 |'~);  // mocap
+  CRT_WriteXY(0,6,FFTermToString(strings[15])); CRT_Write(' '~);
+  CRT_WriteXY(listwidth-2,6,Atascii2Antic(IntToStr(ship.scu_max-ship.scu))); CRT_Write(' |'~); //CRT_WriteXY(listwidth-2,6,'46 |'~);  //mocap
   CRT_WriteXY(0,7,'--------------------+'~);
   CRT_WriteXY(0,18,'--------------------+-------------------'~);
   CRT_GotoXY(0,22);
@@ -360,34 +364,37 @@ begin
     //msx.play;
     If (CRT_Keypressed) then
     begin
-      keyval := chr(CRT_ReadChar);
+      keyval := char(CRT_Keycode[kbcode]);
+
       case keyval of
         KEY_BACK: current_menu:=MENU_MAIN;
         KEY_UP:     begin
-                      if CheckItemPosition(itemindex-1) and (availableitems[itemindex-1] > 0) then
-                      begin
-                        CRT_Invert(liststart,itemindex+TOPMARGIN,listwidth);
-                        Dec(itemindex);
-                        CRT_Invert(liststart,itemindex+TOPMARGIN,listwidth); // selecting the whole row with item
-                        currentitemquantity:=GetItemQuantity(itemindex);
-                        currentitemprice:=GetItemPrice(itemindex,mode);
-                        selecteditemtotal:=0;
-                        selecteditemquantity:=0;
-                        CRT_ClearRow(19);
-                      end;
+                      if stillPressed = false then
+                        if CheckItemPosition(itemindex-1) and (availableitems[itemindex-1] > 0) then
+                        begin
+                          CRT_Invert(liststart,itemindex+TOPMARGIN,listwidth);
+                          Dec(itemindex);
+                          CRT_Invert(liststart,itemindex+TOPMARGIN,listwidth); // selecting the whole row with item
+                          currentitemquantity:=GetItemQuantity(itemindex);
+                          currentitemprice:=GetItemPrice(itemindex,mode);
+                          selecteditemtotal:=0;
+                          selecteditemquantity:=0;
+                          CRT_ClearRow(19);
+                        end;
                     end;
         KEY_DOWN:   begin
-                      if CheckItemPosition(itemindex+1) and (availableitems[itemindex+1] > 0) then
-                      begin
-                        CRT_Invert(liststart,itemindex+TOPMARGIN,listwidth);
-                        Inc(itemindex);
-                        CRT_Invert(liststart,itemindex+TOPMARGIN,listwidth); // selecting the whole row with item
-                        currentitemquantity:=GetItemQuantity(itemindex);
-                        currentitemprice:=GetItemPrice(itemindex,mode);
-                        selecteditemtotal:=0;
-                        selecteditemquantity:=0;
-                        CRT_ClearRow(19);
-                      end;
+                      if stillPressed = false then
+                        if CheckItemPosition(itemindex+1) and (availableitems[itemindex+1] > 0)  then
+                        begin
+                          CRT_Invert(liststart,itemindex+TOPMARGIN,listwidth);
+                          Inc(itemindex);
+                          CRT_Invert(liststart,itemindex+TOPMARGIN,listwidth); // selecting the whole row with item
+                          currentitemquantity:=GetItemQuantity(itemindex);
+                          currentitemprice:=GetItemPrice(itemindex,mode);
+                          selecteditemtotal:=0;
+                          selecteditemquantity:=0;
+                          CRT_ClearRow(19);
+                        end;
                     end;
         KEY_LEFT:   begin
                       if (selecteditemquantity > 0) then
@@ -412,6 +419,11 @@ begin
       // str:=concat(str,' ilosc=');
       // str:=concat(str,IntToStr(GetItemQuantity(itemindex)));
       // CRT_WriteXY(0,19,Atascii2Antic(str));
+      stillPressed:= true;
+    end
+    else
+    begin
+      stillPressed:= false;
     end;
 
     if (CRT_OptionPressed) and (toggled=false) then

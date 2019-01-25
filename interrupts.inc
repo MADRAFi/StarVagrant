@@ -8,10 +8,10 @@ procedure dli1;assembler;interrupt;
         mva #$02 ATARI.colpf2
         mva #$0c ATARI.colpf3
         mva #$00 ATARI.colbk
-        lda #60
-@       cmp vcount
-        bpl @-
-        mva #$00 ATARI.colpf2
+;        lda #60
+;@       cmp vcount
+;        bpl @-
+;        mva #$00 ATARI.colpf2
         ;mwa #DLI2 ATARI.VDSLST
         mwa #DLI2 __dlivec
         pla
