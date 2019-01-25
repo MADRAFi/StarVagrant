@@ -7,18 +7,18 @@ const
 {$i 'const.inc'}
   CURRENCY = ' UEC';
   COMMISSION = 0.05;
-
+{
   KEY_UP = 'o';
   KEY_DOWN = 'l';
   KEY_LEFT = 'j';
   KEY_RIGHT = 'k';
+}
 
-{
   KEY_UP = Chr(28);
   KEY_DOWN = Chr(29);
   KEY_LEFT = Chr(30);
   KEY_RIGHT = Chr(31);
-}
+
 type
 {$i 'types.inc'}
 {$r 'resources.rc'}
@@ -262,6 +262,8 @@ procedure console_navigation;
 var
   y: byte;
   str: string;
+  stillPressed: Boolean;
+
 begin
   for y:=0 to 6 do
     CRT_ClearRow(y);
@@ -274,10 +276,18 @@ begin
   repeat
   //  pause;
   //  msx.play;
-      keyval := chr(CRT_ReadChar);
+    If (CRT_Keypressed) then
+    begin
+      keyval := char(CRT_Keycode[kbcode]);
       case keyval of
         KEY_BACK: current_menu := MENU_MAIN;
       end;
+      stillPressed:= true;
+    end
+    else
+    begin
+      stillPressed:= false;
+    end;
 
   until keyval = KEY_BACK;
 end;
@@ -453,6 +463,7 @@ procedure menu;
 var
     str: string;
     i: byte;
+    stillPressed: Boolean;
 
 begin
   Waitframe;
@@ -480,12 +491,17 @@ begin
   //  msx.play;
     if CRT_Keypressed then
     begin
-      keyval := chr(CRT_ReadChar);
+      keyval := char(CRT_Keycode[kbcode]);
       case keyval of
         KEY_OPTION1: current_menu := MENU_NAV;
         KEY_OPTION2: current_menu := MENU_TRADE;
         KEY_BACK: current_menu := MENU_TITLE;
       end;
+      stillPressed:= true;
+    end
+    else
+    begin
+      stillPressed:= false;
     end;
   until (keyval = KEY_BACK) or (keyval = KEY_OPTION1) or (keyval = KEY_OPTION2);
 end;
@@ -496,6 +512,7 @@ procedure title;
 var
   str: string;
   y: byte;
+  stillPressed: Boolean;
 
 begin
   DLISTL := DISPLAY_LIST_ADDRESS_MENU;
@@ -523,13 +540,18 @@ begin
     //msx.play;
     if CRT_Keypressed then
     begin
-      keyval := chr(CRT_ReadChar);
+      keyval := char(CRT_Keycode[kbcode]);
       case keyval of
         KEY_NEW: begin
                   start;
                   current_menu := MENU_MAIN;
                 end;
       end;
+      stillPressed:= true;
+    end
+    else
+    begin
+      stillPressed:= false;
     end;
 
   until (keyval = KEY_QUIT) or (keyval = KEY_NEW);
