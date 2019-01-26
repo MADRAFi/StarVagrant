@@ -1,35 +1,33 @@
 // stale
 
+FREE_TOP = $7000;
 
-FREE_TOP = $4000;
 CHARSET_ADDRESS = FREE_TOP;
 DISPLAY_LIST_ADDRESS_MENU = CHARSET_ADDRESS + $400;
 DISPLAY_LIST_ADDRESS_CONSOLE = DISPLAY_LIST_ADDRESS_MENU + $100;
 TXT_ADDRESS = DISPLAY_LIST_ADDRESS_CONSOLE + $100;
-SCROLL_ADDRESS = TXT_ADDRESS + $F0;
+
+SCROLL_ADDRESS = TXT_ADDRESS + $400; //$F0;
+
 // end at $4590
 
-RMT_PLAYER_ADDRESS = $5000; // begining of a new mem page
-RMT_MODULE_ADDRESS = RMT_PLAYER_ADDRESS + $800;
+//RMT_PLAYER_ADDRESS = $7000; // begining of a new mem page
+//RMT_MODULE_ADDRESS = RMT_PLAYER_ADDRESS + $800;
 // end at $6F8D
 
-// GFX_ADDRESS = RMT_MODULE_ADDRESS + $178D;
-GFX_ADDRESS = $7000;
+// logo length $178D;
+GFX_ADDRESS = $8000;
+
 
 STRINGS_ADDRESS = GFX_ADDRESS + $2809;
-LOCATIONS_ADDRESS = STRINGS_ADDRESS + $100;
+LOCATIONS_ADDRESS = STRINGS_ADDRESS + $200;
 ITEMS_ADDRESS = LOCATIONS_ADDRESS + $200;
-
-
-
-
 
 
 NUMBEROFLOCATIONS = 15; // number of locations defined in locations.asm. Needs to match.
 NUMBEROFITEMS = 22; // number of items defined in items.asm. Needs to match.
-TXTCOL = 40; // numer of columns in txt mode
-
-
+MAXAVAILABLEITEMS = 12; // numer of cocnrunnet items displayed
+MAXCARGOSLOTS = 10;
 
 // ***************************************************************************//
 KEY_OPTION1 = '1';
@@ -40,8 +38,8 @@ KEY_BACK = 'b';
 KEY_QUIT = 'q';
 KEY_NEW = 'n';
 
-//----------------------------------------------------------------------------//
 
+//----------------------------------------------------------------------------//
 MENU_TITLE = 0;
 MENU_MAIN = 1;
 MENU_NAV = 2;

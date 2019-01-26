@@ -36,8 +36,8 @@ LOCATIONS_ADDRESS rcasm 'locations.asm'
 ITEMS_ADDRESS rcasm 'items.asm'
 
 ; rmt module
-RMT_PLAYER_ADDRESS	RMTPLAY	'assets/titlemusic.feat' 1
-RMT_MODULE_ADDRESS	RMT	'assets/titlemusic.rmt'
+;RMT_PLAYER_ADDRESS	RMTPLAY	'assets/titlemusic.feat' 1
+;RMT_MODULE_ADDRESS	RMT	'assets/titlemusic.rmt'
 
 ; graphics
 GFX_ADDRESS RCDATA 'assets/StarVagrand-3.dat'
