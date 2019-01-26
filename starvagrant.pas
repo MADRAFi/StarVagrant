@@ -157,7 +157,7 @@ begin
   ship.cargoquantity[0]:=10;
   ship.cargoindex[1]:=10;
   ship.cargoquantity[1]:=20;
-
+  ship.scu:= 30;
 end;
 
 
@@ -197,7 +197,7 @@ end;
 //     CRT_WriteXY(liststart,8+count+1,concat('CARGO END:'~,Atascii2Antic(IntToStr(count))));
 // end;
 
-procedure ListCargo(myship: Tship);
+procedure ListCargo(myship: Tship;mode : Boolean);
 const
   LISTWIDTH = 20;
   LISTSTART = 0;
@@ -213,20 +213,20 @@ var
 begin
   count:=1;
   for x:=0 to MAXCARGOSLOTS-1 do // max available items
+  begin
+    offset:=myship.cargoindex[x];
+    if offset > 0 then
     begin
-      offset:=myship.cargoindex[x];
-      if offset > 0 then
-      begin
-        CRT_GotoXY(LISTSTART,7+count); //min count:=1 so we start at 8th row
-        str:= FFTermToString(items[offset]);
-        CRT_Write(Atascii2Antic(str));
-        strnum:=concat(IntToStr(myship.cargoquantity[x]),' SCU');
-        CRT_Write(Atascii2Antic(Space(listwidth-Length(str)-Length(strnum))));
-        CRT_Write(Atascii2Antic(strnum));
-//        if count =1 then CRT_Invert(liststart,8,listwidth);
-        inc(count);
-      end;
+      CRT_GotoXY(LISTSTART,7+count); //min count:=1 so we start at 8th row
+      str:= FFTermToString(items[offset]);
+      CRT_Write(Atascii2Antic(str));
+      strnum:=concat(IntToStr(myship.cargoquantity[x]),' SCU');
+      CRT_Write(Atascii2Antic(Space(listwidth-Length(str)-Length(strnum))));
+      CRT_Write(Atascii2Antic(strnum));
+      if (count = 1) and (mode = true) then CRT_Invert(LISTSTART,8,LISTWIDTH);
+      inc(count);
     end;
+  end;
 
 end;
 
@@ -264,7 +264,7 @@ begin
         CRT_Write(Atascii2Antic(Space(listwidth-Length(str)-Length(pricestr))));
         CRT_Write(Atascii2Antic(pricestr));
         //CRT_WriteRightAligned(Atascii2Antic(IntToStr(finalprice)));
-        if count =1 then CRT_Invert(LISTSTART,5,LISTWIDTH);
+        if (count = 1) and (mode = false) then CRT_Invert(LISTSTART,5,LISTWIDTH);
         inc(count);
       end;
     end;
@@ -465,7 +465,7 @@ begin
 
   LoadItems(player.loc);
   ListItems(false);
-  ListCargo(currentShip);
+  ListCargo(currentShip,false);
   itemindex:=0;
 
   //ListItems(player.loc);
@@ -547,11 +547,13 @@ begin
       begin
           CRT_Invert(l,0,5);CRT_Invert(l+5,0,6);
           ListItems(false);
+          ListCargo(currentShip,false);
           itemindex:=0;
       end
       else begin
         CRT_Invert(l,0,5);CRT_Invert(l+5,0,6);
         ListItems(true);
+        ListCargo(currentShip,true);
         itemindex:=0;
       end;
       toggled:=true;
