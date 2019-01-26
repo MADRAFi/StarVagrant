@@ -7,17 +7,18 @@ const
 {$i 'const.inc'}
   CURRENCY = ' UEC';
   COMMISSION = 0.05;
-{
+
   KEY_UP = 'o';
   KEY_DOWN = 'l';
   KEY_LEFT = 'j';
   KEY_RIGHT = 'k';
-}
 
+{
   KEY_UP = Chr(28);
   KEY_DOWN = Chr(29);
   KEY_LEFT = Chr(30);
   KEY_RIGHT = Chr(31);
+}
 
 type
 {$i 'types.inc'}
@@ -145,8 +146,8 @@ begin
   ship.scu:=0;
 
   for x:=0 to MAXCARGOSLOTS-1 do
-    ship.cargo[x]:=0;
-
+    ship.cargoindex[x]:= 0;
+    ship.cargoquantity[x]:= 0;
 end;
 
 // procedure CRT_Window(x1,y1,x2,y2:byte);
@@ -172,21 +173,21 @@ var
   pricestr: string;
   finalprice: word;
   price: word;
-  itemindex: byte = 0;
+  offset: Word = 0;
 
 
 begin
   count:=1;
   for x:=0 to 11 do // max available items
     begin
-      itemindex:=availableitems[x];
-      if itemindex > 0 then
+      offset:=availableitems[x];
+      if offset > 0 then
       begin
         CRT_GotoXY(CRT_screenWidth div 2 + 1,4+count); //min count:=1 so we start at 4th row
         str:= concat(Atascii2Antic(IntToStr(count)),' '~);
-        str:= concat(str,FFTermToString(items[itemindex]));
+        str:= concat(str,FFTermToString(items[offset]));
         CRT_Write(str);
-        price:=itemprice[itemindex];
+        price:=itemprice[offset];
         if mode then finalprice:=Trunc(price*(1-COMMISSION))
         else finalprice:=price;
         pricestr:=IntToStr(finalprice);
@@ -306,34 +307,53 @@ end;
 
 procedure console_trade;
 const
-  TOPMARGIN = 5;
+  LISTTOPMARGIN = 5;
+  CARGOTOPMARGIN = 8;
 
 var
-  y: byte;
-  mode: boolean = false;
-  toggled: boolean = false;
-  str: string;
-  l: byte;
-  itemindex: byte = 0;
-  listwidth: byte = 19;
-  liststart: byte = 21;
-  currentitemindex: word;
-  currentitemquantity: word;
-  currentitemprice: word;
-  selecteditemtotal: longword;
-  selecteditemquantity: word;
+  y: Byte;
+  mode: Boolean = false;
+  toggled: Boolean = false;
   stillPressed: Boolean;
+
+  str: String;
+  strnum: String;
+
+  l: Byte;
+  itemindex: Byte = 0;
+  listwidth: Byte = 19;
+  liststart: Byte = 21;
+  cargoindex: Byte = 0;
+
+  currentitemindex: Word;
+  currentitemquantity: Word;
+  currentitemprice: Word;
+  currentcargo: array [0..MAXCARGOSLOTS-1] of Word;
+  currentcargoquantity: array [0..MAXCARGOSLOTS-1] of Word;
+  currentuec: Longword;
+
+
+  selecteditemtotal: Longword;
+  selecteditemquantity: Word;
+
+
 
 
 
 begin
   stillPressed:= false;
+  currentuec:= player.uec;
+  currentcargo:= ship.cargoindex;
+  currentcargoquantity:= ship.cargoquantity;
+  cargoindex:= 0;
+
+
   liststart:=(CRT_screenWidth div 2)+1;
   listwidth:=CRT_screenWidth-liststart;
-  selecteditemquantity:=0; // reset choosen quantity at start;
+  selecteditemquantity:= 0; // reset choosen quantity at start;
 
   Waitframe;
-  DLISTL := DISPLAY_LIST_ADDRESS_CONSOLE;
+  DLISTL:= DISPLAY_LIST_ADDRESS_CONSOLE;
   Waitframe;
   EnableVBLI(@vblc);
   EnableDLI(@dlic);
@@ -346,7 +366,7 @@ begin
   CRT_WriteXY(0,0,str);
   CRT_WriteXY(listwidth-4,0,FFTermToString(strings[8])); // Buy
   CRT_Write(FFTermToString(strings[9])); // Sell
-  CRT_WriteRightAligned(Atascii2Antic(concat(IntToStr(player.uec), CURRENCY)));
+  CRT_WriteRightAligned(Atascii2Antic(concat(IntToStr(currentuec), CURRENCY)));
   CRT_WriteXY(0,1,'--------------------+-------------------'~);
   CRT_WriteXY(0,2,concat(FFTermToString(strings[10]),'  |'~)); // Delivery
   CRT_Write(FFTermToString(strings[11])); // Available items
@@ -369,6 +389,7 @@ begin
   itemindex:=0;
 
 
+
   repeat
     Waitframe;
     //msx.play;
@@ -382,11 +403,12 @@ begin
                       if stillPressed = false then
                         if CheckItemPosition(itemindex-1) and (availableitems[itemindex-1] > 0) then
                         begin
-                          CRT_Invert(liststart,itemindex+TOPMARGIN,listwidth);
+                          CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth);
                           Dec(itemindex);
-                          CRT_Invert(liststart,itemindex+TOPMARGIN,listwidth); // selecting the whole row with item
+                          CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth); // selecting the whole row with item
                           currentitemquantity:=GetItemQuantity(itemindex);
                           currentitemprice:=GetItemPrice(itemindex,mode);
+                          currentitemindex:=availableitems[itemindex];
                           selecteditemtotal:=0;
                           selecteditemquantity:=0;
                           CRT_ClearRow(19);
@@ -396,11 +418,12 @@ begin
                       if stillPressed = false then
                         if CheckItemPosition(itemindex+1) and (availableitems[itemindex+1] > 0)  then
                         begin
-                          CRT_Invert(liststart,itemindex+TOPMARGIN,listwidth);
+                          CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth);
                           Inc(itemindex);
-                          CRT_Invert(liststart,itemindex+TOPMARGIN,listwidth); // selecting the whole row with item
+                          CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth); // selecting the whole row with item
                           currentitemquantity:=GetItemQuantity(itemindex);
                           currentitemprice:=GetItemPrice(itemindex,mode);
+                          currentitemindex:=availableitems[itemindex];
                           selecteditemtotal:=0;
                           selecteditemquantity:=0;
                           CRT_ClearRow(19);
@@ -415,7 +438,7 @@ begin
                       end;
                     end;
         KEY_RIGHT:  begin
-                      if (selecteditemquantity < currentitemquantity) and (selecteditemtotal + currentitemprice <= player.uec ) then
+                      if (selecteditemquantity < currentitemquantity) and (selecteditemtotal + currentitemprice <= currentuec ) then
                       begin
                         Inc(selecteditemquantity);
                         selecteditemtotal:=selecteditemquantity * currentitemprice;
