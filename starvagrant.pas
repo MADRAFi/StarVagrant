@@ -3,6 +3,7 @@ program StarVagrant;
 uses atari, b_utils, b_system, b_crt, sysutils;
 
 
+
 const
 {$i 'const.inc'}
   CURRENCY = ' UEC';
@@ -38,7 +39,6 @@ var
   itemprice: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of Word;  // price matrix for items
   itemquantity: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of Word; // quantities of items
   availableitems: array [0..(MAXAVAILABLEITEMS-1)] of Word; // only 12 avaiable items
-
 
   {itemmatrix: array[0..NUMBEROFITEMS] of TPriceMatrix;
   locationmatrix: array [0..NUMBEROFLOCATIONS] of itemmatrix;
@@ -298,8 +298,6 @@ begin
 end;
 
 
-
-
 procedure console_navigation;
 var
   y: byte;
@@ -347,6 +345,7 @@ begin
 end;
 
 procedure console_trade;
+
 const
   LISTTOPMARGIN = 5;
   CARGOTOPMARGIN = 8;
@@ -430,7 +429,7 @@ begin
   ListItems(false);
   itemindex:=0;
 
-
+  //ListItems(player.loc);
 
   repeat
     Waitframe;
@@ -548,6 +547,7 @@ begin
 end;
 
 procedure menu;
+
 var
     str: string;
     i: byte;
@@ -574,6 +574,7 @@ begin
   //hscrol:=0; //stop scroll.
 
   keyval:=chr(0);
+
   repeat
   //  pause;
   //  msx.play;
