@@ -299,6 +299,12 @@ begin
   else Result:=false;
 end;
 
+function CheckCargoPosition(newindex : Byte) : Boolean;
+begin
+  if (newindex < MAXCARGOSLOTS) and (newindex >= 0) then Result:=true
+  else Result:=false;
+end;
+
 function GetItemPrice(itemindex : Byte; mode : Boolean): Word;
 // Get item price based on itemindex of available items mode is false for BUY and tru for SELL
 
@@ -481,32 +487,56 @@ begin
         KEY_BACK: current_menu:=MENU_MAIN;
         KEY_UP:     begin
                       if stillPressed = false then
-                        if CheckItemPosition(itemindex-1) and (availableitems[itemindex-1] > 0) then
+                        if (mode = false) then
                         begin
-                          CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth);
-                          Dec(itemindex);
-                          CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth); // selecting the whole row with item
-                          currentitemquantity:=GetItemQuantity(itemindex);
-                          currentitemprice:=GetItemPrice(itemindex,mode);
-                          currentitemindex:=availableitems[itemindex];
-                          selecteditemtotal:=0;
-                          selecteditemquantity:=0;
-                          CRT_ClearRow(19);
-                        end;
+                          if CheckItemPosition(itemindex-1) and (availableitems[itemindex-1] > 0) then
+                          begin
+                            CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth);
+                            Dec(itemindex);
+                            CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth); // selecting the whole row with item
+                            currentitemquantity:=GetItemQuantity(itemindex);
+                            currentitemprice:=GetItemPrice(itemindex,mode);
+                            currentitemindex:=availableitems[itemindex];
+                            selecteditemtotal:=0;
+                            selecteditemquantity:=0;
+                            CRT_ClearRow(19);
+                          end;
+                        end
+                        else
+                          begin
+                            if CheckItemPosition(itemindex-1) and (currentShip.cargoindex[itemindex-1] > 0)  then
+                            begin
+                              CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1);
+                              Dec(itemindex);
+                              CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1); // selecting the whole row with item
+                            end;
+                          end;
                     end;
         KEY_DOWN:   begin
                       if stillPressed = false then
-                        if CheckItemPosition(itemindex+1) and (availableitems[itemindex+1] > 0)  then
+                        if (mode = false) then
                         begin
-                          CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth);
-                          Inc(itemindex);
-                          CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth); // selecting the whole row with item
-                          currentitemquantity:=GetItemQuantity(itemindex);
-                          currentitemprice:=GetItemPrice(itemindex,mode);
-                          currentitemindex:=availableitems[itemindex];
-                          selecteditemtotal:=0;
-                          selecteditemquantity:=0;
-                          CRT_ClearRow(19);
+                          if CheckItemPosition(itemindex+1) and (availableitems[itemindex+1] > 0)  then
+                          begin
+                            CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth);
+                            Inc(itemindex);
+                            CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth); // selecting the whole row with item
+                            currentitemquantity:=GetItemQuantity(itemindex);
+                            currentitemprice:=GetItemPrice(itemindex,mode);
+                            currentitemindex:=availableitems[itemindex];
+                            selecteditemtotal:=0;
+                            selecteditemquantity:=0;
+                            CRT_ClearRow(19);
+                          end;
+                        end
+                        else
+                        begin
+                          if CheckItemPosition(itemindex+1) and (currentShip.cargoindex[itemindex+1] > 0)  then
+                          begin
+                            CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1);
+                            Inc(itemindex);
+                            CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1); // selecting the whole row with item
+                          end;
                         end;
                     end;
         KEY_LEFT:   begin
