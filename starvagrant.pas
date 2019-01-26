@@ -161,10 +161,11 @@ end;
 //   //CRT_NewLine(y1);
 // end;
 
-procedure ListItems(mode: boolean);
+
+procedure ListCargo;
 const
-  listwidth = 19;
-  liststart = 21;
+  listwidth = 20;
+  liststart = 0;
 
 var
   x: byte;
@@ -178,12 +179,52 @@ var
 
 begin
   count:=1;
-  for x:=0 to 11 do // max available items
+  for x:=0 to MAXCARGOSLOTS-1 do // max available items
     begin
       offset:=availableitems[x];
       if offset > 0 then
       begin
         CRT_GotoXY(CRT_screenWidth div 2 + 1,4+count); //min count:=1 so we start at 4th row
+        str:= concat(Atascii2Antic(IntToStr(count)),' '~);
+        str:= concat(str,FFTermToString(items[offset]));
+        CRT_Write(str);
+        price:=itemprice[offset];
+        finalprice:=price;
+        pricestr:=IntToStr(finalprice);
+        CRT_Write(Atascii2Antic(Space(listwidth-Length(str)-Length(pricestr))));
+        CRT_Write(Atascii2Antic(pricestr));
+        //CRT_WriteRightAligned(Atascii2Antic(IntToStr(finalprice)));
+        if count =1 then CRT_Invert(liststart,8,listwidth);
+        inc(count);
+      end;
+    end;
+end;
+
+
+
+procedure ListItems(mode: boolean);
+const
+  LISTWIDTH = 19;
+  LISTSTART = 21;
+
+var
+  x: byte;
+  count:byte = 1;
+  str: string;
+  pricestr: string;
+  finalprice: word;
+  price: word;
+  offset: Word = 0;
+
+
+begin
+  count:=1;
+  for x:=0 to MAXAVAILABLEITEMS-1 do // max available items
+    begin
+      offset:=availableitems[x];
+      if offset > 0 then
+      begin
+        CRT_GotoXY(LISTSTART,4+count); //min count:=1 so we start at 4th row
         str:= concat(Atascii2Antic(IntToStr(count)),' '~);
         str:= concat(str,FFTermToString(items[offset]));
         CRT_Write(str);
@@ -194,7 +235,7 @@ begin
         CRT_Write(Atascii2Antic(Space(listwidth-Length(str)-Length(pricestr))));
         CRT_Write(Atascii2Antic(pricestr));
         //CRT_WriteRightAligned(Atascii2Antic(IntToStr(finalprice)));
-        if count =1 then CRT_Invert(liststart,5,listwidth);
+        if count =1 then CRT_Invert(LISTSTART,5,LISTWIDTH);
         inc(count);
       end;
     end;
@@ -315,6 +356,7 @@ var
   mode: Boolean = false;
   toggled: Boolean = false;
   stillPressed: Boolean;
+  selectPressed: Boolean;
 
   str: String;
   strnum: String;
@@ -374,9 +416,9 @@ begin
   CRT_Write(FFTermToString(strings[12]));CRT_WriteRightAligned(FFTermToString(strings[13])); // commodity price
   CRT_WriteXY(0,4,'--------------------+-------------------'~);
   CRT_WriteXY(0,5,FFTermToString(strings[14])); CRT_Write(' '~);
-  CRT_WriteXY(listwidth-2,5,Atascii2Antic(IntToStr(ship.scu_max))); CRT_Write(' |'~); //CRT_WriteXY(listwidth-2,5,'46 |'~);  // mocap
+  CRT_WriteXY(listwidth-5,5,Atascii2Antic(IntToStr(ship.scu_max))); CRT_Write(' SCU|'~); //CRT_WriteXY(listwidth-2,5,'46 |'~);  // mocap
   CRT_WriteXY(0,6,FFTermToString(strings[15])); CRT_Write(' '~);
-  CRT_WriteXY(listwidth-2,6,Atascii2Antic(IntToStr(ship.scu_max-ship.scu))); CRT_Write(' |'~); //CRT_WriteXY(listwidth-2,6,'46 |'~);  //mocap
+  CRT_WriteXY(listwidth-5,6,Atascii2Antic(IntToStr(ship.scu_max-ship.scu))); CRT_Write(' SCU|'~); //CRT_WriteXY(listwidth-2,6,'46 |'~);  //mocap
   CRT_WriteXY(0,7,'--------------------+'~);
   CRT_WriteXY(0,18,'--------------------+-------------------'~);
   CRT_GotoXY(0,22);
@@ -478,6 +520,29 @@ begin
     end
     else
       if (CRT_OptionPressed = false) then toggled:=false;
+
+    if (CRT_SelectPressed) then
+    begin
+      if (selectPressed = false) then
+      begin
+        if (selecteditemquantity > 0) and (cargoindex < MAXCARGOSLOTS) then
+        begin
+// //          str:=FFTermToString(items[currentitemindex]);
+//           str:=IntToStr(currentitemindex);
+// //          str:=concat(str,' '~);
+//           strnum:=IntToStr(selecteditemquantity);
+//           CRT_WriteXY(0,cargoindex+CARGOTOPMARGIN, Atascii2Antic(str));
+//           CRT_Write(Atascii2Antic(Space(CRT_screenWidth-listwidth-1-Length(str)-Length(strnum))));
+//
+//           CRT_Write(Atascii2Antic(strnum));
+//           Inc(cargoindex);
+        end;
+      end;
+      selectPressed:=true;
+    end
+    else
+      selectPressed:=false;
+
 
   until keyval = KEY_BACK;
 end;
