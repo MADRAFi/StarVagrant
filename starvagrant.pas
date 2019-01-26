@@ -39,6 +39,8 @@ var
   itemprice: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of Word;  // price matrix for items
   itemquantity: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of Word; // quantities of items
   availableitems: array [0..(MAXAVAILABLEITEMS-1)] of Word; // only 12 avaiable items
+  //currentcargo: array [0..MAXCARGOSLOTS-1] of Word;
+  //currentcargoquantity: array [0..MAXCARGOSLOTS-1] of Word;
 
   {itemmatrix: array[0..NUMBEROFITEMS] of TPriceMatrix;
   locationmatrix: array [0..NUMBEROFLOCATIONS] of itemmatrix;
@@ -146,34 +148,65 @@ begin
   ship.scu:=0;
 
   for x:=0 to MAXCARGOSLOTS-1 do
-    ship.cargoindex[x]:= 0;
-    ship.cargoquantity[x]:= 0;
+  begin
+      ship.cargoindex[x]:= 0;
+      ship.cargoquantity[x]:= 0;
+  end;
+
+  ship.cargoindex[0]:=7;
+  ship.cargoquantity[0]:=10;
+  ship.cargoindex[1]:=10;
+  ship.cargoquantity[1]:=20;
+
 end;
 
-// procedure CRT_Window(x1,y1,x2,y2:byte);
+
+
+// procedure ListCargo;
+// const
+//   LISTWIDTH = 20;
+//   LISTSTART = 0;
+//
+// var
+//   x: byte;
+//   count:byte = 1;
+//   str: string;
+//   strnum: string;
+//   offset: Word = 0;
+//
+//
 // begin
-//   CRT_leftMargin:=x1;
-//   CRT_screenWidth:=x2-x1;
-//   CRT_screenHeight:=y2-y1;
-//   //CRT_Cursor:=CRT_vram+(x1*y1);
-//   CRT_Cursor:=CRT_vram+(y1*DEFAULT_SCREENWIDTH)+x1;
-//   CRT_size:=CRT_screenWidth*CRT_screenHeight;
-//   //CRT_NewLine(y1);
+//   count:=1;
+//   for x:=0 to MAXCARGOSLOTS-1 do // max available items
+//     begin
+//       offset:=currentcargo[x];
+//       if offset > 0 then
+//       begin
+//         CRT_WriteXY(LISTSTART,7+count,'found'~);
+//         CRT_GotoXY(LISTSTART,8+count); //min count:=1 so we start at 4th row
+// //        str:= FFTermToString(items[offset]);
+//         str:= IntToStr(offset);
+//         CRT_Write(Atascii2Antic(str));
+//         strnum:=IntToStr(currentcargoquantity[x]);
+//         CRT_Write(Atascii2Antic(Space(listwidth-Length(str)-Length(strnum))));
+//         CRT_Write(Atascii2Antic(strnum));
+// //        if count =1 then CRT_Invert(liststart,8,listwidth);
+//         inc(count);
+//       end;
+//     end;
+//     CRT_WriteXY(liststart,8+count+1,concat('CARGO END:'~,Atascii2Antic(IntToStr(count))));
 // end;
 
-
-procedure ListCargo;
+procedure ListCargo(myship: Tship);
 const
-  listwidth = 20;
-  liststart = 0;
+  LISTWIDTH = 20;
+  LISTSTART = 0;
 
 var
   x: byte;
   count:byte = 1;
   str: string;
-  pricestr: string;
-  finalprice: word;
-  price: word;
+  strnum: string;
   offset: Word = 0;
 
 
@@ -181,25 +214,21 @@ begin
   count:=1;
   for x:=0 to MAXCARGOSLOTS-1 do // max available items
     begin
-      offset:=availableitems[x];
+      offset:=myship.cargoindex[x];
       if offset > 0 then
       begin
-        CRT_GotoXY(CRT_screenWidth div 2 + 1,4+count); //min count:=1 so we start at 4th row
-        str:= concat(Atascii2Antic(IntToStr(count)),' '~);
-        str:= concat(str,FFTermToString(items[offset]));
-        CRT_Write(str);
-        price:=itemprice[offset];
-        finalprice:=price;
-        pricestr:=IntToStr(finalprice);
-        CRT_Write(Atascii2Antic(Space(listwidth-Length(str)-Length(pricestr))));
-        CRT_Write(Atascii2Antic(pricestr));
-        //CRT_WriteRightAligned(Atascii2Antic(IntToStr(finalprice)));
-        if count =1 then CRT_Invert(liststart,8,listwidth);
+        CRT_GotoXY(LISTSTART,7+count); //min count:=1 so we start at 8th row
+        str:= FFTermToString(items[offset]);
+        CRT_Write(Atascii2Antic(str));
+        strnum:=concat(IntToStr(myship.cargoquantity[x]),' SCU');
+        CRT_Write(Atascii2Antic(Space(listwidth-Length(str)-Length(strnum))));
+        CRT_Write(Atascii2Antic(strnum));
+//        if count =1 then CRT_Invert(liststart,8,listwidth);
         inc(count);
       end;
     end;
-end;
 
+end;
 
 
 procedure ListItems(mode: boolean);
@@ -364,14 +393,15 @@ var
   itemindex: Byte = 0;
   listwidth: Byte = 19;
   liststart: Byte = 21;
-  cargoindex: Byte = 0;
+  //cargoindex: Byte = 0;
 
   currentitemindex: Word;
   currentitemquantity: Word;
   currentitemprice: Word;
-  currentcargo: array [0..MAXCARGOSLOTS-1] of Word;
-  currentcargoquantity: array [0..MAXCARGOSLOTS-1] of Word;
+  //currentcargo: array [0..MAXCARGOSLOTS-1] of Word;
+  //currentcargoquantity: array [0..MAXCARGOSLOTS-1] of Word;
   currentuec: Longword;
+  currentShip:TShip;
 
 
   selecteditemtotal: Longword;
@@ -384,9 +414,12 @@ var
 begin
   stillPressed:= false;
   currentuec:= player.uec;
-  currentcargo:= ship.cargoindex;
-  currentcargoquantity:= ship.cargoquantity;
-  cargoindex:= 0;
+  currentShip:= ship;
+
+  //currentcargo:= ship.cargoindex;
+  //currentcargoquantity:= ship.cargoquantity;
+
+  //cargoindex:= 0;
 
 
   liststart:=(CRT_screenWidth div 2)+1;
@@ -411,14 +444,19 @@ begin
   CRT_WriteXY(0,1,'--------------------+-------------------'~);
   CRT_WriteXY(0,2,concat(FFTermToString(strings[10]),'  |'~)); // Delivery
   CRT_Write(FFTermToString(strings[11])); // Available items
-  CRT_WriteXY(0,3,'[ '~); CRT_Write(Atascii2Antic(ship.sname)); CRT_Write(' ]'~);CRT_WriteXY(liststart-2,3,' |'~);
+  CRT_WriteXY(0,3,'[ '~); CRT_Write(Atascii2Antic(currentship.sname)); CRT_Write(' ]'~);CRT_WriteXY(liststart-2,3,' |'~);
   CRT_Write(FFTermToString(strings[12]));CRT_WriteRightAligned(FFTermToString(strings[13])); // commodity price
   CRT_WriteXY(0,4,'--------------------+-------------------'~);
   CRT_WriteXY(0,5,FFTermToString(strings[14])); CRT_Write(' '~);
-  CRT_WriteXY(listwidth-5,5,Atascii2Antic(IntToStr(ship.scu_max))); CRT_Write(' SCU|'~); //CRT_WriteXY(listwidth-2,5,'46 |'~);  // mocap
+  CRT_WriteXY(listwidth-5,5,Atascii2Antic(IntToStr(currentship.scu_max))); CRT_Write(' SCU|'~); //CRT_WriteXY(listwidth-2,5,'46 |'~);  // mocap
   CRT_WriteXY(0,6,FFTermToString(strings[15])); CRT_Write(' '~);
-  CRT_WriteXY(listwidth-5,6,Atascii2Antic(IntToStr(ship.scu_max-ship.scu))); CRT_Write(' SCU|'~); //CRT_WriteXY(listwidth-2,6,'46 |'~);  //mocap
+  CRT_WriteXY(listwidth-5,6,Atascii2Antic(IntToStr(currentship.scu_max-currentship.scu))); CRT_Write(' SCU|'~); //CRT_WriteXY(listwidth-2,6,'46 |'~);  //mocap
   CRT_WriteXY(0,7,'--------------------+'~);
+  str:='|'~;
+  for y:=8 to 17 do
+  begin
+      CRT_WriteXY(liststart-1,y,Atascii2Antic(str));
+  end;
   CRT_WriteXY(0,18,'--------------------+-------------------'~);
   CRT_GotoXY(0,22);
   str:=concat(FFTermToString(strings[16]),' '~);
@@ -427,6 +465,7 @@ begin
 
   LoadItems(player.loc);
   ListItems(false);
+  ListCargo(currentShip);
   itemindex:=0;
 
   //ListItems(player.loc);
@@ -524,18 +563,18 @@ begin
     begin
       if (selectPressed = false) then
       begin
-        if (selecteditemquantity > 0) and (cargoindex < MAXCARGOSLOTS) then
-        begin
-// //          str:=FFTermToString(items[currentitemindex]);
-//           str:=IntToStr(currentitemindex);
-// //          str:=concat(str,' '~);
-//           strnum:=IntToStr(selecteditemquantity);
-//           CRT_WriteXY(0,cargoindex+CARGOTOPMARGIN, Atascii2Antic(str));
-//           CRT_Write(Atascii2Antic(Space(CRT_screenWidth-listwidth-1-Length(str)-Length(strnum))));
-//
-//           CRT_Write(Atascii2Antic(strnum));
-//           Inc(cargoindex);
-        end;
+//         if (selecteditemquantity > 0) and (cargoindex < MAXCARGOSLOTS) then
+//         begin
+// // //          str:=FFTermToString(items[currentitemindex]);
+// //           str:=IntToStr(currentitemindex);
+// // //          str:=concat(str,' '~);
+// //           strnum:=IntToStr(selecteditemquantity);
+// //           CRT_WriteXY(0,cargoindex+CARGOTOPMARGIN, Atascii2Antic(str));
+// //           CRT_Write(Atascii2Antic(Space(CRT_screenWidth-listwidth-1-Length(str)-Length(strnum))));
+// //
+// //           CRT_Write(Atascii2Antic(strnum));
+// //           Inc(cargoindex);
+//         end;
       end;
       selectPressed:=true;
     end
