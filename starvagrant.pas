@@ -321,16 +321,16 @@ begin
   Result:= finalprice;
 end;
 
-function GetItemQuantity(itemindex : Byte): Word;
-// Get item quantity based on itemindex of available items
-
-var
-  offset: word;
-
-begin
-  offset:=availableitems[itemindex];
-  Result:=itemquantity[offset];
-end;
+// function GetItemQuantity(itemindex : Byte): Word;
+// // Get item quantity based on itemindex of available items
+//
+// var
+//   offset: word;
+//
+// begin
+//   offset:=availableitems[itemindex];
+//   Result:=itemquantity[offset];
+// end;
 
 
 procedure console_navigation;
@@ -494,7 +494,8 @@ begin
                             CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth);
                             Dec(itemindex);
                             CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth); // selecting the whole row with item
-                            currentitemquantity:=GetItemQuantity(itemindex);
+//                            currentitemquantity:=GetItemQuantity(itemindex);
+                            currentitemquantity:=itemquantity[availableitems[itemindex]];
                             currentitemprice:=GetItemPrice(itemindex,mode);
                             currentitemindex:=availableitems[itemindex];
                             selecteditemtotal:=0;
@@ -508,6 +509,11 @@ begin
                             begin
                               CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1);
                               Dec(itemindex);
+                              currentitemquantity:=currentShip.cargoquantity[itemindex];
+                              currentitemprice:=GetItemPrice(itemindex,mode);
+                              currentitemindex:=currentShip.cargoindex[itemindex];
+                              selecteditemtotal:=0;
+                              selecteditemquantity:=0;
                               CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1); // selecting the whole row with item
                             end;
                           end;
@@ -521,7 +527,8 @@ begin
                             CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth);
                             Inc(itemindex);
                             CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth); // selecting the whole row with item
-                            currentitemquantity:=GetItemQuantity(itemindex);
+//                            currentitemquantity:=GetItemQuantity(itemindex);
+                            currentitemquantity:=itemquantity[availableitems[itemindex]];
                             currentitemprice:=GetItemPrice(itemindex,mode);
                             currentitemindex:=availableitems[itemindex];
                             selecteditemtotal:=0;
@@ -535,6 +542,11 @@ begin
                           begin
                             CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1);
                             Inc(itemindex);
+                            currentitemquantity:=currentShip.cargoquantity[itemindex];
+                            currentitemprice:=GetItemPrice(itemindex,mode);
+                            currentitemindex:=currentShip.cargoindex[itemindex];
+                            selecteditemtotal:=0;
+                            selecteditemquantity:=0;
                             CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1); // selecting the whole row with item
                           end;
                         end;
