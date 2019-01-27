@@ -473,6 +473,10 @@ begin
   ListItems(false);
   ListCargo(currentShip,false);
   itemindex:=0;
+  // assign 1st item on the avaiable items
+  currentitemquantity:=itemquantity[availableitems[itemindex]];
+  currentitemprice:=GetItemPrice(itemindex,mode);
+  currentitemindex:=availableitems[itemindex];
 
   //ListItems(player.loc);
 
