@@ -201,6 +201,7 @@ procedure ListCargo(myship: Tship;mode : Boolean);
 const
   LISTWIDTH = 20;
   LISTSTART = 0;
+  TOPCARGOMARGIN = 8;
 
 var
   x: byte;
@@ -227,7 +228,11 @@ begin
       inc(count);
     end;
   end;
-
+  for x:=count to MAXCARGOSLOTS-1 do
+  begin
+    CRT_WriteXY(LISTSTART,TOPCARGOMARGIN+x-1,Atascii2Antic(space(LISTWIDTH))); // -1 to clear from the end of list
+    //CRT_WriteXY(LISTSTART,TOPCARGOMARGIN+x-1,Atascii2Antic('c '~)); // -1 to clear from the end of list
+  end;
 end;
 
 
@@ -372,7 +377,8 @@ var
   str: String;
 
 begin
-  str:= concat(IntToStr(selecteditemquantity),' SCU for ');
+  str:= concat(IntToStr(selecteditemquantity),' SCU');
+  str:= concat(str,FFTermToString(strings[18]));
   str:= concat(str,IntToStr(selecteditemtotal));
   str:= concat(str,CURRENCY);
   CRT_ClearRow(19);
@@ -388,9 +394,9 @@ const
 var
   y: Byte;
   mode: Boolean = false;
-  toggled: Boolean = false;
-  stillPressed: Boolean;
-  selectPressed: Boolean;
+  stillPressed: Boolean = false;
+  optionPressed: Boolean = false;
+  selectPressed: Boolean = false;
 
   str: String;
   strnum: String;
@@ -418,9 +424,14 @@ var
 
 
 begin
-  stillPressed:= false;
   currentuec:= player.uec;
   currentShip:= ship;
+  selecteditemtotal:= 0;
+  selecteditemquantity:= 0; // reset choosen quantity at start;
+  mode:= false;
+  stillPressed:= false;
+  optionPressed:= false;
+  selectPressed:= false;
 
   //currentcargo:= ship.cargoindex;
   //currentcargoquantity:= ship.cargoquantity;
@@ -430,7 +441,7 @@ begin
 
   liststart:=(CRT_screenWidth div 2)+1;
   listwidth:=CRT_screenWidth-liststart;
-  selecteditemquantity:= 0; // reset choosen quantity at start;
+
 
   Waitframe;
   DLISTL:= DISPLAY_LIST_ADDRESS_CONSOLE;
@@ -458,11 +469,13 @@ begin
   CRT_WriteXY(0,6,FFTermToString(strings[15])); CRT_Write(' '~);
   CRT_WriteXY(listwidth-5,6,Atascii2Antic(IntToStr(currentship.scu_max-currentship.scu))); CRT_Write(' SCU|'~); //CRT_WriteXY(listwidth-2,6,'46 |'~);  //mocap
   CRT_WriteXY(0,7,'--------------------+'~);
+
   str:='|'~;
   for y:=8 to 17 do
   begin
       CRT_WriteXY(liststart-1,y,Atascii2Antic(str));
   end;
+
   CRT_WriteXY(0,18,'--------------------+-------------------'~);
   CRT_GotoXY(0,22);
   str:=concat(FFTermToString(strings[16]),' '~);
@@ -585,7 +598,7 @@ begin
       stillPressed:= false;
     end;
 
-    if (CRT_OptionPressed) and (toggled=false) then
+    if (CRT_OptionPressed) and (optionPressed=false) then
     begin
       l:=liststart-6; // Buy text is x char on left from screen center
       mode:= not mode;
@@ -602,10 +615,10 @@ begin
         ListCargo(currentShip,true);
         itemindex:=0;
       end;
-      toggled:=true;
+      optionPressed:=true;
     end
     else
-      if (CRT_OptionPressed = false) then toggled:=false;
+      if (CRT_OptionPressed = false) then optionPressed:=false;
 
     if (CRT_SelectPressed) then
     begin
@@ -623,6 +636,67 @@ begin
 // //           CRT_Write(Atascii2Antic(strnum));
 // //           Inc(cargoindex);
 //         end;
+
+          if (mode = false) then
+          begin
+
+          end
+          else
+          begin
+            if (selecteditemquantity > 0) then
+            begin
+              currentShip.cargoquantity[itemindex]:=currentShip.cargoquantity[itemindex]-selecteditemquantity;
+
+              If currentShip.cargoquantity[itemindex] = 0 then currentShip.cargoindex[itemindex]:= 0; // erasing item form cargoindex
+
+              // update UEC on screen not on player
+              currentuec:=currentuec + selecteditemtotal;
+
+              repeat until CRT_Keypressed;
+
+              for y:=0 to MAXCARGOSLOTS-1 do
+              begin
+                if currentShip.cargoquantity[y] = 0 then
+                begin
+                  for l:=y to MAXCARGOSLOTS-1 do
+                  begin
+                    if (l < High(ship.cargoindex)) then
+                    begin
+                      currentShip.cargoindex[l]:=currentShip.cargoindex[l+1];
+                      currentShip.cargoquantity[l]:=currentShip.cargoquantity[l+1];
+                    end
+                    else
+                    begin
+                      currentShip.cargoindex[l]:=0;
+                      currentShip.cargoquantity[l]:=0;
+                    end;
+                  end;
+                end;
+              end;
+
+              itemindex:=0;
+
+              // set selection to 1st item on the list
+              currentitemquantity:=currentShip.cargoquantity[itemindex];
+              currentitemprice:=GetItemPrice(itemindex,mode);
+              currentitemindex:=currentShip.cargoindex[itemindex];
+
+              // update player UEC (current session)
+              CRT_GotoXY(liststart+7,0); // +7 for Sell string
+              strnum:=IntToStr(currentuec);
+              CRT_Write(Atascii2Antic(space(LISTWIDTH-Length(strnum)-Length(CURRENCY)-7)));
+              CRT_Write(Atascii2Antic(concat(IntToStr(currentuec),CURRENCY)));
+
+              // update cargo Total
+              currentShip.scu:=currentShip.scu-selecteditemquantity;
+              CRT_WriteXY(listwidth-5,6,Atascii2Antic(IntToStr(currentship.scu_max-currentship.scu))); CRT_Write(' SCU|'~);
+
+              // remove selection
+              selecteditemquantity:= 0;
+              selecteditemtotal:=0;
+            end;
+          end;
+        ListCargo(currentShip,mode);
       end;
       selectPressed:=true;
     end

@@ -17,6 +17,7 @@ strings_list
     dta a(txt_15)
     dta a(txt_16)
     dta a(txt_17)
+    dta a(txt_18)
 
 strings
 txt_0
@@ -55,6 +56,8 @@ txt_16
     dta d'[C]ancel',$ff
 txt_17
     dta d'[O]K',$ff
+txt_18
+    dta d' for ',$ff
 
 
 
