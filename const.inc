@@ -37,6 +37,16 @@ KEY_OPTION4 = '4';
 KEY_BACK = 'b';
 KEY_QUIT = 'q';
 KEY_NEW = 'n';
+KEY_UP = 'p';
+KEY_DOWN = ';';
+KEY_LEFT = 'k';
+KEY_RIGHT = 'l';
+
+//  KEY_UP = Chr(28);
+//  KEY_DOWN = Chr(29);
+//  KEY_LEFT = Chr(30);
+//  KEY_RIGHT = Chr(31);
+
 KEY_CANCEL = 'c';
 KEY_OK = 'o';
 
