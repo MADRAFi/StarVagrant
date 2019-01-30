@@ -501,6 +501,37 @@ begin
       keyval := char(CRT_Keycode[kbcode]);
 
       case keyval of
+        KEY_CANCEL: begin
+                      currentuec:= player.uec;
+                      currentShip:= ship;
+
+                      LoadItems(player.loc);
+                      ListItems(false);
+                      ListCargo(currentShip,false);
+                      selecteditemquantity:= 0;
+                      selecteditemtotal:=0;
+                      itemindex:=0;
+                      // assign 1st item on the avaiable items
+                      currentitemquantity:=itemquantity[availableitems[itemindex]];
+                      currentitemprice:=GetItemPrice(itemindex,mode);
+                      currentitemindex:=availableitems[itemindex];
+
+                      // update player UEC (current session)
+                      CRT_GotoXY(liststart+7,0); // +7 for Sell string
+                      strnum:=IntToStr(currentuec);
+                      CRT_Write(Atascii2Antic(space(LISTWIDTH-Length(strnum)-Length(CURRENCY)-7)));
+                      CRT_Write(Atascii2Antic(concat(IntToStr(currentuec),CURRENCY)));
+
+                      // update cargo Total
+                      currentShip.scu:=currentShip.scu-selecteditemquantity;
+                      CRT_WriteXY(listwidth-5,6,Atascii2Antic(IntToStr(currentship.scu_max-currentship.scu))); CRT_Write(' SCU|'~);
+
+                    end;
+        KEY_OK:     begin
+                      player.uec:= currentuec;
+                      ship:= currentShip;
+                      current_menu:= MENU_MAIN;
+                    end;
         KEY_BACK: current_menu:=MENU_MAIN;
         KEY_UP:     begin
                       if stillPressed = false then
@@ -637,22 +668,19 @@ begin
 // //           Inc(cargoindex);
 //         end;
 
-          if (mode = false) then
+          if (mode = false) then // buying mode
           begin
 
           end
-          else
+          else // Selling mode
           begin
             if (selecteditemquantity > 0) then
             begin
               currentShip.cargoquantity[itemindex]:=currentShip.cargoquantity[itemindex]-selecteditemquantity;
-
               If currentShip.cargoquantity[itemindex] = 0 then currentShip.cargoindex[itemindex]:= 0; // erasing item form cargoindex
 
               // update UEC on screen not on player
               currentuec:=currentuec + selecteditemtotal;
-
-              repeat until CRT_Keypressed;
 
               for y:=0 to MAXCARGOSLOTS-1 do
               begin
@@ -674,8 +702,6 @@ begin
                 end;
               end;
 
-              itemindex:=0;
-
               // set selection to 1st item on the list
               currentitemquantity:=currentShip.cargoquantity[itemindex];
               currentitemprice:=GetItemPrice(itemindex,mode);
@@ -694,6 +720,8 @@ begin
               // remove selection
               selecteditemquantity:= 0;
               selecteditemtotal:=0;
+              itemindex:=0;
+
             end;
           end;
         ListCargo(currentShip,mode);
@@ -704,7 +732,7 @@ begin
       selectPressed:=false;
 
 
-  until keyval = KEY_BACK;
+  until (keyval = KEY_BACK) or (keyval = KEY_OK);
 end;
 
 procedure menu;
