@@ -9,18 +9,6 @@ const
   CURRENCY = ' UEC';
   COMMISSION = 0.05;
 
-  KEY_UP = 'o';
-  KEY_DOWN = 'l';
-  KEY_LEFT = 'j';
-  KEY_RIGHT = 'k';
-
-{
-  KEY_UP = Chr(28);
-  KEY_DOWN = Chr(29);
-  KEY_LEFT = Chr(30);
-  KEY_RIGHT = Chr(31);
-}
-
 type
 {$i 'types.inc'}
 {$r 'resources.rc'}
@@ -220,7 +208,7 @@ begin
     begin
       CRT_GotoXY(LISTSTART,7+count); //min count:=1 so we start at 8th row
       str:= FFTermToString(items[offset]);
-      CRT_Write(Atascii2Antic(str));
+      CRT_Write(str);
       strnum:=concat(IntToStr(myship.cargoquantity[x]),' SCU');
       CRT_Write(Atascii2Antic(Space(listwidth-Length(str)-Length(strnum))));
       CRT_Write(Atascii2Antic(strnum));
@@ -321,9 +309,31 @@ var
 begin
   offset:=availableitems[itemindex];
   price:=itemprice[offset];
-  if mode then finalprice:=Trunc(price*(1-commission))
-  else finalprice:=price;
+  if (mode = true) then
+  begin
+    finalprice:=Trunc(price*(1-commission))
+  end
+  else
+  begin
+    finalprice:=price;
+  end;
   Result:= finalprice;
+
+end;
+
+
+function GetCargoPrice(myship: TShip; itemindex : Byte): Word;
+// Get item price based on itemindex of available items mode is false for BUY and tru for SELL
+
+var
+//  price: word;
+  offset: word;
+
+begin
+  offset:=myship.cargoindex[itemindex];
+//  price:=itemprice[offset];
+//  Result:=Trunc(price*(1-commission))
+  Result:=Trunc(itemprice[offset]*(1-commission))
 end;
 
 // function GetItemQuantity(itemindex : Byte): Word;
@@ -455,8 +465,18 @@ begin
 
   str:=FFTermToString(locations[player.loc]);
   CRT_WriteXY(0,0,str);
-  CRT_WriteXY(listwidth-4,0,FFTermToString(strings[8])); // Buy
-  CRT_Write(FFTermToString(strings[9])); // Sell
+  l:=Length(str);
+  str:=' '~;
+  str:=concat(str,FFTermToString(strings[8]));
+  str:=concat(str,' '~);
+  CRT_WriteXY(listwidth-4,0,str); // Buy
+  // invert at start
+  CRT_Invert(listwidth-4,0,5);
+
+  str:=' '~;
+  str:=concat(str,FFTermToString(strings[9]));
+  str:=concat(str,' '~);
+  CRT_Write(str); // Sell
   CRT_WriteRightAligned(Atascii2Antic(concat(IntToStr(currentuec), CURRENCY)));
   CRT_WriteXY(0,1,'--------------------+-------------------'~);
   CRT_WriteXY(0,2,concat(FFTermToString(strings[10]),'  |'~)); // Delivery
@@ -482,6 +502,25 @@ begin
   CRT_WriteRightAligned(concat(str,FFTermToString(strings[17])));
   // CRT_WriteRightAligned('[Cancel] [OK]'~);
 
+  // help
+
+  str:='OPTION'*~;
+  str:=concat(str,'-'~);
+  str:=concat(str,FFTermToString(strings[8]));
+  str:=concat(str,'/'~);
+  str:=concat(str,FFTermToString(strings[9]));
+  str:=concat(str,' '~);
+  str:=concat(str,'SELECT'*~);
+  str:=concat(str,'-'~);
+  str:=concat(str,FFTermToString(strings[19]));
+  str:=concat(str,' '~);
+  str:=concat(str,FFTermToString(strings[7]));
+  CRT_WriteCentered(23,str);
+
+  //move(str[1],pointer(SCROLL_ADDRESS+42),sizeOf(str)); // copy text to vram
+
+
+
   LoadItems(player.loc);
   ListItems(false);
   ListCargo(currentShip,false);
@@ -491,7 +530,7 @@ begin
   currentitemprice:=GetItemPrice(itemindex,mode);
   currentitemindex:=availableitems[itemindex];
 
-  //ListItems(player.loc);
+
 
   repeat
     Waitframe;
@@ -542,9 +581,8 @@ begin
                             CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth);
                             Dec(itemindex);
                             CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth); // selecting the whole row with item
-//                            currentitemquantity:=GetItemQuantity(itemindex);
                             currentitemquantity:=itemquantity[availableitems[itemindex]];
-                            currentitemprice:=GetItemPrice(itemindex,mode);
+                            currentitemprice:=GetItemPrice(itemindex,false);
                             currentitemindex:=availableitems[itemindex];
                             selecteditemtotal:=0;
                             selecteditemquantity:=0;
@@ -558,11 +596,13 @@ begin
                               CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1);
                               Dec(itemindex);
                               currentitemquantity:=currentShip.cargoquantity[itemindex];
-                              currentitemprice:=GetItemPrice(itemindex,mode);
+                              //currentitemprice:=GetItemPrice(itemindex,true);
+                              currentitemprice:=GetCargoPrice(currentShip,itemindex);
                               currentitemindex:=currentShip.cargoindex[itemindex];
                               selecteditemtotal:=0;
                               selecteditemquantity:=0;
                               CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1); // selecting the whole row with item
+
                             end;
                           end;
                     end;
@@ -577,7 +617,7 @@ begin
                             CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth); // selecting the whole row with item
 //                            currentitemquantity:=GetItemQuantity(itemindex);
                             currentitemquantity:=itemquantity[availableitems[itemindex]];
-                            currentitemprice:=GetItemPrice(itemindex,mode);
+                            currentitemprice:=GetItemPrice(itemindex,false);
                             currentitemindex:=availableitems[itemindex];
                             selecteditemtotal:=0;
                             selecteditemquantity:=0;
@@ -591,11 +631,13 @@ begin
                             CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1);
                             Inc(itemindex);
                             currentitemquantity:=currentShip.cargoquantity[itemindex];
-                            currentitemprice:=GetItemPrice(itemindex,mode);
+                            //currentitemprice:=GetItemPrice(itemindex,true);
+                            currentitemprice:=GetCargoPrice(currentShip,itemindex);
                             currentitemindex:=currentShip.cargoindex[itemindex];
                             selecteditemtotal:=0;
                             selecteditemquantity:=0;
                             CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1); // selecting the whole row with item
+
                           end;
                         end;
                     end;
@@ -805,7 +847,6 @@ begin
   CRT_WriteXY(14,0,FFTermToString(strings[1])); // New game;
   CRT_WriteXY(14,1,FFTermToString(strings[2])); // Quit;
 
-
   //str:= Atascii2Antic(NullTermToString(strings[0])); // read scroll text
   str:= FFTermToString(strings[0]); // read scroll text
 
@@ -891,6 +932,5 @@ begin
 until keyval = KEY_QUIT;
 
   // restore system
-
-  //SystemReset;
+  SystemReset;
 end.

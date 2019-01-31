@@ -109,8 +109,8 @@ procedure vblc;interrupt;
 begin
   asm {
       phr ; store registers
-      mwa #dlic ATARI.VDSLST
-      ;mwa #dlic __dlivec
+      ;mwa #dlic ATARI.VDSLST
+      mwa #dlic __dlivec
       plr ; restore registers
   };
 end;

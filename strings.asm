@@ -18,6 +18,7 @@ strings_list
     dta a(txt_16)
     dta a(txt_17)
     dta a(txt_18)
+    dta a(txt_19)
 
 strings
 txt_0
@@ -37,9 +38,9 @@ txt_6
 txt_7
     dta d'[B] Back',$ff
 txt_8
-    dta d' Buy '*,$ff
+    dta d'Buy',$ff
 txt_9
-    dta d' Sell ',$ff
+    dta d'Sell',$ff
 txt_10
     dta d'/Delivery_Location',$ff
 txt_11
@@ -58,7 +59,8 @@ txt_17
     dta d'[O]K',$ff
 txt_18
     dta d' for ',$ff
-
+txt_19
+    dta d'Confirm',$ff
 
 
  .print "STRINGS SIZE: ", *-strings_list
