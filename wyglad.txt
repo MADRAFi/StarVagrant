@@ -4,7 +4,7 @@ Port Olisar    [ Buy ] Sell 99999999 UEC
 [ Cuttles Black ]  | commodity    price
 -------------------+--------------------
 Total Cargo   1246 |1 Aluminium        2
-Empty Cargo     46 |2 Beryl           10
+Empty Cargo  46 SCU|2 Beryl           10
 -------------------+3 Diamond        127
 1                  |4 Chlorium         8
 2                  |5 Spirits          5
@@ -15,7 +15,7 @@ Empty Cargo     46 |2 Beryl           10
 7                   10
 8                   11
 9                   12
-10                    
+10
 --------------------+------------------
                         0 SCU for 0 UEC
                       --[]-------------

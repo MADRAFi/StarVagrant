@@ -351,7 +351,7 @@ end;
 procedure console_navigation;
 var
   y: byte;
-  str: string;
+  // str: string;
   stillPressed: Boolean;
 
 begin
@@ -487,7 +487,8 @@ begin
   CRT_WriteXY(0,5,FFTermToString(strings[14])); CRT_Write(' '~);
   CRT_WriteXY(listwidth-5,5,Atascii2Antic(IntToStr(currentship.scu_max))); CRT_Write(' SCU|'~); //CRT_WriteXY(listwidth-2,5,'46 |'~);  // mocap
   CRT_WriteXY(0,6,FFTermToString(strings[15])); CRT_Write(' '~);
-  CRT_WriteXY(listwidth-5,6,Atascii2Antic(IntToStr(currentship.scu_max-currentship.scu))); CRT_Write(' SCU|'~); //CRT_WriteXY(listwidth-2,6,'46 |'~);  //mocap
+  str:=IntToStr(currentship.scu_max-currentship.scu);
+  CRT_WriteXY(liststart-(Length(str)+5),6,Atascii2Antic(str)); CRT_Write(' SCU|'~);
   CRT_WriteXY(0,7,'--------------------+'~);
 
   str:='|'~;
@@ -563,7 +564,9 @@ begin
 
                       // update cargo Total
                       currentShip.scu:=currentShip.scu-selecteditemquantity;
-                      CRT_WriteXY(listwidth-5,6,Atascii2Antic(IntToStr(currentship.scu_max-currentship.scu))); CRT_Write(' SCU|'~);
+                      str:=IntToStr(currentship.scu_max-currentship.scu);
+                      CRT_WriteXY(liststart-(Length(str)+5)-4,6,Atascii2Antic(Space(4))); // fixed 4 chars for cargo size
+                      CRT_WriteXY(liststart-(Length(str)+5),6,Atascii2Antic(str)); CRT_Write(' SCU|'~);
 
                     end;
         KEY_OK:     begin
@@ -650,7 +653,18 @@ begin
                       end;
                     end;
         KEY_RIGHT:  begin
-                      if (selecteditemquantity < currentitemquantity) and (selecteditemtotal + currentitemprice <= currentuec ) and (selecteditemquantity < currentShip.scu_max-currentShip.scu) then
+                      stillPressed:= false;
+                      if (mode = false) then
+                      begin
+                        if (selecteditemquantity < currentitemquantity) and (selecteditemtotal + currentitemprice <= currentuec ) and (selecteditemquantity < currentShip.scu_max-currentShip.scu) then
+                          stillPressed:= true; //reuse boolean variable
+                      end
+                      else
+                      begin
+                        if (selecteditemquantity < currentitemquantity) and (selecteditemtotal + currentitemprice <= currentuec ) then
+                          stillPressed:= true; //reuse boolean variable
+                      end;
+                      if (stillPressed = true) then
                       begin
                         Inc(selecteditemquantity);
                         selecteditemtotal:=selecteditemquantity * currentitemprice;
@@ -712,7 +726,51 @@ begin
 
           if (mode = false) then // buying mode
           begin
+            if (selecteditemquantity > 0) then
+            begin
+              for y:=0 to MAXCARGOSLOTS-1 do
+              begin
+                if currentShip.cargoindex[y] = 0 then
+                begin
+                  currentShip.cargoindex[y]:=currentitemindex;
+                  currentShip.cargoquantity[y]:=selecteditemquantity;
+                  break;
+                end
+                else
+                begin
+                  // some item exists
+                  if currentship.cargoindex[y] = currentitemindex then
+                  begin
+                    // found same cargo
+                    currentShip.cargoquantity[y]:=currentShip.cargoquantity[itemindex] + selecteditemquantity;
+                    break;
+                  end;
+                end;
+              end;
 
+              // update UEC on screen not on player
+              currentuec:=currentuec - selecteditemtotal;
+
+              // update player UEC (current session)
+              CRT_GotoXY(liststart+7,0); // +7 for Sell string
+              strnum:=IntToStr(currentuec);
+              CRT_Write(Atascii2Antic(space(LISTWIDTH-Length(strnum)-Length(CURRENCY)-7)));
+              CRT_Write(Atascii2Antic(concat(IntToStr(currentuec),CURRENCY)));
+
+              // update cargo Total
+              currentShip.scu:=currentShip.scu + selecteditemquantity;
+              str:=IntToStr(currentship.scu_max-currentship.scu);
+              CRT_WriteXY(liststart-(Length(str)+5)-4,6,Atascii2Antic(Space(4))); // fixed 4 chars for cargo size
+              CRT_WriteXY(liststart-(Length(str)+5),6,Atascii2Antic(str)); CRT_Write(' SCU|'~);
+
+              // remove selection
+              currentitemprice:=GetCargoPrice(currentShip,itemindex);
+              currentitemindex:=currentShip.cargoindex[itemindex];
+              selecteditemquantity:= 0;
+              selecteditemtotal:=0;
+//              itemindex:=0;
+
+            end;
           end
           else // Selling mode
           begin
@@ -757,12 +815,16 @@ begin
 
               // update cargo Total
               currentShip.scu:=currentShip.scu-selecteditemquantity;
-              CRT_WriteXY(listwidth-5,6,Atascii2Antic(IntToStr(currentship.scu_max-currentship.scu))); CRT_Write(' SCU|'~);
+              str:=IntToStr(currentship.scu_max-currentship.scu);
+              CRT_WriteXY(liststart-(Length(str)+5)-4,6,Atascii2Antic(Space(4))); // fixed 4 chars for cargo size
+              CRT_WriteXY(liststart-(Length(str)+5),6,Atascii2Antic(str)); CRT_Write(' SCU|'~);
 
               // remove selection
+              currentitemprice:=GetCargoPrice(currentShip,itemindex);
+              currentitemindex:=currentShip.cargoindex[itemindex];
               selecteditemquantity:= 0;
               selecteditemtotal:=0;
-              itemindex:=0;
+//              itemindex:=0;
 
             end;
           end;
@@ -780,7 +842,7 @@ end;
 procedure menu;
 
 var
-    str: string;
+    //str: string;
     i: byte;
     stillPressed: Boolean;
 
