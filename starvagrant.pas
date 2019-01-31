@@ -209,7 +209,8 @@ begin
       CRT_GotoXY(LISTSTART,7+count); //min count:=1 so we start at 8th row
       str:= FFTermToString(items[offset]);
       CRT_Write(str);
-      strnum:=concat(IntToStr(myship.cargoquantity[x]),' SCU');
+      //strnum:=concat(IntToStr(myship.cargoquantity[x]),' SCU');
+      strnum:=IntToStr(myship.cargoquantity[x]);
       CRT_Write(Atascii2Antic(Space(listwidth-Length(str)-Length(strnum))));
       CRT_Write(Atascii2Antic(strnum));
       if (count = 1) and (mode = true) then CRT_Invert(LISTSTART,8,LISTWIDTH);
