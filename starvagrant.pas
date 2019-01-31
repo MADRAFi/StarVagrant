@@ -650,7 +650,7 @@ begin
                       end;
                     end;
         KEY_RIGHT:  begin
-                      if (selecteditemquantity < currentitemquantity) and (selecteditemtotal + currentitemprice <= currentuec ) then
+                      if (selecteditemquantity < currentitemquantity) and (selecteditemtotal + currentitemprice <= currentuec ) and (selecteditemquantity < currentShip.scu_max-currentShip.scu) then
                       begin
                         Inc(selecteditemquantity);
                         selecteditemtotal:=selecteditemquantity * currentitemprice;
