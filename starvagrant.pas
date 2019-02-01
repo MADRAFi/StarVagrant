@@ -23,7 +23,6 @@ var
   locations: array [0..0] of word absolute LOCATIONS_ADDRESS;
   items: array [0..0] of word absolute ITEMS_ADDRESS;
 
-//  itemmatrix: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of boolean;  // matrix where items are available
   itemprice: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of Word;  // price matrix for items
   itemquantity: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of Word; // quantities of items
   availableitems: array [0..(MAXAVAILABLEITEMS-1)] of Word; // only 12 avaiable items
@@ -39,38 +38,6 @@ var
 
 {$i 'interrupts.inc'}
 
-
-{
-procedure ClrLine;
-(*
-@description:
-ClrLine clears the current line, starting from the position 1, to the end of the window.
-
-The cursor doesn't move.
-*)
-begin
-   FillChar( pointer(word(DPeek(88)+1)+CRT_WhereY*40-41), byte(41-byte(1)), 0);
-   //FillChar( pointer(word(DPeek(88))+WhereY*TXTCOL-41), byte(TXTCOL), 0);
-
-   //FillByte(pointer(TXT_ADDRESS+(WhereY*TXTCOL)), TXTCOL, 0);
-   //ClrEol;
-end;
-}
-{
-procedure ClrSroll;
-(*
-@description:
-ClrLine clears the current line, starting from the position 1, to the end of the window.
-
-The cursor doesn't move.
-*)
-begin
-   FillChar(pointer(SCROLL_ADDRESS), byte(TXTCOL), 0);
-   //move(0,pointer(SCROLL_ADDRESS),255);
-   //FillByte(pointer(TXT_ADDRESS+(WhereY*TXTCOL)), TXTCOL, 0);
-   //ClrEol;
-end;
-}
 
 
 procedure generateworld;
@@ -89,14 +56,6 @@ begin
   locationmatrix[0].item[5].price:=10;
 }
   // item * location
-  // Location 0
-  // itemmatrix[4]:=true;
-  // itemmatrix[5]:=true;
-  // itemmatrix[7]:=true;
-  // itemmatrix[9]:=true;
-  // itemmatrix[15]:=true;
-  // itemmatrix[19]:=true;
-  // itemmatrix[20]:=true;
 
   // Prices location 0
   itemprice[0]:=26;
@@ -125,8 +84,6 @@ begin
   itemquantity[19]:=10000;
   itemquantity[20]:=2000;
   itemquantity[21]:=0;
-
-
 
 
 
@@ -160,43 +117,6 @@ begin
   // ship.cargoquantity[1]:=20;
   // ship.scu:= 30;
 end;
-
-
-
-// procedure ListCargo;
-// const
-//   LISTWIDTH = 20;
-//   LISTSTART = 0;
-//
-// var
-//   x: byte;
-//   count:byte = 1;
-//   str: string;
-//   strnum: string;
-//   offset: Word = 0;
-//
-//
-// begin
-//   count:=1;
-//   for x:=0 to MAXCARGOSLOTS-1 do // max available items
-//     begin
-//       offset:=currentcargo[x];
-//       if offset > 0 then
-//       begin
-//         CRT_WriteXY(LISTSTART,7+count,'found'~);
-//         CRT_GotoXY(LISTSTART,8+count); //min count:=1 so we start at 4th row
-// //        str:= FFTermToString(items[offset]);
-//         str:= IntToStr(offset);
-//         CRT_Write(Atascii2Antic(str));
-//         strnum:=IntToStr(currentcargoquantity[x]);
-//         CRT_Write(Atascii2Antic(Space(listwidth-Length(str)-Length(strnum))));
-//         CRT_Write(Atascii2Antic(strnum));
-// //        if count =1 then CRT_Invert(liststart,8,listwidth);
-//         inc(count);
-//       end;
-//     end;
-//     CRT_WriteXY(liststart,8+count+1,concat('CARGO END:'~,Atascii2Antic(IntToStr(count))));
-// end;
 
 procedure ListCargo(myship: Tship;mode : Boolean);
 const
@@ -289,7 +209,6 @@ begin
   for x:=0 to NUMBEROFITEMS-1 do
     begin
       offset:=(NUMBEROFITEMS-1)*loc + x;
-//      if itemmatrix[offset] = true then
 //      if (itemprice[offset] <> 0) and (itemquantity[offset] <> 0) then
       if (itemprice[offset] <> 0) then
       begin
@@ -351,18 +270,6 @@ begin
 //  Result:=Trunc(price*(1-commission))
   Result:=Trunc(itemprice[offset]*(1-commission))
 end;
-
-// function GetItemQuantity(itemindex : Byte): Word;
-// // Get item quantity based on itemindex of available items
-//
-// var
-//   offset: word;
-//
-// begin
-//   offset:=availableitems[itemindex];
-//   Result:=itemquantity[offset];
-// end;
-
 
 procedure console_navigation;
 var
@@ -687,7 +594,9 @@ begin
                         Inc(selecteditemquantity);
                         selecteditemtotal:=selecteditemquantity * currentitemprice;
                         UpdateSelectedItem(selecteditemquantity,selecteditemtotal);
-                      end;
+                      end
+                      else
+                        CRT_WriteRightAligned(19,FFTermToString(strings[20]));
                     end;
       end;
       // str:=concat('itemindex=',IntToStr(itemindex));
