@@ -25,8 +25,8 @@ ITEMS_ADDRESS = LOCATIONS_ADDRESS + $200;
 
 NUMBEROFLOCATIONS = 15; // number of locations defined in locations.asm. Needs to match.
 NUMBEROFITEMS = 24; // number of items defined in items.asm. Needs to match.
-MAXAVAILABLEITEMS = 12; // numer of cocnrunnet items displayed
-MAXCARGOSLOTS = 10;
+MAXAVAILABLEITEMS = 12; // numer of concurrent items displayed
+MAXCARGOSLOTS = 10;  // number of cargo slots
 
 // ***************************************************************************//
 KEY_OPTION1 = '1';
