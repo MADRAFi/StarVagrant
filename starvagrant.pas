@@ -118,6 +118,11 @@ begin
   itemquantity[18]:=100;
   itemquantity[21]:=65535;
 
+
+
+
+
+
 end;
 
 procedure start;
@@ -141,11 +146,11 @@ begin
       ship.cargoquantity[x]:= 0;
   end;
 
-  ship.cargoindex[0]:=7;
-  ship.cargoquantity[0]:=10;
-  ship.cargoindex[1]:=10;
-  ship.cargoquantity[1]:=20;
-  ship.scu:= 30;
+  // ship.cargoindex[0]:=7;
+  // ship.cargoquantity[0]:=10;
+  // ship.cargoindex[1]:=10;
+  // ship.cargoquantity[1]:=20;
+  // ship.scu:= 30;
 end;
 
 
@@ -553,9 +558,10 @@ begin
                       selecteditemtotal:=0;
                       itemindex:=0;
                       // assign 1st item on the avaiable items
+                      currentitemindex:=availableitems[itemindex];
                       currentitemquantity:=itemquantity[availableitems[itemindex]];
                       currentitemprice:=GetItemPrice(itemindex,mode);
-                      currentitemindex:=availableitems[itemindex];
+
 
                       // update player UEC (current session)
                       CRT_GotoXY(liststart+7,0); // +7 for Sell string
@@ -573,6 +579,7 @@ begin
         KEY_OK:     begin
                       player.uec:= currentuec;
                       ship:= currentShip;
+                      itemquantity[currentitemindex]:=itemquantity[currentitemindex]-selecteditemquantity;
                       current_menu:= MENU_MAIN;
                     end;
         KEY_BACK: current_menu:=MENU_MAIN;
