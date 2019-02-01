@@ -23,14 +23,12 @@ var
   locations: array [0..0] of word absolute LOCATIONS_ADDRESS;
   items: array [0..0] of word absolute ITEMS_ADDRESS;
 
-  itemmatrix: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of boolean;  // matrix where items are available
+//  itemmatrix: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of boolean;  // matrix where items are available
   itemprice: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of Word;  // price matrix for items
   itemquantity: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of Word; // quantities of items
   availableitems: array [0..(MAXAVAILABLEITEMS-1)] of Word; // only 12 avaiable items
-  //currentcargo: array [0..MAXCARGOSLOTS-1] of Word;
-  //currentcargoquantity: array [0..MAXCARGOSLOTS-1] of Word;
 
-  {itemmatrix: array[0..NUMBEROFITEMS] of TPriceMatrix;
+{
   locationmatrix: array [0..NUMBEROFLOCATIONS] of itemmatrix;
 }
   current_menu: Byte;
@@ -92,31 +90,31 @@ begin
 }
   // item * location
   // Location 0
-  itemmatrix[7]:=true;
-  itemmatrix[8]:=true;
-  itemmatrix[10]:=true;
-  itemmatrix[14]:=true;
-  itemmatrix[15]:=true;
-  itemmatrix[18]:=true;
-  itemmatrix[21]:=true;
+  // itemmatrix[4]:=true;
+  // itemmatrix[5]:=true;
+  // itemmatrix[7]:=true;
+  // itemmatrix[9]:=true;
+  // itemmatrix[15]:=true;
+  // itemmatrix[19]:=true;
+  // itemmatrix[20]:=true;
 
   // Prices location 0
-  itemprice[7]:=127;
-  itemprice[8]:=5;
-  itemprice[10]:=99;
-  itemprice[14]:=10;
-  itemprice[15]:=2;
-  itemprice[18]:=100;
-  itemprice[21]:=1;
+  itemprice[4]:=8;
+  itemprice[5]:=4;
+  itemprice[7]:=3;
+  itemprice[9]:=5;
+  itemprice[15]:=17;
+  itemprice[19]:=3;
+  itemprice[20]:=8;
 
 // quantity location 0
-  itemquantity[7]:=10;
-  itemquantity[8]:=5000;
-  itemquantity[10]:=400;
-  itemquantity[14]:=10000;
+  itemquantity[4]:=10000;
+  itemquantity[5]:=10000;
+  itemquantity[7]:=10000;
+  itemquantity[9]:=1000;
   itemquantity[15]:=65535;
-  itemquantity[18]:=100;
-  itemquantity[21]:=65535;
+  itemquantity[19]:=10000;
+  itemquantity[20]:=2000;
 
 
 
@@ -281,7 +279,8 @@ begin
   for x:=0 to NUMBEROFITEMS-1 do
     begin
       offset:=(NUMBEROFITEMS-1)*loc + x;
-      if itemmatrix[offset] = true then
+//      if itemmatrix[offset] = true then
+      if (itemprice[offset] <> 0) and (itemquantity[offset] <> 0) then
       begin
         if count <= MAXAVAILABLEITEMS-1 then // max avaiable items
         begin
