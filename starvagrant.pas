@@ -99,22 +99,32 @@ begin
   // itemmatrix[20]:=true;
 
   // Prices location 0
+  itemprice[0]:=26;
   itemprice[4]:=8;
   itemprice[5]:=4;
   itemprice[7]:=3;
+  itemprice[8]:=7;
   itemprice[9]:=5;
+  itemprice[11]:=6;
+  itemprice[14]:=28;
   itemprice[15]:=17;
   itemprice[19]:=3;
   itemprice[20]:=8;
+  itemprice[21]:=4;
 
 // quantity location 0
+  itemquantity[0]:=0;
   itemquantity[4]:=10000;
   itemquantity[5]:=10000;
   itemquantity[7]:=10000;
+  itemquantity[8]:=0;
   itemquantity[9]:=1000;
+  itemquantity[11]:=0;
+  itemquantity[14]:=0;
   itemquantity[15]:=65535;
   itemquantity[19]:=10000;
   itemquantity[20]:=2000;
+  itemquantity[21]:=0;
 
 
 
@@ -248,7 +258,7 @@ begin
   for x:=0 to MAXAVAILABLEITEMS-1 do // max available items
     begin
       offset:=availableitems[x];
-      if offset > 0 then
+      if offset >= 0 then
       begin
         CRT_GotoXY(LISTSTART,4+count); //min count:=1 so we start at 4th row
         str:= concat(Atascii2Antic(IntToStr(count)),' '~);
@@ -280,7 +290,8 @@ begin
     begin
       offset:=(NUMBEROFITEMS-1)*loc + x;
 //      if itemmatrix[offset] = true then
-      if (itemprice[offset] <> 0) and (itemquantity[offset] <> 0) then
+//      if (itemprice[offset] <> 0) and (itemquantity[offset] <> 0) then
+      if (itemprice[offset] <> 0) then
       begin
         if count <= MAXAVAILABLEITEMS-1 then // max avaiable items
         begin
@@ -586,7 +597,7 @@ begin
                       if stillPressed = false then
                         if (mode = false) then
                         begin
-                          if CheckItemPosition(itemindex-1) and (availableitems[itemindex-1] > 0) then
+                          if CheckItemPosition(itemindex-1) and (availableitems[itemindex-1] >= 0) then
                           begin
                             CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth);
                             Dec(itemindex);
@@ -601,7 +612,7 @@ begin
                         end
                         else
                           begin
-                            if CheckItemPosition(itemindex-1) and (currentShip.cargoindex[itemindex-1] > 0)  then
+                            if CheckItemPosition(itemindex-1) and (currentShip.cargoindex[itemindex-1] >= 0)  then
                             begin
                               CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1);
                               Dec(itemindex);
@@ -620,7 +631,7 @@ begin
                       if stillPressed = false then
                         if (mode = false) then
                         begin
-                          if CheckItemPosition(itemindex+1) and (availableitems[itemindex+1] > 0)  then
+                          if CheckItemPosition(itemindex+1) and (availableitems[itemindex+1] >= 0)  then
                           begin
                             CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth);
                             Inc(itemindex);
@@ -636,7 +647,7 @@ begin
                         end
                         else
                         begin
-                          if CheckItemPosition(itemindex+1) and (currentShip.cargoindex[itemindex+1] > 0)  then
+                          if CheckItemPosition(itemindex+1) and (currentShip.cargoindex[itemindex+1] >= 0)  then
                           begin
                             CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1);
                             Inc(itemindex);
