@@ -22,6 +22,7 @@ items_list
     dta a(item_20)
     dta a(item_21)
     dta a(item_22)
+    dta a(item_23)
 
 items
 item_0

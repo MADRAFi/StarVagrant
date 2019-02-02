@@ -23,9 +23,44 @@ var
   locations: array [0..0] of word absolute LOCATIONS_ADDRESS;
   items: array [0..0] of word absolute ITEMS_ADDRESS;
 
-  itemprice: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of Word;  // price matrix for items
-  itemquantity: array [0..(NUMBEROFLOCATIONS-1)*(NUMBEROFITEMS-1)] of Word; // quantities of items
+  itemprice: array [0..(NUMBEROFLOCATIONS*NUMBEROFITEMS)-1] of Word = (
+    26,0,0,0,8,4,0,3,7,5,0,6,0,0,28,17,0,0,0,3,8,4,1,0,
+    26,0,12,0,8,4,0,0,7,5,0,6,0,0,29,18,0,0,0,0,8,4,0,24,
+    0,0,12,0,0,0,0,0,0,5,0,0,0,0,0,18,1,0,0,3,0,0,0,24,
+    0,1,10,0,0,0,2,0,0,5,0,0,1,0,0,18,1,0,0,3,0,0,0,15,
+    24,0,12,0,0,4,0,0,0,5,0,6,0,0,0,18,1,1,0,3,0,4,1,24,
+    0,0,12,0,0,0,0,0,0,5,0,0,0,0,0,18,1,0,0,3,0,0,0,24,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+  );  // price matrix for items
+  itemquantity: array [0..(NUMBEROFLOCATIONS*NUMBEROFITEMS)-1] of Word = (
+    0,0,0,0,10000,10000,0,10000,0,1000,0,0,0,0,0,60000,0,0,0,10000,2000,0,60000,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,60000,0,
+    0,0,0,0,0,0,10000,0,0,0,10000,0,5000,5000,0,0,0,0,0,0,0,0,60000,0,
+    0,0,5000,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,60000,10000,
+    10000,0,0,0,0,5000,0,0,0,0,0,10000,0,0,0,0,0,5000,0,0,0,10000,60000,0,
+    5000,0,0,0,0,5000,0,5000,0,0,0,0,0,0,0,0,0,10000,0,0,0,5000,60000,0,
+    0,0,0,0,0,0,0,0,0,10000,0,0,0,0,0,0,10000,0,0,5000,0,0,0,0,
+    0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,
+    0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,1,0,0,1,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,
+    0,0,1,1,0,1,0,0,0,1,0,0,1,0,0,1,1,0,0,1,0,0,0,1,
+    1,0,1,0,1,1,0,0,1,1,0,1,0,0,1,1,0,0,0,0,1,1,0,1,
+    1,0,0,0,1,1,0,0,1,1,0,1,0,0,1,1,0,0,0,1,1,1,0,1,
+    0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,
+    0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0
+
+  ); // quantities of items
   availableitems: array [0..(MAXAVAILABLEITEMS-1)] of Word; // only 12 avaiable items
+  locationdistance: array[0..(NUMBEROFLOCATIONS*NUMBEROFLOCATIONS)-1] of Word;
 
 {
   locationmatrix: array [0..NUMBEROFLOCATIONS] of itemmatrix;
@@ -58,32 +93,32 @@ begin
   // item * location
 
   // Prices location 0
-  itemprice[0]:=26;
-  itemprice[4]:=8;
-  itemprice[5]:=4;
-  itemprice[7]:=3;
-  itemprice[8]:=7;
-  itemprice[9]:=5;
-  itemprice[11]:=6;
-  itemprice[14]:=28;
-  itemprice[15]:=17;
-  itemprice[19]:=3;
-  itemprice[20]:=8;
-  itemprice[21]:=4;
+  // itemprice[0]:=26;
+  // itemprice[4]:=8;
+  // itemprice[5]:=4;
+  // itemprice[7]:=3;
+  // itemprice[8]:=7;
+  // itemprice[9]:=5;
+  // itemprice[11]:=6;
+  // itemprice[14]:=28;
+  // itemprice[15]:=17;
+  // itemprice[19]:=3;
+  // itemprice[20]:=8;
+  // itemprice[21]:=4;
 
 // quantity location 0
-  itemquantity[0]:=0;
-  itemquantity[4]:=10000;
-  itemquantity[5]:=10000;
-  itemquantity[7]:=10000;
-  itemquantity[8]:=0;
-  itemquantity[9]:=1000;
-  itemquantity[11]:=0;
-  itemquantity[14]:=0;
-  itemquantity[15]:=65535;
-  itemquantity[19]:=10000;
-  itemquantity[20]:=2000;
-  itemquantity[21]:=0;
+  // itemquantity[0]:=0;
+  // itemquantity[4]:=10000;
+  // itemquantity[5]:=10000;
+  // itemquantity[7]:=10000;
+  // itemquantity[8]:=0;
+  // itemquantity[9]:=1000;
+  // itemquantity[11]:=0;
+  // itemquantity[14]:=0;
+  // itemquantity[15]:=65535;
+  // itemquantity[19]:=10000;
+  // itemquantity[20]:=2000;
+  // itemquantity[21]:=0;
 
 
 
@@ -874,10 +909,12 @@ var
   stillPressed: Boolean;
 
 begin
-  DLISTL := DISPLAY_LIST_ADDRESS_MENU;
-  Waitframe;
   EnableVBLI(@vbl);
   EnableDLI(@dli1);
+  Waitframe;
+  DLISTL := DISPLAY_LIST_ADDRESS_MENU;
+
+
 
 
   for y:=0 to 6 do
