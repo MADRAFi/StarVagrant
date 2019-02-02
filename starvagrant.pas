@@ -178,7 +178,7 @@ begin
   for x:=0 to MAXAVAILABLEITEMS-1 do // max available items
     begin
       offset:=availableitems[x];
-      if offset >= 0 then
+      if (offset > 0) then
       begin
         CRT_GotoXY(LISTSTART,4+count); //min count:=1 so we start at 4th row
         str:= concat(Atascii2Antic(IntToStr(count)),' '~);
@@ -193,30 +193,59 @@ begin
         //CRT_WriteRightAligned(Atascii2Antic(IntToStr(finalprice)));
         if (count = 1) and (mode = false) then CRT_Invert(LISTSTART,5,LISTWIDTH);
         inc(count);
+      end
+      else
+      begin
+        CRT_GotoXY(LISTSTART,4+x+1);
+        CRT_Write(Atascii2Antic(Space(listwidth)));
       end;
+
     end;
 end;
 
 
-procedure LoadItems(loc: byte);
+procedure LoadItems(loc: byte; mode: Boolean);
 var
   x: byte;
   count:byte = 0;
   offset: word = 0;
+  visible: Boolean;
 
 begin
   count:=0;
   for x:=0 to NUMBEROFITEMS-1 do
     begin
+      visible:= false;
       offset:=(NUMBEROFITEMS-1)*loc + x;
+
+      if (mode = true) then
+      begin
+        if (itemprice[offset] <> 0) then // show item even if quantity is 0
+          visible:=true;
+      end
+      else
+      begin
+        if (itemprice[offset] <> 0) and (itemquantity[offset] <> 0) then // show item if quantity > 0
+          visible:=true;
+      end;
 //      if (itemprice[offset] <> 0) and (itemquantity[offset] <> 0) then
-      if (itemprice[offset] <> 0) then
+//      if (itemprice[offset] <> 0) then
+      if (visible = true) then
       begin
         if count <= MAXAVAILABLEITEMS-1 then // max avaiable items
         begin
           availableitems[count]:=offset;
           inc(count);
         end;
+      end;
+    end;
+
+    // clear avaiable items array when mode is changed and less items are present
+    if (count < MAXAVAILABLEITEMS-1) then
+    begin
+      for x:=count to MAXAVAILABLEITEMS-1 do
+      begin
+        availableitems[x]:=0;
       end;
     end;
 end;
@@ -443,12 +472,11 @@ begin
 
   //move(str[1],pointer(SCROLL_ADDRESS+42),sizeOf(str)); // copy text to vram
 
-
-
-  LoadItems(player.loc);
+  LoadItems(player.loc, false);
   ListItems(false);
-  ListCargo(currentShip,false);
+  //ListCargo(currentShip,false);
   itemindex:=0;
+
   // assign 1st item on the avaiable items
   currentitemquantity:=itemquantity[availableitems[itemindex]];
   currentitemprice:=GetItemPrice(itemindex,mode);
@@ -468,7 +496,7 @@ begin
                       currentuec:= player.uec;
                       currentShip:= ship;
 
-                      LoadItems(player.loc);
+                      LoadItems(player.loc,false);
                       ListItems(false);
                       ListCargo(currentShip,false);
                       selecteditemquantity:= 0;
@@ -504,7 +532,7 @@ begin
                       if stillPressed = false then
                         if (mode = false) then
                         begin
-                          if CheckItemPosition(itemindex-1) and (availableitems[itemindex-1] >= 0) then
+                          if CheckItemPosition(itemindex-1) and (availableitems[itemindex-1] > 0) then
                           begin
                             CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth);
                             Dec(itemindex);
@@ -519,12 +547,11 @@ begin
                         end
                         else
                           begin
-                            if CheckItemPosition(itemindex-1) and (currentShip.cargoindex[itemindex-1] >= 0)  then
+                            if CheckItemPosition(itemindex-1) and (currentShip.cargoindex[itemindex-1] > 0)  then
                             begin
                               CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1);
                               Dec(itemindex);
                               currentitemquantity:=currentShip.cargoquantity[itemindex];
-                              //currentitemprice:=GetItemPrice(itemindex,true);
                               currentitemprice:=GetCargoPrice(currentShip,itemindex);
                               currentitemindex:=currentShip.cargoindex[itemindex];
                               selecteditemtotal:=0;
@@ -538,12 +565,11 @@ begin
                       if stillPressed = false then
                         if (mode = false) then
                         begin
-                          if CheckItemPosition(itemindex+1) and (availableitems[itemindex+1] >= 0)  then
+                          if CheckItemPosition(itemindex+1) and (availableitems[itemindex+1] > 0)  then
                           begin
                             CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth);
                             Inc(itemindex);
                             CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth); // selecting the whole row with item
-//                            currentitemquantity:=GetItemQuantity(itemindex);
                             currentitemquantity:=itemquantity[availableitems[itemindex]];
                             currentitemprice:=GetItemPrice(itemindex,false);
                             currentitemindex:=availableitems[itemindex];
@@ -554,7 +580,7 @@ begin
                         end
                         else
                         begin
-                          if CheckItemPosition(itemindex+1) and (currentShip.cargoindex[itemindex+1] >= 0)  then
+                          if CheckItemPosition(itemindex+1) and (currentShip.cargoindex[itemindex+1] > 0)  then
                           begin
                             CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1);
                             Inc(itemindex);
@@ -618,14 +644,38 @@ begin
       mode:= not mode;
       if (mode = false) then
       begin
-          CRT_Invert(l,0,5);CRT_Invert(l+5,0,6);
-          ListItems(false);
-          ListCargo(currentShip,false);
-          itemindex:=0;
+        CRT_Invert(l,0,5);CRT_Invert(l+5,0,6);
+        LoadItems(player.loc,false);
+        ListItems(false);
+
+        // // debug
+        // for y:=0 to MAXAVAILABLEITEMS-1 do
+        // begin
+        //  str:=concat('availableitems[',IntToStr(y));
+        //  str:=concat(str,']=');
+        //  str:=concat(str,IntToStr(availableitems[y]));
+        //  CRT_WriteXY(0,8+y,Atascii2Antic(str));
+        // end;
+        // //
+
+        ListCargo(currentShip,false);
+        itemindex:=0;
       end
       else begin
         CRT_Invert(l,0,5);CRT_Invert(l+5,0,6);
+        LoadItems(player.loc, true);
         ListItems(true);
+
+       //  // debug
+       //  for y:=0 to MAXAVAILABLEITEMS-1 do
+       //  begin
+       //   str:=concat('available[',IntToStr(y));
+       //   str:=concat(str,']=');
+       //   str:=concat(str,IntToStr(availableitems[y]));
+       //   CRT_WriteXY(0,8+y,Atascii2Antic(str));
+       // end;
+       //  //
+
         ListCargo(currentShip,true);
         itemindex:=0;
       end;
