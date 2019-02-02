@@ -474,7 +474,7 @@ begin
 
   LoadItems(player.loc, false);
   ListItems(false);
-  //ListCargo(currentShip,false);
+  ListCargo(currentShip,false);
   itemindex:=0;
 
   // assign 1st item on the avaiable items
@@ -622,7 +622,7 @@ begin
                         UpdateSelectedItem(selecteditemquantity,selecteditemtotal);
                       end
                       else
-                        CRT_WriteRightAligned(19,FFTermToString(strings[20]));
+//                        CRT_WriteRightAligned(19,FFTermToString(strings[20]));
                     end;
       end;
       // str:=concat('itemindex=',IntToStr(itemindex));
