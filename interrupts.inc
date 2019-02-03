@@ -2,14 +2,18 @@
 // TITLE DLI
 
 procedure dli_title1;assembler;interrupt;
+// $10
+// $14
+// $1A
+// $00 -
     asm {
         pha
         sta ATARI.WSYNC
-        mva #$0c ATARI.colpf0
-        mva #$06 ATARI.colpf1
-        mva #$02 ATARI.colpf2
-        mva #$0c ATARI.colpf3
-        mva #$00 ATARI.colbk
+        mva #$00 ATARI.colpf0
+        mva #$1A ATARI.colpf1
+        mva #$14 ATARI.colpf2
+        mva #$00 ATARI.colpf3
+        mva #$10 ATARI.colbk
 ;        lda #60
 ;@       cmp vcount
 ;        bpl @-
@@ -27,7 +31,8 @@ procedure dli_title2;assembler;interrupt;
         mva #$00 ATARI.colpf0
         mva #$0c ATARI.colpf1
         mva #$00 ATARI.colpf2
-        mva #$00 ATARI.colpf3
+        ;mva #$00 ATARI.colpf3
+        mva #$00 ATARI.colbk
         mwa #DLI_TITLE3 __dlivec
         pla
         };
@@ -92,29 +97,44 @@ end;
 
 
 
-procedure dli1;assembler;interrupt;
-    asm {
-        pha
-        sta ATARI.WSYNC
-        mva #$0c ATARI.colpf0
-        mva #$06 ATARI.colpf1
-        mva #$02 ATARI.colpf2
-        mva #$0c ATARI.colpf3
-        mva #$00 ATARI.colbk
-;        lda #60
-;@       cmp vcount
-;        bpl @-
-;        mva #$00 ATARI.colpf2
-        mwa #DLI2 __dlivec
-        pla
+procedure dli1;interrupt;
+begin
+  case player.loc of
+    0:  asm {
+          pha
+          sta ATARI.WSYNC
+
+          mva #$14 ATARI.colpf0
+          mva #$00 ATARI.colpf1
+          mva #$10 ATARI.colpf2
+          mva #$00 ATARI.colpf3
+          mva #$1A ATARI.colbk
+
+          mwa #DLI2 __dlivec
+          pla
         };
+  ELSE
+    asm {
+          pha
+          sta ATARI.WSYNC
+
+          mva #$0c ATARI.colpf0
+          mva #$06 ATARI.colpf1
+          mva #$02 ATARI.colpf2
+          mva #$0c ATARI.colpf3
+          mva #$00 ATARI.colbk
+
+          mwa #DLI2 __dlivec
+          pla
+        };
+  end;
 end;
 
 procedure dli2;assembler;interrupt;
     asm {
         pha
         sta ATARI.WSYNC
-        ;mva #$00 ATARI.colbk
+        mva #$00 ATARI.colbk
         mva #$00 ATARI.colpf0
         mva #$0c ATARI.colpf1
         mva #$00 ATARI.colpf2

@@ -7,6 +7,7 @@ uses atari, b_utils, b_system, b_crt, sysutils;
 const
 {$i 'const.inc'}
   CURRENCY = ' UEC';
+  DISTANCE = ' AU';
   COMMISSION = 0.05;
 
 type
