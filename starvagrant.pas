@@ -112,11 +112,11 @@ begin
       ship.cargoquantity[x]:= 0;
   end;
 
-  // ship.cargoindex[0]:=7;
-  // ship.cargoquantity[0]:=10;
-  // ship.cargoindex[1]:=10;
-  // ship.cargoquantity[1]:=20;
-  // ship.scu:= 30;
+  ship.cargoindex[0]:=7;
+  ship.cargoquantity[0]:=10;
+  ship.cargoindex[1]:=10;
+  ship.cargoquantity[1]:=20;
+  ship.scu:= 30;
 end;
 
 procedure ListCargo(myship: Tship;mode : Boolean);
@@ -257,11 +257,11 @@ begin
   else Result:=false;
 end;
 
-// function CheckCargoPosition(newindex : Byte) : Boolean;
-// begin
-//   if (newindex < MAXCARGOSLOTS) and (newindex >= 0) then Result:=true
-//   else Result:=false;
-// end;
+function CheckCargoPosition(newindex : Byte) : Boolean;
+begin
+  if (newindex < MAXCARGOSLOTS) and (newindex >= 0) then Result:=true
+  else Result:=false;
+end;
 
 function GetItemPrice(itemindex : Byte; mode : Boolean): Word;
 // Get item price based on itemindex of available items mode is false for BUY and tru for SELL
@@ -287,7 +287,7 @@ begin
 end;
 
 
-function GetCargoPrice(myship: TShip; itemindex : Byte): Word;
+function GetCargoPrice(myship: TShip; itemindex: Byte): Word;
 // Get item price based on itemindex of available items mode is false for BUY and tru for SELL
 
 var
@@ -300,6 +300,24 @@ begin
 //  Result:=Trunc(price*(1-commission))
   Result:=Trunc(itemprice[offset]*(1-commission))
 end;
+
+function CheckCargoPresence(myship: TShip; itemindex: Byte): Boolean;
+
+var
+  offset: Word;
+  item: Word;
+
+begin
+  offset:=myship.cargoindex[itemindex];
+  Result:= false;
+  //for item in availableitems do
+  for item:=0 to MAXAVAILABLEITEMS-1 do
+    begin
+      Result:= offset =  availableitems[item];
+      If (Result = true) then break;
+    end
+end;
+
 
 procedure console_navigation;
 var
@@ -361,6 +379,7 @@ var
   stillPressed: Boolean = false;
   optionPressed: Boolean = false;
   selectPressed: Boolean = false;
+  cargoPresent: Boolean = false;
 
   str: String;
   strnum: String;
@@ -396,6 +415,7 @@ begin
   stillPressed:= false;
   optionPressed:= false;
   selectPressed:= false;
+  cargoPresent:= false;
 
   //currentcargo:= ship.cargoindex;
   //currentcargoquantity:= ship.cargoquantity;
@@ -547,9 +567,9 @@ begin
                             CRT_ClearRow(19);
                           end;
                         end
-                        else
+                        else  // when selling
                           begin
-                            if CheckItemPosition(itemindex-1) and (currentShip.cargoindex[itemindex-1] > 0)  then
+                            if CheckCargoPosition(itemindex-1) and (currentShip.cargoindex[itemindex-1] > 0)  then
                             begin
                               CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1);
                               Dec(itemindex);
@@ -559,7 +579,7 @@ begin
                               selecteditemtotal:=0;
                               selecteditemquantity:=0;
                               CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1); // selecting the whole row with item
-
+                              cargoPresent:=CheckCargoPresence(currentShip,itemindex);
                             end;
                           end;
                     end;
@@ -580,20 +600,19 @@ begin
                             CRT_ClearRow(19);
                           end;
                         end
-                        else
+                        else // when selling
                         begin
-                          if CheckItemPosition(itemindex+1) and (currentShip.cargoindex[itemindex+1] > 0)  then
+                          if CheckCargoPosition(itemindex+1) and (currentShip.cargoindex[itemindex+1] > 0)  then
                           begin
                             CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1);
                             Inc(itemindex);
                             currentitemquantity:=currentShip.cargoquantity[itemindex];
-                            //currentitemprice:=GetItemPrice(itemindex,true);
                             currentitemprice:=GetCargoPrice(currentShip,itemindex);
                             currentitemindex:=currentShip.cargoindex[itemindex];
                             selecteditemtotal:=0;
                             selecteditemquantity:=0;
                             CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1); // selecting the whole row with item
-
+                            cargoPresent:=CheckCargoPresence(currentShip,itemindex);
                           end;
                         end;
                     end;
@@ -609,12 +628,14 @@ begin
                       stillPressed:= false;
                       if (mode = false) then
                       begin
-                        if (selecteditemquantity < currentitemquantity) and (selecteditemtotal + currentitemprice <= currentuec ) and (selecteditemquantity < currentShip.scu_max-currentShip.scu) then
+                        if (selecteditemquantity < currentitemquantity) and (selecteditemtotal + currentitemprice <= currentuec )
+                           and (selecteditemquantity < currentShip.scu_max-currentShip.scu) then
                           stillPressed:= true; //reuse boolean variable
                       end
-                      else
+                      else // when selling
                       begin
-                        if (selecteditemquantity < currentitemquantity) and (selecteditemtotal + currentitemprice <= currentuec ) then
+                        if (selecteditemquantity < currentitemquantity) and (selecteditemtotal + currentitemprice <= currentuec )
+                          and (cargoPresent = true) then
                           stillPressed:= true; //reuse boolean variable
                       end;
                       if (stillPressed = true) then
@@ -679,6 +700,10 @@ begin
        //  //
 
         ListCargo(currentShip,true);
+        currentitemquantity:=currentShip.cargoquantity[itemindex];
+        currentitemprice:=GetCargoPrice(currentShip,itemindex);
+        currentitemindex:=currentShip.cargoindex[itemindex];
+
         itemindex:=0;
       end;
       optionPressed:=true;
@@ -747,7 +772,7 @@ begin
               currentitemindex:=currentShip.cargoindex[itemindex];
               selecteditemquantity:= 0;
               selecteditemtotal:=0;
-//              itemindex:=0;
+              itemindex:=0;
 
             end;
           end
