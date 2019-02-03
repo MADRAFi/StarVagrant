@@ -60,11 +60,9 @@ var
 
   ); // quantities of items
   availableitems: array [0..(MAXAVAILABLEITEMS-1)] of Word; // only 12 avaiable items
-  locationdistance: array[0..(NUMBEROFLOCATIONS*NUMBEROFLOCATIONS)-1] of Word;
+  locationdistance: array[0..(NUMBEROFLOCATIONS*NUMBEROFLOCATIONS)-1] of shortreal;
 
-{
-  locationmatrix: array [0..NUMBEROFLOCATIONS] of itemmatrix;
-}
+
   current_menu: Byte;
   player: TPlayer;
   ship: TShip;
@@ -90,38 +88,6 @@ begin
   locationmatrix[0].item[5].quantity:=10000;
   locationmatrix[0].item[5].price:=10;
 }
-  // item * location
-
-  // Prices location 0
-  // itemprice[0]:=26;
-  // itemprice[4]:=8;
-  // itemprice[5]:=4;
-  // itemprice[7]:=3;
-  // itemprice[8]:=7;
-  // itemprice[9]:=5;
-  // itemprice[11]:=6;
-  // itemprice[14]:=28;
-  // itemprice[15]:=17;
-  // itemprice[19]:=3;
-  // itemprice[20]:=8;
-  // itemprice[21]:=4;
-
-// quantity location 0
-  // itemquantity[0]:=0;
-  // itemquantity[4]:=10000;
-  // itemquantity[5]:=10000;
-  // itemquantity[7]:=10000;
-  // itemquantity[8]:=0;
-  // itemquantity[9]:=1000;
-  // itemquantity[11]:=0;
-  // itemquantity[14]:=0;
-  // itemquantity[15]:=65535;
-  // itemquantity[19]:=10000;
-  // itemquantity[20]:=2000;
-  // itemquantity[21]:=0;
-
-
-
 
 end;
 
@@ -291,11 +257,11 @@ begin
   else Result:=false;
 end;
 
-function CheckCargoPosition(newindex : Byte) : Boolean;
-begin
-  if (newindex < MAXCARGOSLOTS) and (newindex >= 0) then Result:=true
-  else Result:=false;
-end;
+// function CheckCargoPosition(newindex : Byte) : Boolean;
+// begin
+//   if (newindex < MAXCARGOSLOTS) and (newindex >= 0) then Result:=true
+//   else Result:=false;
+// end;
 
 function GetItemPrice(itemindex : Byte; mode : Boolean): Word;
 // Get item price based on itemindex of available items mode is false for BUY and tru for SELL
@@ -346,8 +312,9 @@ begin
     CRT_ClearRow(y);
 
 
-  CRT_WriteXY(0,0,concat('Location: '~,FFTermToString(locations[player.loc]))); //mocap
-  CRT_WriteXY(0,1,'#########################'~);
+  CRT_WriteXY(0,0,concat('Loc: '~,FFTermToString(locations[player.loc]))); //mocap
+  CRT_WriteXY(0,1,concat('Dest: '~,FFTermToString(locations[2]))); //mocap
+  CRT_WriteXY(0,2,concat('Distance: '~,'23.567 AU'~)); //mocap
   CRT_WriteXY(14,5,FFTermToString(strings[7])); // Back
 
   repeat
@@ -439,12 +406,12 @@ begin
   liststart:=(CRT_screenWidth div 2)+1;
   listwidth:=CRT_screenWidth-liststart;
 
-
+  EnableVBLI(@vbl_console);
+  EnableDLI(@dli_console);
   Waitframe;
   DLISTL:= DISPLAY_LIST_ADDRESS_CONSOLE;
-  Waitframe;
-  EnableVBLI(@vblc);
-  EnableDLI(@dlic);
+
+
 
 
   for y:=0 to CRT_screenWidth do
@@ -859,11 +826,11 @@ var
     stillPressed: Boolean;
 
 begin
-  Waitframe;
-  DLISTL := DISPLAY_LIST_ADDRESS_MENU;
-  Waitframe;
   EnableVBLI(@vbl);
   EnableDLI(@dli1);
+  Waitframe;
+  DLISTL := DISPLAY_LIST_ADDRESS_MENU;
+
   //CRT_Init(TXT_ADDRESS);
 
   for i:=0 to 6 do
@@ -873,13 +840,9 @@ begin
   CRT_WriteXY(14,1,FFTermToString(strings[4])); // Trade Console
   CRT_WriteXY(14,2,FFTermToString(strings[7])); // Back
 
-  // erase scroll content
-  //str:= ''~;
-  //move(str[1],pointer(SCROLL_ADDRESS+42),sizeOf(str));
-  //hscrol:=0; //stop scroll.
+//  CRT_ClearRow(7);
 
   keyval:=chr(0);
-
   repeat
   //  pause;
   //  msx.play;
@@ -909,10 +872,10 @@ var
   stillPressed: Boolean;
 
 begin
-  EnableVBLI(@vbl);
-  EnableDLI(@dli1);
+  EnableVBLI(@vbl_title);
+  EnableDLI(@dli_title1);
   Waitframe;
-  DLISTL := DISPLAY_LIST_ADDRESS_MENU;
+  DLISTL := DISPLAY_LIST_ADDRESS_TITLE;
 
 
 
