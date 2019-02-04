@@ -17,7 +17,7 @@ SCROLL_ADDRESS = TXT_ADDRESS + $400;
 // logo length $178D;
 //GFX_ADDRESS = $A000;
 GFX_ADDRESS = $9000;
-GFX2_ADDRESS = $C000;  //GFX_ADDRESS + $2000;
+//GFX2_ADDRESS = $C000;  //GFX_ADDRESS + $2000;
 
 
 STRINGS_ADDRESS = GFX_ADDRESS + $2000; // $1800;
@@ -25,7 +25,7 @@ LOCATIONS_ADDRESS = STRINGS_ADDRESS + $200;
 ITEMS_ADDRESS = LOCATIONS_ADDRESS + $200;
 
 
-NUMBEROFLOCATIONS = 15; // number of locations defined in locations.asm. Needs to match.
+NUMBEROFLOCATIONS = 17; // number of locations defined in locations.asm. Needs to match.
 NUMBEROFITEMS = 24; // number of items defined in items.asm. Needs to match.
 MAXAVAILABLEITEMS = 12; // numer of concurrent items displayed
 MAXCARGOSLOTS = 10;  // number of cargo slots

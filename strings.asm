@@ -19,7 +19,7 @@ strings_list
     dta a(txt_17)
     dta a(txt_18)
     dta a(txt_19)
-    dta a(txt_20)
+
 
 strings
 txt_0
@@ -62,8 +62,7 @@ txt_18
     dta d' for ',$ff
 txt_19
     dta d'Confirm',$ff
-txt_20
-    dta d'No items to sell',$ff
+
 
  .print "STRINGS SIZE: ", *-strings_list
  .print "STRINGS : ", strings_list, "..", *

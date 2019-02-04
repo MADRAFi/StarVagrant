@@ -2,12 +2,11 @@ program StarVagrant;
 {$librarypath '../Libs/lib/';'../Libs/blibs/';'../Libs/base/'}
 uses atari, b_utils, b_system, b_crt, sysutils;
 
-
-
 const
 {$i 'const.inc'}
   CURRENCY = ' UEC';
-  DISTANCE = ' AU';
+  CARGOUNIT = ' SCU'~;
+  DISTANCE = ' SDU';
   COMMISSION = 0.05;
 
 type
@@ -61,7 +60,27 @@ var
 
   ); // quantities of items
   availableitems: array [0..(MAXAVAILABLEITEMS-1)] of Word; // only 12 avaiable items
-  locationdistance: array[0..(NUMBEROFLOCATIONS*NUMBEROFLOCATIONS)-1] of shortreal;
+  locationdistance: array[0..(NUMBEROFLOCATIONS*NUMBEROFLOCATIONS)-1] of Word =
+  (
+    0,0.05,0,0,0,0,0,0,0.06,0,0,36.55,0.86,0,0,0.05,0.05,
+    0.05,0,0.02,0.03,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0.02,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0.03,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0.02,0,0,0,0,0,0,0,0,0,0.02,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.03,
+    0,0,0,0,0.02,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0.03,0,0,0,0,0,0,0,0,
+    0.06,0,0,0,0,0,0,0.03,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0.05,0,0.06,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0.05,0,0,0,0,0,0,0,
+    36.55,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0.86,0,0,0,0,0,0,0,0,0.06,0,0,0,0.01,0.07,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0.01,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0.07,0,0,0,0,
+    0.05,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0.05,0,0,0,0.02,0.03,0,0,0,0,0,0,0,0,0,0,0
+
+  );
 
 
   current_menu: Byte;
@@ -74,23 +93,23 @@ var
 
 
 
-procedure generateworld;
-
-begin
-  {
-  locationmatrix[0].item[0].quantity:=0;
-  locationmatrix[0].item[0].price:=0;
-  locationmatrix[0].item[1].quantity:=0;
-  locationmatrix[0].item[1].price:=0;
-  locationmatrix[0].item[3].quantity:=10000;
-  locationmatrix[0].item[3].price:=2;
-  locationmatrix[0].item[4].quantity:=0;
-  locationmatrix[0].item[4].price:=0;
-  locationmatrix[0].item[5].quantity:=10000;
-  locationmatrix[0].item[5].price:=10;
-}
-
-end;
+// procedure generateworld;
+//
+// begin
+//   {
+//   locationmatrix[0].item[0].quantity:=0;
+//   locationmatrix[0].item[0].price:=0;
+//   locationmatrix[0].item[1].quantity:=0;
+//   locationmatrix[0].item[1].price:=0;
+//   locationmatrix[0].item[3].quantity:=10000;
+//   locationmatrix[0].item[3].price:=2;
+//   locationmatrix[0].item[4].quantity:=0;
+//   locationmatrix[0].item[4].price:=0;
+//   locationmatrix[0].item[5].quantity:=10000;
+//   locationmatrix[0].item[5].price:=10;
+// }
+//
+// end;
 
 procedure start;
 var
@@ -98,7 +117,7 @@ var
 
 begin
   //msx.Sfx(3, 2, 24);
-  generateworld;
+  //generateworld;
   player.uec:= 5000; // start cash
   player.loc:= 0; //start location Port Olisar
 
@@ -129,8 +148,8 @@ const
 var
   x: byte;
   count:byte = 1;
-  str: string;
-  strnum: string;
+  str: TString;
+  strnum: TString;
   offset: Word = 0;
 
 
@@ -144,7 +163,7 @@ begin
       CRT_GotoXY(LISTSTART,7+count); //min count:=1 so we start at 8th row
       str:= FFTermToString(items[offset]);
       CRT_Write(str);
-      //strnum:=concat(IntToStr(myship.cargoquantity[x]),' SCU');
+      //strnum:=concat(IntToStr(myship.cargoquantity[x]),CARGOUNIT);
       strnum:=IntToStr(myship.cargoquantity[x]);
       CRT_Write(Atascii2Antic(Space(listwidth-Length(str)-Length(strnum))));
       CRT_Write(Atascii2Antic(strnum));
@@ -168,8 +187,8 @@ const
 var
   x: byte;
   count:byte = 1;
-  str: string;
-  pricestr: string;
+  str: TString;
+  pricestr: TString;
   finalprice: word;
   price: word;
   offset: Word = 0;
@@ -323,7 +342,6 @@ end;
 procedure console_navigation;
 var
   y: byte;
-  // str: string;
   stillPressed: Boolean;
 
 begin
@@ -336,6 +354,7 @@ begin
   CRT_WriteXY(0,2,concat('Distance: '~,'23.567 AU'~)); //mocap
   CRT_WriteXY(14,5,FFTermToString(strings[7])); // Back
 
+  stillPressed:= false;
   repeat
   //  pause;
   //  msx.play;
@@ -360,7 +379,7 @@ var
   str: String;
 
 begin
-  str:= concat(IntToStr(selecteditemquantity),' SCU');
+  str:= concat(IntToStr(selecteditemquantity),CARGOUNIT);
   str:= concat(str,FFTermToString(strings[18]));
   str:= concat(str,IntToStr(selecteditemtotal));
   str:= concat(str,CURRENCY);
@@ -382,8 +401,8 @@ var
   selectPressed: Boolean = false;
   cargoPresent: Boolean = false;
 
-  str: String;
-  strnum: String;
+  str: TString;
+  strnum: TString;
 
   l: Byte;
   itemindex: Byte = 0;
@@ -460,10 +479,10 @@ begin
   CRT_Write(FFTermToString(strings[12]));CRT_WriteRightAligned(FFTermToString(strings[13])); // commodity price
   CRT_WriteXY(0,4,'--------------------+-------------------'~);
   CRT_WriteXY(0,5,FFTermToString(strings[14])); CRT_Write(' '~);
-  CRT_WriteXY(listwidth-5,5,Atascii2Antic(IntToStr(currentship.scu_max))); CRT_Write(' SCU|'~); //CRT_WriteXY(listwidth-2,5,'46 |'~);  // mocap
+  CRT_WriteXY(listwidth-5,5,Atascii2Antic(IntToStr(currentship.scu_max))); CRT_Write(concat(CARGOUNIT,'|'~));//CRT_Write(' SCU|'~); //CRT_WriteXY(listwidth-2,5,'46 |'~);  // mocap
   CRT_WriteXY(0,6,FFTermToString(strings[15])); CRT_Write(' '~);
   str:=IntToStr(currentship.scu_max-currentship.scu);
-  CRT_WriteXY(liststart-(Length(str)+5),6,Atascii2Antic(str)); CRT_Write(' SCU|'~);
+  CRT_WriteXY(liststart-(Length(str)+5),6,Atascii2Antic(str)); CRT_Write(concat(CARGOUNIT,'|'~)); //CRT_Write(' SCU|'~);
   CRT_WriteXY(0,7,'--------------------+'~);
 
   str:='|'~;
@@ -473,6 +492,11 @@ begin
   end;
 
   CRT_WriteXY(0,18,'--------------------+-------------------'~);
+  // str:=StringOfChar('-',20);
+  // str:=concat(str,'+');
+  // str:=concat(str,StringOfChar('-',19));
+  // CRT_WriteXY(0,18,Atascii2Antic(str));
+  //
   CRT_GotoXY(0,22);
   str:=concat(FFTermToString(strings[16]),' '~);
   CRT_WriteRightAligned(concat(str,FFTermToString(strings[17])));
@@ -541,7 +565,7 @@ begin
                       currentShip.scu:=currentShip.scu-selecteditemquantity;
                       str:=IntToStr(currentship.scu_max-currentship.scu);
                       CRT_WriteXY(liststart-(Length(str)+5)-4,6,Atascii2Antic(Space(4))); // fixed 4 chars for cargo size
-                      CRT_WriteXY(liststart-(Length(str)+5),6,Atascii2Antic(str)); CRT_Write(' SCU|'~);
+                      CRT_WriteXY(liststart-(Length(str)+5),6,Atascii2Antic(str)); CRT_Write(concat(CARGOUNIT,'|'~)); //CRT_Write(' SCU|'~);
 
                     end;
         KEY_OK:     begin
@@ -766,7 +790,7 @@ begin
               currentShip.scu:=currentShip.scu + selecteditemquantity;
               str:=IntToStr(currentship.scu_max-currentship.scu);
               CRT_WriteXY(liststart-(Length(str)+5)-4,6,Atascii2Antic(Space(4))); // fixed 4 chars for cargo size
-              CRT_WriteXY(liststart-(Length(str)+5),6,Atascii2Antic(str)); CRT_Write(' SCU|'~);
+              CRT_WriteXY(liststart-(Length(str)+5),6,Atascii2Antic(str)); CRT_Write(concat(CARGOUNIT,'|'~)); //CRT_Write(' SCU|'~);
 
               // remove selection
               currentitemprice:=GetCargoPrice(currentShip,itemindex);
@@ -822,7 +846,7 @@ begin
               currentShip.scu:=currentShip.scu-selecteditemquantity;
               str:=IntToStr(currentship.scu_max-currentship.scu);
               CRT_WriteXY(liststart-(Length(str)+5)-4,6,Atascii2Antic(Space(4))); // fixed 4 chars for cargo size
-              CRT_WriteXY(liststart-(Length(str)+5),6,Atascii2Antic(str)); CRT_Write(' SCU|'~);
+              CRT_WriteXY(liststart-(Length(str)+5),6,Atascii2Antic(str)); CRT_Write(CARGOUNIT~);
 
               // remove selection
               currentitemprice:=GetCargoPrice(currentShip,itemindex);
@@ -847,7 +871,6 @@ end;
 procedure menu;
 
 var
-    //str: string;
     i: byte;
     stillPressed: Boolean;
 
@@ -866,8 +889,8 @@ begin
   CRT_WriteXY(14,1,FFTermToString(strings[4])); // Trade Console
   CRT_WriteXY(14,2,FFTermToString(strings[7])); // Back
 
-//  CRT_ClearRow(7);
 
+  stillPressed:= false;
   keyval:=chr(0);
   repeat
   //  pause;
@@ -893,8 +916,8 @@ end;
 
 procedure title;
 var
-  str: string;
-  y: byte;
+  str: String;
+  y: Byte;
   stillPressed: Boolean;
 
 begin
@@ -945,19 +968,19 @@ end;
 
 
 
-procedure fade;
-var
-  fadecolors: Array[0..6] of byte = ($95,$94,$93,$92,$91,$90,$00);
-  i: byte;
-
-begin
-  for i:=Low(fadecolors) to high(fadecolors)  do
-    begin
-      colbk:=fadecolors[i];
-      Waitframe;
-    end;
-  //poke($2C6,$C4);
-end;
+// procedure fade;
+// var
+//   fadecolors: Array[0..6] of byte = ($95,$94,$93,$92,$91,$90,$00);
+//   i: byte;
+//
+// begin
+//   for i:=Low(fadecolors) to high(fadecolors)  do
+//     begin
+//       colbk:=fadecolors[i];
+//       Waitframe;
+//     end;
+//   //poke($2C6,$C4);
+// end;
 
 
 
@@ -972,7 +995,7 @@ begin
   SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
   CRT_Init(TXT_ADDRESS);
 
-  fade;
+  //fade;
 
   // Initialize RMT player
   //msx.player:=pointer(RMT_PLAYER_ADDRESS);
@@ -980,7 +1003,6 @@ begin
   //msx.init(0);
 
   current_menu := MENU_TITLE;
-  //current_menu := MENU_TRADE;
 
   repeat
     case current_menu of
@@ -992,8 +1014,7 @@ begin
       MENU_TRADE: console_trade;
       //MENU_MAINT: console_maint;
     end;
-    //if keyval = KEY_QUIT then break;
-//until FALSE;
+
 until keyval = KEY_QUIT;
 
   // restore system
