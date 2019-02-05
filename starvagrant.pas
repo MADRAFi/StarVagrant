@@ -354,15 +354,11 @@ begin
     CRT_ClearRow(y);
 
 
-//debug
-    for y:=0 to 6 do
-      CRT_WriteXY(0,y,Atascii2Antic(IntToStr(y)));
-//
-  //CRT_WriteXY(0,0,concat(FFTermToString(strings[20]),FFTermToString(locations[player.loc])));
-//  CRT_WriteXY(0,0,FFTermToString(strings[20]));
-//  CRT_WriteXY(0,1,FFTermToString(strings[21]));
-//  CRT_WriteXY(0,2,concat(FFTermToString(strings[22]),' 23.567 AU'~)); //mocap
-  //CRT_WriteXY(14,5,FFTermToString(strings[7])); // Back
+  CRT_WriteXY(0,0,concat(FFTermToString(strings[20]),FFTermToString(locations[player.loc])));
+  //CRT_WriteXY(0,0,FFTermToString(strings[20]));
+  CRT_WriteXY(0,1,FFTermToString(strings[21]));
+  CRT_WriteXY(0,2,concat(FFTermToString(strings[22]),' 23.567 AU'~)); //mocap
+  CRT_WriteXY(14,5,FFTermToString(strings[7])); // Back
 
   keyval:= chr(0);
   stillPressed:= false;
@@ -901,7 +897,10 @@ begin
   CRT_WriteXY(14,0,FFTermToString(strings[3])); // Navigation
   CRT_WriteXY(14,1,FFTermToString(strings[4])); // Trade Console
   CRT_WriteXY(14,2,FFTermToString(strings[7])); // Back
-
+  // CRT_WriteXY(14,3,'Linia 4'~);
+  // CRT_WriteXY(14,4,'Linia 5'~);
+  // CRT_WriteXY(14,5,'Linia 6'~);
+  // CRT_WriteXY(14,6,'Linia 7'~);
 
 
   stillPressed:= false;
@@ -943,14 +942,14 @@ begin
   Waitframe;
   DLISTL := DISPLAY_LIST_ADDRESS_TITLE;
 
-  // for y:=0 to 6 do
-  //   CRT_ClearRow(y);
+   for y:=0 to 5 do
+    CRT_ClearRow(y);
 
-  //CRT_WriteXY(14,0,FFTermToString(strings[1])); // New game;
-  //CRT_WriteXY(14,1,FFTermToString(strings[2])); // Quit;
+  CRT_WriteXY(14,0,FFTermToString(strings[1])); // New game;
+  CRT_WriteXY(14,1,FFTermToString(strings[2])); // Quit;
 
-  for y:=0 to 4 do
-    CRT_WriteXY(0,y,Atascii2Antic(IntToStr(y)));
+  // for y:=0 to 5 do
+  //   CRT_WriteXY(0,y,Atascii2Antic(IntToStr(y)));
 
   //str:= Atascii2Antic(NullTermToString(strings[0])); // read scroll text
   str:= FFTermToString(strings[0]); // read scroll text
