@@ -19,7 +19,9 @@ strings_list
     dta a(txt_17)
     dta a(txt_18)
     dta a(txt_19)
-
+    dta a(txt_20)
+    dta a(txt_21)
+    dta a(txt_22)
 
 strings
 txt_0
@@ -62,7 +64,12 @@ txt_18
     dta d' for ',$ff
 txt_19
     dta d'Confirm',$ff
-
+txt_20
+    dta d'Loc:',$ff
+txt_21
+    dta d'Dest:',$ff
+txt_22
+    dta d'Distance:',$ff
 
  .print "STRINGS SIZE: ", *-strings_list
  .print "STRINGS : ", strings_list, "..", *

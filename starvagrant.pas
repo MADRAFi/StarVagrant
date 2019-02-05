@@ -38,6 +38,8 @@ var
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 
   );  // price matrix for items
@@ -56,29 +58,32 @@ var
     1,0,1,0,1,1,0,0,1,1,0,1,0,0,1,1,0,0,0,0,1,1,0,1,
     1,0,0,0,1,1,0,0,1,1,0,1,0,0,1,1,0,0,0,1,1,1,0,1,
     0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,
-    0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0
+    0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
 
   ); // quantities of items
   availableitems: array [0..(MAXAVAILABLEITEMS-1)] of Word; // only 12 avaiable items
   locationdistance: array[0..(NUMBEROFLOCATIONS*NUMBEROFLOCATIONS)-1] of Word =
   (
-    0,0.05,0,0,0,0,0,0,0.06,0,0,36.55,0.86,0,0,0.05,0.05,
-    0.05,0,0.02,0.03,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0.02,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0.03,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0.02,0,0,0,0,0,0,0,0,0,0.02,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.03,
-    0,0,0,0,0.02,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0.03,0,0,0,0,0,0,0,0,
-    0.06,0,0,0,0,0,0,0.03,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0.05,0,0.06,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0.05,0,0,0,0,0,0,0,
-    36.55,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0.86,0,0,0,0,0,0,0,0,0.06,0,0,0,0.01,0.07,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0.01,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0.07,0,0,0,0,
-    0.05,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0.05,0,0,0,0.02,0.03,0,0,0,0,0,0,0,0,0,0,0
+    0,5,0,0,0,0,0,0,6,0,0,3655,86,0,0,5,5,
+    5,0,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,2,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,
+    0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,
+    6,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,5,0,6,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,
+    3655,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    86,0,0,0,0,0,0,0,0,6,0,0,0,1,7,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,
+    5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    5,0,0,0,2,3,0,0,0,0,0,0,0,0,0,0,0
 
   );
 
@@ -146,8 +151,8 @@ const
   TOPCARGOMARGIN = 8;
 
 var
-  x: byte;
-  count:byte = 1;
+  x: Byte;
+  count: Byte = 1;
   str: TString;
   strnum: TString;
   offset: Word = 0;
@@ -168,7 +173,7 @@ begin
       CRT_Write(Atascii2Antic(Space(listwidth-Length(str)-Length(strnum))));
       CRT_Write(Atascii2Antic(strnum));
       if (count = 1) and (mode = true) then CRT_Invert(LISTSTART,8,LISTWIDTH);
-      inc(count);
+      Inc(count);
     end;
   end;
   for x:=count to MAXCARGOSLOTS-1 do
@@ -349,22 +354,31 @@ begin
     CRT_ClearRow(y);
 
 
-  CRT_WriteXY(0,0,concat('Loc: '~,FFTermToString(locations[player.loc]))); //mocap
-  CRT_WriteXY(0,1,concat('Dest: '~,FFTermToString(locations[2]))); //mocap
-  CRT_WriteXY(0,2,concat('Distance: '~,'23.567 AU'~)); //mocap
-  CRT_WriteXY(14,5,FFTermToString(strings[7])); // Back
+//debug
+    for y:=0 to 6 do
+      CRT_WriteXY(0,y,Atascii2Antic(IntToStr(y)));
+//
+  //CRT_WriteXY(0,0,concat(FFTermToString(strings[20]),FFTermToString(locations[player.loc])));
+//  CRT_WriteXY(0,0,FFTermToString(strings[20]));
+//  CRT_WriteXY(0,1,FFTermToString(strings[21]));
+//  CRT_WriteXY(0,2,concat(FFTermToString(strings[22]),' 23.567 AU'~)); //mocap
+  //CRT_WriteXY(14,5,FFTermToString(strings[7])); // Back
 
+  keyval:= chr(0);
   stillPressed:= false;
   repeat
   //  pause;
   //  msx.play;
     If (CRT_Keypressed) then
     begin
-      keyval := char(CRT_Keycode[kbcode]);
-      case keyval of
-        KEY_BACK: current_menu := MENU_MAIN;
+      if (stillPressed = false) then
+      begin
+        keyval := char(CRT_Keycode[kbcode]);
+        case keyval of
+          KEY_BACK: current_menu := MENU_MAIN;
+        end;
+        stillPressed:= true;
       end;
-      stillPressed:= true;
     end
     else
     begin
@@ -425,7 +439,6 @@ var
 
 
 
-
 begin
   currentuec:= player.uec;
   currentShip:= ship;
@@ -436,6 +449,7 @@ begin
   optionPressed:= false;
   selectPressed:= false;
   cargoPresent:= false;
+  keyval:= chr(0);
 
   //currentcargo:= ship.cargoindex;
   //currentcargoquantity:= ship.cargoquantity;
@@ -454,7 +468,7 @@ begin
 
 
 
-  for y:=0 to CRT_screenWidth do
+  for y:=0 to CRT_screenHeight do
     CRT_ClearRow(y);
 
   str:=FFTermToString(locations[player.loc]);
@@ -485,7 +499,7 @@ begin
   CRT_WriteXY(liststart-(Length(str)+5),6,Atascii2Antic(str)); CRT_Write(concat(CARGOUNIT,'|'~)); //CRT_Write(' SCU|'~);
   CRT_WriteXY(0,7,'--------------------+'~);
 
-  str:='|'~;
+  str:='|';
   for y:=8 to 17 do
   begin
       CRT_WriteXY(liststart-1,y,Atascii2Antic(str));
@@ -528,7 +542,6 @@ begin
   currentitemquantity:=itemquantity[availableitems[itemindex]];
   currentitemprice:=GetItemPrice(itemindex,mode);
   currentitemindex:=availableitems[itemindex];
-
 
 
   repeat
@@ -574,7 +587,7 @@ begin
                       itemquantity[currentitemindex]:=itemquantity[currentitemindex]-selecteditemquantity;
                       current_menu:= MENU_MAIN;
                     end;
-        KEY_BACK: current_menu:=MENU_MAIN;
+        KEY_BACK: if (stillPressed = false) then current_menu := MENU_MAIN;
         KEY_UP:     begin
                       if stillPressed = false then
                         if (mode = false) then
@@ -890,6 +903,7 @@ begin
   CRT_WriteXY(14,2,FFTermToString(strings[7])); // Back
 
 
+
   stillPressed:= false;
   keyval:=chr(0);
   repeat
@@ -897,19 +911,22 @@ begin
   //  msx.play;
     if CRT_Keypressed then
     begin
-      keyval := char(CRT_Keycode[kbcode]);
-      case keyval of
-        KEY_OPTION1: current_menu := MENU_NAV;
-        KEY_OPTION2: current_menu := MENU_TRADE;
-        KEY_BACK: current_menu := MENU_TITLE;
+      if (stillPressed = false) then
+      begin
+        keyval := char(CRT_Keycode[kbcode]);
+        case keyval of
+          KEY_OPTION1: current_menu := MENU_NAV;
+          KEY_OPTION2: current_menu := MENU_TRADE;
+          KEY_BACK: current_menu := MENU_TITLE;
+        end;
+        stillPressed:= true;
       end;
-      stillPressed:= true;
     end
     else
     begin
       stillPressed:= false;
     end;
-  until (keyval = KEY_BACK) or (keyval = KEY_OPTION1) or (keyval = KEY_OPTION2);
+  until (keyval = KEY_BACK) or (keyval = KEY_OPTION1) or (keyval = KEY_OPTION2); // temp solution for the dev ( should be restored to KEY_BACK)
 end;
 
 
@@ -926,18 +943,17 @@ begin
   Waitframe;
   DLISTL := DISPLAY_LIST_ADDRESS_TITLE;
 
+  // for y:=0 to 6 do
+  //   CRT_ClearRow(y);
 
+  //CRT_WriteXY(14,0,FFTermToString(strings[1])); // New game;
+  //CRT_WriteXY(14,1,FFTermToString(strings[2])); // Quit;
 
-
-  for y:=0 to 6 do
-    CRT_ClearRow(y);
-
-  CRT_WriteXY(14,0,FFTermToString(strings[1])); // New game;
-  CRT_WriteXY(14,1,FFTermToString(strings[2])); // Quit;
+  for y:=0 to 4 do
+    CRT_WriteXY(0,y,Atascii2Antic(IntToStr(y)));
 
   //str:= Atascii2Antic(NullTermToString(strings[0])); // read scroll text
   str:= FFTermToString(strings[0]); // read scroll text
-
   move(str[1],pointer(SCROLL_ADDRESS+42),sizeOf(str)); // copy text to vram
 
 
@@ -949,10 +965,11 @@ begin
     begin
       keyval := char(CRT_Keycode[kbcode]);
       case keyval of
-        KEY_NEW: begin
-                  start;
-                  current_menu := MENU_MAIN;
-                end;
+        KEY_NEW:  if (stillPressed = false) then
+                  begin
+                    start;
+                    current_menu := MENU_MAIN;
+                  end;
       end;
       stillPressed:= true;
     end

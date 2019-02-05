@@ -26,7 +26,6 @@
 ; remove # to uncomment and use examples below:
 
 CHARSET_ADDRESS rcdata 'assets/Nvdi8.fnt'
-; CHARSET_ADDRESS rcdata 'assets/kaz1.fnt'
 
 DISPLAY_LIST_ADDRESS_TITLE rcasm 'dlist_title.asm'
 DISPLAY_LIST_ADDRESS_MENU rcasm 'dlist_menu.asm'
@@ -42,4 +41,4 @@ ITEMS_ADDRESS rcasm 'items.asm'
 
 ; graphics
 GFX_ADDRESS RCDATA 'assets/StarVagrandLogo.dat'
-;GFX2_ADDRESS RCDATA 'assets/portolisar.dat'
+GFX2_ADDRESS RCDATA 'assets/portolisar.dat'
