@@ -425,7 +425,6 @@ end;
 procedure console_navigation;
 var
   y: byte;
-  stillPressed: Boolean;
 
 begin
   for y:=0 to 6 do
@@ -442,11 +441,11 @@ begin
   CRT_GotoXY(0,2);
   CRT_Write(FFTermToString(strings[22]));CRT_Write(' 2356 SDU'~); // Dis:
 
-  // Keys Help
+  // Help Keys
   CRT_GotoXY(0,6);
-  CRT_Write(FFTermToString(strings[23])); // Navigation
+  CRT_Write(FFTermToString(strings[23])); // Navigation options
   CRT_Write(' '~);
-  CRT_Write(FFTermToString(strings[24]));  // Launch
+  CRT_Write(FFTermToString(strings[24]));  // FTL Jump
   CRT_Write(' '~);
   CRT_Write(FFTermToString(strings[7])); // Back
 
@@ -454,25 +453,18 @@ begin
 
 
   keyval:= chr(0);
-  stillPressed:= false;
   repeat
   //  pause;
   //  msx.play;
     If (CRT_Keypressed) then
     begin
-      if (stillPressed = false) then
-      begin
+
         keyval := char(CRT_Keycode[kbcode]);
         case keyval of
           KEY_BACK: current_menu := MENU_MAIN;
         end;
-        stillPressed:= true;
-      end;
-    end
-    else
-    begin
-      stillPressed:= false;
     end;
+    Waitframe;
 
   until keyval = KEY_BACK;
 end;
@@ -499,11 +491,11 @@ const
 var
   y: Byte;
   mode: Boolean = false;
-  stillPressed: Boolean = false;
+
   optionPressed: Boolean = false;
   selectPressed: Boolean = false;
   cargoPresent: Boolean = false;
-
+  selectitem: Boolean = false;
   str: TString;
   strnum: TString;
 
@@ -511,13 +503,12 @@ var
   itemindex: Byte = 0;
   listwidth: Byte = 19;
   liststart: Byte = 21;
-  //cargoindex: Byte = 0;
+
 
   currentitemindex: Word;
   currentitemquantity: Word;
   currentitemprice: Word;
-  //currentcargo: array [0..MAXCARGOSLOTS-1] of Word;
-  //currentcargoquantity: array [0..MAXCARGOSLOTS-1] of Word;
+
   currentuec: Longword;
   currentShip:TShip;
 
@@ -534,7 +525,6 @@ begin
   selecteditemtotal:= 0;
   selecteditemquantity:= 0; // reset choosen quantity at start;
   mode:= false;
-  stillPressed:= false;
   optionPressed:= false;
   selectPressed:= false;
   cargoPresent:= false;
@@ -561,7 +551,8 @@ begin
     CRT_ClearRow(y);
 
   str:=FFTermToString(locations[player.loc]);
-  CRT_WriteXY(0,0,str);
+  CRT_GotoXY(0,0);
+  CRT_Write(str);
   l:=Length(str);
   str:=' '~;
   str:=concat(str,FFTermToString(strings[8]));
@@ -676,72 +667,70 @@ begin
                       itemquantity[currentitemindex]:=itemquantity[currentitemindex]-selecteditemquantity;
                       current_menu:= MENU_MAIN;
                     end;
-        KEY_BACK: if (stillPressed = false) then current_menu := MENU_MAIN;
+        KEY_BACK:   current_menu := MENU_MAIN;
         KEY_UP:     begin
-                      if stillPressed = false then
-                        if (mode = false) then
+                      if (mode = false) then
+                      begin
+                        if CheckItemPosition(itemindex-1) and (availableitems[itemindex-1] > 0) then
                         begin
-                          if CheckItemPosition(itemindex-1) and (availableitems[itemindex-1] > 0) then
-                          begin
-                            CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth);
-                            Dec(itemindex);
-                            CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth); // selecting the whole row with item
-                            currentitemquantity:=itemquantity[availableitems[itemindex]];
-                            currentitemprice:=GetItemPrice(itemindex,false);
-                            currentitemindex:=availableitems[itemindex];
-                            selecteditemtotal:=0;
-                            selecteditemquantity:=0;
-                            CRT_ClearRow(19);
-                          end;
-                        end
-                        else  // when selling
-                          begin
-                            if CheckCargoPosition(itemindex-1) and (currentShip.cargoindex[itemindex-1] > 0)  then
-                            begin
-                              CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1);
-                              Dec(itemindex);
-                              currentitemquantity:=currentShip.cargoquantity[itemindex];
-                              currentitemprice:=GetCargoPrice(currentShip,itemindex);
-                              currentitemindex:=currentShip.cargoindex[itemindex];
-                              selecteditemtotal:=0;
-                              selecteditemquantity:=0;
-                              CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1); // selecting the whole row with item
-                              cargoPresent:=CheckCargoPresence(currentShip,itemindex);
-                            end;
-                          end;
+                          CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth);
+                          Dec(itemindex);
+                          CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth); // selecting the whole row with item
+                          currentitemquantity:=itemquantity[availableitems[itemindex]];
+                          currentitemprice:=GetItemPrice(itemindex,false);
+                          currentitemindex:=availableitems[itemindex];
+                          selecteditemtotal:=0;
+                          selecteditemquantity:=0;
+                          CRT_ClearRow(19);
+                        end;
+                      end
+                      else  // when selling
+                      begin
+                        if CheckCargoPosition(itemindex-1) and (currentShip.cargoindex[itemindex-1] > 0)  then
+                        begin
+                          CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1);
+                          Dec(itemindex);
+                          currentitemquantity:=currentShip.cargoquantity[itemindex];
+                          currentitemprice:=GetCargoPrice(currentShip,itemindex);
+                          currentitemindex:=currentShip.cargoindex[itemindex];
+                          selecteditemtotal:=0;
+                          selecteditemquantity:=0;
+                          CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1); // selecting the whole row with item
+                          cargoPresent:=CheckCargoPresence(currentShip,itemindex);
+                        end;
+                      end;
                     end;
         KEY_DOWN:   begin
-                      if stillPressed = false then
-                        if (mode = false) then
+                      if (mode = false) then
+                      begin
+                        if CheckItemPosition(itemindex+1) and (availableitems[itemindex+1] > 0)  then
                         begin
-                          if CheckItemPosition(itemindex+1) and (availableitems[itemindex+1] > 0)  then
-                          begin
-                            CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth);
-                            Inc(itemindex);
-                            CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth); // selecting the whole row with item
-                            currentitemquantity:=itemquantity[availableitems[itemindex]];
-                            currentitemprice:=GetItemPrice(itemindex,false);
-                            currentitemindex:=availableitems[itemindex];
-                            selecteditemtotal:=0;
-                            selecteditemquantity:=0;
-                            CRT_ClearRow(19);
-                          end;
-                        end
-                        else // when selling
-                        begin
-                          if CheckCargoPosition(itemindex+1) and (currentShip.cargoindex[itemindex+1] > 0)  then
-                          begin
-                            CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1);
-                            Inc(itemindex);
-                            currentitemquantity:=currentShip.cargoquantity[itemindex];
-                            currentitemprice:=GetCargoPrice(currentShip,itemindex);
-                            currentitemindex:=currentShip.cargoindex[itemindex];
-                            selecteditemtotal:=0;
-                            selecteditemquantity:=0;
-                            CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1); // selecting the whole row with item
-                            cargoPresent:=CheckCargoPresence(currentShip,itemindex);
-                          end;
+                          CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth);
+                          Inc(itemindex);
+                          CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth); // selecting the whole row with item
+                          currentitemquantity:=itemquantity[availableitems[itemindex]];
+                          currentitemprice:=GetItemPrice(itemindex,false);
+                          currentitemindex:=availableitems[itemindex];
+                          selecteditemtotal:=0;
+                          selecteditemquantity:=0;
+                          CRT_ClearRow(19);
                         end;
+                      end
+                      else // when selling
+                      begin
+                        if CheckCargoPosition(itemindex+1) and (currentShip.cargoindex[itemindex+1] > 0)  then
+                        begin
+                          CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1);
+                          Inc(itemindex);
+                          currentitemquantity:=currentShip.cargoquantity[itemindex];
+                          currentitemprice:=GetCargoPrice(currentShip,itemindex);
+                          currentitemindex:=currentShip.cargoindex[itemindex];
+                          selecteditemtotal:=0;
+                          selecteditemquantity:=0;
+                          CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1); // selecting the whole row with item
+                          cargoPresent:=CheckCargoPresence(currentShip,itemindex);
+                        end;
+                      end;
                     end;
         KEY_LEFT:   begin
                       if (selecteditemquantity > 0) then
@@ -752,20 +741,20 @@ begin
                       end;
                     end;
         KEY_RIGHT:  begin
-                      stillPressed:= false;
+                      selectitem:= false;
                       if (mode = false) then
                       begin
                         if (selecteditemquantity < currentitemquantity) and (selecteditemtotal + currentitemprice <= currentuec )
                            and (selecteditemquantity < currentShip.scu_max-currentShip.scu) then
-                          stillPressed:= true; //reuse boolean variable
+                          selectitem:= true;
                       end
                       else // when selling
                       begin
                         if (selecteditemquantity < currentitemquantity) and (selecteditemtotal + currentitemprice <= currentuec )
                           and (cargoPresent = true) then
-                          stillPressed:= true; //reuse boolean variable
+                          selectitem:= true;
                       end;
-                      if (stillPressed = true) then
+                      if (selectitem = true) then
                       begin
                         Inc(selecteditemquantity);
                         selecteditemtotal:=selecteditemquantity * currentitemprice;
@@ -781,11 +770,6 @@ begin
       // str:=concat(str,' ilosc=');
       // str:=concat(str,IntToStr(GetItemQuantity(itemindex)));
       // CRT_WriteXY(0,19,Atascii2Antic(str));
-      stillPressed:= true;
-    end
-    else
-    begin
-      stillPressed:= false;
     end;
 
     if (CRT_OptionPressed) and (optionPressed=false) then
@@ -842,19 +826,6 @@ begin
     begin
       if (selectPressed = false) then
       begin
-//         if (selecteditemquantity > 0) and (cargoindex < MAXCARGOSLOTS) then
-//         begin
-// // //          str:=FFTermToString(items[currentitemindex]);
-// //           str:=IntToStr(currentitemindex);
-// // //          str:=concat(str,' '~);
-// //           strnum:=IntToStr(selecteditemquantity);
-// //           CRT_WriteXY(0,cargoindex+CARGOTOPMARGIN, Atascii2Antic(str));
-// //           CRT_Write(Atascii2Antic(Space(CRT_screenWidth-listwidth-1-Length(str)-Length(strnum))));
-// //
-// //           CRT_Write(Atascii2Antic(strnum));
-// //           Inc(cargoindex);
-//         end;
-
           if (mode = false) then // buying mode
           begin
             if (selecteditemquantity > 0) then
@@ -965,7 +936,7 @@ begin
     end
     else
       selectPressed:=false;
-
+    Waitframe;
 
   until (keyval = KEY_BACK) or (keyval = KEY_OK);
 end;
@@ -974,7 +945,6 @@ procedure menu;
 
 var
     i: byte;
-    stillPressed: Boolean;
 
 begin
   EnableVBLI(@vbl);
@@ -982,43 +952,32 @@ begin
   Waitframe;
   DLISTL := DISPLAY_LIST_ADDRESS_MENU;
 
-  //CRT_Init(TXT_ADDRESS);
-
   for i:=0 to 6 do
     CRT_ClearRow(i);
 
-  CRT_WriteXY(14,0,FFTermToString(strings[3])); // Navigation
-  CRT_WriteXY(14,1,FFTermToString(strings[4])); // Trade Console
-  CRT_WriteXY(14,2,FFTermToString(strings[7])); // Back
-  // CRT_WriteXY(14,3,'Linia 4'~);
-  // CRT_WriteXY(14,4,'Linia 5'~);
-  // CRT_WriteXY(14,5,'Linia 6'~);
-  // CRT_WriteXY(14,6,'Linia 7'~);
+  CRT_GotoXY(14,0);
+  CRT_Write(FFTermToString(strings[3])); // Navigation
+  CRT_GotoXY(14,1);
+  CRT_Write(FFTermToString(strings[4])); // Trade Console
+  CRT_GotoXY(14,2);
+  CRT_Write(FFTermToString(strings[7])); // Back
 
-
-  stillPressed:= false;
   keyval:=chr(0);
   repeat
   //  pause;
   //  msx.play;
     if CRT_Keypressed then
     begin
-      if (stillPressed = false) then
-      begin
-        keyval := char(CRT_Keycode[kbcode]);
-        case keyval of
-          KEY_OPTION1: current_menu := MENU_NAV;
-          KEY_OPTION2: current_menu := MENU_TRADE;
-          KEY_BACK: current_menu := MENU_TITLE;
-        end;
-        stillPressed:= true;
+      keyval := char(CRT_Keycode[kbcode]);
+      case keyval of
+        KEY_OPTION1: current_menu := MENU_NAV;
+        KEY_OPTION2: current_menu := MENU_TRADE;
+        KEY_BACK: current_menu := MENU_TITLE;
       end;
-    end
-    else
-    begin
-      stillPressed:= false;
     end;
-  until (keyval = KEY_BACK) or (keyval = KEY_OPTION1) or (keyval = KEY_OPTION2); // temp solution for the dev ( should be restored to KEY_BACK)
+    Waitframe;
+
+  until (keyval = KEY_BACK) or (keyval = KEY_OPTION1) or (keyval = KEY_OPTION2);
 end;
 
 
@@ -1027,7 +986,6 @@ procedure title;
 var
   str: String;
   y: Byte;
-  stillPressed: Boolean;
 
 begin
   EnableVBLI(@vbl_title);
@@ -1038,37 +996,29 @@ begin
    for y:=0 to 5 do
     CRT_ClearRow(y);
 
-  CRT_WriteXY(14,0,FFTermToString(strings[1])); // New game;
-  CRT_WriteXY(14,1,FFTermToString(strings[2])); // Quit;
-
-  // for y:=0 to 5 do
-  //   CRT_WriteXY(0,y,Atascii2Antic(IntToStr(y)));
+  CRT_GotoXY(14,0);
+  CRT_Write(FFTermToString(strings[1])); // New game;
+  CRT_GotoXY(14,1);
+  CRT_Write(FFTermToString(strings[2])); // Quit;
 
   //str:= Atascii2Antic(NullTermToString(strings[0])); // read scroll text
   str:= FFTermToString(strings[0]); // read scroll text
   move(str[1],pointer(SCROLL_ADDRESS+42),sizeOf(str)); // copy text to vram
 
-
   keyval:=chr(0);
   repeat
-    pause;
     //msx.play;
     if CRT_Keypressed then
     begin
       keyval := char(CRT_Keycode[kbcode]);
       case keyval of
-        KEY_NEW:  if (stillPressed = false) then
-                  begin
-                    start;
-                    current_menu := MENU_MAIN;
-                  end;
+          KEY_NEW:  begin
+                      start;
+                      current_menu := MENU_MAIN;
+                    end;
       end;
-      stillPressed:= true;
-    end
-    else
-    begin
-      stillPressed:= false;
     end;
+    Waitframe;
 
   until (keyval = KEY_QUIT) or (keyval = KEY_NEW);
 end;
@@ -1123,8 +1073,9 @@ begin
       MENU_TRADE: console_trade;
       //MENU_MAINT: console_maint;
     end;
+    repeat Waitframe until not CRT_Keypressed;
 
-until keyval = KEY_QUIT;
+  until keyval = KEY_QUIT;
 
   // restore system
   SystemReset;

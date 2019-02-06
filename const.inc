@@ -29,7 +29,7 @@ NUMBEROFLOCATIONS = 17; // number of locations defined in locations.asm. Needs t
 NUMBEROFITEMS = 24; // number of items defined in items.asm. Needs to match.
 MAXAVAILABLEITEMS = 12; // numer of concurrent items displayed
 MAXCARGOSLOTS = 10;  // number of cargo slots
-MAXAVAILABLEDESTINATIONS = 5;  // number of destinations
+MAXAVAILABLEDESTINATIONS = 5;  // number of destinations fron location.
 
 // ***************************************************************************//
 KEY_OPTION1 = '1';

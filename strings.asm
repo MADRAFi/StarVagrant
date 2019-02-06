@@ -29,9 +29,9 @@ strings
 txt_0
     dta d'v.0.1 (c) 2019 MADRAFi. Special thanks to Bocianu for support. ',$ff
 txt_1
-    dta d'[N]ew Game',$ff
+    dta d'[N] New Game',$ff
 txt_2
-    dta d'[Q]uit',$ff
+    dta d'[Q] Quit',$ff
 txt_3
     dta d'[1] Navigation',$ff
 txt_4
@@ -41,7 +41,7 @@ txt_5
 txt_6
     dta d'[4] Ship Hangar',$ff
 txt_7
-    dta d'[B]ack',$ff
+    dta d'[B] Back',$ff
 txt_8
     dta d'Buy',$ff
 txt_9
@@ -75,7 +75,7 @@ txt_22
 txt_23
     dta d'[1-5] Navigation',$ff
 txt_24
-    dta d'[L]aunch',$ff
+    dta d'[J] FTL Jump',$ff
 
  .print "STRINGS SIZE: ", *-strings_list
  .print "STRINGS : ", strings_list, "..", *
