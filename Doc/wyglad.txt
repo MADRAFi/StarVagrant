@@ -1,4 +1,4 @@
-Port Olisar    [ Buy ] Sell 99999999 UEC
+Port Olisar       Buy       99999999 UEC
 ----------------------------------------
 /Delivery_Locations| ../Available_Items
 [ Cuttles Black ]  | commodity    price

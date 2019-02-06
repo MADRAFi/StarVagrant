@@ -22,6 +22,8 @@ strings_list
     dta a(txt_20)
     dta a(txt_21)
     dta a(txt_22)
+    dta a(txt_23)
+    dta a(txt_24)
 
 strings
 txt_0
@@ -39,7 +41,7 @@ txt_5
 txt_6
     dta d'[4] Ship Hangar',$ff
 txt_7
-    dta d'[B] Back',$ff
+    dta d'[B]ack',$ff
 txt_8
     dta d'Buy',$ff
 txt_9
@@ -67,9 +69,13 @@ txt_19
 txt_20
     dta d'Loc:',$ff
 txt_21
-    dta d'Dest:',$ff
+    dta d'Nav:',$ff
 txt_22
-    dta d'Distance:',$ff
+    dta d'Dis:',$ff
+txt_23
+    dta d'[1-5] Navigation',$ff
+txt_24
+    dta d'[L]aunch',$ff
 
  .print "STRINGS SIZE: ", *-strings_list
  .print "STRINGS : ", strings_list, "..", *

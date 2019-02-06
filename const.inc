@@ -8,7 +8,7 @@ DISPLAY_LIST_ADDRESS_MENU = DISPLAY_LIST_ADDRESS_TITLE + $100;
 DISPLAY_LIST_ADDRESS_CONSOLE = DISPLAY_LIST_ADDRESS_MENU + $100;
 TXT_ADDRESS = DISPLAY_LIST_ADDRESS_CONSOLE + $100;
 
-SCROLL_ADDRESS = TXT_ADDRESS + $500;
+SCROLL_ADDRESS = TXT_ADDRESS + $400;
 
 //RMT_PLAYER_ADDRESS = $7000; // begining of a new mem page
 //RMT_MODULE_ADDRESS = RMT_PLAYER_ADDRESS + $800;
@@ -29,6 +29,7 @@ NUMBEROFLOCATIONS = 17; // number of locations defined in locations.asm. Needs t
 NUMBEROFITEMS = 24; // number of items defined in items.asm. Needs to match.
 MAXAVAILABLEITEMS = 12; // numer of concurrent items displayed
 MAXCARGOSLOTS = 10;  // number of cargo slots
+MAXAVAILABLEDESTINATIONS = 5;  // number of destinations
 
 // ***************************************************************************//
 KEY_OPTION1 = '1';

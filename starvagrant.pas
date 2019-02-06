@@ -62,9 +62,9 @@ var
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 
-
   ); // quantities of items
   availableitems: array [0..(MAXAVAILABLEITEMS-1)] of Word; // only 12 avaiable items
+
   locationdistance: array[0..(NUMBEROFLOCATIONS*NUMBEROFLOCATIONS)-1] of Word =
   (
     0,5,0,0,0,0,0,0,6,0,0,3655,86,0,0,5,5,
@@ -87,6 +87,7 @@ var
 
   );
 
+  availabledestinations: array [0..(MAXAVAILABLEDESTINATIONS-1)] of Word; // only 5 avaiable destinations
 
   current_menu: Byte;
   player: TPlayer;
@@ -230,7 +231,7 @@ begin
 end;
 
 
-procedure LoadItems(loc: byte; mode: Boolean);
+procedure LoadItems(loc: Byte; mode: Boolean);
 var
   x: byte;
   count:byte = 0;
@@ -275,6 +276,83 @@ begin
       end;
     end;
 end;
+
+
+
+// procedure ListDestinations;
+// const
+//   LISTSTART = 20;
+//
+// var
+//   x: byte;
+//   count:byte;
+//   offset: Word;
+//
+// begin
+//   count:=0;
+//   for x:=0 to MAXAVAILABLEDESTINATIONS-1 do
+//     begin
+//       offset:=availabledestinations[x];
+//       if (offset > 0) then
+//       begin
+//         CRT_GotoXY(LISTSTART,count);
+//         CRT_Write(count+1);CRT_Write(' '~);
+//         CRT_Write(FFTermToString(locations[offset]));
+//       end;
+//     end;
+//
+// end;
+
+procedure LoadDestinations(loc: Byte);
+const
+  LISTSTART = 20;
+
+var
+  x: Byte;
+  count: Byte;
+  offset: Word;
+
+begin
+
+  // Load destinations
+  count:=0;
+  for x:=0 to NUMBEROFLOCATIONS-1 do
+  begin
+    offset:=(NUMBEROFLOCATIONS-1)*loc + x;
+    if locationdistance[offset] > 0 then
+    begin
+      availabledestinations[count]:=offset;
+      inc(count);
+    end;
+  end;
+
+
+  // clear avaiable destinations array when less destinations are present
+  if (count < MAXAVAILABLEDESTINATIONS-1) then
+  begin
+    for x:=count to MAXAVAILABLEDESTINATIONS-1 do
+    begin
+      availabledestinations[x]:=0;
+    end;
+  end;
+
+
+  // list destinations
+  count:=0;
+  for x:=0 to MAXAVAILABLEDESTINATIONS-1 do
+  begin
+    offset:=availabledestinations[x];
+    if (offset > 0) then
+    begin
+      CRT_GotoXY(LISTSTART,count);
+      CRT_Write(count+1);CRT_Write(' '~);
+      CRT_Write(FFTermToString(locations[offset]));
+      Inc(count);
+    end;
+  end;
+
+end;
+
 
 function CheckItemPosition(newindex : Byte) : Boolean;
 begin
@@ -353,12 +431,27 @@ begin
   for y:=0 to 6 do
     CRT_ClearRow(y);
 
+  CRT_GotoXY(0,0);
+  CRT_Write(FFTermToString(strings[20])); // Loc:
+  CRT_Write(FFTermToString(locations[player.loc]));
+  //CRT_GotoXY(20,0);
+  //CRT_Write(FFTermToString(strings[23])); // Navigation:
 
-  CRT_WriteXY(0,0,concat(FFTermToString(strings[20]),FFTermToString(locations[player.loc])));
-  //CRT_WriteXY(0,0,FFTermToString(strings[20]));
-  CRT_WriteXY(0,1,FFTermToString(strings[21]));
-  CRT_WriteXY(0,2,concat(FFTermToString(strings[22]),' 23.567 AU'~)); //mocap
-  CRT_WriteXY(14,5,FFTermToString(strings[7])); // Back
+  CRT_GotoXY(0,1);
+  CRT_Write(FFTermToString(strings[21])); // Nav:
+  CRT_GotoXY(0,2);
+  CRT_Write(FFTermToString(strings[22]));CRT_Write(' 2356 SDU'~); // Dis:
+
+  // Keys Help
+  CRT_GotoXY(0,6);
+  CRT_Write(FFTermToString(strings[23])); // Navigation
+  CRT_Write(' '~);
+  CRT_Write(FFTermToString(strings[24]));  // Launch
+  CRT_Write(' '~);
+  CRT_Write(FFTermToString(strings[7])); // Back
+
+  LoadDestinations(player.loc);
+
 
   keyval:= chr(0);
   stillPressed:= false;
