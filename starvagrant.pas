@@ -5,7 +5,7 @@ uses atari, b_utils, b_system, b_crt, sysutils;
 const
 {$i 'const.inc'}
   CURRENCY = ' UEC';
-  CARGOUNIT = ' SCU'~;
+  CARGOUNIT = ' SCU';
   DISTANCE = ' SDU';
   COMMISSION = 0.05;
 
@@ -138,11 +138,12 @@ begin
       ship.cargoquantity[x]:= 0;
   end;
 
-  ship.cargoindex[0]:=7;
-  ship.cargoquantity[0]:=10;
-  ship.cargoindex[1]:=10;
-  ship.cargoquantity[1]:=20;
-  ship.scu:= 30;
+  // ship.cargoindex[0]:=7;
+  // ship.cargoquantity[0]:=10;
+  // ship.cargoindex[1]:=10;
+  // ship.cargoquantity[1]:=20;
+  // ship.scu:= 30;
+  
 end;
 
 procedure ListCargo(myship: Tship;mode : Boolean);
@@ -482,6 +483,40 @@ begin
   CRT_WriteRightAligned(19,Atascii2Antic(str));
 end;
 
+
+procedure trade_UpdateUEC(uec: Longword);
+var
+  strnum: TString;
+  liststart: Byte;
+  listwidth: Byte;
+
+begin
+    liststart:=(CRT_screenWidth div 2)+1;
+    listwidth:=CRT_screenWidth-liststart;
+
+  // update player UEC (current session)
+  CRT_GotoXY(liststart+7,0); // +7 for Sell string
+  strnum:=IntToStr(uec);
+  CRT_Write(Atascii2Antic(space(LISTWIDTH-Length(strnum)-Length(CURRENCY)-7)));
+  CRT_Write(uec);
+  CRT_Write(Atascii2Antic(CURRENCY));
+end;
+
+procedure trade_UpdateCargo(myship: TShip);
+var
+  str: TString;
+  liststart: Byte;
+
+begin
+  liststart:=(CRT_screenWidth div 2)+1;
+  // update cargo Total
+  str:=IntToStr(myship.scu_max-myship.scu);
+  CRT_GotoXY(liststart-(Length(str)+5)-4,6);
+  CRT_Write('    '~); // fixed 4 chars for cargo size
+  CRT_GotoXY(liststart-(Length(str)+5),6);
+  CRT_Write(Atascii2Antic(str)); CRT_Write(Atascii2Antic(CARGOUNIT));CRT_Write('|'~);
+end;
+
 procedure console_trade;
 
 const
@@ -554,62 +589,71 @@ begin
   CRT_GotoXY(0,0);
   CRT_Write(str);
   l:=Length(str);
-  str:=' '~;
-  str:=concat(str,FFTermToString(strings[8]));
-  str:=concat(str,' '~);
-  CRT_WriteXY(listwidth-4,0,str); // Buy
+
+  CRT_GotoXY(listwidth-1,0);
+  CRT_Write(' '~);
+  CRT_Write(FFTermToString(strings[8])); // Buy
+  CRT_Write(' '~);
   // invert at start
-  CRT_Invert(listwidth-4,0,5);
+  CRT_Invert(listwidth-1,0,5);
 
-  str:=' '~;
-  str:=concat(str,FFTermToString(strings[9]));
-  str:=concat(str,' '~);
-  CRT_Write(str); // Sell
   CRT_WriteRightAligned(Atascii2Antic(concat(IntToStr(currentuec), CURRENCY)));
-  CRT_WriteXY(0,1,'--------------------+-------------------'~);
-  CRT_WriteXY(0,2,concat(FFTermToString(strings[10]),'  |'~)); // Delivery
+  CRT_GotoXY(0,1);
+  CRT_Write('--------------------+-------------------'~);
+  CRT_GotoXY(0,2);
+  CRT_Write(FFTermToString(strings[10]));CRT_Write('  |'~); // Delivery
   CRT_Write(FFTermToString(strings[11])); // Available items
-  CRT_WriteXY(0,3,'[ '~); CRT_Write(Atascii2Antic(currentship.sname)); CRT_Write(' ]'~);CRT_WriteXY(liststart-2,3,' |'~);
+  CRT_GotoXY(0,3);
+  CRT_Write('[ '~); CRT_Write(Atascii2Antic(currentship.sname)); CRT_Write(' ]'~);
+  CRT_GotoXY(liststart-2,3);
+  CRT_Write(' |'~);
   CRT_Write(FFTermToString(strings[12]));CRT_WriteRightAligned(FFTermToString(strings[13])); // commodity price
-  CRT_WriteXY(0,4,'--------------------+-------------------'~);
-  CRT_WriteXY(0,5,FFTermToString(strings[14])); CRT_Write(' '~);
-  CRT_WriteXY(listwidth-5,5,Atascii2Antic(IntToStr(currentship.scu_max))); CRT_Write(concat(CARGOUNIT,'|'~));//CRT_Write(' SCU|'~); //CRT_WriteXY(listwidth-2,5,'46 |'~);  // mocap
-  CRT_WriteXY(0,6,FFTermToString(strings[15])); CRT_Write(' '~);
+  CRT_GotoXY(0,4);
+  CRT_Write('--------------------+-------------------'~);
+  CRT_GotoXY(0,5);
+  CRT_Write(FFTermToString(strings[14])); CRT_Write(' '~);
+  CRT_GotoXY(listwidth-5,5);
+  CRT_Write(Atascii2Antic(IntToStr(currentship.scu_max))); CRT_Write(Atascii2Antic(CARGOUNIT));CRT_Write('|'~);
+  CRT_GotoXY(0,6);
+  CRT_Write(FFTermToString(strings[15])); CRT_Write(' '~);
   str:=IntToStr(currentship.scu_max-currentship.scu);
-  CRT_WriteXY(liststart-(Length(str)+5),6,Atascii2Antic(str)); CRT_Write(concat(CARGOUNIT,'|'~)); //CRT_Write(' SCU|'~);
-  CRT_WriteXY(0,7,'--------------------+'~);
+  CRT_GotoXY(liststart-(Length(str)+5),6);
+  CRT_Write(Atascii2Antic(str)); CRT_Write(Atascii2Antic(CARGOUNIT));CRT_Write('|'~);
+  CRT_GotoXY(0,7);
+  CRT_Write('--------------------+'~);
 
-  str:='|';
+
   for y:=8 to 17 do
   begin
-      CRT_WriteXY(liststart-1,y,Atascii2Antic(str));
+      CRT_GotoXY(liststart-1,y);
+      CRT_Write('|'~);
   end;
 
-  CRT_WriteXY(0,18,'--------------------+-------------------'~);
+  CRT_GotoXY(0,18);
+  CRT_Write('--------------------+-------------------'~);
   // str:=StringOfChar('-',20);
   // str:=concat(str,'+');
   // str:=concat(str,StringOfChar('-',19));
   // CRT_WriteXY(0,18,Atascii2Antic(str));
   //
-  CRT_GotoXY(0,22);
-  str:=concat(FFTermToString(strings[16]),' '~);
-  CRT_WriteRightAligned(concat(str,FFTermToString(strings[17])));
+  CRT_GotoXY(27,22);
+  CRT_Write(FFTermToString(strings[16])); CRT_Write(' '~);
+  CRT_Write(FFTermToString(strings[17]));
   // CRT_WriteRightAligned('[Cancel] [OK]'~);
 
   // help
-
-  str:='OPTION'*~;
-  str:=concat(str,'-'~);
-  str:=concat(str,FFTermToString(strings[8]));
-  str:=concat(str,'/'~);
-  str:=concat(str,FFTermToString(strings[9]));
-  str:=concat(str,' '~);
-  str:=concat(str,'SELECT'*~);
-  str:=concat(str,'-'~);
-  str:=concat(str,FFTermToString(strings[19]));
-  str:=concat(str,' '~);
-  str:=concat(str,FFTermToString(strings[7]));
-  CRT_WriteCentered(23,str);
+  CRT_GotoXY(0,23);
+  CRT_Write('OPTION'*~);
+  CRT_Write('-'~);
+  CRT_Write(FFTermToString(strings[8]));
+  CRT_Write('/'~);
+  CRT_Write(FFTermToString(strings[9]));
+  CRT_Write(' '~);
+  CRT_Write('SELECT'*~);
+  CRT_Write('-'~);
+  CRT_Write(FFTermToString(strings[19]));
+  CRT_Write(' '~);
+  CRT_Write(FFTermToString(strings[7]));
 
   //move(str[1],pointer(SCROLL_ADDRESS+42),sizeOf(str)); // copy text to vram
 
@@ -649,16 +693,11 @@ begin
 
 
                       // update player UEC (current session)
-                      CRT_GotoXY(liststart+7,0); // +7 for Sell string
-                      strnum:=IntToStr(currentuec);
-                      CRT_Write(Atascii2Antic(space(LISTWIDTH-Length(strnum)-Length(CURRENCY)-7)));
-                      CRT_Write(Atascii2Antic(concat(IntToStr(currentuec),CURRENCY)));
+                      trade_UpdateUEC(currentuec);
 
                       // update cargo Total
                       currentShip.scu:=currentShip.scu-selecteditemquantity;
-                      str:=IntToStr(currentship.scu_max-currentship.scu);
-                      CRT_WriteXY(liststart-(Length(str)+5)-4,6,Atascii2Antic(Space(4))); // fixed 4 chars for cargo size
-                      CRT_WriteXY(liststart-(Length(str)+5),6,Atascii2Antic(str)); CRT_Write(concat(CARGOUNIT,'|'~)); //CRT_Write(' SCU|'~);
+                      trade_UpdateCargo(currentShip);
 
                     end;
         KEY_OK:     begin
@@ -774,11 +813,15 @@ begin
 
     if (CRT_OptionPressed) and (optionPressed=false) then
     begin
-      l:=liststart-6; // Buy text is x char on left from screen center
       mode:= not mode;
       if (mode = false) then
       begin
-        CRT_Invert(l,0,5);CRT_Invert(l+5,0,6);
+        CRT_GotoXY(LISTSTART-3,0);
+        CRT_Write(' '~);
+        CRT_Write(FFTermToString(strings[8])); // Buy
+        CRT_Write('  '~);
+        CRT_Invert(LISTSTART-3,0,5);
+
         LoadItems(player.loc,false);
         ListItems(false);
 
@@ -796,7 +839,12 @@ begin
         itemindex:=0;
       end
       else begin
-        CRT_Invert(l,0,5);CRT_Invert(l+5,0,6);
+        CRT_GotoXY(LISTSTART-3,0);
+        CRT_Write(' '~);
+        CRT_Write(FFTermToString(strings[9])); // Buy
+        CRT_Write(' '~);
+        CRT_Invert(LISTSTART-3,0,6);
+
         LoadItems(player.loc, true);
         ListItems(true);
 
@@ -854,16 +902,11 @@ begin
               currentuec:=currentuec - selecteditemtotal;
 
               // update player UEC (current session)
-              CRT_GotoXY(liststart+7,0); // +7 for Sell string
-              strnum:=IntToStr(currentuec);
-              CRT_Write(Atascii2Antic(space(LISTWIDTH-Length(strnum)-Length(CURRENCY)-7)));
-              CRT_Write(Atascii2Antic(concat(IntToStr(currentuec),CURRENCY)));
+              trade_UpdateUEC(currentuec);
 
               // update cargo Total
               currentShip.scu:=currentShip.scu + selecteditemquantity;
-              str:=IntToStr(currentship.scu_max-currentship.scu);
-              CRT_WriteXY(liststart-(Length(str)+5)-4,6,Atascii2Antic(Space(4))); // fixed 4 chars for cargo size
-              CRT_WriteXY(liststart-(Length(str)+5),6,Atascii2Antic(str)); CRT_Write(concat(CARGOUNIT,'|'~)); //CRT_Write(' SCU|'~);
+              trade_UpdateCargo(currentShip);
 
               // remove selection
               currentitemprice:=GetCargoPrice(currentShip,itemindex);
@@ -910,16 +953,11 @@ begin
               currentitemindex:=currentShip.cargoindex[itemindex];
 
               // update player UEC (current session)
-              CRT_GotoXY(liststart+7,0); // +7 for Sell string
-              strnum:=IntToStr(currentuec);
-              CRT_Write(Atascii2Antic(space(LISTWIDTH-Length(strnum)-Length(CURRENCY)-7)));
-              CRT_Write(Atascii2Antic(concat(IntToStr(currentuec),CURRENCY)));
+              trade_UpdateUEC(currentuec);
 
               // update cargo Total
               currentShip.scu:=currentShip.scu-selecteditemquantity;
-              str:=IntToStr(currentship.scu_max-currentship.scu);
-              CRT_WriteXY(liststart-(Length(str)+5)-4,6,Atascii2Antic(Space(4))); // fixed 4 chars for cargo size
-              CRT_WriteXY(liststart-(Length(str)+5),6,Atascii2Antic(str)); CRT_Write(CARGOUNIT~);
+              trade_UpdateCargo(currentShip);
 
               // remove selection
               currentitemprice:=GetCargoPrice(currentShip,itemindex);
@@ -927,6 +965,9 @@ begin
               selecteditemquantity:= 0;
               selecteditemtotal:=0;
 //              itemindex:=0;
+
+              // remove selected GetItemQuantity
+              CRT_ClearRow(19);
 
             end;
           end;
