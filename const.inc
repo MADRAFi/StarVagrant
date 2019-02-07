@@ -41,6 +41,7 @@ KEY_OPTION5 = '5';
 KEY_BACK = 'b';
 KEY_QUIT = 'q';
 KEY_NEW = 'n';
+KEY_JUMP = 'j';
 
 KEY_UP = 'p';
 KEY_DOWN = ';';

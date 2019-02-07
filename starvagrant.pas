@@ -125,7 +125,7 @@ begin
   //msx.Sfx(3, 2, 24);
   //generateworld;
   player.uec:= 5000; // start cash
-  player.loc:= 0; //start location Port Olisar
+  player.loc:= 5; //start location Port Olisar
 
   //mocap starting ship
   ship.sname:= 'Cuttlas Black';
@@ -244,7 +244,7 @@ begin
   for x:=0 to NUMBEROFITEMS-1 do
     begin
       visible:= false;
-      offset:=(NUMBEROFITEMS-1)*loc + x;
+      offset:=(NUMBEROFITEMS)*loc + x;
 
       if (mode = true) then
       begin
@@ -319,7 +319,7 @@ begin
   count:=0;
   for x:=0 to NUMBEROFLOCATIONS-1 do
   begin
-    offset:=(NUMBEROFLOCATIONS-1)*loc + x;
+    offset:=(NUMBEROFLOCATIONS)*loc + x;
     if locationdistance[offset] > 0 then
     begin
       availabledestinations[count]:=offset;
@@ -447,7 +447,29 @@ begin
 end;
 
 
+procedure fade_gfx;
+// var
+//   x: Byte;
+//   y: Byte;
 
+begin
+  // for x:=0 to 160 do
+  // begin
+  //   for y:=0 to 100 do
+  //   begin
+  //     SetColor(1);
+  //     //move($00,pointer(GFX2_ADDRESS+x),sizeOf(1));
+  //     PutPixel(x,y);
+  //     Waitframe;
+  //   end;
+  //   Waitframe;
+  // end;
+  colbk:=0;
+  colpf0:=0;
+  colpf1:=0;
+  colpf2:=0;
+  colpf3:=0;
+end;
 
 procedure console_navigation;
 var
@@ -536,12 +558,19 @@ begin
                             navi_distanceUpdate(distance);
                           end;
                         end;
-
+          KEY_JUMP:     begin
+                          if destinationindex > 0 then
+                          begin
+                            //fade_gfx;
+                            player.loc:=destinationindex;
+                            current_menu:=MENU_MAIN;
+                          end;
+                        end;
         end;
     end;
     Waitframe;
 
-  until keyval = KEY_BACK;
+  until (keyval = KEY_BACK) OR (keyval = KEY_JUMP);
 end;
 
 procedure UpdateSelectedItem(selecteditemquantity:Word;selecteditemtotal:Longword);
