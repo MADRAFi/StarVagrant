@@ -6,7 +6,7 @@ const
 {$i 'const.inc'}
   CURRENCY = ' UEC';
   CARGOUNIT = ' SCU';
-  DISTANCE = ' SDU';
+  DISTANCE = ' DU';
   COMMISSION = 0.05;
 
 type
@@ -143,7 +143,7 @@ begin
   // ship.cargoindex[1]:=10;
   // ship.cargoquantity[1]:=20;
   // ship.scu:= 30;
-  
+
 end;
 
 procedure ListCargo(myship: Tship;mode : Boolean);
@@ -422,10 +422,38 @@ begin
     end
 end;
 
+procedure navi_destinationUpdate(loc: Word);
+//var
+  //str: TString;
+
+begin
+  CRT_GotoXY(0,1);
+  CRT_Write(Atascii2Antic(Space(19))); // max location lenght
+  CRT_GotoXY(0,1);
+  CRT_Write(FFTermToString(strings[21]));
+  CRT_Write(FFTermToString(locations[loc]));
+end;
+
+procedure navi_distanceUpdate(mydistance: Word);
+//var
+  //str: TString;
+
+begin
+  CRT_GotoXY(0,2);
+  CRT_Write(Atascii2Antic(Space(19))); // max distance lenght
+  CRT_GotoXY(0,2);
+  CRT_Write(FFTermToString(strings[22]));
+  CRT_Write(mydistance); CRT_Write(Atascii2Antic(DISTANCE));
+end;
+
+
+
 
 procedure console_navigation;
 var
   y: byte;
+  destinationindex: Word;
+  distance: Word;
 
 begin
   for y:=0 to 6 do
@@ -440,7 +468,7 @@ begin
   CRT_GotoXY(0,1);
   CRT_Write(FFTermToString(strings[21])); // Nav:
   CRT_GotoXY(0,2);
-  CRT_Write(FFTermToString(strings[22]));CRT_Write(' 2356 SDU'~); // Dis:
+  CRT_Write(FFTermToString(strings[22])); //CRT_Write(' 2356 SDU'~); // Dis:
 
   // Help Keys
   CRT_GotoXY(0,6);
@@ -463,6 +491,52 @@ begin
         keyval := char(CRT_Keycode[kbcode]);
         case keyval of
           KEY_BACK: current_menu := MENU_MAIN;
+          KEY_OPTION1:  begin
+                          destinationindex:=availabledestinations[0];
+                          if (destinationindex > 0) then
+                          begin
+                            distance:=locationdistance[destinationindex];
+                            navi_destinationUpdate(destinationindex);
+                            navi_distanceUpdate(distance);
+                          end;
+                         end;
+          KEY_OPTION2:  begin
+                          destinationindex:=availabledestinations[1];
+                          if (destinationindex > 0) then
+                          begin
+                            distance:=locationdistance[destinationindex];
+                            navi_destinationUpdate(destinationindex);
+                            navi_distanceUpdate(distance);
+                          end;
+                        end;
+          KEY_OPTION3:  begin
+                          destinationindex:=availabledestinations[2];
+                          if (destinationindex > 0) then
+                          begin
+                            distance:=locationdistance[destinationindex];
+                            navi_destinationUpdate(destinationindex);
+                            navi_distanceUpdate(distance);
+                          end;
+                        end;
+          KEY_OPTION4:  begin
+                          destinationindex:=availabledestinations[3];
+                          if (destinationindex > 0) then
+                          begin
+                            distance:=locationdistance[destinationindex];
+                            navi_destinationUpdate(destinationindex);
+                            navi_distanceUpdate(distance);
+                          end;
+                        end;
+          KEY_OPTION5:  begin
+                          destinationindex:=availabledestinations[4];
+                          if (destinationindex > 0) then
+                          begin
+                            distance:=locationdistance[destinationindex];
+                            navi_destinationUpdate(destinationindex);
+                            navi_distanceUpdate(distance);
+                          end;
+                        end;
+
         end;
     end;
     Waitframe;

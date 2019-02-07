@@ -36,6 +36,8 @@ KEY_OPTION1 = '1';
 KEY_OPTION2 = '2';
 KEY_OPTION3 = '3';
 KEY_OPTION4 = '4';
+KEY_OPTION5 = '5';
+
 KEY_BACK = 'b';
 KEY_QUIT = 'q';
 KEY_NEW = 'n';
