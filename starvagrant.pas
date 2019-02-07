@@ -125,7 +125,7 @@ begin
   //msx.Sfx(3, 2, 24);
   //generateworld;
   player.uec:= 5000; // start cash
-  player.loc:= 5; //start location Port Olisar
+  player.loc:= 1; //start location Port Olisar
 
   //mocap starting ship
   ship.sname:= 'Cuttlas Black';
@@ -138,11 +138,11 @@ begin
       ship.cargoquantity[x]:= 0;
   end;
 
-  // ship.cargoindex[0]:=7;
-  // ship.cargoquantity[0]:=10;
-  // ship.cargoindex[1]:=10;
-  // ship.cargoquantity[1]:=20;
-  // ship.scu:= 30;
+  ship.cargoindex[0]:=8;
+  ship.cargoquantity[0]:=10;
+  ship.cargoindex[1]:=11;
+  ship.cargoquantity[1]:=20;
+  ship.scu:= 30;
 
 end;
 
@@ -244,7 +244,7 @@ begin
   for x:=0 to NUMBEROFITEMS-1 do
     begin
       visible:= false;
-      offset:=(NUMBEROFITEMS)*loc + x;
+      offset:=(NUMBEROFITEMS*loc) + x;
 
       if (mode = true) then
       begin
@@ -319,7 +319,7 @@ begin
   count:=0;
   for x:=0 to NUMBEROFLOCATIONS-1 do
   begin
-    offset:=(NUMBEROFLOCATIONS)*loc + x;
+    offset:=(NUMBEROFLOCATIONS*loc) + x;
     if locationdistance[offset] > 0 then
     begin
       availabledestinations[count]:=offset;
@@ -327,30 +327,43 @@ begin
     end;
   end;
 
-
+  Waitframe;
   // clear avaiable destinations array when less destinations are present
   if (count < MAXAVAILABLEDESTINATIONS-1) then
   begin
     for x:=count to MAXAVAILABLEDESTINATIONS-1 do
     begin
       availabledestinations[x]:=0;
+      CRT_GotoXY(0,x);
+      CRT_Write('erase:='~);CRT_Write(x);
     end;
   end;
 
 
   // list destinations
   count:=0;
-  for x:=0 to MAXAVAILABLEDESTINATIONS-1 do
+
+// debug
+//
+for x:=0 to MAXAVAILABLEDESTINATIONS-1 do
   begin
-    offset:=availabledestinations[x];
-    if (offset > 0) then
-    begin
-      CRT_GotoXY(LISTSTART,count);
-      CRT_Write(count+1);CRT_Write(' '~);
-      CRT_Write(FFTermToString(locations[offset]));
-      Inc(count);
-    end;
+    CRT_GotoXY(20,x);
+    CRT_Write('av_dest:='~);CRT_Write(Atascii2Antic(IntToStr(availabledestinations[x])));
   end;
+
+
+  // for x:=0 to MAXAVAILABLEDESTINATIONS-1 do
+  // begin
+  //   offset:=availabledestinations[x]-(loc*NUMBEROFLOCATIONS); // calculate base lication index
+  //   if (offset > 0) then
+  //   begin
+  //     CRT_GotoXY(LISTSTART,count);
+  //     CRT_Write(count+1);CRT_Write(' '~);
+  //     //CRT_Write(FFTermToString(locations[offset]));
+  //     CRT_Write('offset='~); CRT_Write(offset);
+  //     Inc(count);
+  //   end;
+  // end;
 
 end;
 
@@ -757,8 +770,6 @@ begin
   CRT_Write(FFTermToString(strings[19]));
   CRT_Write(' '~);
   CRT_Write(FFTermToString(strings[7]));
-
-  //move(str[1],pointer(SCROLL_ADDRESS+42),sizeOf(str)); // copy text to vram
 
   LoadItems(player.loc, false);
   ListItems(false);
