@@ -198,8 +198,53 @@ var
   finalprice: word;
   offset: Word = 0;
 
+  visible: Boolean;
 
 begin
+
+//load items
+
+  count:=0;
+  for x:=0 to NUMBEROFITEMS-1 do
+    begin
+      visible:= false;
+      offset:=(NUMBEROFITEMS*player.loc) + x;
+
+      if (mode = true) then
+      begin
+        if (itemprice[offset] > 0) then // show item even if quantity is 0
+          visible:=true;
+      end
+      else
+      //begin
+        if (itemprice[offset] > 0) and (itemquantity[offset] > 0) then // show item if quantity > 0
+          visible:=true;
+      //end;
+
+
+      if (visible = true) then
+      begin
+        if count <= MAXAVAILABLEITEMS-1 then // max avaiable items
+        begin
+          availableitems[count]:=offset;
+          inc(count);
+        end;
+      end;
+    end;
+
+    // clear avaiable items array when mode is changed and less items are present
+    if (count < MAXAVAILABLEITEMS-1) then
+    begin
+      for x:=count to MAXAVAILABLEITEMS-1 do
+      //begin
+        availableitems[x]:=0;
+      //end;
+    end;
+
+
+
+  // list items
+
   count:=1;
   for x:=0 to MAXAVAILABLEITEMS-1 do // max available items
     begin
@@ -233,51 +278,51 @@ begin
 end;
 
 
-procedure LoadItems(loc: Byte; mode: Boolean);
-var
-  x: byte;
-  count:byte = 0;
-  offset: word = 0;
-  visible: Boolean;
-
-begin
-  count:=0;
-  for x:=0 to NUMBEROFITEMS-1 do
-    begin
-      visible:= false;
-      offset:=(NUMBEROFITEMS*loc) + x;
-
-      if (mode = true) then
-      begin
-        if (itemprice[offset] > 0) then // show item even if quantity is 0
-          visible:=true;
-      end
-      else
-      begin
-        if (itemprice[offset] > 0) and (itemquantity[offset] > 0) then // show item if quantity > 0
-          visible:=true;
-      end;
-
-
-      if (visible = true) then
-      begin
-        if count <= MAXAVAILABLEITEMS-1 then // max avaiable items
-        begin
-          availableitems[count]:=offset;
-          inc(count);
-        end;
-      end;
-    end;
-
-    // clear avaiable items array when mode is changed and less items are present
-    if (count < MAXAVAILABLEITEMS-1) then
-    begin
-      for x:=count to MAXAVAILABLEITEMS-1 do
-      begin
-        availableitems[x]:=0;
-      end;
-    end;
-end;
+// procedure LoadItems(loc: Byte; mode: Boolean);
+// var
+//   x: byte;
+//   count:byte = 0;
+//   offset: word = 0;
+//   visible: Boolean;
+//
+// begin
+//   count:=0;
+//   for x:=0 to NUMBEROFITEMS-1 do
+//     begin
+//       visible:= false;
+//       offset:=(NUMBEROFITEMS*loc) + x;
+//
+//       if (mode = true) then
+//       begin
+//         if (itemprice[offset] > 0) then // show item even if quantity is 0
+//           visible:=true;
+//       end
+//       else
+//       //begin
+//         if (itemprice[offset] > 0) and (itemquantity[offset] > 0) then // show item if quantity > 0
+//           visible:=true;
+//       //end;
+//
+//
+//       if (visible = true) then
+//       begin
+//         if count <= MAXAVAILABLEITEMS-1 then // max avaiable items
+//         begin
+//           availableitems[count]:=offset;
+//           inc(count);
+//         end;
+//       end;
+//     end;
+//
+//     // clear avaiable items array when mode is changed and less items are present
+//     if (count < MAXAVAILABLEITEMS-1) then
+//     begin
+//       for x:=count to MAXAVAILABLEITEMS-1 do
+//       //begin
+//         availableitems[x]:=0;
+//       //end;
+//     end;
+// end;
 
 
 
@@ -412,7 +457,7 @@ begin
     end
 end;
 
-procedure navi_destinationUpdate(loc: Word);
+procedure navi_destinationUpdate(locationindex: Word);
 //var
   //str: TString;
 
@@ -421,7 +466,7 @@ begin
   CRT_Write(Atascii2Antic(Space(19))); // max location lenght
   CRT_GotoXY(0,1);
   CRT_Write(FFTermToString(strings[21]));
-  CRT_Write(FFTermToString(locations[loc]));
+  CRT_Write(FFTermToString(locations[locationindex-(player.loc*NUMBEROFLOCATIONS)]));
 end;
 
 procedure navi_distanceUpdate(mydistance: Word);
@@ -746,11 +791,13 @@ begin
 
   CRT_GotoXY(0,18);
   CRT_Write('--------------------+-------------------'~);
-  // str:=StringOfChar('-',20);
-  // str:=concat(str,'+');
-  // str:=concat(str,StringOfChar('-',19));
-  // CRT_WriteXY(0,18,Atascii2Antic(str));
-  //
+
+
+  // CRT_Write(StringOfChar('-'~,20));
+  // CRT_Write('+'~);
+  // CRT_Write(StringOfChar('-'~,19));
+
+
   CRT_GotoXY(27,22);
   CRT_Write(FFTermToString(strings[16])); CRT_Write(' '~);
   CRT_Write(FFTermToString(strings[17]));
@@ -770,7 +817,7 @@ begin
   CRT_Write(' '~);
   CRT_Write(FFTermToString(strings[7]));
 
-  LoadItems(player.loc, false);
+  //LoadItems(player.loc, false);
   ListItems(false);
   ListCargo(currentShip,false);
   itemindex:=0;
@@ -793,7 +840,7 @@ begin
                       currentuec:= player.uec;
                       currentShip:= ship;
 
-                      LoadItems(player.loc,false);
+                      //LoadItems(player.loc,false);
                       ListItems(false);
                       ListCargo(currentShip,false);
                       selecteditemquantity:= 0;
@@ -935,7 +982,7 @@ begin
         CRT_Write('  '~);
         CRT_Invert(LISTSTART-3,0,5);
 
-        LoadItems(player.loc,false);
+        //LoadItems(player.loc,false);
         ListItems(false);
 
         // // debug
@@ -958,7 +1005,7 @@ begin
         CRT_Write(' '~);
         CRT_Invert(LISTSTART-3,0,6);
 
-        LoadItems(player.loc, true);
+        //LoadItems(player.loc, true);
         ListItems(true);
 
        //  // debug
