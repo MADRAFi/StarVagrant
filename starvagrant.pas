@@ -120,7 +120,7 @@ begin
   //msx.Sfx(3, 2, 24);
   //generateworld;
   player.uec:= 5000; // start cash
-  player.loc:= 1; //start location Port Olisar
+  player.loc:= 3; //start location Port Olisar
 
   //mocap starting ship
   ship.sname:= 'Cuttlas Black';
@@ -203,13 +203,15 @@ begin
   count:=1;
   for x:=0 to MAXAVAILABLEITEMS-1 do // max available items
     begin
-      offset:=availableitems[x];
-      if (offset > 0) then
+      // offset:=availableitems[x];
+      if (availableitems[x] > 0) then
       begin
+
+        offset:=availableitems[x];
         CRT_GotoXY(LISTSTART,4+count); //min count:=1 so we start at 4th row
 
         CRT_Write(count);CRT_Write(' '~);
-        str:= FFTermToString(items[offset]);
+        str:= FFTermToString(items[availableitems[x]-(player.loc*NUMBEROFITEMS)]);
         CRT_Write(str);
         if mode then finalprice:=Trunc(itemprice[offset]*(1-COMMISSION))
         else finalprice:=itemprice[offset];
@@ -247,14 +249,16 @@ begin
 
       if (mode = true) then
       begin
-        if (itemprice[offset] <> 0) then // show item even if quantity is 0
+        if (itemprice[offset] > 0) then // show item even if quantity is 0
           visible:=true;
       end
       else
       begin
-        if (itemprice[offset] <> 0) and (itemquantity[offset] <> 0) then // show item if quantity > 0
+        if (itemprice[offset] > 0) and (itemquantity[offset] > 0) then // show item if quantity > 0
           visible:=true;
       end;
+
+
       if (visible = true) then
       begin
         if count <= MAXAVAILABLEITEMS-1 then // max avaiable items
@@ -329,7 +333,7 @@ begin
   begin
     if (availabledestinations[x] > 0) then
     begin
-      offset:=availabledestinations[x]-(loc*NUMBEROFLOCATIONS); // calculate base lication index
+      offset:=availabledestinations[x]-(loc*NUMBEROFLOCATIONS); // calculate base location index
       CRT_GotoXY(LISTSTART,count);
       CRT_Write(count+1);CRT_Write(' '~);
       CRT_Write(FFTermToString(locations[offset]));
