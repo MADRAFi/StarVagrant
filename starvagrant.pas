@@ -106,7 +106,7 @@ var
 
   );
 
-  availabledestinations: array [0..(MAXAVAILABLEDESTINATIONS-1)] of Word = (0,0,0,0,0); // only 5 avaiable destinations
+  availabledestinations: array [0..(MAXAVAILABLEDESTINATIONS-1)] of Word; // = (0,0,0,0,0); // only 5 avaiable destinations
 
 
 {$i 'interrupts.inc'}
@@ -120,7 +120,7 @@ begin
   //msx.Sfx(3, 2, 24);
   //generateworld;
   player.uec:= 5000; // start cash
-  player.loc:= 3; //start location Port Olisar
+  player.loc:= 0; //start location Port Olisar
 
   //mocap starting ship
   ship.sname:= 'Cuttlas Black';
@@ -139,7 +139,7 @@ begin
   ship.cargoquantity[1]:=20;
   ship.scu:= 30;
 
-  //xbios_openfile('starvagr.sav');
+  //xbios_openfile('star1   sav');
   //xbios_write(@ship);
 
 
@@ -561,11 +561,20 @@ begin
                             navi_distanceUpdate(distance);
                           end;
                         end;
+          KEY_OPTION6:  begin
+                          destinationindex:=availabledestinations[5];
+                          if (destinationindex > 0) then
+                          begin
+                            distance:=locationdistance[destinationindex];
+                            navi_destinationUpdate(destinationindex);
+                            navi_distanceUpdate(distance);
+                          end;
+                        end;
           KEY_JUMP:     begin
                           if destinationindex > 0 then
                           begin
                             //fade_gfx;
-                            player.loc:=destinationindex;
+                            player.loc:=destinationindex-(player.loc*NUMBEROFLOCATIONS);
                             current_menu:=MENU_MAIN;
                           end;
                         end;
