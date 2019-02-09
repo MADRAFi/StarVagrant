@@ -1,9 +1,10 @@
 program StarVagrant;
 {$librarypath '../Libs/lib/';'../Libs/blibs/';'../Libs/base/'}
-uses atari, b_utils, b_system, b_crt, sysutils;
+uses atari, b_utils, b_system, b_crt, sysutils, mad_xbios;
 
 const
 {$i 'const.inc'}
+
   CURRENCY = ' UEC';
   CARGOUNIT = ' SCU';
   DISTANCE = ' DU';
@@ -18,10 +19,28 @@ var
 //  keyval: byte = 0;
 
   //msx: TRMT;
+  current_menu: Byte;
 
-  strings: array [0..0] of word absolute STRINGS_ADDRESS;
-  locations: array [0..0] of word absolute LOCATIONS_ADDRESS;
-  items: array [0..0] of word absolute ITEMS_ADDRESS;
+  (*
+  * 0 - colpf0
+  * 1 - colpf1
+  * 2 - colpf2
+  * 3 - colpf3
+  * 4 - colbk
+  *)
+  gfxcolor0: Byte;
+  gfxcolor1: Byte;
+  gfxcolor2: Byte;
+  gfxcolor3: Byte;
+  gfxcolor4: Byte;
+
+  player: TPlayer;
+  ship: TShip;
+
+//commission: shortreal = 0.05;
+  strings: array [0..0] of Word absolute STRINGS_ADDRESS;
+  locations: array [0..0] of Word absolute LOCATIONS_ADDRESS;
+  items: array [0..0] of Word absolute ITEMS_ADDRESS;
 
   itemprice: array [0..(NUMBEROFLOCATIONS*NUMBEROFITEMS)-1] of Word = (
     26,0,0,0,8,4,0,3,7,5,0,6,0,0,28,17,0,0,0,3,8,4,1,0,
@@ -87,35 +106,11 @@ var
 
   );
 
-  availabledestinations: array [0..(MAXAVAILABLEDESTINATIONS-1)] of Word; // only 5 avaiable destinations
+  availabledestinations: array [0..(MAXAVAILABLEDESTINATIONS-1)] of Word = (0,0,0,0,0); // only 5 avaiable destinations
 
-  current_menu: Byte;
-  player: TPlayer;
-  ship: TShip;
-
-//commission: shortreal = 0.05;
 
 {$i 'interrupts.inc'}
 
-
-
-// procedure generateworld;
-//
-// begin
-//   {
-//   locationmatrix[0].item[0].quantity:=0;
-//   locationmatrix[0].item[0].price:=0;
-//   locationmatrix[0].item[1].quantity:=0;
-//   locationmatrix[0].item[1].price:=0;
-//   locationmatrix[0].item[3].quantity:=10000;
-//   locationmatrix[0].item[3].price:=2;
-//   locationmatrix[0].item[4].quantity:=0;
-//   locationmatrix[0].item[4].price:=0;
-//   locationmatrix[0].item[5].quantity:=10000;
-//   locationmatrix[0].item[5].price:=10;
-// }
-//
-// end;
 
 procedure start;
 var
@@ -144,6 +139,10 @@ begin
   ship.cargoquantity[1]:=20;
   ship.scu:= 30;
 
+  //xbios_openfile('starvagr.sav');
+  //xbios_write(@ship);
+
+
 end;
 
 procedure ListCargo(myship: Tship;mode : Boolean);
@@ -170,7 +169,6 @@ begin
       CRT_GotoXY(LISTSTART,7+count); //min count:=1 so we start at 8th row
       str:= FFTermToString(items[offset]);
       CRT_Write(str);
-      //strnum:=concat(IntToStr(myship.cargoquantity[x]),CARGOUNIT);
       strnum:=IntToStr(myship.cargoquantity[x]);
       CRT_Write(Atascii2Antic(Space(listwidth-Length(str)-Length(strnum))));
       CRT_Write(Atascii2Antic(strnum));
@@ -180,8 +178,8 @@ begin
   end;
   for x:=count to MAXCARGOSLOTS-1 do
   begin
-    CRT_WriteXY(LISTSTART,TOPCARGOMARGIN+x-1,Atascii2Antic(space(LISTWIDTH))); // -1 to clear from the end of list
-    //CRT_WriteXY(LISTSTART,TOPCARGOMARGIN+x-1,Atascii2Antic('c '~)); // -1 to clear from the end of list
+    CRT_GotoXY(LISTSTART,TOPCARGOMARGIN+x-1);
+    CRT_Write(Atascii2Antic(Space(LISTWIDTH))); // -1 to clear from the end of list
   end;
 end;
 
@@ -196,8 +194,8 @@ var
   count:byte = 1;
   str: TString;
   pricestr: TString;
+  countstr: Tstring;
   finalprice: word;
-  price: word;
   offset: Word = 0;
 
 
@@ -209,14 +207,15 @@ begin
       if (offset > 0) then
       begin
         CRT_GotoXY(LISTSTART,4+count); //min count:=1 so we start at 4th row
-        str:= concat(Atascii2Antic(IntToStr(count)),' '~);
-        str:= concat(str,FFTermToString(items[offset]));
+
+        CRT_Write(count);CRT_Write(' '~);
+        str:= FFTermToString(items[offset]);
         CRT_Write(str);
-        price:=itemprice[offset];
-        if mode then finalprice:=Trunc(price*(1-COMMISSION))
-        else finalprice:=price;
+        if mode then finalprice:=Trunc(itemprice[offset]*(1-COMMISSION))
+        else finalprice:=itemprice[offset];
+        countstr:=IntToStr(count);
         pricestr:=IntToStr(finalprice);
-        CRT_Write(Atascii2Antic(Space(listwidth-Length(str)-Length(pricestr))));
+        CRT_Write(Atascii2Antic(Space(LISTWIDTH-(Length(countstr)+1+Length(str))-Length(pricestr)))); // (count, space and string)-price
         CRT_Write(Atascii2Antic(pricestr));
         //CRT_WriteRightAligned(Atascii2Antic(IntToStr(finalprice)));
         if (count = 1) and (mode = false) then CRT_Invert(LISTSTART,5,LISTWIDTH);
@@ -256,8 +255,6 @@ begin
         if (itemprice[offset] <> 0) and (itemquantity[offset] <> 0) then // show item if quantity > 0
           visible:=true;
       end;
-//      if (itemprice[offset] <> 0) and (itemquantity[offset] <> 0) then
-//      if (itemprice[offset] <> 0) then
       if (visible = true) then
       begin
         if count <= MAXAVAILABLEITEMS-1 then // max avaiable items
@@ -279,30 +276,6 @@ begin
 end;
 
 
-
-// procedure ListDestinations;
-// const
-//   LISTSTART = 20;
-//
-// var
-//   x: byte;
-//   count:byte;
-//   offset: Word;
-//
-// begin
-//   count:=0;
-//   for x:=0 to MAXAVAILABLEDESTINATIONS-1 do
-//     begin
-//       offset:=availabledestinations[x];
-//       if (offset > 0) then
-//       begin
-//         CRT_GotoXY(LISTSTART,count);
-//         CRT_Write(count+1);CRT_Write(' '~);
-//         CRT_Write(FFTermToString(locations[offset]));
-//       end;
-//     end;
-//
-// end;
 
 procedure LoadDestinations(loc: Byte);
 const
@@ -334,8 +307,8 @@ begin
     for x:=count to MAXAVAILABLEDESTINATIONS-1 do
     begin
       availabledestinations[x]:=0;
-      CRT_GotoXY(0,x);
-      CRT_Write('erase:='~);CRT_Write(x);
+      //CRT_GotoXY(0,x);
+      //CRT_Write('erase:='~);CRT_Write(x);
     end;
   end;
 
@@ -345,25 +318,25 @@ begin
 
 // debug
 //
-for x:=0 to MAXAVAILABLEDESTINATIONS-1 do
+// for x:=0 to MAXAVAILABLEDESTINATIONS-1 do
+//   begin
+//     CRT_GotoXY(20,x);
+//     CRT_Write('av_dest:='~);CRT_Write(availabledestinations[x]);
+//   end;
+
+
+  for x:=0 to MAXAVAILABLEDESTINATIONS-1 do
   begin
-    CRT_GotoXY(20,x);
-    CRT_Write('av_dest:='~);CRT_Write(Atascii2Antic(IntToStr(availabledestinations[x])));
+    if (availabledestinations[x] > 0) then
+    begin
+      offset:=availabledestinations[x]-(loc*NUMBEROFLOCATIONS); // calculate base lication index
+      CRT_GotoXY(LISTSTART,count);
+      CRT_Write(count+1);CRT_Write(' '~);
+      CRT_Write(FFTermToString(locations[offset]));
+      //CRT_Write('offset='~); CRT_Write(offset);
+      Inc(count);
+    end;
   end;
-
-
-  // for x:=0 to MAXAVAILABLEDESTINATIONS-1 do
-  // begin
-  //   offset:=availabledestinations[x]-(loc*NUMBEROFLOCATIONS); // calculate base lication index
-  //   if (offset > 0) then
-  //   begin
-  //     CRT_GotoXY(LISTSTART,count);
-  //     CRT_Write(count+1);CRT_Write(' '~);
-  //     //CRT_Write(FFTermToString(locations[offset]));
-  //     CRT_Write('offset='~); CRT_Write(offset);
-  //     Inc(count);
-  //   end;
-  // end;
 
 end;
 
@@ -477,11 +450,6 @@ begin
   //   end;
   //   Waitframe;
   // end;
-  colbk:=0;
-  colpf0:=0;
-  colpf1:=0;
-  colpf2:=0;
-  colpf3:=0;
 end;
 
 procedure console_navigation;
@@ -491,6 +459,24 @@ var
   distance: Word;
 
 begin
+  case player.loc of
+    0:  begin
+          gfxcolor0:=$14;
+          gfxcolor1:=$00;
+          gfxcolor2:=$10;
+          gfxcolor3:=$00;
+          gfxcolor4:=$1a;
+        end;
+  else
+    begin
+      gfxcolor0:=$0c;
+      gfxcolor1:=$06;
+      gfxcolor2:=$02;
+      gfxcolor3:=$0c;
+      gfxcolor4:=$00;
+    end;
+  end;
+
   for y:=0 to 6 do
     CRT_ClearRow(y);
 
@@ -648,7 +634,7 @@ var
   cargoPresent: Boolean = false;
   selectitem: Boolean = false;
   str: TString;
-  strnum: TString;
+  //strnum: TString;
 
   l: Byte;
   itemindex: Byte = 0;
@@ -1102,6 +1088,13 @@ var
     i: byte;
 
 begin
+
+  gfxcolor0:=$14;
+  gfxcolor1:=$00;
+  gfxcolor2:=$10;
+  gfxcolor3:=$00;
+  gfxcolor4:=$1a;
+
   EnableVBLI(@vbl);
   EnableDLI(@dli1);
   Waitframe;
@@ -1180,24 +1173,6 @@ end;
 
 
 
-
-
-// procedure fade;
-// var
-//   fadecolors: Array[0..6] of byte = ($95,$94,$93,$92,$91,$90,$00);
-//   i: byte;
-//
-// begin
-//   for i:=Low(fadecolors) to high(fadecolors)  do
-//     begin
-//       colbk:=fadecolors[i];
-//       Waitframe;
-//     end;
-//   //poke($2C6,$C4);
-// end;
-
-
-
 {
 --------------------------------------------------------------------------------
 MAIN LOOP
@@ -1209,7 +1184,6 @@ begin
   SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
   CRT_Init(TXT_ADDRESS);
 
-  //fade;
 
   // Initialize RMT player
   //msx.player:=pointer(RMT_PLAYER_ADDRESS);

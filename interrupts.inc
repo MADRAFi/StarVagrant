@@ -104,37 +104,21 @@ end;
 
 
 
-procedure dli1;interrupt;
-begin
-  case player.loc of
-    0:  asm {
-          pha
-          sta ATARI.WSYNC
+procedure dli1;assembler;interrupt;
+  asm {
+        pha
+        sta ATARI.WSYNC
 
-          mva #$14 ATARI.colpf0
-          mva #$00 ATARI.colpf1
-          mva #$10 ATARI.colpf2
-          mva #$00 ATARI.colpf3
-          mva #$1A ATARI.colbk
+        mva gfxcolor0 ATARI.colpf0
+        mva gfxcolor1 ATARI.colpf1
+        mva gfxcolor2 ATARI.colpf2
+        mva gfxcolor3 ATARI.colpf3
+        mva gfxcolor4 ATARI.colbk
 
-          mwa #DLI2 __dlivec
-          pla
-        };
-  ELSE
-    asm {
-          pha
-          sta ATARI.WSYNC
+        mwa #DLI2 __dlivec
+        pla
+  };
 
-          mva #$0c ATARI.colpf0
-          mva #$06 ATARI.colpf1
-          mva #$02 ATARI.colpf2
-          mva #$0c ATARI.colpf3
-          mva #$00 ATARI.colbk
-
-          mwa #DLI2 __dlivec
-          pla
-        };
-  end;
 end;
 
 procedure dli2;assembler;interrupt;
@@ -151,10 +135,6 @@ procedure dli2;assembler;interrupt;
 end;
 
 procedure vbl;interrupt;
-var
-  count: byte = 3;
-  offset: byte = 0;
-
 begin
   asm {
         phr ; store registers
