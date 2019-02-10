@@ -1,6 +1,6 @@
 program StarVagrant;
 {$librarypath '../Libs/lib/';'../Libs/blibs/';'../Libs/base/'}
-uses atari, b_utils, b_system, b_crt, sysutils, mad_xbios;
+uses atari, b_utils, b_system, b_crt, sysutils; //, mad_xbios; // disabled till I know hot to use it
 
 const
 {$i 'const.inc'}
@@ -16,7 +16,7 @@ type
 
 var
   keyval: char = chr(0);
-//  keyval: byte = 0;
+
 
   //msx: TRMT;
   current_menu: Byte;
@@ -86,23 +86,24 @@ var
 
   locationdistance: array[0..(NUMBEROFLOCATIONS*NUMBEROFLOCATIONS)-1] of Word =
   (
-    0,5,0,0,0,0,0,0,6,0,0,3655,86,0,0,5,5,
-    5,0,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,2,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,
-    0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,
-    6,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,5,0,6,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,
-    3655,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    86,0,0,0,0,0,0,0,0,6,0,0,0,1,7,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,
-    5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    5,0,0,0,2,3,0,0,0,0,0,0,0,0,0,0,0
+    0,50,0,0,0,0,0,0,60,0,0,365,120,0,0,50,50,
+    50,0,20,30,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,30,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,20,0,0,0,0,0,0,0,0,0,20,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,30,
+    0,0,0,0,20,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,30,0,0,0,0,0,0,0,0,
+    60,0,0,0,0,0,0,30,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,50,0,60,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,50,0,0,0,0,0,0,0,
+    365,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    120,0,0,0,0,0,0,0,0,60,0,0,0,10,70,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,10,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,70,0,0,0,0,
+    50,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    50,0,0,0,20,30,0,0,0,0,0,0,0,0,0,0,0
+
 
   );
 
@@ -139,9 +140,9 @@ begin
   ship.cargoquantity[1]:=20;
   ship.scu:= 30;
 
+  //xbios_opencurrentdir;
   //xbios_openfile('star1   sav');
   //xbios_write(@ship);
-
 
 end;
 
@@ -482,24 +483,19 @@ begin
 end;
 
 
-procedure fade_gfx;
-// var
-//   x: Byte;
-//   y: Byte;
-
-begin
-  // for x:=0 to 160 do
-  // begin
-  //   for y:=0 to 100 do
-  //   begin
-  //     SetColor(1);
-  //     //move($00,pointer(GFX2_ADDRESS+x),sizeOf(1));
-  //     PutPixel(x,y);
-  //     Waitframe;
-  //   end;
-  //   Waitframe;
-  // end;
-end;
+// procedure fade_gfx;
+//
+// begin
+//   repeat
+//     If (gfxcolor0 > 0) then Dec(gfxcolor0);
+//     If (gfxcolor1 > 0) then Dec(gfxcolor1);
+//     If (gfxcolor2 > 0) then Dec(gfxcolor2);
+//     If (gfxcolor3 > 0) then Dec(gfxcolor3);
+//     If (gfxcolor4 > 0) then Dec(gfxcolor4);
+//
+//     Waitframe;
+//   until (gfxcolor0 = 0) and (gfxcolor1 = 0) and (gfxcolor2 = 0) and (gfxcolor3 = 0) and (gfxcolor4 = 0);
+// end;
 
 procedure console_navigation;
 var
@@ -618,7 +614,30 @@ begin
           KEY_JUMP:     begin
                           if destinationindex > 0 then
                           begin
-                            //fade_gfx;
+                            CRT_ClearRow(7);
+                            for y:=0 to MAXAVAILABLEDESTINATIONS-1 do
+                              begin
+                                CRT_GotoXY(20,0+y); // liststart
+                                CRT_Write(Atascii2Antic(Space(18))); // clear rows
+                              end;
+
+                            // fade
+
+                              repeat
+                                If (gfxcolor0 > 0) then Dec(gfxcolor0);
+                                If (gfxcolor1 > 0) then Dec(gfxcolor1);
+                                If (gfxcolor2 > 0) then Dec(gfxcolor2);
+                                If (gfxcolor3 > 0) then Dec(gfxcolor3);
+                                If (gfxcolor4 > 0) then Dec(gfxcolor4);
+
+                                Waitframe;
+                              until (gfxcolor0 = 0) and (gfxcolor1 = 0) and (gfxcolor2 = 0) and (gfxcolor3 = 0) and (gfxcolor4 = 0);
+
+                            repeat
+                              Waitframes(5);
+                              Dec(distance);
+                              navi_distanceUpdate(distance);
+                            until (distance = 0);
                             player.loc:=destinationindex-(player.loc*NUMBEROFLOCATIONS);
                             current_menu:=MENU_MAIN;
                           end;
@@ -657,7 +676,7 @@ begin
   // update player UEC (current session)
   CRT_GotoXY(liststart+7,0); // +7 for Sell string
   strnum:=IntToStr(uec);
-  CRT_Write(Atascii2Antic(space(LISTWIDTH-Length(strnum)-Length(CURRENCY)-7)));
+  CRT_Write(Atascii2Antic(space(listwidth-Length(strnum)-Length(CURRENCY)-7)));
   CRT_Write(uec);
   CRT_Write(Atascii2Antic(CURRENCY));
 end;
@@ -963,12 +982,7 @@ begin
 //                        CRT_WriteRightAligned(19,FFTermToString(strings[20]));
                     end;
       end;
-      // str:=concat('itemindex=',IntToStr(itemindex));
-      // str:=concat(str,' cena=');
-      // str:=concat(str,IntToStr(GetItemPrice(itemindex,mode)));
-      // str:=concat(str,' ilosc=');
-      // str:=concat(str,IntToStr(GetItemQuantity(itemindex)));
-      // CRT_WriteXY(0,19,Atascii2Antic(str));
+
     end;
 
     if (CRT_OptionPressed) and (optionPressed=false) then

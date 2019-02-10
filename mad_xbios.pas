@@ -10,12 +10,19 @@ interface
 const
 {$i 'mad_xbios.inc'}
 
+procedure xbios_opencurrentdir;assembler;
 procedure xbios_openfile(fname: TString);assembler;
 procedure xbios_closefile;assembler;
 procedure xbios_write(src: Pointer);assembler;
 procedure xbios_read(dst: Pointer);assembler;
 
 implementation
+
+procedure xbios_opencurrentdir;assembler;
+  asm {
+    jsr xBIOS_OPEN_CURRENT_DIR
+  };
+end;
 
 procedure xbios_openfile(fname: TString);assembler;
   asm {
