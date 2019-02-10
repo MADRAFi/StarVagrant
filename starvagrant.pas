@@ -845,8 +845,7 @@ begin
                           CRT_ClearRow(19);
                         end;
                       end
-                      else  // when selling
-                      begin
+                      else begin // when selling
                         if CheckCargoPosition(itemindex+d) and (currentShip.cargoindex[itemindex+d] > 0)  then
                         begin
                           CRT_Invert(0,itemindex + CARGOTOPMARGIN,LISTWIDTH+1);
@@ -860,13 +859,14 @@ begin
                       end;
                       selecteditemtotal:=0;
                       selecteditemquantity:=0;
+                      Waitframes(2);
                     end;
         KEY_LEFT:   begin
                       if (selecteditemquantity > 0) then
                       begin
                         Dec(selecteditemquantity);
                         selecteditemtotal:=selecteditemquantity * currentitemprice;
-                        UpdateSelectedItem(selecteditemquantity,selecteditemtotal);
+//                        UpdateSelectedItem(selecteditemquantity,selecteditemtotal);
                       end;
                     end;
         KEY_RIGHT:  begin
@@ -881,13 +881,13 @@ begin
                       begin
                         Inc(selecteditemquantity);
                         selecteditemtotal:=selecteditemquantity * currentitemprice;
-                        UpdateSelectedItem(selecteditemquantity,selecteditemtotal);
+//                        UpdateSelectedItem(selecteditemquantity,selecteditemtotal);
                       end
-                      else
+//                      else
 //                        CRT_WriteRightAligned(19,FFTermToString(strings[20]));
                     end;
       end;
-
+      If (keyval = KEY_LEFT) or (keyval = KEY_RIGHT) then UpdateSelectedItem(selecteditemquantity,selecteditemtotal);
     end;
 
     if (CRT_OptionPressed) and (optionPressed=false) then
@@ -901,9 +901,6 @@ begin
         CRT_Write('  '~);
         CRT_Invert(LISTSTART-3,0,5);
 
-        //LoadItems(player.loc,false);
-        ListItems(false);
-
         // // debug
         // for y:=0 to MAXAVAILABLEITEMS-1 do
         // begin
@@ -914,6 +911,8 @@ begin
         // end;
         // //
 
+        //LoadItems(player.loc,false);
+        ListItems(false);
         ListCargo(currentShip,false);
         itemindex:=0;
       end
@@ -924,19 +923,18 @@ begin
         CRT_Write(' '~);
         CRT_Invert(LISTSTART-3,0,6);
 
+        //  // debug
+        //  for y:=0 to MAXAVAILABLEITEMS-1 do
+        //  begin
+        //   str:=concat('available[',IntToStr(y));
+        //   str:=concat(str,']=');
+        //   str:=concat(str,IntToStr(availableitems[y]));
+        //   CRT_WriteXY(0,8+y,Atascii2Antic(str));
+        // end;
+        //  //
+
         //LoadItems(player.loc, true);
         ListItems(true);
-
-       //  // debug
-       //  for y:=0 to MAXAVAILABLEITEMS-1 do
-       //  begin
-       //   str:=concat('available[',IntToStr(y));
-       //   str:=concat(str,']=');
-       //   str:=concat(str,IntToStr(availableitems[y]));
-       //   CRT_WriteXY(0,8+y,Atascii2Antic(str));
-       // end;
-       //  //
-
         ListCargo(currentShip,true);
         currentitemquantity:=currentShip.cargoquantity[itemindex];
         currentitemprice:=GetCargoPrice(currentShip,itemindex);
@@ -1008,22 +1006,21 @@ begin
               begin
                 if currentShip.cargoquantity[y] = 0 then
                 begin
-                  for l:=y to MAXCARGOSLOTS-1 do
-                  begin
-                    if (l < MAXCARGOSLOTS-1) then
-                    begin
-                      currentShip.cargoindex[l]:=currentShip.cargoindex[l+1];
-                      currentShip.cargoquantity[l]:=currentShip.cargoquantity[l+1];
-                    end
-                    else
-                    begin
-                      currentShip.cargoindex[l]:=0;
-                      currentShip.cargoquantity[l]:=0;
-                    end;
-                  end;
-
-                  // fillbyte(currentShip.cargoindex[y],(MAXCARGOSLOTS-1-y) shl 1,0);
-                  // fillbyte(currentShip.cargoquantity[y],(MAXCARGOSLOTS-1-y) shl 1,0);
+                  // for l:=y to MAXCARGOSLOTS-1 do
+                  // begin
+                  //   if (l < MAXCARGOSLOTS-1) then
+                  //   begin
+                  //     currentShip.cargoindex[l]:=currentShip.cargoindex[l+1];
+                  //     currentShip.cargoquantity[l]:=currentShip.cargoquantity[l+1];
+                  //   end
+                  //   else
+                  //   begin
+                  //     currentShip.cargoindex[l]:=0;
+                  //     currentShip.cargoquantity[l]:=0;
+                  //   end;
+                  // end;
+                  move (currentShip.cargoindex[y],currentShip.cargoindex[y+1],1);
+                  move (currentShip.cargoquantity[y],currentShip.cargoquantity[y+1],1);
                 end;
               end;
 
