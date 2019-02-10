@@ -995,8 +995,7 @@ begin
 
             end;
           end
-          else // Selling mode
-          begin
+          else begin // Selling mode
             if (selecteditemquantity > 0) then
             begin
               currentShip.cargoquantity[itemindex]:=currentShip.cargoquantity[itemindex]-selecteditemquantity;
@@ -1041,11 +1040,13 @@ begin
               trade_UpdateCargo(currentShip);
 
               // remove selection
+              itemindex:=0;
               currentitemprice:=GetCargoPrice(currentShip,itemindex);
+              currentitemquantity:=currentShip.cargoquantity[itemindex];
               currentitemindex:=currentShip.cargoindex[itemindex];
               selecteditemquantity:= 0;
               selecteditemtotal:=0;
-//              itemindex:=0;
+
 
               // remove selected GetItemQuantity
               CRT_ClearRow(19);
