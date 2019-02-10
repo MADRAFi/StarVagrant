@@ -1012,7 +1012,7 @@ begin
                 begin
                   for l:=y to MAXCARGOSLOTS-1 do
                   begin
-                    if (l < High(ship.cargoindex)) then
+                    if (l < MAXCARGOSLOTS-1) then
                     begin
                       currentShip.cargoindex[l]:=currentShip.cargoindex[l+1];
                       currentShip.cargoquantity[l]:=currentShip.cargoquantity[l+1];
@@ -1023,6 +1023,9 @@ begin
                       currentShip.cargoquantity[l]:=0;
                     end;
                   end;
+
+                  // fillbyte(currentShip.cargoindex[y],(MAXCARGOSLOTS-1-y) shl 1,0);
+                  // fillbyte(currentShip.cargoquantity[y],(MAXCARGOSLOTS-1-y) shl 1,0);
                 end;
               end;
 
@@ -1062,9 +1065,6 @@ begin
 end;
 
 procedure menu;
-
-// var
-//     i: byte;
 
 begin
 
@@ -1193,11 +1193,9 @@ begin
 
   repeat
     case current_menu of
-      MENU_TITLE: begin
-                  title;
-                  end;
-      MENU_MAIN: menu;
-      MENU_NAV: console_navigation;
+      MENU_TITLE: title;
+      MENU_MAIN:  menu;
+      MENU_NAV:   console_navigation;
       MENU_TRADE: console_trade;
       //MENU_MAINT: console_maint;
     end;
