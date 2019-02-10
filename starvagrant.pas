@@ -1,5 +1,6 @@
 program StarVagrant;
 {$librarypath '../Libs/lib/';'../Libs/blibs/';'../Libs/base/'}
+// {$librarypath '../blibs/'}
 uses atari, b_utils, b_system, b_crt, sysutils; //, mad_xbios; // disabled till I know hot to use it
 
 const
@@ -146,6 +147,16 @@ begin
 
 end;
 
+procedure WriteSpaces(len:byte);
+begin
+  CRT_Write(Atascii2Antic(Space(len)));
+end;
+
+procedure WriteFF(ptr:word);
+begin
+    CRT_Write(FFTermToString(ptr));
+end;
+
 procedure ListCargo(myship: Tship;mode : Boolean);
 const
   LISTWIDTH = 20;
@@ -171,16 +182,16 @@ begin
       str:= FFTermToString(items[offset]);
       CRT_Write(str);
       strnum:=IntToStr(myship.cargoquantity[x]);
-      CRT_Write(Atascii2Antic(Space(listwidth-Length(str)-Length(strnum))));
+      WriteSpaces(listwidth-Length(str)-Length(strnum));
       CRT_Write(Atascii2Antic(strnum));
-      if (count = 1) and (mode = true) then CRT_Invert(LISTSTART,8,LISTWIDTH);
+      if (count = 1) and mode then CRT_Invert(LISTSTART,8,LISTWIDTH);
       Inc(count);
     end;
   end;
   for x:=count to MAXCARGOSLOTS-1 do
   begin
     CRT_GotoXY(LISTSTART,TOPCARGOMARGIN+x-1);
-    CRT_Write(Atascii2Antic(Space(LISTWIDTH))); // -1 to clear from the end of list
+    WriteSpaces(LISTWIDTH); // -1 to clear from the end of list
   end;
 end;
 
@@ -211,7 +222,7 @@ begin
       visible:= false;
       offset:=(NUMBEROFITEMS*player.loc) + x;
 
-      if (mode = true) then
+      if mode then
       begin
         if (itemprice[offset] > 0) then // show item even if quantity is 0
           visible:=true;
@@ -223,7 +234,7 @@ begin
       //end;
 
 
-      if (visible = true) then
+      if visible then
       begin
         if count <= MAXAVAILABLEITEMS-1 then // max avaiable items
         begin
@@ -263,7 +274,7 @@ begin
         else finalprice:=itemprice[offset];
         countstr:=IntToStr(count);
         pricestr:=IntToStr(finalprice);
-        CRT_Write(Atascii2Antic(Space(LISTWIDTH-(Length(countstr)+1+Length(str))-Length(pricestr)))); // (count, space and string)-price
+        WriteSpaces(LISTWIDTH-(Length(countstr)+1+Length(str))-Length(pricestr)); // (count, space and string)-price
         CRT_Write(Atascii2Antic(pricestr));
         //CRT_WriteRightAligned(Atascii2Antic(IntToStr(finalprice)));
         if (count = 1) and (mode = false) then CRT_Invert(LISTSTART,5,LISTWIDTH);
@@ -272,7 +283,7 @@ begin
       else
       begin
         CRT_GotoXY(LISTSTART,4+x+1);
-        CRT_Write(Atascii2Antic(Space(listwidth)));
+        WriteSpaces(listwidth);
       end;
 
     end;
@@ -382,7 +393,7 @@ begin
       offset:=availabledestinations[x]-(loc*NUMBEROFLOCATIONS); // calculate base location index
       CRT_GotoXY(LISTSTART,count);
       CRT_Write(count+1);CRT_Write(' '~);
-      CRT_Write(FFTermToString(locations[offset]));
+      WriteFF(locations[offset]);
       //CRT_Write('offset='~); CRT_Write(offset);
       Inc(count);
     end;
@@ -393,14 +404,12 @@ end;
 
 function CheckItemPosition(newindex : Byte) : Boolean;
 begin
-  if (newindex < MAXAVAILABLEITEMS) and (newindex >= 0) then Result:=true
-  else Result:=false;
+  result:=(newindex < MAXAVAILABLEITEMS) and (newindex >= 0);
 end;
 
 function CheckCargoPosition(newindex : Byte) : Boolean;
 begin
-  if (newindex < MAXCARGOSLOTS) and (newindex >= 0) then Result:=true
-  else Result:=false;
+  result:=(newindex < MAXCARGOSLOTS) and (newindex >= 0);
 end;
 
 function GetItemPrice(itemindex : Byte; mode : Boolean): Word;
@@ -414,7 +423,7 @@ var
 begin
   offset:=availableitems[itemindex];
   price:=itemprice[offset];
-  if (mode = true) then
+  if mode then
   begin
     finalprice:=Trunc(price*(1-commission))
   end
@@ -429,32 +438,24 @@ end;
 
 function GetCargoPrice(myship: TShip; itemindex: Byte): Word;
 // Get item price based on itemindex of available items mode is false for BUY and tru for SELL
-
-var
-//  price: word;
-  offset: word;
-
 begin
-  offset:=myship.cargoindex[itemindex];
+
 //  price:=itemprice[offset];
 //  Result:=Trunc(price*(1-commission))
-  Result:=Trunc(itemprice[offset]*(1-commission))
+  Result:=Trunc(itemprice[myship.cargoindex[itemindex]]*(1-commission))
 end;
 
 function CheckCargoPresence(myship: TShip; itemindex: Byte): Boolean;
 
 var
-  offset: Word;
   item: Word;
 
 begin
-  offset:=myship.cargoindex[itemindex];
   Result:= false;
   //for item in availableitems do
   for item:=0 to MAXAVAILABLEITEMS-1 do
     begin
-      Result:= offset =  availableitems[item];
-      If (Result = true) then break;
+      if myship.cargoindex[itemindex] = availableitems[item] then exit(true);
     end
 end;
 
@@ -464,10 +465,10 @@ procedure navi_destinationUpdate(locationindex: Word);
 
 begin
   CRT_GotoXY(0,1);
-  CRT_Write(Atascii2Antic(Space(19))); // max location lenght
+  WriteSpaces(19); // max location lenght
   CRT_GotoXY(0,1);
-  CRT_Write(FFTermToString(strings[21]));
-  CRT_Write(FFTermToString(locations[locationindex-(player.loc*NUMBEROFLOCATIONS)]));
+  WriteFF(strings[21]);
+  WriteFF(locations[locationindex-(player.loc*NUMBEROFLOCATIONS)]);
 end;
 
 procedure navi_distanceUpdate(mydistance: Word);
@@ -476,9 +477,9 @@ procedure navi_distanceUpdate(mydistance: Word);
 
 begin
   CRT_GotoXY(0,2);
-  CRT_Write(Atascii2Antic(Space(19))); // max distance lenght
+  WriteSpaces(19); // max distance lenght
   CRT_GotoXY(0,2);
-  CRT_Write(FFTermToString(strings[22]));
+  WriteFF(strings[22]);
   CRT_Write(mydistance); CRT_Write(Atascii2Antic(DISTANCE));
 end;
 
@@ -496,6 +497,15 @@ end;
 //     Waitframe;
 //   until (gfxcolor0 = 0) and (gfxcolor1 = 0) and (gfxcolor2 = 0) and (gfxcolor3 = 0) and (gfxcolor4 = 0);
 // end;
+
+procedure updateNavi(destinationIndex:word);
+begin
+    if (destinationindex > 0) then
+    begin
+        navi_destinationUpdate(destinationindex);
+        navi_distanceUpdate(locationdistance[destinationindex]);
+    end;
+end;
 
 procedure console_navigation;
 var
@@ -526,23 +536,23 @@ begin
     CRT_ClearRow(y);
 
   CRT_GotoXY(0,0);
-  CRT_Write(FFTermToString(strings[20])); // Loc:
-  CRT_Write(FFTermToString(locations[player.loc]));
+  WriteFF(strings[20]); // Loc:
+  WriteFF(locations[player.loc]);
   //CRT_GotoXY(20,0);
   //CRT_Write(FFTermToString(strings[23])); // Navigation:
 
   CRT_GotoXY(0,1);
-  CRT_Write(FFTermToString(strings[21])); // Nav:
+  WriteFF(strings[21]); // Nav:
   CRT_GotoXY(0,2);
-  CRT_Write(FFTermToString(strings[22])); //CRT_Write(' 2356 SDU'~); // Dis:
+  WriteFF(strings[22]); //CRT_Write(' 2356 SDU'~); // Dis:
 
   // Help Keys
   CRT_GotoXY(0,6);
-  CRT_Write(FFTermToString(strings[23])); // Navigation options
+  WriteFF(strings[23]); // Navigation options
   CRT_Write(' '~);
-  CRT_Write(FFTermToString(strings[24]));  // FTL Jump
+  WriteFF(strings[24]);  // FTL Jump
   CRT_Write(' '~);
-  CRT_Write(FFTermToString(strings[7])); // Back
+  WriteFF(strings[7]); // Back
 
   LoadDestinations(player.loc);
 
@@ -558,58 +568,22 @@ begin
         case keyval of
           KEY_BACK: current_menu := MENU_MAIN;
           KEY_OPTION1:  begin
-                          destinationindex:=availabledestinations[0];
-                          if (destinationindex > 0) then
-                          begin
-                            distance:=locationdistance[destinationindex];
-                            navi_destinationUpdate(destinationindex);
-                            navi_distanceUpdate(distance);
-                          end;
+                          updateNavi(availabledestinations[0]);
                          end;
           KEY_OPTION2:  begin
-                          destinationindex:=availabledestinations[1];
-                          if (destinationindex > 0) then
-                          begin
-                            distance:=locationdistance[destinationindex];
-                            navi_destinationUpdate(destinationindex);
-                            navi_distanceUpdate(distance);
-                          end;
+                          updateNavi(availabledestinations[1]);
                         end;
           KEY_OPTION3:  begin
-                          destinationindex:=availabledestinations[2];
-                          if (destinationindex > 0) then
-                          begin
-                            distance:=locationdistance[destinationindex];
-                            navi_destinationUpdate(destinationindex);
-                            navi_distanceUpdate(distance);
-                          end;
+                          updateNavi(availabledestinations[2]);
                         end;
           KEY_OPTION4:  begin
-                          destinationindex:=availabledestinations[3];
-                          if (destinationindex > 0) then
-                          begin
-                            distance:=locationdistance[destinationindex];
-                            navi_destinationUpdate(destinationindex);
-                            navi_distanceUpdate(distance);
-                          end;
+                          updateNavi(availabledestinations[3]);
                         end;
           KEY_OPTION5:  begin
-                          destinationindex:=availabledestinations[4];
-                          if (destinationindex > 0) then
-                          begin
-                            distance:=locationdistance[destinationindex];
-                            navi_destinationUpdate(destinationindex);
-                            navi_distanceUpdate(distance);
-                          end;
+                          updateNavi(availabledestinations[4]);
                         end;
           KEY_OPTION6:  begin
-                          destinationindex:=availabledestinations[5];
-                          if (destinationindex > 0) then
-                          begin
-                            distance:=locationdistance[destinationindex];
-                            navi_destinationUpdate(destinationindex);
-                            navi_distanceUpdate(distance);
-                          end;
+                          updateNavi(availabledestinations[5]);
                         end;
           KEY_JUMP:     begin
                           if destinationindex > 0 then
@@ -618,7 +592,7 @@ begin
                             for y:=0 to MAXAVAILABLEDESTINATIONS-1 do
                               begin
                                 CRT_GotoXY(20,0+y); // liststart
-                                CRT_Write(Atascii2Antic(Space(18))); // clear rows
+                                WriteSpaces(18); // clear rows
                               end;
 
                             // fade
@@ -631,7 +605,7 @@ begin
                                 If (gfxcolor4 > 0) then Dec(gfxcolor4);
 
                                 Waitframe;
-                              until (gfxcolor0 = 0) and (gfxcolor1 = 0) and (gfxcolor2 = 0) and (gfxcolor3 = 0) and (gfxcolor4 = 0);
+                              until (gfxcolor0 or gfxcolor1 or gfxcolor2 or gfxcolor3 or gfxcolor4) = 0;
 
                             repeat
                               Waitframes(5);
@@ -670,13 +644,13 @@ var
   listwidth: Byte;
 
 begin
-    liststart:=(CRT_screenWidth div 2)+1;
+    liststart:=(CRT_screenWidth shr 1)+1;
     listwidth:=CRT_screenWidth-liststart;
 
   // update player UEC (current session)
   CRT_GotoXY(liststart+7,0); // +7 for Sell string
   strnum:=IntToStr(uec);
-  CRT_Write(Atascii2Antic(space(listwidth-Length(strnum)-Length(CURRENCY)-7)));
+  WriteSpaces(listwidth-Length(strnum)-Length(CURRENCY)-7);
   CRT_Write(uec);
   CRT_Write(Atascii2Antic(CURRENCY));
 end;
@@ -687,13 +661,18 @@ var
   liststart: Byte;
 
 begin
-  liststart:=(CRT_screenWidth div 2)+1;
+  liststart:=(CRT_screenWidth shr 1)+1;
   // update cargo Total
   str:=IntToStr(myship.scu_max-myship.scu);
   CRT_GotoXY(liststart-(Length(str)+5)-4,6);
   CRT_Write('    '~); // fixed 4 chars for cargo size
   CRT_GotoXY(liststart-(Length(str)+5),6);
   CRT_Write(Atascii2Antic(str)); CRT_Write(Atascii2Antic(CARGOUNIT));CRT_Write('|'~);
+end;
+
+procedure writeRuler;
+begin
+    CRT_Write('--------------------+-------------------'~);
 end;
 
 procedure console_trade;
@@ -704,6 +683,7 @@ const
 
 var
   y: Byte;
+  d: shortInt;
   mode: Boolean = false;
 
   optionPressed: Boolean = false;
@@ -750,16 +730,13 @@ begin
   //cargoindex:= 0;
 
 
-  liststart:=(CRT_screenWidth div 2)+1;
+  liststart:=(CRT_screenWidth shr 1)+1;
   listwidth:=CRT_screenWidth-liststart;
 
   EnableVBLI(@vbl_console);
   EnableDLI(@dli_console);
   Waitframe;
   DLISTL:= DISPLAY_LIST_ADDRESS_CONSOLE;
-
-
-
 
   for y:=0 to CRT_screenHeight do
     CRT_ClearRow(y);
@@ -771,30 +748,30 @@ begin
 
   CRT_GotoXY(listwidth-1,0);
   CRT_Write(' '~);
-  CRT_Write(FFTermToString(strings[8])); // Buy
+  WriteFF(strings[8]); // Buy
   CRT_Write(' '~);
   // invert at start
   CRT_Invert(listwidth-1,0,5);
 
   CRT_WriteRightAligned(Atascii2Antic(concat(IntToStr(currentuec), CURRENCY)));
   CRT_GotoXY(0,1);
-  CRT_Write('--------------------+-------------------'~);
+  writeRuler;
   CRT_GotoXY(0,2);
-  CRT_Write(FFTermToString(strings[10]));CRT_Write('  |'~); // Delivery
-  CRT_Write(FFTermToString(strings[11])); // Available items
+  WriteFF(strings[10]);CRT_Write('  |'~); // Delivery
+  WriteFF(strings[11]); // Available items
   CRT_GotoXY(0,3);
   CRT_Write('[ '~); CRT_Write(Atascii2Antic(currentship.sname)); CRT_Write(' ]'~);
   CRT_GotoXY(liststart-2,3);
   CRT_Write(' |'~);
-  CRT_Write(FFTermToString(strings[12]));CRT_WriteRightAligned(FFTermToString(strings[13])); // commodity price
+  WriteFF(strings[12]);CRT_WriteRightAligned(FFTermToString(strings[13])); // commodity price
   CRT_GotoXY(0,4);
-  CRT_Write('--------------------+-------------------'~);
+  writeRuler;
   CRT_GotoXY(0,5);
-  CRT_Write(FFTermToString(strings[14])); CRT_Write(' '~);
+  WriteFF(strings[14]); CRT_Write(' '~);
   CRT_GotoXY(listwidth-5,5);
   CRT_Write(Atascii2Antic(IntToStr(currentship.scu_max))); CRT_Write(Atascii2Antic(CARGOUNIT));CRT_Write('|'~);
   CRT_GotoXY(0,6);
-  CRT_Write(FFTermToString(strings[15])); CRT_Write(' '~);
+  WriteFF(strings[15]); CRT_Write(' '~);
   str:=IntToStr(currentship.scu_max-currentship.scu);
   CRT_GotoXY(liststart-(Length(str)+5),6);
   CRT_Write(Atascii2Antic(str)); CRT_Write(Atascii2Antic(CARGOUNIT));CRT_Write('|'~);
@@ -809,7 +786,7 @@ begin
   end;
 
   CRT_GotoXY(0,18);
-  CRT_Write('--------------------+-------------------'~);
+  writeRuler;
 
 
   // CRT_Write(StringOfChar('-'~,20));
@@ -818,23 +795,23 @@ begin
 
 
   CRT_GotoXY(27,22);
-  CRT_Write(FFTermToString(strings[16])); CRT_Write(' '~);
-  CRT_Write(FFTermToString(strings[17]));
+  WriteFF(strings[16]); CRT_Write(' '~);
+  WriteFF(strings[17]);
   // CRT_WriteRightAligned('[Cancel] [OK]'~);
 
   // help
   CRT_GotoXY(0,23);
   CRT_Write('OPTION'*~);
   CRT_Write('-'~);
-  CRT_Write(FFTermToString(strings[8]));
+  WriteFF(strings[8]);
   CRT_Write('/'~);
-  CRT_Write(FFTermToString(strings[9]));
+  WriteFF(strings[9]);
   CRT_Write(' '~);
   CRT_Write('SELECT'*~);
   CRT_Write('-'~);
-  CRT_Write(FFTermToString(strings[19]));
+  WriteFF(strings[19]);
   CRT_Write(' '~);
-  CRT_Write(FFTermToString(strings[7]));
+  WriteFF(strings[7]);
 
   //LoadItems(player.loc, false);
   ListItems(false);
@@ -886,69 +863,38 @@ begin
                       current_menu:= MENU_MAIN;
                     end;
         KEY_BACK:   current_menu := MENU_MAIN;
-        KEY_UP:     begin
+        KEY_UP, KEY_DOWN:
+                    begin
+                      d:=1;
+                      if keyval = KEY_UP then d:=-1;
                       if (mode = false) then
                       begin
-                        if CheckItemPosition(itemindex-1) and (availableitems[itemindex-1] > 0) then
+                        if CheckItemPosition(itemindex+d) and (availableitems[itemindex+d] > 0) then
                         begin
                           CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth);
-                          Dec(itemindex);
+                          itemindex:=itemindex+d;
                           CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth); // selecting the whole row with item
                           currentitemquantity:=itemquantity[availableitems[itemindex]];
                           currentitemprice:=GetItemPrice(itemindex,false);
                           currentitemindex:=availableitems[itemindex];
-                          selecteditemtotal:=0;
-                          selecteditemquantity:=0;
                           CRT_ClearRow(19);
                         end;
                       end
                       else  // when selling
                       begin
-                        if CheckCargoPosition(itemindex-1) and (currentShip.cargoindex[itemindex-1] > 0)  then
+                        if CheckCargoPosition(itemindex+d) and (currentShip.cargoindex[itemindex+d] > 0)  then
                         begin
                           CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1);
-                          Dec(itemindex);
+                          itemindex:=itemindex+d;
                           currentitemquantity:=currentShip.cargoquantity[itemindex];
                           currentitemprice:=GetCargoPrice(currentShip,itemindex);
                           currentitemindex:=currentShip.cargoindex[itemindex];
-                          selecteditemtotal:=0;
-                          selecteditemquantity:=0;
                           CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1); // selecting the whole row with item
                           cargoPresent:=CheckCargoPresence(currentShip,itemindex);
                         end;
                       end;
-                    end;
-        KEY_DOWN:   begin
-                      if (mode = false) then
-                      begin
-                        if CheckItemPosition(itemindex+1) and (availableitems[itemindex+1] > 0)  then
-                        begin
-                          CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth);
-                          Inc(itemindex);
-                          CRT_Invert(liststart,itemindex + LISTTOPMARGIN,listwidth); // selecting the whole row with item
-                          currentitemquantity:=itemquantity[availableitems[itemindex]];
-                          currentitemprice:=GetItemPrice(itemindex,false);
-                          currentitemindex:=availableitems[itemindex];
-                          selecteditemtotal:=0;
-                          selecteditemquantity:=0;
-                          CRT_ClearRow(19);
-                        end;
-                      end
-                      else // when selling
-                      begin
-                        if CheckCargoPosition(itemindex+1) and (currentShip.cargoindex[itemindex+1] > 0)  then
-                        begin
-                          CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1);
-                          Inc(itemindex);
-                          currentitemquantity:=currentShip.cargoquantity[itemindex];
-                          currentitemprice:=GetCargoPrice(currentShip,itemindex);
-                          currentitemindex:=currentShip.cargoindex[itemindex];
-                          selecteditemtotal:=0;
-                          selecteditemquantity:=0;
-                          CRT_Invert(0,itemindex + CARGOTOPMARGIN,listwidth+1); // selecting the whole row with item
-                          cargoPresent:=CheckCargoPresence(currentShip,itemindex);
-                        end;
-                      end;
+                      selecteditemtotal:=0;
+                      selecteditemquantity:=0;
                     end;
         KEY_LEFT:   begin
                       if (selecteditemquantity > 0) then
@@ -960,19 +906,13 @@ begin
                     end;
         KEY_RIGHT:  begin
                       selectitem:= false;
-                      if (mode = false) then
-                      begin
-                        if (selecteditemquantity < currentitemquantity) and (selecteditemtotal + currentitemprice <= currentuec )
-                           and (selecteditemquantity < currentShip.scu_max-currentShip.scu) then
-                          selectitem:= true;
-                      end
-                      else // when selling
-                      begin
-                        if (selecteditemquantity < currentitemquantity) and (selecteditemtotal + currentitemprice <= currentuec )
-                          and (cargoPresent = true) then
-                          selectitem:= true;
-                      end;
-                      if (selectitem = true) then
+                      if (selecteditemquantity < currentitemquantity) and (selecteditemtotal + currentitemprice <= currentuec ) then
+                          if (mode = false) then begin
+                              if (selecteditemquantity < currentShip.scu_max-currentShip.scu) then selectitem := true;
+                          end else // when selling
+                              if cargoPresent then selectitem:= true;
+
+                      if selectitem then
                       begin
                         Inc(selecteditemquantity);
                         selecteditemtotal:=selecteditemquantity * currentitemprice;
@@ -992,7 +932,7 @@ begin
       begin
         CRT_GotoXY(LISTSTART-3,0);
         CRT_Write(' '~);
-        CRT_Write(FFTermToString(strings[8])); // Buy
+        WriteFF(strings[8]); // Buy
         CRT_Write('  '~);
         CRT_Invert(LISTSTART-3,0,5);
 
@@ -1015,7 +955,7 @@ begin
       else begin
         CRT_GotoXY(LISTSTART-3,0);
         CRT_Write(' '~);
-        CRT_Write(FFTermToString(strings[9])); // Buy
+        WriteFF(strings[9]); // Buy
         CRT_Write(' '~);
         CRT_Invert(LISTSTART-3,0,6);
 
@@ -1042,7 +982,7 @@ begin
       optionPressed:=true;
     end
     else
-      if (CRT_OptionPressed = false) then optionPressed:=false;
+      if not CRT_OptionPressed then optionPressed:=false;
 
     if (CRT_SelectPressed) then
     begin
@@ -1178,11 +1118,11 @@ begin
     CRT_ClearRow(i);
 
   CRT_GotoXY(14,0);
-  CRT_Write(FFTermToString(strings[3])); // Navigation
+  WriteFF(strings[3]); // Navigation
   CRT_GotoXY(14,1);
-  CRT_Write(FFTermToString(strings[4])); // Trade Console
+  WriteFF(strings[4]); // Trade Console
   CRT_GotoXY(14,2);
-  CRT_Write(FFTermToString(strings[7])); // Back
+  WriteFF(strings[7]); // Back
 
   keyval:=chr(0);
   repeat
@@ -1219,9 +1159,9 @@ begin
     CRT_ClearRow(y);
 
   CRT_GotoXY(14,0);
-  CRT_Write(FFTermToString(strings[1])); // New game;
+  WriteFF(strings[1]); // New game;
   CRT_GotoXY(14,1);
-  CRT_Write(FFTermToString(strings[2])); // Quit;
+  WriteFF(strings[2]); // Quit;
 
   //str:= Atascii2Antic(NullTermToString(strings[0])); // read scroll text
   str:= FFTermToString(strings[0]); // read scroll text
