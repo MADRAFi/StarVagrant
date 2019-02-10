@@ -965,13 +965,12 @@ begin
                   currentShip.cargoquantity[y]:=selecteditemquantity;
                   break;
                 end
-                else
-                begin
+                else begin
                   // some item exists
                   if currentship.cargoindex[y] = currentitemindex then
                   begin
                     // found same cargo
-                    currentShip.cargoquantity[y]:=currentShip.cargoquantity[itemindex] + selecteditemquantity;
+                    currentShip.cargoquantity[y]:=currentShip.cargoquantity[y] + selecteditemquantity;
                     break;
                   end;
                 end;
@@ -992,7 +991,7 @@ begin
               currentitemindex:=currentShip.cargoindex[itemindex];
               selecteditemquantity:= 0;
               selecteditemtotal:=0;
-              itemindex:=0;
+//              itemindex:=0;
 
             end;
           end
@@ -1029,10 +1028,10 @@ begin
                 end;
               end;
 
-              // set selection to 1st item on the list
-              currentitemquantity:=currentShip.cargoquantity[itemindex];
-              currentitemprice:=GetItemPrice(itemindex,mode);
-              currentitemindex:=currentShip.cargoindex[itemindex];
+              // // set selection to 1st item on the list
+              // currentitemquantity:=currentShip.cargoquantity[itemindex];
+              // currentitemprice:=GetItemPrice(itemindex,mode);
+              // currentitemindex:=currentShip.cargoindex[itemindex];
 
               // update player UEC (current session)
               trade_UpdateUEC(currentuec);
