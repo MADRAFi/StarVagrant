@@ -147,9 +147,20 @@ begin
 
 end;
 
+
+procedure playsfx(freq: Byte; vol: Byte);
+
+begin
+  poke($D206,freq);
+  poke($D207,vol);
+  waitframes(5);
+  poke($D207,0);
+end;
+
 procedure writeRuler;
 begin
     CRT_Write('--------------------+-------------------'~);
+    playsfx(77,196); // vol4
 end;
 
 procedure WriteSpaces(len:byte);
@@ -183,6 +194,7 @@ begin
     fillbyte(a[min],(max-min) shl 2,0); // x2 becasue Word type (2 bytes)
   end;
 end;
+
 
 
 procedure ListCargo(myship: Tship;mode : Boolean);
@@ -221,6 +233,7 @@ begin
     CRT_GotoXY(LISTSTART,TOPCARGOMARGIN+x-1);
     WriteSpaces(LISTWIDTH); // -1 to clear from the end of list
   end;
+
 end;
 
 
@@ -316,6 +329,7 @@ begin
       end;
 
     end;
+  playsfx(185,196); // vol4
 end;
 
 
@@ -370,13 +384,13 @@ begin
       Inc(count);
     end;
 
-
   // debug
   //   CRT_GotoXY(LISTSTART,count);
   //   CRT_Write('avdes='~);
   //   CRT_Write(availabledestinations[x]);
   //   Inc(count);
   end;
+  playsfx(185,196); // vol4
 
 end;
 
@@ -512,14 +526,16 @@ begin
 
   keyval:= chr(0);
   repeat
-  //  pause;
-  //  msx.play;
+
     If (CRT_Keypressed) then
     begin
 
         keyval := char(CRT_Keycode[kbcode]);
         case keyval of
-          KEY_BACK: current_menu := MENU_MAIN;
+          KEY_BACK:     begin
+                          playsfx(255,164); // vol4
+                          current_menu := MENU_MAIN;
+                        end;
           KEY_OPTION1:  begin
                           destinationindex:=availabledestinations[0];
                          end;
@@ -548,17 +564,20 @@ begin
                                 WriteSpaces(18); // clear rows
                               end;
 
-                            // fade
+                              playsfx(236,196); //vol 4
+                              playsfx(236,198); //vol 6
+                              playsfx(236,200); // vol 8
 
+                            // fade
                             repeat
+                              Waitframe;
                               If (gfxcolor0 > 0) then Dec(gfxcolor0);
                               If (gfxcolor1 > 0) then Dec(gfxcolor1);
                               If (gfxcolor2 > 0) then Dec(gfxcolor2);
                               If (gfxcolor3 > 0) then Dec(gfxcolor3);
                               If (gfxcolor4 > 0) then Dec(gfxcolor4);
-
-                              Waitframe;
                             until (gfxcolor0 or gfxcolor1 or gfxcolor2 or gfxcolor3 or gfxcolor4) = 0;
+
 
                             // simulate travel
                             repeat
@@ -572,10 +591,12 @@ begin
                           end;
                         end;
         end;
-        //updateNavi(destinationindex);
-        distance:=locationdistance[destinationindex];
-        navi_destinationUpdate(destinationindex);
-        navi_distanceUpdate(distance);
+        if current_menu= MENU_NAV then
+        begin
+          distance:=locationdistance[destinationindex];
+          navi_destinationUpdate(destinationindex);
+          navi_distanceUpdate(distance);
+        end;
     end;
     Waitframe;
 
@@ -819,15 +840,19 @@ begin
                       // update cargo Total
                       currentShip.scu:=currentShip.scu-selecteditemquantity;
                       trade_UpdateCargo(currentShip);
-
+                      playsfx(255,164); // vol4
                     end;
         KEY_OK:     begin
                       player.uec:= currentuec;
                       ship:= currentShip;
                       itemquantity[currentitemindex]:=itemquantity[currentitemindex]-selecteditemquantity;
                       current_menu:= MENU_MAIN;
+                      playsfx(52,196); // vol4
                     end;
-        KEY_BACK:   current_menu := MENU_MAIN;
+        KEY_BACK:   begin
+                      playsfx(255,164); // vol4
+                      current_menu := MENU_MAIN;
+                    end;
         KEY_UP, KEY_DOWN:
                     begin
                       d:=1;
@@ -1160,6 +1185,14 @@ begin
                       start;
                       current_menu := MENU_MAIN;
                     end;
+(*
+          KEY_OPTION1: playsfx(185,16*12+4);
+          KEY_OPTION2: playsfx(110,16*12+4);
+          KEY_OPTION3: playsfx(60,16*12+4);
+          KEY_OPTION4: playsfx(20,16*12+4);
+          KEY_OPTION5: playsfx(10,16*12+4);
+          KEY_OPTION6: playsfx(5,16*12+4);
+*)
       end;
     end;
     Waitframe;
@@ -1185,6 +1218,11 @@ begin
   //msx.player:=pointer(RMT_PLAYER_ADDRESS);
   //msx.modul:=pointer(RMT_MODULE_ADDRESS);
   //msx.init(0);
+
+  // sound init at pokey
+  poke($d20f,3);
+  poke($d208,0);
+
 
   current_menu := MENU_TITLE;
 

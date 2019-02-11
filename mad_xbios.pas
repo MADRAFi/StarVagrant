@@ -13,6 +13,7 @@ const
 procedure xbios_opencurrentdir;assembler;
 procedure xbios_openfile(fname: TString);assembler;
 procedure xbios_closefile;assembler;
+procedure xbios_loadfile(filename: TString);assembler;
 procedure xbios_write(src: Pointer);assembler;
 procedure xbios_read(dst: Pointer);assembler;
 
@@ -37,6 +38,18 @@ end;
 procedure xbios_closefile;assembler;
   asm {
     jsr xBIOS_FLUSH_BUFFER
+  };
+end;
+
+procedure xbios_loadfile(filename: TString);assembler;
+  asm {
+
+
+  ldy <fname
+  ldx >fname
+  jsr xBIOS_LOAD_FILE
+  fname .byte c'STARV   XEX' ; 11 chars ATASCII
+
   };
 end;
 
