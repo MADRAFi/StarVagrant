@@ -469,8 +469,6 @@ begin
 end;
 
 procedure navi_distanceUpdate(mydistance: Word);
-//var
-  //str: TString;
 
 begin
   CRT_GotoXY(0,2);
@@ -485,18 +483,24 @@ var
   fileloc : TString;
 
 begin
-  if loc < 10 then
-    fileloc:='LOC0' + loc + '   DAT';
+  if (loc < 10) then
+  begin
+    fileloc:=concat('LOC0',IntToStr(loc));
+    fileloc:=concat(fileloc,'   DAT');
+  end
   else
-    fileloc:='LOC' + loc + '   DAT';
+  begin
+    fileloc:=concat('LOC',inttostr(loc));
+    fileloc:=concat(fileloc,'   DAT');
+  end;
 
-fileloc:= 'LOC00   DAT';
+  fileloc:= 'LOC00   DAT'; //test
   xbios_openfile(fileloc);
   xbios_loaddata(GFX2_ADDRESS);
   xbios_closefile;
 end;
 
-procedure navi_ftljump(distance: Word, loc : Byte);
+procedure navi_ftljump(distance: Word; loc : Byte);
 var
   y: Byte;
 
@@ -522,10 +526,6 @@ begin
     If (gfxcolor3 > 0) then Dec(gfxcolor3);
     If (gfxcolor4 > 0) then Dec(gfxcolor4);
   until (gfxcolor0 or gfxcolor1 or gfxcolor2 or gfxcolor3 or gfxcolor4) = 0;
-
-
-
-
 
   // simulate travel
   repeat
