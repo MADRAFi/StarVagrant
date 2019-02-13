@@ -1,7 +1,7 @@
 program StarVagrant;
 {$librarypath '../Libs/lib/';'../Libs/blibs/';'../Libs/base/'}
 // {$librarypath '../blibs/'}
-uses atari, b_utils, b_system, b_crt, sysutils; //, mad_xbios; // disabled till I know hot to use it
+uses atari, b_utils, b_system, b_crt, sysutils, mad_xbios;
 
 const
 {$i 'const.inc'}
@@ -44,66 +44,65 @@ var
   items: array [0..0] of Word absolute ITEMS_ADDRESS;
 
   itemprice: array [0..(NUMBEROFLOCATIONS*NUMBEROFITEMS)-1] of Word = (
-    26,0,0,0,8,4,0,3,7,5,0,6,0,0,28,17,0,0,0,3,8,4,1,0,
-    26,0,12,0,8,4,0,0,7,5,0,6,0,0,29,18,0,0,0,0,8,4,0,24,
-    0,0,12,0,0,0,0,0,0,5,0,0,0,0,0,18,1,0,0,3,0,0,0,24,
-    0,1,10,0,0,0,2,0,0,5,0,0,1,0,0,18,1,0,0,3,0,0,0,15,
-    24,0,12,0,0,4,0,0,0,5,0,6,0,0,0,18,1,1,0,3,0,4,1,24,
-    0,0,12,0,0,0,0,0,0,5,0,0,0,0,0,18,1,0,0,3,0,0,0,24,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  0,0,0,0,83,43,0,25,69,50,0,61,0,0,281,170,0,0,0,34,83,39,1,0,
+  256,0,116,0,83,43,0,0,69,50,0,61,0,0,286,180,0,0,10,0,83,39,0,150,
+  0,0,118,0,0,0,0,0,0,50,0,0,0,0,0,178,14,0,0,34,0,0,0,160,
+  0,12,98,0,0,0,17,0,0,50,0,0,11,0,0,180,14,0,0,34,0,0,1,146,
+  245,0,118,0,0,42,0,0,0,50,0,57,0,0,0,178,14,13,0,34,0,37,1,240,
+  0,0,118,0,0,0,0,0,0,50,0,0,0,0,0,178,14,0,0,34,0,0,0,240,
+  0,35,0,0,0,0,17,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,
+  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,0,0,0,0,0,
+  0,0,0,0,0,0,0,0,0,20,15,0,8,0,0,0,10,0,0,24,0,0,3,0,
+  0,0,0,0,0,0,0,0,39,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  0,0,0,0,0,0,0,0,0,40,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  0,0,0,0,0,0,0,0,0,60,0,61,0,0,0,0,0,0,20,0,0,0,0,280,
+  0,0,0,0,0,0,0,0,0,50,0,61,0,0,0,0,0,0,20,0,0,0,0,249,
+  0,0,118,12,0,42,10,0,64,50,0,0,0,0,0,181,14,0,0,0,0,0,1,249,
+  0,0,118,12,0,0,0,0,0,50,0,56,0,0,0,181,14,0,0,0,0,0,1,249,
+  0,26,0,0,0,0,10,0,0,0,22,61,11,10,0,0,0,0,0,0,0,0,0,240,
+  0,0,0,0,0,0,0,25,0,50,0,61,0,0,0,0,0,0,20,0,0,0,0,240
 
   );  // price matrix for items
   itemquantity: array [0..(NUMBEROFLOCATIONS*NUMBEROFITEMS)-1] of Word = (
-    0,0,0,0,10000,10000,0,10000,0,1000,0,0,0,0,0,60000,0,0,0,10000,2000,0,60000,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,60000,0,
-    0,0,0,0,0,0,10000,0,0,0,10000,0,5000,5000,0,0,0,0,0,0,0,0,60000,0,
-    0,0,5000,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,60000,10000,
-    10000,0,0,0,0,5000,0,0,0,0,0,10000,0,0,0,0,0,5000,0,0,0,10000,60000,0,
-    5000,0,0,0,0,5000,0,5000,0,0,0,0,0,0,0,0,0,10000,0,0,0,5000,60000,0,
-    0,0,0,0,0,0,0,0,0,10000,0,0,0,0,0,0,10000,0,0,5000,0,0,0,0,
-    0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,
-    0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,1,0,0,1,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,
-    0,0,1,1,0,1,0,0,0,1,0,0,1,0,0,1,1,0,0,1,0,0,0,1,
-    1,0,1,0,1,1,0,0,1,1,0,1,0,0,1,1,0,0,0,0,1,1,0,1,
-    1,0,0,0,1,1,0,0,1,1,0,1,0,0,1,1,0,0,0,1,1,1,0,1,
-    0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,
-    0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  0,0,0,0,10000,10000,0,10000,0,1000,0,0,0,0,0,60000,0,0,0,10000,2000,0,60000,0,
+  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,60000,0,
+  0,0,0,0,0,0,10000,0,0,0,10000,0,5000,5000,0,0,0,0,0,0,0,0,60000,0,
+  0,5000,5000,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,60000,10000,
+  10000,0,0,0,0,5000,0,0,0,0,0,10000,0,0,0,0,0,5000,0,0,0,10000,60000,0,
+  5000,0,0,0,0,5000,0,5000,0,0,0,0,0,0,0,0,0,10000,0,0,0,5000,60000,0,
+  0,0,0,0,0,0,0,0,0,10000,0,0,0,0,0,0,10000,0,0,5000,0,0,0,0,
+  0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,
+  0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,1,0,0,1,0,
+  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,
+  0,0,0,1,0,1,0,0,0,1,0,0,1,0,0,1,1,0,0,1,0,0,0,1,
+  1,0,0,0,1,1,0,0,1,1,0,1,0,0,1,1,0,0,0,0,1,1,0,1,
+  1,0,0,0,1,1,0,0,1,1,0,1,0,0,1,1,0,0,0,1,1,1,0,1,
+  0,0,0,10000,0,0,0,0,5000,0,0,0,0,0,0,0,0,0,0,0,0,0,60000,0,
+  0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,
+  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 
   ); // quantities of items
 
   locationdistance: array[0..(NUMBEROFLOCATIONS*NUMBEROFLOCATIONS)-1] of Word =
   (
-    0,50,0,0,0,0,0,0,60,0,0,365,120,0,0,50,50,
-    50,0,20,30,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,30,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,20,0,0,0,0,0,0,0,0,0,20,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,30,
-    0,0,0,0,20,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,30,0,0,0,0,0,0,0,0,
-    60,0,0,0,0,0,0,30,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,50,0,60,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,50,0,0,0,0,0,0,0,
-    365,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    120,0,0,0,0,0,0,0,0,60,0,0,0,10,70,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,10,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,70,0,0,0,0,
-    50,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    50,0,0,0,20,30,0,0,0,0,0,0,0,0,0,0,0
-
+  0,50,0,0,0,0,0,0,60,0,0,365,120,0,0,50,50,
+  50,0,20,30,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  0,30,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  0,0,0,0,0,0,20,0,0,0,0,0,0,0,0,0,20,
+  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,30,
+  0,0,0,0,20,0,0,0,0,0,0,0,0,0,0,0,0,
+  0,0,0,0,0,0,0,0,30,0,0,0,0,0,0,0,0,
+  60,0,0,0,0,0,0,30,0,0,0,0,0,0,0,0,0,
+  0,0,0,0,0,0,0,0,0,0,50,0,60,0,0,0,0,
+  0,0,0,0,0,0,0,0,0,50,0,0,0,0,0,0,0,
+  365,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  120,0,0,0,0,0,0,0,0,60,0,0,0,10,70,0,0,
+  0,0,0,0,0,0,0,0,0,0,0,0,10,0,0,0,0,
+  0,0,0,0,0,0,0,0,0,0,0,0,70,0,0,0,0,
+  50,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  50,0,0,0,20,30,0,0,0,0,0,0,0,0,0,0,0
 
   );
 
@@ -122,7 +121,6 @@ begin
   //msx.Sfx(3, 2, 24);
   //generateworld;
   player.uec:= 5000; // start cash
-  player.loc:= 0; //start location Port Olisar
 
   //mocap starting ship
   ship.sname:= 'Cuttlas Black';
@@ -148,19 +146,25 @@ begin
 end;
 
 
-procedure playsfx(freq: Byte; vol: Byte);
+procedure playsfx(channel: Word; freq: Byte; vol: Byte);
 
 begin
-  poke($D206,freq);
-  poke($D207,vol);
+  // case voice of
+  //   voice1:  channel:=$D200;
+  //   voice2:  channel:=$D202;
+  //   voice3:  channel:=$D204;
+  //   voice4:  channel:=$D206;
+  // end;
+  poke(channel,freq);
+  poke(channel+1,vol);
   waitframes(5);
-  poke($D207,0);
+  poke(channel+1,0);
 end;
 
 procedure writeRuler;
 begin
     CRT_Write('--------------------+-------------------'~);
-    playsfx(77,196); // vol4
+    playsfx(voice4,77,200); // vol8
 end;
 
 procedure WriteSpaces(len:byte);
@@ -168,7 +172,7 @@ begin
   CRT_Write(Atascii2Antic(Space(len)));
 end;
 
-procedure WriteFF(ptr:word);
+procedure WriteFF(var ptr:word);
 begin
     CRT_Write(FFTermToString(ptr));
 end;
@@ -329,7 +333,7 @@ begin
       end;
 
     end;
-  playsfx(185,196); // vol4
+  playsfx(voice4,185,200); // vol8
 end;
 
 
@@ -390,7 +394,7 @@ begin
   //   CRT_Write(availabledestinations[x]);
   //   Inc(count);
   end;
-  playsfx(185,196); // vol4
+  playsfx(voice4,185,200); // vol8
 
 end;
 
@@ -476,6 +480,61 @@ begin
   CRT_Write(mydistance); CRT_Write(Atascii2Antic(DISTANCE));
 end;
 
+procedure load_piclocation(loc: Byte);
+var
+  fileloc : TString;
+
+begin
+  if loc < 10 then
+    fileloc:='LOC0' + loc + '   DAT';
+  else
+    fileloc:='LOC' + loc + '   DAT';
+
+fileloc:= 'LOC00   DAT';
+  xbios_openfile(fileloc);
+  xbios_loaddata(GFX2_ADDRESS);
+  xbios_closefile;
+end;
+
+procedure navi_ftljump(distance: Word, loc : Byte);
+var
+  y: Byte;
+
+begin
+  CRT_ClearRow(6);
+  for y:=0 to MAXAVAILABLEDESTINATIONS-1 do
+    begin
+      CRT_GotoXY(20,0+y); // liststart
+      WriteSpaces(18); // clear rows
+    end;
+
+    playsfx(voice1,230,200); //vol 8
+    playsfx(voice2,230,200); //vol 8
+    playsfx(voice3,236,200); //vol 8
+    playsfx(voice4, 236,200); // vol 8
+
+  // fade
+  repeat
+    Waitframe;
+    If (gfxcolor0 > 0) then Dec(gfxcolor0);
+    If (gfxcolor1 > 0) then Dec(gfxcolor1);
+    If (gfxcolor2 > 0) then Dec(gfxcolor2);
+    If (gfxcolor3 > 0) then Dec(gfxcolor3);
+    If (gfxcolor4 > 0) then Dec(gfxcolor4);
+  until (gfxcolor0 or gfxcolor1 or gfxcolor2 or gfxcolor3 or gfxcolor4) = 0;
+
+
+
+
+
+  // simulate travel
+  repeat
+    Waitframes(5);
+    Dec(distance);
+    navi_distanceUpdate(distance);
+  until (distance = 0);
+  player.loc:=loc;
+end;
 
 // procedure fade_gfx;
 //
@@ -496,6 +555,7 @@ var
   y: byte;
   destinationindex: Word;
   distance: Word;
+  newloc: Byte;
 
 begin
   // for y:=0 to 6 do
@@ -533,7 +593,7 @@ begin
         keyval := char(CRT_Keycode[kbcode]);
         case keyval of
           KEY_BACK:     begin
-                          playsfx(255,164); // vol4
+                          playsfx(voice4,255,168); // vol8
                           current_menu := MENU_MAIN;
                         end;
           KEY_OPTION1:  begin
@@ -557,36 +617,8 @@ begin
           KEY_JUMP:     begin
                           if destinationindex > 0 then
                           begin
-                            CRT_ClearRow(7);
-                            for y:=0 to MAXAVAILABLEDESTINATIONS-1 do
-                              begin
-                                CRT_GotoXY(20,0+y); // liststart
-                                WriteSpaces(18); // clear rows
-                              end;
-
-                              playsfx(236,196); //vol 4
-                              playsfx(236,198); //vol 6
-                              playsfx(236,200); // vol 8
-
-                            // fade
-                            repeat
-                              Waitframe;
-                              If (gfxcolor0 > 0) then Dec(gfxcolor0);
-                              If (gfxcolor1 > 0) then Dec(gfxcolor1);
-                              If (gfxcolor2 > 0) then Dec(gfxcolor2);
-                              If (gfxcolor3 > 0) then Dec(gfxcolor3);
-                              If (gfxcolor4 > 0) then Dec(gfxcolor4);
-                            until (gfxcolor0 or gfxcolor1 or gfxcolor2 or gfxcolor3 or gfxcolor4) = 0;
-
-
-                            // simulate travel
-                            repeat
-                              Waitframes(5);
-                              Dec(distance);
-                              navi_distanceUpdate(distance);
-                            until (distance = 0);
-
-                            player.loc:=destinationindex-(player.loc*NUMBEROFLOCATIONS);
+                            newloc:=destinationindex-(player.loc*NUMBEROFLOCATIONS);
+                            navi_ftljump(distance,newloc);
                             current_menu:=MENU_MAIN;
                           end;
                         end;
@@ -840,17 +872,17 @@ begin
                       // update cargo Total
                       currentShip.scu:=currentShip.scu-selecteditemquantity;
                       trade_UpdateCargo(currentShip);
-                      playsfx(255,164); // vol4
+                      playsfx(voice4,255,168); // vol8
                     end;
         KEY_OK:     begin
                       player.uec:= currentuec;
                       ship:= currentShip;
                       itemquantity[currentitemindex]:=itemquantity[currentitemindex]-selecteditemquantity;
                       current_menu:= MENU_MAIN;
-                      playsfx(52,196); // vol4
+                      playsfx(voice4,52,200); // vol8
                     end;
         KEY_BACK:   begin
-                      playsfx(255,164); // vol4
+                      playsfx(voice4,255,168); // vol8
                       current_menu := MENU_MAIN;
                     end;
         KEY_UP, KEY_DOWN:
@@ -1139,7 +1171,10 @@ begin
       case keyval of
         KEY_OPTION1: current_menu := MENU_NAV;
         KEY_OPTION2: current_menu := MENU_TRADE;
-        KEY_BACK: current_menu := MENU_TITLE;
+        KEY_BACK: begin
+                    playsfx(voice4,255,168); // vol8
+                    current_menu := MENU_TITLE;
+                  end;
       end;
     end;
     Waitframe;
@@ -1182,6 +1217,10 @@ begin
       keyval := char(CRT_Keycode[kbcode]);
       case keyval of
           KEY_NEW:  begin
+                      playsfx(voice1,80,200); // vol8
+                      playsfx(voice2,84,200); // vol8
+                      playsfx(voice3,86,200); // vol8
+                      playsfx(voice4,88,200); // vol8
                       start;
                       current_menu := MENU_MAIN;
                     end;
@@ -1213,6 +1252,8 @@ begin
   SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
   CRT_Init(TXT_ADDRESS);
 
+  player.loc:= 0; //start location Port Olisar
+  //load_piclocation(player.loc);
 
   // Initialize RMT player
   //msx.player:=pointer(RMT_PLAYER_ADDRESS);

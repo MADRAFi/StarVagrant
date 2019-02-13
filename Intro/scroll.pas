@@ -1,5 +1,5 @@
 {$librarypath '../'}
-uses crt, mad_xbios;
+uses crt, sysutils, mad_xbios;
 
 const
  stext = $8000;
@@ -18,6 +18,7 @@ const
 var
  ptext	: ^byte;
  xb     : ^byte;
+ main   : tstring;
 
  x,z	: byte;
  count	: byte;
@@ -92,9 +93,9 @@ begin
  SetIntVec(iDLI,@dli);
  nmien:=$c0;
 
- xb:= Pointer(XBIOS);
+ xb:= Pointer(XBIOS_VERSION);
  gotoxy(4,1);
- write('xbios =',xb^);
+ write('xbios ver=',IntToHex(xb^,2));
  gotoxy(15,11);
  write('press any key');
 
@@ -122,7 +123,8 @@ begin
 
  SetIntVec(iDLI, old_dli);
 
- xbios_loadfile('starv   xex');
+ main:= 'STARV   XEX';
+ xbios_loadfile(main);
 
 
 end.

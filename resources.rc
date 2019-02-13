@@ -41,4 +41,4 @@ ITEMS_ADDRESS rcasm 'items.asm'
 
 ; graphics
 GFX_ADDRESS RCDATA 'assets/StarVagrandLogo.dat'
-GFX2_ADDRESS RCDATA 'assets/portolisar.dat'
+;GFX2_ADDRESS RCDATA 'assets/portolisar.dat'
