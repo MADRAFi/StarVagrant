@@ -93,9 +93,9 @@ begin
  SetIntVec(iDLI,@dli);
  nmien:=$c0;
 
- xb:= Pointer(XBIOS_VERSION);
- gotoxy(4,1);
- write('xbios ver=',IntToHex(xb^,2));
+ // xb:= Pointer(XBIOS_VERSION);
+ // gotoxy(4,1);
+ // write('xbios ver=',IntToHex(xb^,2));
  gotoxy(15,11);
  write('press any key');
 

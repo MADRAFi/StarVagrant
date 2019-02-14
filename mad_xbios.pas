@@ -29,25 +29,14 @@ end;
 procedure xbios_openfile(var filename: TString);assembler;
   asm {
 
-  ;lda filename
-  ;clc
-  ;adc #1
-  ;tay
-  ;lda filename+1
-  ;adc #0
-  ;tax
-  ;jsr xBIOS_OPEN_FILE
-
-  txa
-  pha
+  txa:pha
   ldy filename
   ldx filename+1
   iny
   sne
   inx
   jsr xBIOS_OPEN_FILE
-  pla
-  tax
+  pla:tax
   };
 end;
 
@@ -74,13 +63,12 @@ end;
 
 procedure xbios_loaddata(address: Word);assembler;
   asm {
-
   txa
   pha
-  ;ldy address
-  ;ldx address+1
-  ldy GFX2_ADDRESS
-  ldx GFX2_ADDRESS+1
+  ldy address
+  ldx address+1
+  ;ldy GFX2_ADDRESS
+  ;ldx GFX2_ADDRESS+1
   jsr xBIOS_LOAD_DATA
   pla
   tax

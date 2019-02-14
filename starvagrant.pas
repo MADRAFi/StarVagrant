@@ -1,7 +1,7 @@
 program StarVagrant;
-{$librarypath '../Libs/lib/';'../Libs/blibs/';'../Libs/base/'}
+{$librarypath '../Libs/lib/';'../Libs/blibs/';'../Libs/base/';'../libs/xbios/'}
 // {$librarypath '../blibs/'}
-uses atari, b_utils, b_system, b_crt, sysutils, mad_xbios;
+uses atari, b_utils, b_system, b_crt, sysutils, xbios; //, mad_xbios;
 
 const
 {$i 'const.inc'}
@@ -114,8 +114,9 @@ var
 
 
 procedure start;
-// var
-//   x: byte;
+var
+   x: byte;
+   savefile: Tstring;
 
 begin
   //msx.Sfx(3, 2, 24);
@@ -139,15 +140,16 @@ begin
   // ship.cargoquantity[1]:=20;
   // ship.scu:= 30;
 
+  //savefile:='D1:STAR1   SAV';
+  //xbios_openfile(savefile);
 
-  xbios_openfile('STAR1   SAV');
-  xbios_write(@ship);
-  xbios_closefile;
+  //xbios_write(@ship);
+  //xbios_closefile;
 
 end;
 
 
-procedure playsfx(channel: Word; freq: Byte; vol: Byte);
+procedure playsfx(channel: Word; freq: Byte; vol: Byte );
 
 begin
   // case voice of
@@ -495,12 +497,18 @@ begin
     fileloc:=concat(fileloc,'   DAT');
   end;
 
-  fileloc:= 'D1:LOC00   DAT'; //test
-  xbios_openfile(fileloc);
+  if xBiosCheck = 0 then
+  begin
+    CRT_Write('xBios not found at address: $'); CRT_Write(HexStr(xBIOS_ADDRESS,4));
+  end
+  else begin
+    fileloc:= 'LOC00   DAT'; //test
+    xBiosOpenFile(fileloc);
+    xBiosLoadFile(pointer(GFX2_ADDRESS));
 
-  xbios_loaddata(GFX2_ADDRESS);
+    //xbios_closefile;
+  end;
 
-  xbios_closefile;
 end;
 
 procedure navi_ftljump(distance: Word; loc : Byte);
@@ -1256,7 +1264,7 @@ begin
   CRT_Init(TXT_ADDRESS);
 
   player.loc:= 0; //start location Port Olisar
-  //load_piclocation(player.loc);
+  load_piclocation(player.loc);
 
   // Initialize RMT player
   //msx.player:=pointer(RMT_PLAYER_ADDRESS);
