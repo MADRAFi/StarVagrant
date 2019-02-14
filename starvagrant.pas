@@ -139,9 +139,10 @@ begin
   // ship.cargoquantity[1]:=20;
   // ship.scu:= 30;
 
-  //xbios_opencurrentdir;
-  //xbios_openfile('star1   sav');
-  //xbios_write(@ship);
+
+  xbios_openfile('STAR1   SAV');
+  xbios_write(@ship);
+  xbios_closefile;
 
 end;
 
@@ -494,9 +495,11 @@ begin
     fileloc:=concat(fileloc,'   DAT');
   end;
 
-  fileloc:= 'LOC00   DAT'; //test
+  fileloc:= 'D1:LOC00   DAT'; //test
   xbios_openfile(fileloc);
+
   xbios_loaddata(GFX2_ADDRESS);
+
   xbios_closefile;
 end;
 

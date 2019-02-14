@@ -38,13 +38,16 @@ procedure xbios_openfile(var filename: TString);assembler;
   ;tax
   ;jsr xBIOS_OPEN_FILE
 
+  txa
+  pha
   ldy filename
   ldx filename+1
   iny
   sne
   inx
   jsr xBIOS_OPEN_FILE
-
+  pla
+  tax
   };
 end;
 
@@ -56,15 +59,6 @@ end;
 
 procedure xbios_loadfile(var filename: TString);assembler;
   asm {
-
-  ;lda filename
-  ;clc
-  ;adc #1
-  ;tay
-  ;lda filename+1
-  ;adc #0
-  ;tax
-
   txa
   pha
   ldy filename
@@ -90,23 +84,30 @@ procedure xbios_loaddata(address: Word);assembler;
   jsr xBIOS_LOAD_DATA
   pla
   tax
-
   };
 end;
 
 procedure xbios_write(src: Pointer);assembler;
   asm {
-    ldy < src
-    ldx > src
+    txa
+    pha
+    ldy src
+    ldx src+1
     jsr xBIOS_WRITE_DATA
+    pla
+    tax
   };
 end;
 
 procedure xbios_read(dst: Pointer);assembler;
   asm {
-    ldy < dst
-    ldx > dst
+    txa
+    pha
+    ldy dst
+    ldx dst+1
     JSR xBIOS_LOAD_DATA
+    pla
+    tax
   };
 end;
 
