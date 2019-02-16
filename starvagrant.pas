@@ -11,12 +11,17 @@ const
   DISTANCE = ' DU';
   COMMISSION = 0.05;
 
+  //KEY_UP = Char(142);
+  //KEY_DOWN = Char(143);
+  //KEY_LEFT = Char(134);
+  //KEY_RIGHT = Char(135);
+
 type
 {$i 'types.inc'}
 {$r 'resources.rc'}
 
 var
-  keyval: char = chr(0);
+  keyval : Byte = 0;
 
 
   //msx: TRMT;
@@ -114,9 +119,9 @@ var
 
 
 procedure start;
-var
-   x: byte;
-   savefile: Tstring;
+//var
+//   x: byte;
+//   savefile: Tstring;
 
 begin
   //msx.Sfx(3, 2, 24);
@@ -486,6 +491,7 @@ var
   fileloc : TString;
 
 begin
+
   if (loc < 10) then
   begin
     fileloc:=concat('LOC0',IntToStr(loc));
@@ -502,11 +508,13 @@ begin
     CRT_Write('xBios not found at address: $'); CRT_Write(HexStr(xBIOS_ADDRESS,4));
   end
   else begin
-    fileloc:= 'LOC00   DAT'; //test
-    xBiosOpenFile(fileloc);
-    xBiosLoadFile(pointer(GFX2_ADDRESS));
 
-    //xbios_closefile;
+    // waitframe;
+    // xBiosOpenFile(fileloc);
+    // waitframe;
+    //xBiosLoadFile(pointer(GFX2_ADDRESS));
+
+
   end;
 
 end;
@@ -595,13 +603,14 @@ begin
   LoadDestinations(player.loc);
 
 
-  keyval:= chr(0);
+  keyval:= 0;
   repeat
 
     If (CRT_Keypressed) then
     begin
 
-        keyval := char(CRT_Keycode[kbcode]);
+        //keyval := char(CRT_Keycode[kbcode]);
+        keyval := kbcode;
         case keyval of
           KEY_BACK:     begin
                           playsfx(voice4,255,168); // vol8
@@ -750,7 +759,7 @@ begin
   optionPressed:= false;
   selectPressed:= false;
   cargoPresent:= false;
-  keyval:= chr(0);
+  keyval:= 0;
 
   //currentcargo:= ship.cargoindex;
   //currentcargoquantity:= ship.cargoquantity;
@@ -858,7 +867,7 @@ begin
     //msx.play;
     If (CRT_Keypressed) then
     begin
-      keyval := char(CRT_Keycode[kbcode]);
+      keyval := kbcode;
 
       case keyval of
         KEY_CANCEL: begin
@@ -1129,6 +1138,38 @@ begin
   until (keyval = KEY_BACK) or (keyval = KEY_OK);
 end;
 
+
+procedure calculateprices(loc: Byte);
+var
+  x: Byte;
+  offset: Word;
+
+
+begin
+  for x:=0 to MAXAVAILABLEITEMS-1 do
+    begin
+      offset:= (x*loc)+x;
+
+      // Produce new items on certain LOCATIONS
+      // if (itemquantity[offset]<= 10) and (loc and (2,3,4,5,6,7,8,9,13,14)) then
+      // begin
+      //
+      // end
+
+      // Increase price if less then 1000
+      if itemquantity[offset]< 1000 then
+      begin
+
+      end
+
+      //
+
+
+
+    end;
+end;
+
+
 procedure menu;
 
 begin
@@ -1140,11 +1181,11 @@ begin
   // gfxcolor4:=$1a;
   case player.loc of
     0:  begin
-          gfxcolor0:=$14;
-          gfxcolor1:=$00;
+          gfxcolor0:=$1a;
+          gfxcolor1:=$14;
           gfxcolor2:=$10;
           gfxcolor3:=$00;
-          gfxcolor4:=$1a;
+          gfxcolor4:=$00;
         end;
   else
     begin
@@ -1172,13 +1213,14 @@ begin
   CRT_GotoXY(14,2);
   WriteFF(strings[7]); // Back
 
-  keyval:=chr(0);
+  keyval:=0;
+
   repeat
   //  pause;
   //  msx.play;
     if CRT_Keypressed then
     begin
-      keyval := char(CRT_Keycode[kbcode]);
+      keyval := kbcode;
       case keyval of
         KEY_OPTION1: current_menu := MENU_NAV;
         KEY_OPTION2: current_menu := MENU_TRADE;
@@ -1220,12 +1262,14 @@ begin
   str:= FFTermToString(strings[0]); // read scroll text
   move(str[1],pointer(SCROLL_ADDRESS+42),sizeOf(str)); // copy text to vram
 
-  keyval:=chr(0);
+  //keyval:=chr(0);
+  keyval:=0;
   repeat
     //msx.play;
     if CRT_Keypressed then
     begin
-      keyval := char(CRT_Keycode[kbcode]);
+      //keyval := char(CRT_Keycode[kbcode]);
+      keyval := kbcode;
       case keyval of
           KEY_NEW:  begin
                       playsfx(voice1,80,200); // vol8
@@ -1235,6 +1279,15 @@ begin
                       start;
                       current_menu := MENU_MAIN;
                     end;
+      // else
+      // begin
+      //   CRT_GotoXY(0,5);
+      //   CRT_Write('Klawisz='~);
+      //   CRT_Write(asc(keyval));
+      //   CRT_Write('   Kod='~);
+      //   CRT_Write(keyval);
+      //   CRT_Write('  '~);
+      // end;
 (*
           KEY_OPTION1: playsfx(185,16*12+4);
           KEY_OPTION2: playsfx(110,16*12+4);
@@ -1265,6 +1318,7 @@ begin
 
   player.loc:= 0; //start location Port Olisar
   load_piclocation(player.loc);
+
 
   // Initialize RMT player
   //msx.player:=pointer(RMT_PLAYER_ADDRESS);

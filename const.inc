@@ -33,34 +33,30 @@ MAXCARGOSLOTS = 10;  // number of cargo slots
 MAXAVAILABLEDESTINATIONS = 6;  // number of destinations fron location.
 
 // ***************************************************************************//
-KEY_OPTION1 = '1';
-KEY_OPTION2 = '2';
-KEY_OPTION3 = '3';
-KEY_OPTION4 = '4';
-KEY_OPTION5 = '5';
-KEY_OPTION6 = '6';
 
-KEY_BACK = 'b';
-KEY_QUIT = 'q';
-KEY_NEW = 'n';
-KEY_JUMP = 'j';
+KEY_OPTION1 = 31; //1
+KEY_OPTION2 = 30; //2
+KEY_OPTION3 = 26;  //3
+KEY_OPTION4 = 24;  //4
+KEY_OPTION5 = 29;  //5
+KEY_OPTION6 = 27;  //6
 
-KEY_UP = 'p';
-KEY_DOWN = ';';
-KEY_LEFT = 'k';
-KEY_RIGHT = 'l';
-//  KEY_UP = Chr(28);
-//  KEY_DOWN = Chr(29);
-//  KEY_LEFT = Chr(30);
-//  KEY_RIGHT = Chr(31);
+KEY_BACK = 21;    //b
+KEY_QUIT = 47;    //q
+KEY_NEW = 35;     //n
+KEY_JUMP = 1;    //j
 
-KEY_CANCEL = 'c';
-KEY_OK = 'o';
+KEY_UP = 142;
+KEY_DOWN = 143;
+KEY_LEFT = 134;
+KEY_RIGHT = 135;
 
+KEY_CANCEL = 18;  //c
+KEY_OK = 8;      //o
 
 //----------------------------------------------------------------------------//
 MENU_TITLE = 0;
 MENU_MAIN = 1;
 MENU_NAV = 2;
 MENU_TRADE = 3;
-//MENU_MAINT = 4;
+MENU_MAINT = 4;
