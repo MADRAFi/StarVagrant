@@ -43,48 +43,48 @@ var
   locations: array [0..0] of Word absolute LOCATIONS_ADDRESS;
   items: array [0..0] of Word absolute ITEMS_ADDRESS;
 
-  itemprice: array [0..(NUMBEROFLOCATIONS*NUMBEROFITEMS)-1] of Word = (
-  0,0,0,0,83,43,0,25,69,50,0,61,0,0,281,170,0,0,0,34,83,39,1,0,
-  256,0,116,0,83,43,0,0,69,50,0,61,0,0,286,180,0,0,10,0,83,39,0,150,
-  0,0,118,0,0,0,0,0,0,50,0,0,0,0,0,178,14,0,0,34,0,0,0,160,
-  0,12,98,0,0,0,17,0,0,50,0,0,11,0,0,180,14,0,0,34,0,0,1,146,
-  245,0,118,0,0,42,0,0,0,50,0,57,0,0,0,178,14,13,0,34,0,37,1,240,
-  0,0,118,0,0,0,0,0,0,50,0,0,0,0,0,178,14,0,0,34,0,0,0,240,
-  0,35,0,0,0,0,17,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,20,15,0,8,0,0,0,10,0,0,24,0,0,3,0,
-  0,0,0,0,0,0,0,0,39,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,40,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,60,0,61,0,0,0,0,0,0,20,0,0,0,0,280,
-  0,0,0,0,0,0,0,0,0,50,0,61,0,0,0,0,0,0,20,0,0,0,0,249,
-  0,0,118,12,0,42,10,0,64,50,0,0,0,0,0,181,14,0,0,0,0,0,1,249,
-  0,0,118,12,0,0,0,0,0,50,0,56,0,0,0,181,14,0,0,0,0,0,1,249,
-  0,26,0,0,0,0,10,0,0,0,22,61,11,10,0,0,0,0,0,0,0,0,0,240,
-  0,0,0,0,0,0,0,25,0,50,0,61,0,0,0,0,0,0,20,0,0,0,0,240
+  itemprice: array [0..(NUMBEROFLOCATIONS * NUMBEROFITEMS)-1] of Word = (
+  0,0,0,0,83,43,0,25,69,30,0,61,0,0,281,170,0,0,0,34,83,39,1,0,
+  256,0,116,0,83,43,0,0,69,30,0,61,0,0,0,180,0,0,10,0,0,39,1,150,
+  0,0,118,0,0,0,15,0,0,30,16,0,13,15,0,178,14,0,0,34,0,0,0,160,
+  0,12,97,0,0,0,17,0,0,30,0,0,11,0,0,180,14,0,0,34,0,0,1,146,
+  245,0,118,0,0,42,0,0,0,30,0,57,0,0,0,178,14,13,0,34,0,37,1,240,
+  243,0,118,0,0,31,0,24,0,30,0,0,0,0,0,178,14,12,0,34,0,35,0,240,
+  0,35,0,0,0,0,17,0,0,20,0,0,15,0,0,0,10,0,0,22,0,0,3,0,
+  0,31,0,22,0,42,0,0,0,0,0,68,0,0,0,176,0,0,8,0,0,0,0,0,
+  0,0,0,0,0,0,0,0,0,34,15,0,8,13,0,0,10,0,0,24,0,0,3,0,
+  225,0,0,0,0,0,0,22,39,0,0,0,0,16,0,0,14,21,18,0,0,0,2,0,
+  225,26,0,0,0,0,0,27,0,27,18,0,14,10,0,0,0,21,20,0,0,0,1,249,
+  205,0,125,0,78,49,0,0,46,38,0,61,0,0,291,195,0,0,0,0,78,47,0,280,
+  0,0,0,22,73,38,0,0,44,36,0,61,0,0,291,181,0,0,20,0,89,47,0,249,
+  0,0,118,12,0,42,10,0,39,37,0,0,0,0,0,181,14,0,0,0,0,0,1,249,
+  0,26,118,12,0,0,0,0,0,37,0,56,0,0,0,181,14,0,0,0,0,0,1,249,
+  0,26,0,0,0,0,10,23,0,0,22,61,11,10,271,0,14,33,0,0,89,0,0,240,
+  0,0,0,22,0,0,11,25,0,40,24,0,12,16,281,185,16,0,0,36,99,0,0,0
 
   );  // price matrix for items
-  itemquantity: array [0..(NUMBEROFLOCATIONS*NUMBEROFITEMS)-1] of Word = (
-  0,0,0,0,10000,10000,0,10000,0,1000,0,0,0,0,0,60000,0,0,0,10000,2000,0,60000,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,60000,0,
-  0,0,0,0,0,0,10000,0,0,0,10000,0,5000,5000,0,0,0,0,0,0,0,0,60000,0,
-  0,5000,5000,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,60000,10000,
-  10000,0,0,0,0,5000,0,0,0,0,0,10000,0,0,0,0,0,5000,0,0,0,10000,60000,0,
-  5000,0,0,0,0,5000,0,5000,0,0,0,0,0,0,0,0,0,10000,0,0,0,5000,60000,0,
-  0,0,0,0,0,0,0,0,0,10000,0,0,0,0,0,0,10000,0,0,5000,0,0,0,0,
-  0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,
-  0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,1,0,0,1,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,
-  0,0,0,1,0,1,0,0,0,1,0,0,1,0,0,1,1,0,0,1,0,0,0,1,
-  1,0,0,0,1,1,0,0,1,1,0,1,0,0,1,1,0,0,0,0,1,1,0,1,
-  1,0,0,0,1,1,0,0,1,1,0,1,0,0,1,1,0,0,0,1,1,1,0,1,
-  0,0,0,10000,0,0,0,0,5000,0,0,0,0,0,0,0,0,0,0,0,0,0,60000,0,
-  0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+  itemquantity: array [0..(NUMBEROFLOCATIONS * NUMBEROFITEMS)-1] of Word = (
+  0,0,0,0,5000,5000,0,5000,0,1000,0,0,0,0,0,5000,0,0,0,5000,2000,0,10000,0,
+  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10000,0,
+  0,0,0,0,0,0,5000,0,0,0,5000,0,2500,2500,0,0,0,0,0,0,0,0,10000,0,
+  0,2500,1000,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10000,1000,
+  5000,0,0,0,0,2500,0,0,0,0,0,5000,0,0,0,0,0,2500,0,0,0,5000,10000,0,
+  2500,0,0,0,0,2500,0,2500,0,0,0,0,0,0,0,0,0,5000,0,0,0,2500,10000,0,
+  0,0,0,0,0,0,0,0,0,5000,0,0,2500,0,0,0,5000,0,0,2500,0,0,0,0,
+  0,1000,0,0,0,0,0,0,0,0,0,0,0,0,0,2500,0,0,5000,0,0,0,10000,0,
+  0,0,0,0,0,0,0,0,0,2500,500,0,2500,2500,0,0,5000,0,0,2500,0,0,10000,0,
+  5000,0,0,0,0,0,0,1500,0,0,0,0,0,1000,0,0,0,0,5000,0,0,0,10000,0,
+  0,2500,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2500,0,0,0,10000,0,
+  5000,0,0,0,5000,5000,0,0,5000,100,0,500,0,0,5000,1000,0,0,0,0,5000,2000,0,0,
+  1000,0,0,0,1000,1000,0,0,1000,1000,0,1000,0,0,1000,1000,0,0,0,0,1000,1000,0,0,
+  0,0,0,5000,0,0,0,0,2500,0,0,0,0,0,0,0,0,0,0,0,0,0,10000,0,
+  0,500,0,5000,0,0,0,0,0,0,0,5000,0,0,0,0,0,0,0,0,0,0,10000,0,
+  0,5000,0,0,0,0,5000,5000,0,0,5000,0,5000,5000,2500,0,2500,5000,0,0,0,0,0,0,
+  0,0,0,500,0,0,500,500,0,500,500,0,500,500,500,500,500,0,0,500,500,0,0,0
 
   ); // quantities of items
 
-  locationdistance: array[0..(NUMBEROFLOCATIONS*NUMBEROFLOCATIONS)-1] of Word =
+  locationdistance: array[0..(NUMBEROFLOCATIONS * NUMBEROFLOCATIONS)-1] of Word =
   (
   0,50,0,0,0,0,0,0,60,0,0,365,120,0,0,50,50,
   50,0,20,30,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -269,7 +269,7 @@ begin
   for x:=0 to NUMBEROFITEMS-1 do
     begin
       visible:= false;
-      offset:=(NUMBEROFITEMS*player.loc) + x;
+      offset:=(NUMBEROFITEMS * player.loc) + x;
 
       if mode then
       begin
@@ -305,9 +305,9 @@ begin
         CRT_GotoXY(LISTSTART,4+count); //min count:=1 so we start at 4th row
 
         CRT_Write(count);CRT_Write(' '~);
-        str:= FFTermToString(items[availableitems[x]-(player.loc*NUMBEROFITEMS)]);
+        str:= FFTermToString(items[availableitems[x]-(player.loc * NUMBEROFITEMS)]);
         CRT_Write(str);
-        if mode then finalprice:=Trunc(itemprice[offset]*(1-COMMISSION))
+        if mode then finalprice:=Trunc(itemprice[offset] * (1-COMMISSION))
         else finalprice:=itemprice[offset];
         countstr:=IntToStr(count);
         pricestr:=IntToStr(finalprice);
@@ -343,7 +343,7 @@ begin
   count:=0;
   for x:=0 to NUMBEROFLOCATIONS-1 do
   begin
-    offset:=(NUMBEROFLOCATIONS*loc) + x;
+    offset:=(NUMBEROFLOCATIONS * loc) + x;
     if locationdistance[offset] > 0 then
     begin
       availabledestinations[count]:=offset;
@@ -371,7 +371,7 @@ begin
   begin
     if (availabledestinations[x] > 0) then
     begin
-      offset:=availabledestinations[x]-(loc*NUMBEROFLOCATIONS); // calculate base location index
+      offset:=availabledestinations[x]-(loc * NUMBEROFLOCATIONS); // calculate base location index
       CRT_GotoXY(LISTSTART,count);
       CRT_Write(count+1);CRT_Write(' '~);
       WriteFF(locations[offset]);
@@ -392,12 +392,12 @@ end;
 
 function CheckItemPosition(newindex : Byte) : Boolean;
 begin
-  result:=(newindex < MAXAVAILABLEITEMS) and (newindex >= 0);
+  result:=(newindex < MAXAVAILABLEITEMS); // and (newindex >= 0);
 end;
 
 function CheckCargoPosition(newindex : Byte) : Boolean;
 begin
-  result:=(newindex < MAXCARGOSLOTS) and (newindex >= 0);
+  result:=(newindex < MAXCARGOSLOTS); // and (newindex >= 0);
 end;
 
 function GetItemPrice(itemindex : Byte; mode : Boolean): Word;
@@ -413,7 +413,7 @@ begin
   price:=itemprice[offset];
   if mode then
   begin
-    finalprice:=Trunc(price*(1-commission))
+    finalprice:=Trunc(price * (1-commission))
   end
   else
   begin
@@ -432,21 +432,23 @@ function GetCargoPrice(myship: TShip; itemindex: Byte): Word;
 begin
 //  myship:= @ship;
 
-  Result:=Trunc(itemprice[myship.cargoindex[itemindex]]*(1-commission))
+  Result:=Trunc(itemprice[myship.cargoindex[itemindex]] * (1-commission))
 end;
 
 function CheckCargoPresence(myship: TShip; itemindex: Byte): Boolean;
 
-var
-  item: Word;
+// var
+//   item: Word;
 
 begin
   Result:= false;
   //for item in availableitems do
-  for item:=0 to MAXAVAILABLEITEMS-1 do
-    begin
-      if myship.cargoindex[itemindex] = availableitems[item] then exit(true);
-    end
+  // for item:=0 to MAXAVAILABLEITEMS-1 do
+  //   begin
+  //     if myship.cargoindex[itemindex] = availableitems[item] then exit(true);
+  //   end
+  if myship.cargoindex[itemindex] > 0 then exit(true);
+
 end;
 
 procedure navi_destinationUpdate(locationindex: Word);
@@ -458,7 +460,7 @@ begin
   WriteSpaces(19); // max location lenght
   CRT_GotoXY(0,1);
   WriteFF(strings[21]);
-  WriteFF(locations[locationindex-(player.loc*NUMBEROFLOCATIONS)]);
+  WriteFF(locations[locationindex-(player.loc * NUMBEROFLOCATIONS)]);
 end;
 
 procedure navi_distanceUpdate(mydistance: Word);
@@ -508,6 +510,49 @@ begin
 
 end;
 
+
+procedure calculateprices(loc: Byte);
+var
+  x: Byte;
+  offset: Word;
+
+
+begin
+  for x:=0 to MAXAVAILABLEITEMS-1 do
+    begin
+      offset:= (x * loc)+x;
+
+      // Produce new items on certain LOCATIONS
+      if (itemquantity[offset] > 0) and (itemquantity[offset] <= 10) then
+      begin
+        case loc of
+          2..9,13,14:   begin
+                          itemquantity[offset]:= itemquantity[offset] + Random(200);
+                        end;
+        end;
+      end;
+
+      // Increase price if less then 1000
+      if (itemquantity[offset] > 0) and (itemquantity[offset] < 1000) and (itemprice[offset] > 0) then
+      begin
+        itemprice[offset]:=itemprice[offset] * (1 + COMMISSION);
+      end;
+
+      // Decrease price if more then 5000
+      if (itemquantity[offset] > 5000) and (itemquantity[offset] < 10000) and (itemprice[offset] > 0) then
+      begin
+        itemprice[offset]:=itemprice[offset] * (1 - COMMISSION);
+      end;
+
+      // Simulate item sell
+      if (itemquantity[offset] > 10000) and (itemprice[offset] > 0) then
+      begin
+        itemquantity[offset]:=itemquantity[offset] * (1 - COMMISSION);
+      end;
+
+    end;
+end;
+
 procedure navi_ftljump(distance: Word; loc : Byte);
 var
   y: Byte;
@@ -541,6 +586,7 @@ begin
     Dec(distance);
     navi_distanceUpdate(distance);
   until (distance = 0);
+  calculateprices(player.loc);
   player.loc:=loc;
 end;
 
@@ -560,7 +606,7 @@ end;
 
 procedure console_navigation;
 var
-  y: byte;
+  //y: byte;
   destinationindex: Word;
   distance: Word;
   newloc: Byte;
@@ -626,7 +672,7 @@ begin
           KEY_JUMP:     begin
                           if destinationindex > 0 then
                           begin
-                            newloc:=destinationindex-(player.loc*NUMBEROFLOCATIONS);
+                            newloc:=destinationindex-(player.loc * NUMBEROFLOCATIONS);
                             navi_ftljump(distance,newloc);
                             current_menu:=MENU_MAIN;
                           end;
@@ -951,14 +997,16 @@ begin
 //                        UpdateSelectedItem(selecteditemquantity,selecteditemtotal);
                       end;
 //                      else
-//                        CRT_WriteRightAligned(19,FFTermToString(strings[20]));
-                      // CRT_GotoXY(0,15);
+//                       CRT_WriteRightAligned(19,FFTermToString(strings[??]));
+
+
+                      // CRT_GotoXY(0,12);
                       // CRT_Write('selectitem='~);CRT_Write(selectitem);CRT_Write('           '~);
-                      // CRT_GotoXY(0,16);
+                      // CRT_GotoXY(0,13);
                       // CRT_Write('selecteditemquantity='~);CRT_Write(selecteditemquantity);CRT_Write('           '~);
-                      // CRT_GotoXY(0,17);
+                      // CRT_GotoXY(0,14);
                       // CRT_Write('currentitemquantity='~);CRT_Write(currentitemquantity);CRT_Write('           '~);
-                      // CRT_GotoXY(0,18);
+                      // CRT_GotoXY(0,15);
                       // CRT_Write('cargoPresent='~);CRT_Write(cargoPresent);CRT_Write('           '~);
                     end;
       end;
@@ -1075,6 +1123,7 @@ begin
           else begin // Selling mode
             if (selecteditemquantity > 0) then
             begin
+
               currentShip.cargoquantity[itemindex]:=currentShip.cargoquantity[itemindex]-selecteditemquantity;
               If currentShip.cargoquantity[itemindex] = 0 then currentShip.cargoindex[itemindex]:= 0; // erasing item form cargoindex
 
@@ -1103,13 +1152,6 @@ begin
                 end;
               end;
 
-              // // set selection to 1st item on the list
-              itemindex:=0;
-              currentitemprice:=GetCargoPrice(currentShip,itemindex);
-              currentitemquantity:=currentShip.cargoquantity[itemindex];
-              currentitemindex:=currentShip.cargoindex[itemindex];
-              selecteditemquantity:= 0;
-              selecteditemtotal:=0;
 
               // update player UEC (current session)
               trade_UpdateUEC(currentuec);
@@ -1118,16 +1160,25 @@ begin
               currentShip.scu:=currentShip.scu-selecteditemquantity;
               trade_UpdateCargo(currentShip);
 
+
+              // // set selection to 1st item on the list
+              itemindex:=0;
+              currentitemprice:=GetCargoPrice(currentShip,itemindex);
+              currentitemquantity:=currentShip.cargoquantity[itemindex];
+              currentitemindex:=currentShip.cargoindex[itemindex];
+              selecteditemquantity:= 0;
+              selecteditemtotal:=0;
+
               // remove selection
 
-              for y:=0 to MAXCARGOSLOTS-1 do
-              begin
-               str:=concat('cargoindex[',IntToStr(y));
-               str:=concat(str,']=');
-               str:=concat(str,IntToStr(currentShip.cargoindex[y]));
-               str:=concat(str,'          2');
-               CRT_WriteXY(20,11+y,Atascii2Antic(str));
-              end;
+              // for y:=0 to MAXCARGOSLOTS-1 do
+              // begin
+              //  str:=concat('cargoindex[',IntToStr(y));
+              //  str:=concat(str,']=');
+              //  str:=concat(str,IntToStr(currentShip.cargoindex[y]));
+              //  str:=concat(str,'          2');
+              //  CRT_WriteXY(20,11+y,Atascii2Antic(str));
+              // end;
 
               // remove selected
               CRT_ClearRow(19);
@@ -1144,38 +1195,6 @@ begin
 
   until (keyval = KEY_BACK) or (keyval = KEY_OK);
 end;
-
-
-procedure calculateprices(loc: Byte);
-var
-  x: Byte;
-  offset: Word;
-
-
-begin
-  for x:=0 to MAXAVAILABLEITEMS-1 do
-    begin
-      offset:= (x*loc)+x;
-
-      // Produce new items on certain LOCATIONS
-      // if (itemquantity[offset]<= 10) and (loc and (2,3,4,5,6,7,8,9,13,14)) then
-      // begin
-      //
-      // end
-
-      // Increase price if less then 1000
-      if itemquantity[offset]< 1000 then
-      begin
-
-      end
-
-      //
-
-
-
-    end;
-end;
-
 
 procedure menu;
 
@@ -1320,6 +1339,7 @@ MAIN LOOP
 
 begin
   SystemOff;
+  Randomize;
   SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
   CRT_Init(TXT_ADDRESS);
 
