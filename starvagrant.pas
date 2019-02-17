@@ -1,5 +1,5 @@
 program StarVagrant;
-{$librarypath '../Libs/lib/';'../Libs/blibs/';'../Libs/base/';'../libs/xbios/'}
+{$librarypath '../Libs/lib/';'../Libs/blibs/';'../Libs/base/'}
 // {$librarypath '../blibs/'}
 uses atari, b_utils, b_system, b_crt, sysutils, xbios; //, mad_xbios;
 
@@ -10,11 +10,6 @@ const
   CARGOUNIT = ' SCU';
   DISTANCE = ' DU';
   COMMISSION = 0.05;
-
-  //KEY_UP = Char(142);
-  //KEY_DOWN = Char(143);
-  //KEY_LEFT = Char(134);
-  //KEY_RIGHT = Char(135);
 
 type
 {$i 'types.inc'}
@@ -119,25 +114,26 @@ var
 
 
 procedure start;
-//var
-//   x: byte;
+var
+   x: byte;
 //   savefile: Tstring;
 
 begin
   //msx.Sfx(3, 2, 24);
   //generateworld;
   player.uec:= 5000; // start cash
+  player.loc:= 0;
 
   //mocap starting ship
   ship.sname:= 'Cuttlas Black';
   ship.scu_max:=46;
   ship.scu:=0;
 
-  // for x:=0 to MAXCARGOSLOTS-1 do
-  // begin
-  //     ship.cargoindex[x]:= 0;
-  //     ship.cargoquantity[x]:= 0;
-  // end;
+  for x:=0 to MAXCARGOSLOTS-1 do
+  begin
+      ship.cargoindex[x]:= 0;
+      ship.cargoquantity[x]:= 0;
+  end;
 
   // ship.cargoindex[0]:=8;
   // ship.cargoquantity[0]:=10;
@@ -269,7 +265,6 @@ var
 begin
 
 //load items
-
   count:=0;
   for x:=0 to NUMBEROFITEMS-1 do
     begin
@@ -287,7 +282,6 @@ begin
           visible:=true;
       //end;
 
-
       if visible then
       begin
         if count <= MAXAVAILABLEITEMS-1 then // max avaiable items
@@ -297,20 +291,9 @@ begin
         end;
       end;
     end;
-
-    // clear avaiable items array when mode is changed and less items are present
-    // if (count < MAXAVAILABLEITEMS-1) then
-    // begin
-    //   for x:=count to MAXAVAILABLEITEMS-1 do
-    //   //begin
-    //     availableitems[x]:=0;
-    //   //end;
-    // end;
-    eraseArray(count,MAXAVAILABLEITEMS-1, @availableitems);
-
+  eraseArray(count,MAXAVAILABLEITEMS-1, @availableitems);
 
   // list items
-
   count:=1;
   for x:=0 to MAXAVAILABLEITEMS-1 do // max available items
     begin
@@ -442,11 +425,13 @@ end;
 
 
 function GetCargoPrice(myship: TShip; itemindex: Byte): Word;
-// Get item price based on itemindex of available items mode is false for BUY and tru for SELL
-begin
+// Get item price based on itemindex of available items
+//var
+//  myship: TShip;
 
-//  price:=itemprice[offset];
-//  Result:=Trunc(price*(1-commission))
+begin
+//  myship:= @ship;
+
   Result:=Trunc(itemprice[myship.cargoindex[itemindex]]*(1-commission))
 end;
 
@@ -505,12 +490,16 @@ begin
 
   if xBiosCheck = 0 then
   begin
-    CRT_Write('xBios not found at address: $'); CRT_Write(HexStr(xBIOS_ADDRESS,4));
+    CRT_GotoXY(0,6);
+    CRT_Write('xBios not found at address: $'~); CRT_Write(HexStr(xBIOS_ADDRESS,4));
   end
   else begin
 
     // waitframe;
-    // xBiosOpenFile(fileloc);
+    //xBiosOpenDefaultDir;
+    xBiosOpenFile(fileloc);
+    //waitframe;
+    //xBiosFlushBuffer;
     // waitframe;
     //xBiosLoadFile(pointer(GFX2_ADDRESS));
 
@@ -948,9 +937,10 @@ begin
                     end;
         KEY_RIGHT:  begin
                       selectitem:= false;
-                      if (selecteditemquantity < currentitemquantity) and (selecteditemtotal + currentitemprice <= currentuec ) then
+                      if (selecteditemquantity < currentitemquantity) then
                           if (mode = false) then begin
-                              if (selecteditemquantity < currentShip.scu_max-currentShip.scu) then selectitem := true;
+                              if (selecteditemquantity < currentShip.scu_max-currentShip.scu)
+                                and (selecteditemtotal + currentitemprice <= currentuec ) then selectitem := true;
                           end else // when selling
                               if cargoPresent then selectitem:= true;
 
@@ -959,9 +949,17 @@ begin
                         Inc(selecteditemquantity);
                         selecteditemtotal:=selecteditemquantity * currentitemprice;
 //                        UpdateSelectedItem(selecteditemquantity,selecteditemtotal);
-                      end
+                      end;
 //                      else
 //                        CRT_WriteRightAligned(19,FFTermToString(strings[20]));
+                      // CRT_GotoXY(0,15);
+                      // CRT_Write('selectitem='~);CRT_Write(selectitem);CRT_Write('           '~);
+                      // CRT_GotoXY(0,16);
+                      // CRT_Write('selecteditemquantity='~);CRT_Write(selecteditemquantity);CRT_Write('           '~);
+                      // CRT_GotoXY(0,17);
+                      // CRT_Write('currentitemquantity='~);CRT_Write(currentitemquantity);CRT_Write('           '~);
+                      // CRT_GotoXY(0,18);
+                      // CRT_Write('cargoPresent='~);CRT_Write(cargoPresent);CRT_Write('           '~);
                     end;
       end;
       If (keyval = KEY_LEFT) or (keyval = KEY_RIGHT) then UpdateSelectedItem(selecteditemquantity,selecteditemtotal);
@@ -970,6 +968,7 @@ begin
     if (CRT_OptionPressed) and (optionPressed=false) then
     begin
       mode:= not mode;
+      CRT_ClearRow(19);
       if (mode = false) then
       begin
         CRT_GotoXY(LISTSTART-3,0);
@@ -988,7 +987,7 @@ begin
         // end;
         // //
 
-        //LoadItems(player.loc,false);
+
         ListItems(false);
         ListCargo(currentShip,false);
         itemindex:=0;
@@ -1010,14 +1009,17 @@ begin
         // end;
         //  //
 
-        //LoadItems(player.loc, true);
+
         ListItems(true);
         ListCargo(currentShip,true);
+        itemindex:=0;
         currentitemquantity:=currentShip.cargoquantity[itemindex];
         currentitemprice:=GetCargoPrice(currentShip,itemindex);
         currentitemindex:=currentShip.cargoindex[itemindex];
+        cargoPresent:=CheckCargoPresence(currentShip,itemindex);
+        selecteditemquantity:=0;
 
-        itemindex:=0;
+
       end;
       optionPressed:=true;
     end
@@ -1065,7 +1067,7 @@ begin
               currentitemprice:=GetCargoPrice(currentShip,itemindex);
               currentitemindex:=currentShip.cargoindex[itemindex];
               selecteditemquantity:= 0;
-              selecteditemtotal:=0;
+              selecteditemtotal:= 0;
 //              itemindex:=0;
 
             end;
@@ -1083,28 +1085,31 @@ begin
               begin
                 if currentShip.cargoquantity[y] = 0 then
                 begin
-                  // for l:=y to MAXCARGOSLOTS-1 do
-                  // begin
-                  //   if (l < MAXCARGOSLOTS-1) then
-                  //   begin
-                  //     currentShip.cargoindex[l]:=currentShip.cargoindex[l+1];
-                  //     currentShip.cargoquantity[l]:=currentShip.cargoquantity[l+1];
-                  //   end
-                  //   else
-                  //   begin
-                  //     currentShip.cargoindex[l]:=0;
-                  //     currentShip.cargoquantity[l]:=0;
-                  //   end;
-                  // end;
-                  move (currentShip.cargoindex[y],currentShip.cargoindex[y+1],1);
-                  move (currentShip.cargoquantity[y],currentShip.cargoquantity[y+1],1);
+                  for l:=y to MAXCARGOSLOTS-1 do
+                  begin
+                    if (l < MAXCARGOSLOTS-1) then
+                    begin
+                      currentShip.cargoindex[l]:=currentShip.cargoindex[l+1];
+                      currentShip.cargoquantity[l]:=currentShip.cargoquantity[l+1];
+                    end
+                    else
+                    begin
+                      currentShip.cargoindex[l]:=0;
+                      currentShip.cargoquantity[l]:=0;
+                    end;
+                  end;
+                  //move (currentShip.cargoindex[y],currentShip.cargoindex[y+1],1);
+                  //move (currentShip.cargoquantity[y],currentShip.cargoquantity[y+1],1);
                 end;
               end;
 
               // // set selection to 1st item on the list
-              // currentitemquantity:=currentShip.cargoquantity[itemindex];
-              // currentitemprice:=GetItemPrice(itemindex,mode);
-              // currentitemindex:=currentShip.cargoindex[itemindex];
+              itemindex:=0;
+              currentitemprice:=GetCargoPrice(currentShip,itemindex);
+              currentitemquantity:=currentShip.cargoquantity[itemindex];
+              currentitemindex:=currentShip.cargoindex[itemindex];
+              selecteditemquantity:= 0;
+              selecteditemtotal:=0;
 
               // update player UEC (current session)
               trade_UpdateUEC(currentuec);
@@ -1114,15 +1119,17 @@ begin
               trade_UpdateCargo(currentShip);
 
               // remove selection
-              itemindex:=0;
-              currentitemprice:=GetCargoPrice(currentShip,itemindex);
-              currentitemquantity:=currentShip.cargoquantity[itemindex];
-              currentitemindex:=currentShip.cargoindex[itemindex];
-              selecteditemquantity:= 0;
-              selecteditemtotal:=0;
 
+              for y:=0 to MAXCARGOSLOTS-1 do
+              begin
+               str:=concat('cargoindex[',IntToStr(y));
+               str:=concat(str,']=');
+               str:=concat(str,IntToStr(currentShip.cargoindex[y]));
+               str:=concat(str,'          2');
+               CRT_WriteXY(20,11+y,Atascii2Antic(str));
+              end;
 
-              // remove selected GetItemQuantity
+              // remove selected
               CRT_ClearRow(19);
 
             end;
@@ -1316,8 +1323,8 @@ begin
   SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
   CRT_Init(TXT_ADDRESS);
 
-  player.loc:= 0; //start location Port Olisar
-  load_piclocation(player.loc);
+  //player.loc:= 0; //start location Port Olisar
+  load_piclocation(0);//start location Port Olisar
 
 
   // Initialize RMT player
