@@ -1,5 +1,5 @@
-{$librarypath '../'}
-uses crt, sysutils, mad_xbios;
+{$librarypath '../../Libs/lib/';'../../Libs/blibs/';'../../Libs/base/'}
+uses crt, sysutils, xbios;
 
 const
  stext = $8000;
@@ -124,7 +124,7 @@ begin
  SetIntVec(iDLI, old_dli);
 
  main:= 'STARV   XEX';
- xbios_loadfile(main);
+ xbiosloadfile(main);
 
 
 end.

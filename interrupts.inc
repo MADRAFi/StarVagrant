@@ -110,11 +110,10 @@ procedure dli1;assembler;interrupt;
         pha
         sta ATARI.WSYNC
 
-        mva gfxcolor0 ATARI.colpf0
-        mva gfxcolor1 ATARI.colpf1
-        mva gfxcolor2 ATARI.colpf2
-        mva gfxcolor3 ATARI.colpf3
-        mva gfxcolor4 ATARI.colbk
+        mva adr.gfxcolors ATARI.colpf0
+        mva adr.gfxcolors+1 ATARI.colpf1
+        mva adr.gfxcolors+2 ATARI.colpf2
+        mva adr.gfxcolors+3 ATARI.colbk
 
         mwa #DLI2 __dlivec
         pla

@@ -9,7 +9,7 @@ const
   CURRENCY = ' UEC';
   CARGOUNIT = ' SCU';
   DISTANCE = ' DU';
-  COMMISSION = 0.05;
+  COMMISSION = 0.03;
 
 type
 {$i 'types.inc'}
@@ -26,14 +26,32 @@ var
   * 0 - colpf0
   * 1 - colpf1
   * 2 - colpf2
-  * 3 - colpf3
-  * 4 - colbk
+  * 3 - colbk
   *)
-  gfxcolor0: Byte;
-  gfxcolor1: Byte;
-  gfxcolor2: Byte;
-  gfxcolor3: Byte;
-  gfxcolor4: Byte;
+  piccolors: array [0..(4*NUMBEROFLOCATIONS)-1] of Byte = (
+    $1a,$14,$10,$00,    // 0
+    $10,$14,$1c,$00,    // 1
+    $1a,$14,$10,$00,    // 2
+    $90,$96,$9c,$00,    // 3
+    $1a,$14,$10,$00,    // 4
+    $1a,$14,$10,$00,    // 5
+    $1a,$14,$10,$00,    // 6
+    $1a,$14,$10,$00,    // 7
+    $d0,$d4,$dc,$00,    // 8
+    $1a,$14,$10,$00,    // 9
+    $1a,$14,$10,$00,    // 10
+    $1a,$14,$10,$00,    // 11
+    $1a,$14,$10,$00,    // 12
+    $1a,$14,$10,$00,    // 13
+    $1a,$14,$10,$00,    // 14
+    $1a,$14,$10,$00,    // 15
+    $1a,$14,$10,$00     // 16
+  );
+
+// current gfx colors
+  gfxcolors: array [0..3] of Byte = (
+    $1a,$14,$10,$00
+  );
 
   player: TPlayer;
   ship: TShip;
@@ -112,6 +130,51 @@ var
 
 {$i 'interrupts.inc'}
 
+procedure eraseArray(min: Byte; max: Byte; arrptr: Pointer); //forward does not work
+//procedure eraseArray(min: Byte; max: Byte; a: array [0..0] of Word);
+var
+  a: array [0..0] of Word;
+
+begin
+  if (min < max) then
+  begin
+    a:=arrptr;
+    fillbyte(a[min],(max-min) shl 2,0); // x2 becasue Word type (2 bytes)
+  end;
+end;
+
+procedure load_piclocation(loc: Byte);
+var
+  fileloc : TString;
+
+begin
+
+  if (loc < 10) then
+  begin
+    fileloc:=concat('LOC0',IntToStr(loc));
+    fileloc:=concat(fileloc,'   DAT');
+  end
+  else
+  begin
+    fileloc:=concat('LOC',inttostr(loc));
+    fileloc:=concat(fileloc,'   DAT');
+  end;
+
+  if xBiosCheck = 0 then
+  begin
+    CRT_GotoXY(0,6);
+    CRT_Write('xBios not found at address: $'~); CRT_Write(HexStr(xBIOS_ADDRESS,4));
+  end
+  else begin
+    xBiosOpenFile(fileloc);
+    if xBiosIOresult = 0 then
+    begin
+      xBiosLoadData(Pointer(GFX2_ADDRESS));
+      xBiosFlushBuffer;
+    end
+  end;
+
+end;
 
 procedure start;
 var
@@ -122,18 +185,23 @@ begin
   //msx.Sfx(3, 2, 24);
   //generateworld;
   player.uec:= 5000; // start cash
-  player.loc:= 0;
+  if player.loc <> 0  then
+  begin
+    player.loc:= 0;
+    load_piclocation(player.loc);
+  end;
 
   //mocap starting ship
   ship.sname:= 'Cuttlas Black';
   ship.scu_max:=46;
   ship.scu:=0;
 
-  for x:=0 to MAXCARGOSLOTS-1 do
-  begin
-      ship.cargoindex[x]:= 0;
-      ship.cargoquantity[x]:= 0;
-  end;
+  // for x:=0 to MAXCARGOSLOTS-1 do
+  // begin
+  //     ship.cargoindex[x]:= 0;
+  //     ship.cargoquantity[x]:= 0;
+  // end;
+  eraseArray(0,MAXCARGOSLOTS-1, @ship.cargoindex);
 
   // ship.cargoindex[0]:=8;
   // ship.cargoquantity[0]:=10;
@@ -141,11 +209,6 @@ begin
   // ship.cargoquantity[1]:=20;
   // ship.scu:= 30;
 
-  //savefile:='D1:STAR1   SAV';
-  //xbios_openfile(savefile);
-
-  //xbios_write(@ship);
-  //xbios_closefile;
 
 end;
 
@@ -189,20 +252,6 @@ begin
   for y:=start to num do
     CRT_ClearRow(y);
 end;
-
-procedure eraseArray(min: Byte; max: Byte; arrptr: Pointer);
-//procedure eraseArray(min: Byte; max: Byte; a: array [0..0] of Word);
-var
-  a: array [0..0] of Word;
-
-begin
-  if (min < max) then
-  begin
-    a:=arrptr;
-    fillbyte(a[min],(max-min) shl 2,0); // x2 becasue Word type (2 bytes)
-  end;
-end;
-
 
 
 procedure ListCargo(myship: Tship;mode : Boolean);
@@ -307,7 +356,8 @@ begin
         CRT_Write(count);CRT_Write(' '~);
         str:= FFTermToString(items[availableitems[x]-(player.loc * NUMBEROFITEMS)]);
         CRT_Write(str);
-        if mode then finalprice:=Trunc(itemprice[offset] * (1-COMMISSION))
+        //if mode then finalprice:=Trunc(itemprice[offset] * (1-COMMISSION))
+        if mode then finalprice:=Round(itemprice[offset] * (1-COMMISSION))
         else finalprice:=itemprice[offset];
         countstr:=IntToStr(count);
         pricestr:=IntToStr(finalprice);
@@ -413,7 +463,8 @@ begin
   price:=itemprice[offset];
   if mode then
   begin
-    finalprice:=Trunc(price * (1-commission))
+    //finalprice:=Trunc(price * (1-commission))
+    finalprice:=Round(price * (1-commission))
   end
   else
   begin
@@ -432,7 +483,8 @@ function GetCargoPrice(myship: TShip; itemindex: Byte): Word;
 begin
 //  myship:= @ship;
 
-  Result:=Trunc(itemprice[myship.cargoindex[itemindex]] * (1-commission))
+  //Result:=Trunc(itemprice[myship.cargoindex[itemindex]] * (1-commission))
+  Result:=Round(itemprice[myship.cargoindex[itemindex]] * (1-commission))
 end;
 
 function CheckCargoPresence(myship: TShip; itemindex: Byte): Boolean;
@@ -471,43 +523,6 @@ begin
   CRT_GotoXY(0,2);
   WriteFF(strings[22]);
   CRT_Write(mydistance); CRT_Write(Atascii2Antic(DISTANCE));
-end;
-
-procedure load_piclocation(loc: Byte);
-var
-  fileloc : TString;
-
-begin
-
-  if (loc < 10) then
-  begin
-    fileloc:=concat('LOC0',IntToStr(loc));
-    fileloc:=concat(fileloc,'   DAT');
-  end
-  else
-  begin
-    fileloc:=concat('LOC',inttostr(loc));
-    fileloc:=concat(fileloc,'   DAT');
-  end;
-
-  if xBiosCheck = 0 then
-  begin
-    CRT_GotoXY(0,6);
-    CRT_Write('xBios not found at address: $'~); CRT_Write(HexStr(xBIOS_ADDRESS,4));
-  end
-  else begin
-
-    // waitframe;
-    //xBiosOpenDefaultDir;
-    xBiosOpenFile(fileloc);
-    //waitframe;
-    //xBiosFlushBuffer;
-    // waitframe;
-    //xBiosLoadFile(pointer(GFX2_ADDRESS));
-
-
-  end;
-
 end;
 
 
@@ -573,12 +588,12 @@ begin
   // fade
   repeat
     Waitframe;
-    If (gfxcolor0 > 0) then Dec(gfxcolor0);
-    If (gfxcolor1 > 0) then Dec(gfxcolor1);
-    If (gfxcolor2 > 0) then Dec(gfxcolor2);
-    If (gfxcolor3 > 0) then Dec(gfxcolor3);
-    If (gfxcolor4 > 0) then Dec(gfxcolor4);
-  until (gfxcolor0 or gfxcolor1 or gfxcolor2 or gfxcolor3 or gfxcolor4) = 0;
+    If (gfxcolors[0] > 0) then Dec(gfxcolors[0]);
+    If (gfxcolors[1] > 0) then Dec(gfxcolors[1]);
+    If (gfxcolors[2] > 0) then Dec(gfxcolors[2]);
+    If (gfxcolors[3] > 0) then Dec(gfxcolors[3]);
+
+  until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3]) = 0;
 
   // simulate travel
   repeat
@@ -674,6 +689,7 @@ begin
                           begin
                             newloc:=destinationindex-(player.loc * NUMBEROFLOCATIONS);
                             navi_ftljump(distance,newloc);
+                            load_piclocation(newloc);
                             current_menu:=MENU_MAIN;
                           end;
                         end;
@@ -1197,31 +1213,17 @@ begin
 end;
 
 procedure menu;
+var
+  offset: Byte;
 
 begin
+  // offset for player location colors
+  offset:= player.loc shl 2;
+  gfxcolors[0]:=piccolors[offset];
+  gfxcolors[1]:=piccolors[offset+1];
+  gfxcolors[2]:=piccolors[offset+2];
+  gfxcolors[3]:=piccolors[offset+3];
 
-  // gfxcolor0:=$14;
-  // gfxcolor1:=$00;
-  // gfxcolor2:=$10;
-  // gfxcolor3:=$00;
-  // gfxcolor4:=$1a;
-  case player.loc of
-    0:  begin
-          gfxcolor0:=$1a;
-          gfxcolor1:=$14;
-          gfxcolor2:=$10;
-          gfxcolor3:=$00;
-          gfxcolor4:=$00;
-        end;
-  else
-    begin
-      gfxcolor0:=$0c;
-      gfxcolor1:=$06;
-      gfxcolor2:=$02;
-      gfxcolor3:=$0c;
-      gfxcolor4:=$00;
-    end;
-  end;
 
   EnableVBLI(@vbl);
   EnableDLI(@dli1);
@@ -1343,7 +1345,6 @@ begin
   SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
   CRT_Init(TXT_ADDRESS);
 
-  //player.loc:= 0; //start location Port Olisar
   load_piclocation(0);//start location Port Olisar
 
 
@@ -1358,7 +1359,7 @@ begin
 
 
   current_menu := MENU_TITLE;
-
+  //current_menu := MENU_MAIN;
   repeat
     case current_menu of
       MENU_TITLE: title;
