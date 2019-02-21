@@ -176,6 +176,39 @@ begin
 
 end;
 
+procedure piclocation_openfile(loc: Byte);
+var
+  fileloc : TString;
+
+begin
+
+  if (loc < 10) then
+  begin
+    fileloc:=concat('LOC0',IntToStr(loc));
+    fileloc:=concat(fileloc,'   DAT');
+  end
+  else
+  begin
+    fileloc:=concat('LOC',inttostr(loc));
+    fileloc:=concat(fileloc,'   DAT');
+  end;
+
+  if xBiosCheck = 0 then
+  begin
+    CRT_GotoXY(0,6);
+    CRT_Write('xBios not found at address: $'~); CRT_Write(HexStr(xBIOS_ADDRESS,4));
+  end
+  else begin
+    xBiosOpenFile(fileloc);
+    // if xBiosIOresult = 0 then
+    // begin
+    //   xBiosLoadData(Pointer(GFX2_ADDRESS));
+    //   xBiosFlushBuffer;
+    // end
+  end;
+
+end;
+
 procedure start;
 var
    x: byte;
@@ -571,6 +604,7 @@ end;
 procedure navi_ftljump(distance: Word; loc : Byte);
 var
   y: Byte;
+  fileoffset: Cardinal;
 
 begin
   CRT_ClearRow(6);
@@ -588,19 +622,31 @@ begin
   // fade
   repeat
     Waitframe;
-    If (gfxcolors[0] > 0) then Dec(gfxcolors[0]);
-    If (gfxcolors[1] > 0) then Dec(gfxcolors[1]);
-    If (gfxcolors[2] > 0) then Dec(gfxcolors[2]);
-    If (gfxcolors[3] > 0) then Dec(gfxcolors[3]);
-
+    If (gfxcolors[0] and %00001111 <> 0) then Dec(gfxcolors[0]) else gfxcolors[0]:=0;
+    If (gfxcolors[1] and %00001111 <> 0) then Dec(gfxcolors[1]) else gfxcolors[1]:=0;
+    If (gfxcolors[2] and %00001111 <> 0) then Dec(gfxcolors[2]) else gfxcolors[2]:=0;
+    If (gfxcolors[3] and %00001111 <> 0) then Dec(gfxcolors[3]) else gfxcolors[3]:=0;
   until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3]) = 0;
+
+  piclocation_openfile(loc);
+  fileoffset:=0;
+  xBiosSetLength(400); //size of chunk to read
 
   // simulate travel
   repeat
-    Waitframes(5);
+    //if (xBiosIOerror = 0) then
+    //begin
+      xBiosLoadData(Pointer(GFX2_ADDRESS+fileoffset));
+      fileoffset:=fileoffset+400;
+    //end;
     Dec(distance);
     navi_distanceUpdate(distance);
-  until (distance = 0);
+    waitframes(5);
+    //waitframe;
+  until (distance = 0) and (xBiosIOresult <> 0);
+
+  xBiosFlushBuffer; // close file
+
   calculateprices(player.loc);
   player.loc:=loc;
 end;
@@ -689,7 +735,7 @@ begin
                           begin
                             newloc:=destinationindex-(player.loc * NUMBEROFLOCATIONS);
                             navi_ftljump(distance,newloc);
-                            load_piclocation(newloc);
+                            //load_piclocation(newloc);
                             current_menu:=MENU_MAIN;
                           end;
                         end;
