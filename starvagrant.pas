@@ -1,5 +1,6 @@
 program StarVagrant;
 {$librarypath '../Libs/lib/';'../Libs/blibs/';'../Libs/base/'}
+//{$librarypath 'Libs/lib/';'Libs/blibs/';'Libs/base/'}
 // {$librarypath '../blibs/'}
 uses atari, b_utils, b_system, b_crt, sysutils, xbios; //, mad_xbios;
 
@@ -16,9 +17,12 @@ type
 {$r 'resources.rc'}
 
 var
+  //commission: shortreal = 0.05;
   keyval : Byte = 0;
-
-
+  player: TPlayer; // player
+  ship: TShip; // player's ship
+  currentship:TShip; // temp ship for operations
+  tstr : TString; // string used in various routines.
   //msx: TRMT;
   current_menu: Byte;
 
@@ -53,10 +57,6 @@ var
     $1a,$14,$10,$00
   );
 
-  player: TPlayer;
-  ship: TShip;
-
-//commission: shortreal = 0.05;
   strings: array [0..0] of Word absolute STRINGS_ADDRESS;
   locations: array [0..0] of Word absolute LOCATIONS_ADDRESS;
   items: array [0..0] of Word absolute ITEMS_ADDRESS;
@@ -143,55 +143,12 @@ begin
   end;
 end;
 
-procedure load_piclocation(loc: Byte);
-var
-  fileloc : TString;
-
-begin
-
-  if (loc < 10) then
-  begin
-    fileloc:=concat('LOC0',IntToStr(loc));
-    fileloc:=concat(fileloc,'   DAT');
-  end
-  else
-  begin
-    fileloc:=concat('LOC',inttostr(loc));
-    fileloc:=concat(fileloc,'   DAT');
-  end;
-
-  if xBiosCheck = 0 then
-  begin
-    CRT_GotoXY(0,6);
-    CRT_Write('xBios not found at address: $'~); CRT_Write(HexStr(xBIOS_ADDRESS,4));
-  end
-  else begin
-    xBiosOpenFile(fileloc);
-    if xBiosIOresult = 0 then
-    begin
-      xBiosLoadData(Pointer(GFX2_ADDRESS));
-      xBiosFlushBuffer;
-    end
-  end;
-
-end;
-
 procedure piclocation_openfile(loc: Byte);
-var
-  fileloc : TString;
 
 begin
-
-  if (loc < 10) then
-  begin
-    fileloc:=concat('LOC0',IntToStr(loc));
-    fileloc:=concat(fileloc,'   DAT');
-  end
-  else
-  begin
-    fileloc:=concat('LOC',inttostr(loc));
-    fileloc:=concat(fileloc,'   DAT');
-  end;
+  if (loc < 10) then tstr:=concat('LOC0',IntToStr(loc))
+  else tstr:=concat('LOC',inttostr(loc));
+  tstr:=concat(tstr,'   DAT');
 
   if xBiosCheck = 0 then
   begin
@@ -199,15 +156,24 @@ begin
     CRT_Write('xBios not found at address: $'~); CRT_Write(HexStr(xBIOS_ADDRESS,4));
   end
   else begin
-    xBiosOpenFile(fileloc);
-    // if xBiosIOresult = 0 then
-    // begin
-    //   xBiosLoadData(Pointer(GFX2_ADDRESS));
-    //   xBiosFlushBuffer;
-    // end
+    xBiosOpenFile(tstr);
   end;
 
 end;
+
+procedure piclocation_load(loc: Byte);
+
+begin
+  piclocation_openfile(loc);
+
+  if xBiosIOresult = 0 then
+  begin
+    xBiosLoadData(Pointer(GFX2_ADDRESS));
+    xBiosFlushBuffer;
+  end
+
+end;
+
 
 procedure start;
 var
@@ -221,7 +187,7 @@ begin
   if player.loc <> 0  then
   begin
     player.loc:= 0;
-    load_piclocation(player.loc);
+    piclocation_load(player.loc);
   end;
 
   //mocap starting ship
@@ -287,7 +253,7 @@ begin
 end;
 
 
-procedure ListCargo(myship: Tship;mode : Boolean);
+procedure ListCargo(mode : Boolean);
 const
   LISTWIDTH = 20;
   LISTSTART = 0;
@@ -305,13 +271,13 @@ begin
   count:=1;
   for x:=0 to MAXCARGOSLOTS-1 do // max available items
   begin
-    offset:=myship.cargoindex[x];
+    offset:=currentship.cargoindex[x];
     if offset > 0 then
     begin
       CRT_GotoXY(LISTSTART,7+count); //min count:=1 so we start at 8th row
       str:= FFTermToString(items[offset]);
       CRT_Write(str);
-      strnum:=IntToStr(myship.cargoquantity[x]);
+      strnum:=IntToStr(currentship.cargoquantity[x]);
       WriteSpaces(LISTWIDTH-Length(str)-Length(strnum));
       CRT_Write(Atascii2Antic(strnum));
       if (count = 1) and mode then CRT_Invert(LISTSTART,8,LISTWIDTH);
@@ -508,19 +474,14 @@ begin
 end;
 
 
-function GetCargoPrice(myship: TShip; itemindex: Byte): Word;
+function GetCargoPrice(itemindex: Byte): Word;
 // Get item price based on itemindex of available items
-//var
-//  myship: TShip;
 
 begin
-//  myship:= @ship;
-
-  //Result:=Trunc(itemprice[myship.cargoindex[itemindex]] * (1-commission))
-  Result:=Round(itemprice[myship.cargoindex[itemindex]] * (1-commission))
+  Result:=Round(itemprice[currentship.cargoindex[itemindex]] * (1-commission))
 end;
 
-function CheckCargoPresence(myship: TShip; itemindex: Byte): Boolean;
+function CheckCargoPresence(itemindex: Byte): Boolean;
 
 // var
 //   item: Word;
@@ -530,9 +491,9 @@ begin
   //for item in availableitems do
   // for item:=0 to MAXAVAILABLEITEMS-1 do
   //   begin
-  //     if myship.cargoindex[itemindex] = availableitems[item] then exit(true);
+  //     if currentShip.cargoindex[itemindex] = availableitems[item] then exit(true);
   //   end
-  if myship.cargoindex[itemindex] > 0 then exit(true);
+  if currentship.cargoindex[itemindex] > 0 then exit(true);
 
 end;
 
@@ -621,7 +582,7 @@ begin
 
   // fade
   repeat
-    Waitframe;
+    Waitframes(2);
     If (gfxcolors[0] and %00001111 <> 0) then Dec(gfxcolors[0]) else gfxcolors[0]:=0;
     If (gfxcolors[1] and %00001111 <> 0) then Dec(gfxcolors[1]) else gfxcolors[1]:=0;
     If (gfxcolors[2] and %00001111 <> 0) then Dec(gfxcolors[2]) else gfxcolors[2]:=0;
@@ -735,7 +696,6 @@ begin
                           begin
                             newloc:=destinationindex-(player.loc * NUMBEROFLOCATIONS);
                             navi_ftljump(distance,newloc);
-                            //load_piclocation(newloc);
                             current_menu:=MENU_MAIN;
                           end;
                         end;
@@ -789,7 +749,7 @@ begin
   CRT_Write(Atascii2Antic(CURRENCY));
 end;
 
-procedure trade_UpdateCargo(myship: TShip);
+procedure trade_UpdateCargo;
 
 const
   LISTSTART = 21;
@@ -800,7 +760,7 @@ var
 begin
   //liststart:=(CRT_screenWidth shr 1)+1;
   // update cargo Total
-  str:=IntToStr(myship.scu_max-myship.scu);
+  str:=IntToStr(currentship.scu_max-currentship.scu);
   CRT_GotoXY(LISTSTART-(Length(str)+5)-4,6);
   CRT_Write('    '~); // fixed 4 chars for cargo size
   CRT_GotoXY(LISTSTART-(Length(str)+5),6);
@@ -838,7 +798,6 @@ var
   currentitemprice: Word;
 
   currentuec: Longword;
-  currentShip:TShip;
 
 
   selecteditemtotal: Longword;
@@ -950,7 +909,7 @@ begin
 
   //LoadItems(player.loc, false);
   ListItems(false);
-  ListCargo(currentShip,false);
+  ListCargo(false);
   itemindex:=0;
 
   // assign 1st item on the avaiable items
@@ -973,7 +932,7 @@ begin
 
                       //LoadItems(player.loc,false);
                       ListItems(false);
-                      ListCargo(currentShip,false);
+                      ListCargo(false);
                       selecteditemquantity:= 0;
                       selecteditemtotal:=0;
                       itemindex:=0;
@@ -988,7 +947,7 @@ begin
 
                       // update cargo Total
                       currentShip.scu:=currentShip.scu-selecteditemquantity;
-                      trade_UpdateCargo(currentShip);
+                      trade_UpdateCargo;
                       playsfx(voice4,255,168); // vol8
                     end;
         KEY_OK:     begin
@@ -1025,10 +984,10 @@ begin
                           CRT_Invert(0,itemindex + CARGOTOPMARGIN,LISTWIDTH+1);
                           itemindex:=itemindex+d;
                           currentitemquantity:=currentShip.cargoquantity[itemindex];
-                          currentitemprice:=GetCargoPrice(currentShip,itemindex);
+                          currentitemprice:=GetCargoPrice(itemindex);
                           currentitemindex:=currentShip.cargoindex[itemindex];
                           CRT_Invert(0,itemindex + CARGOTOPMARGIN,LISTWIDTH+1); // selecting the whole row with item
-                          cargoPresent:=CheckCargoPresence(currentShip,itemindex);
+                          cargoPresent:=CheckCargoPresence(itemindex);
                         end;
                       end;
                       selecteditemtotal:=0;
@@ -1099,7 +1058,7 @@ begin
 
 
         ListItems(false);
-        ListCargo(currentShip,false);
+        ListCargo(false);
         itemindex:=0;
       end
       else begin
@@ -1121,12 +1080,12 @@ begin
 
 
         ListItems(true);
-        ListCargo(currentShip,true);
+        ListCargo(true);
         itemindex:=0;
         currentitemquantity:=currentShip.cargoquantity[itemindex];
-        currentitemprice:=GetCargoPrice(currentShip,itemindex);
+        currentitemprice:=GetCargoPrice(itemindex);
         currentitemindex:=currentShip.cargoindex[itemindex];
-        cargoPresent:=CheckCargoPresence(currentShip,itemindex);
+        cargoPresent:=CheckCargoPresence(itemindex);
         selecteditemquantity:=0;
 
 
@@ -1171,10 +1130,10 @@ begin
 
               // update cargo Total
               currentShip.scu:=currentShip.scu + selecteditemquantity;
-              trade_UpdateCargo(currentShip);
+              trade_UpdateCargo;
 
               // remove selection
-              currentitemprice:=GetCargoPrice(currentShip,itemindex);
+              currentitemprice:=GetCargoPrice(itemindex);
               currentitemindex:=currentShip.cargoindex[itemindex];
               selecteditemquantity:= 0;
               selecteditemtotal:= 0;
@@ -1220,12 +1179,12 @@ begin
 
               // update cargo Total
               currentShip.scu:=currentShip.scu-selecteditemquantity;
-              trade_UpdateCargo(currentShip);
+              trade_UpdateCargo;
 
 
               // // set selection to 1st item on the list
               itemindex:=0;
-              currentitemprice:=GetCargoPrice(currentShip,itemindex);
+              currentitemprice:=GetCargoPrice(itemindex);
               currentitemquantity:=currentShip.cargoquantity[itemindex];
               currentitemindex:=currentShip.cargoindex[itemindex];
               selecteditemquantity:= 0;
@@ -1247,7 +1206,7 @@ begin
 
             end;
           end;
-        ListCargo(currentShip,mode);
+        ListCargo(mode);
       end;
       selectPressed:=true;
     end
@@ -1391,7 +1350,7 @@ begin
   SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
   CRT_Init(TXT_ADDRESS);
 
-  load_piclocation(0);//start location Port Olisar
+  piclocation_load(0); //start location Port Olisar
 
 
   // Initialize RMT player
