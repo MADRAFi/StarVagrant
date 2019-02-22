@@ -24,6 +24,7 @@ strings_list
     dta a(txt_22)
     dta a(txt_23)
     dta a(txt_24)
+    dta a(txt_100)
 
 strings
 txt_0
@@ -76,6 +77,10 @@ txt_23
     dta d'[1-5] Navigation',$ff
 txt_24
     dta d'[J] FTL Jump',$ff
+txt_100
+    dta d'You have been boarded by pirates.',$ff
+
+
 
  .print "STRINGS SIZE: ", *-strings_list
  .print "STRINGS : ", strings_list, "..", *
