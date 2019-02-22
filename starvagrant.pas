@@ -22,6 +22,7 @@ var
   player: TPlayer; // player
   ship: TShip; // player's ship
   currentship:TShip; // temp ship for operations
+  newLoc: Byte; // new Location (destination)
   tstr : TString; // string used in various routines.
   strnum: TString; // string used in various routines to display numbers
   txt: String; // Some strings
@@ -147,16 +148,16 @@ begin
   end;
 end;
 
-procedure piclocation_openfile(loc: Byte);
+procedure piclocation_openfile;
 
 begin
-  if (loc < 10) then tstr:=concat('LOC0',IntToStr(loc))
-  else tstr:=concat('LOC',inttostr(loc));
+  if (newLoc < 10) then tstr:=concat('LOC0',IntToStr(newLoc))
+  else tstr:=concat('LOC',inttostr(newLoc));
   tstr:=concat(tstr,'   DAT');
 
   if xBiosCheck = 0 then
   begin
-    CRT_GotoXY(0,6);
+    CRT_GotoXY(0,5);
     CRT_Write('xBios not found at address: $'~); CRT_Write(HexStr(xBIOS_ADDRESS,4));
   end
   else begin
@@ -165,12 +166,13 @@ begin
 
 end;
 
-procedure piclocation_load(loc: Byte);
+procedure piclocation_load;
 
 begin
-  piclocation_openfile(loc);
+  newLoc:=player.loc;
+  piclocation_openfile;
 
-  if xBiosIOresult = 0 then
+  if (xBiosCheck = 1) and (xBiosIOresult = 0) then
   begin
     xBiosLoadData(Pointer(GFX2_ADDRESS));
     xBiosFlushBuffer;
@@ -186,7 +188,8 @@ begin
   if player.loc <> 0  then
   begin
     player.loc:= 0;
-    piclocation_load(player.loc);
+    newLoc:=0;
+    piclocation_load;
   end;
 
   //mocap starting ship
@@ -371,7 +374,7 @@ begin
 end;
 
 
-procedure LoadDestinations(loc: Byte);
+procedure LoadDestinations;
 const
   LISTSTART = 20;
 
@@ -386,7 +389,7 @@ begin
   count:=0;
   for x:=0 to NUMBEROFLOCATIONS-1 do
   begin
-    offset:=(NUMBEROFLOCATIONS * loc) + x;
+    offset:=(NUMBEROFLOCATIONS * player.loc) + x;
     if locationdistance[offset] > 0 then
     begin
       availabledestinations[count]:=offset;
@@ -414,7 +417,7 @@ begin
   begin
     if (availabledestinations[x] > 0) then
     begin
-      offset:=availabledestinations[x]-(loc * NUMBEROFLOCATIONS); // calculate base location index
+      offset:=availabledestinations[x]-(player.loc * NUMBEROFLOCATIONS); // calculate base location index
       CRT_GotoXY(LISTSTART,count);
       CRT_Write(count+1);CRT_Write(' '~);
       WriteFF(locations[offset]);
@@ -556,7 +559,21 @@ begin
     end;
 end;
 
-procedure navi_ftljump(distance: Word; loc : Byte);
+procedure randomEncounter(num: byte);
+begin
+  CRT_ClearRows(0,6);
+
+  case num of
+  24:     begin // Pirates
+            CRT_GotoXY(0,0);
+            WriteFF(strings[]);
+          end;
+end;
+
+procedure navi_ftljump(distance: Word);
+const
+    CHUNKSIZE = 800;
+
 var
   y: Byte;
   fileoffset: Cardinal;
@@ -564,17 +581,17 @@ var
 begin
   CRT_ClearRow(6);
   for y:=0 to MAXAVAILABLEDESTINATIONS-1 do
-    begin
-      CRT_GotoXY(20,0+y); // liststart
-      WriteSpaces(18); // clear rows
-    end;
+  begin
+    CRT_GotoXY(20,0+y); // liststart
+    WriteSpaces(18); // clear rows
+  end;
 
-    sfx_play(voice1,230,200); //vol 8
-    sfx_play(voice2,230,200); //vol 8
-    sfx_play(voice3,236,200); //vol 8
-    sfx_play(voice4, 236,200); // vol 8
+  sfx_play(voice1,230,200); //vol 8
+  sfx_play(voice2,230,200); //vol 8
+  sfx_play(voice3,236,200); //vol 8
+  sfx_play(voice4, 236,200); // vol 8
 
-  // fade
+  // fade out
   repeat
     Waitframes(2);
     If (gfxcolors[0] and %00001111 <> 0) then Dec(gfxcolors[0]) else gfxcolors[0]:=0;
@@ -583,16 +600,18 @@ begin
     If (gfxcolors[3] and %00001111 <> 0) then Dec(gfxcolors[3]) else gfxcolors[3]:=0;
   until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3]) = 0;
 
-  piclocation_openfile(loc);
+  piclocation_openfile;
   fileoffset:=0;
-  xBiosSetLength(400); //size of chunk to read
+  xBiosSetLength(CHUNKSIZE); //size of chunk to read
+
+  y:= Random(24); // should be k48 dice probably
 
   // simulate travel
   repeat
     //if (xBiosIOerror = 0) then
     //begin
       xBiosLoadData(Pointer(GFX2_ADDRESS+fileoffset));
-      fileoffset:=fileoffset+400;
+      fileoffset:=fileoffset+CHUNKSIZE;
     //end;
     Dec(distance);
     navi_distanceUpdate(distance);
@@ -602,9 +621,10 @@ begin
 
   xBiosFlushBuffer; // close file
   sfx_init; // reinitialize pokey
-
+  randomEncounter(y);
   calculateprices(player.loc);
-  player.loc:=loc;
+  player.loc:=newLoc;
+  //calculateprices(player.loc);
 end;
 
 procedure console_navigation;
@@ -612,7 +632,6 @@ var
   //y: byte;
   destinationindex: Word;
   distance: Word;
-  newloc: Byte;
 
 begin
   CRT_ClearRows(0,6);
@@ -636,7 +655,7 @@ begin
   CRT_Write(' '~);
   WriteFF(strings[7]); // Back
 
-  LoadDestinations(player.loc);
+  LoadDestinations;
 
   destinationindex:=0;
   keyval:= 0;
@@ -673,8 +692,8 @@ begin
           KEY_JUMP:     begin
                           if (destinationindex > 0) then
                           begin
-                            newloc:=destinationindex-(player.loc * NUMBEROFLOCATIONS);
-                            navi_ftljump(distance,newloc);
+                            newLoc:=destinationindex-(player.loc * NUMBEROFLOCATIONS);
+                            navi_ftljump(distance);
                             current_menu:=MENU_MAIN;
                           end;
                         end;
@@ -875,7 +894,7 @@ begin
   CRT_Write(' '~);
   WriteFF(strings[7]);
 
-  //LoadItems(player.loc, false);
+
   ListItems(false);
   ListCargo(false);
   itemindex:=0;
@@ -898,7 +917,6 @@ begin
                       currentuec:= player.uec;
                       currentShip:= ship;
 
-                      //LoadItems(player.loc,false);
                       ListItems(false);
                       ListCargo(false);
                       selecteditemquantity:= 0;
@@ -1339,7 +1357,7 @@ begin
   SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
   CRT_Init(TXT_ADDRESS);
 
-  piclocation_load(0); //start location Port Olisar
+  piclocation_load; //start location Port Olisar
   sfx_init;
 
   // Initialize RMT player
