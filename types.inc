@@ -12,3 +12,5 @@
     loc: Byte; //TLoc;
     //ship: TShip;
   end;
+
+TPokeyVoice = (Voice1=$D200, Voice2=$D202, Voice3=$D204, Voice4=$D206);

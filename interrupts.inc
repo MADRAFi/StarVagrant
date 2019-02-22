@@ -19,7 +19,7 @@ procedure dli_title1;assembler;interrupt;
         mva #$14 ATARI.colpf1
         mva #$10 ATARI.colpf2
         mva #$00 ATARI.colpf3
-        mva #$00 ATARI.colbk
+        sta ATARI.colbk
 
 ;        lda #60
 ;@       cmp vcount
@@ -36,10 +36,10 @@ procedure dli_title2;assembler;interrupt;
         sta ATARI.WSYNC
         ;mva #$00 ATARI.colbk
         mva #$00 ATARI.colpf0
-        mva #$0c ATARI.colpf1
-        mva #$00 ATARI.colpf2
+        sta ATARI.colpf2
         ;mva #$00 ATARI.colpf3
-        mva #$00 ATARI.colbk
+        sta ATARI.colbk
+        mva #$0c ATARI.colpf1
         mwa #DLI_TITLE3 __dlivec
         pla
         };
@@ -75,7 +75,8 @@ begin
   };
     if count = $ff then begin // $ff is one below zero
         count := 3;
-        offset := (offset + 1) mod 140;  // 140 = 2x string size
+        Inc(offset);
+        if offset=140 then offset:= 0;  // 140 = 2x string size
         dpoke(DISPLAY_LIST_ADDRESS_TITLE + 114, SCROLL_ADDRESS + offset); // 114 bytes for DLI lines
     end;
 
@@ -109,11 +110,10 @@ procedure dli1;assembler;interrupt;
         pha
         sta ATARI.WSYNC
 
-        mva gfxcolor0 ATARI.colpf0
-        mva gfxcolor1 ATARI.colpf1
-        mva gfxcolor2 ATARI.colpf2
-        mva gfxcolor3 ATARI.colpf3
-        mva gfxcolor4 ATARI.colbk
+        mva adr.gfxcolors ATARI.colpf0
+        mva adr.gfxcolors+1 ATARI.colpf1
+        mva adr.gfxcolors+2 ATARI.colpf2
+        mva adr.gfxcolors+3 ATARI.colbk
 
         mwa #DLI2 __dlivec
         pla
@@ -126,10 +126,10 @@ procedure dli2;assembler;interrupt;
         pha
         sta ATARI.WSYNC
         mva #$00 ATARI.colbk
-        mva #$00 ATARI.colpf0
+        sta ATARI.colpf0
+        sta ATARI.colpf2
+        sta ATARI.colpf3
         mva #$0c ATARI.colpf1
-        mva #$00 ATARI.colpf2
-        mva #$00 ATARI.colpf3
         pla
         };
 end;
@@ -137,7 +137,7 @@ end;
 procedure vbl;interrupt;
 begin
   asm {
-        phr ; store registers
+        pha ; store registers
   };
 
   //msx.play;
@@ -154,7 +154,7 @@ begin
       ;mwa #dli1 ATARI.VDSLST
       mwa #DLI1 __dlivec
 
-      plr ; restore registers
+      pla ; restore registers
   };
 end;
 
@@ -168,8 +168,8 @@ procedure dli_console;assembler;interrupt;
         pha
         sta ATARI.WSYNC
         mva #$06 ATARI.colbk
+        sta ATARI.colpf2
         mva #$02 ATARI.colpf1
-        mva #$06 ATARI.colpf2
         pla
         };
 end;
@@ -177,8 +177,8 @@ end;
 procedure vbl_console;interrupt;
 begin
   asm {
-      phr ; store registers
+      pha ; store registers
       mwa #dli_console __dlivec
-      plr ; restore registers
+      pla ; restore registers
   };
 end;
