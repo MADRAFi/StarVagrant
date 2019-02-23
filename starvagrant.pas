@@ -226,10 +226,10 @@ end;
 procedure start;
 
 begin
-  player.uec:= 5000; // start cash
+  player.uec:= STARTUEC;
   if player.loc <> 0  then
   begin
-    player.loc:= 0;
+    player.loc:= STARTLOCATION;
     newLoc:=0;
     piclocation_load;
   end;
@@ -1020,7 +1020,8 @@ begin
                           CRT_Invert(LISTSTART,itemindex + LISTTOPMARGIN,LISTWIDTH); // selecting the whole row with item
                           currentitemquantity:=itemquantity[availableitems[itemindex]];
                           currentitemprice:=GetItemPrice(itemindex,false);
-                          currentitemindex:=availableitems[itemindex];
+//                          currentitemindex:=availableitems[itemindex];
+                          currentitemindex:=availableitems[itemindex]-(NUMBEROFITEMS * player.loc);
                           CRT_ClearRow(19);
                         end;
 
@@ -1051,10 +1052,10 @@ begin
                           // CRT_Write('itemindex='~);CRT_Write(itemindex);CRT_Write('      '~);
                           // CRT_GotoXY(19,14);
                           // CRT_Write('cur_itemindex='~);CRT_Write(currentitemindex);CRT_Write('      '~);
-                          // //CRT_GotoXY(0,15);
-                          // //CRT_Write('cargoPresent='~);CRT_Write(cargoPresent);CRT_Write('           '~);
-
-
+                          // CRT_GotoXY(0,15);
+                          // CRT_Write('cargoindex[0]='~);CRT_Write(currentship.cargoindex[0]);CRT_Write('           '~);
+                          //
+                          //
 
                         end;
                       end;
@@ -1088,7 +1089,7 @@ begin
 //                      else
 //                       CRT_WriteRightAligned(19,FFTermToString(strings[??]));
 
-
+                      //
                       // CRT_GotoXY(0,12);
                       // CRT_Write('selectitem='~);CRT_Write(selectitem);CRT_Write('           '~);
                       // CRT_GotoXY(0,13);

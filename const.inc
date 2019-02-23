@@ -32,6 +32,10 @@ MAXAVAILABLEDESTINATIONS = 6;  // number of destinations fron location.
 
 // ***************************************************************************//
 
+STARTUEC = 5000;
+STARTLOCATION = 0; // Port Olisar
+
+// ***************************************************************************//
 KEY_OPTION1 = 31; //1
 KEY_OPTION2 = 30; //2
 KEY_OPTION3 = 26;  //3
