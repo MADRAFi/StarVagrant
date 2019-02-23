@@ -28,6 +28,7 @@ var
   txt: String; // Some strings
   offset: Word; // offset counted to get items from arrays
   y: Byte; // index for loops
+  count: Byte; // count in item iterations
   //msx: TRMT;
   current_menu: Byte;
 
@@ -260,11 +261,6 @@ const
   LISTSTART = 0;
   TOPCARGOMARGIN = 8;
 
-var
-  count: Byte = 1;
-
-
-
 begin
   count:=1;
   for y:=0 to MAXCARGOSLOTS-1 do // max available items
@@ -298,7 +294,6 @@ const
 
 
 var
-  count:byte = 1;
   countstr: Tstring;
   finalprice: word;
 
@@ -376,10 +371,6 @@ procedure LoadDestinations;
 const
   LISTSTART = 20;
 
-var
-  count: Byte;
-
-
 begin
 
   // Load destinations
@@ -395,12 +386,6 @@ begin
   end;
 
   Waitframe;
-
-  // if (count < MAXAVAILABLEDESTINATIONS-1) then
-  // begin
-  //   for x:=count to MAXAVAILABLEDESTINATIONS-1 do
-  //     availabledestinations[x]:=0;
-  // end;
 
   // clear avaiable destinations array when less destinations are present
   eraseArray(count,MAXAVAILABLEDESTINATIONS-1, @availabledestinations);
@@ -446,24 +431,17 @@ end;
 function GetItemPrice(itemindex : Byte; mode : Boolean): Word;
 // Get item price based on itemindex of available items mode is false for BUY and tru for SELL
 
-var
-  finalprice: word;
-  price: word;
-
-
 begin
   offset:=availableitems[itemindex];
-  price:=itemprice[offset];
   if mode then
   begin
     //finalprice:=Trunc(price * (1-commission))
-    finalprice:=Round(price * (1-commission))
+    Result:=Round(itemprice[offset] * (1-commission))
   end
   else
   begin
-    finalprice:=price;
+    Result:=itemprice[offset];
   end;
-  Result:= finalprice;
 
 end;
 
@@ -634,7 +612,6 @@ const
     CHUNKSIZE = 800;
 
 var
-  y: Byte;
   fileoffset: Cardinal;
 
 begin
@@ -1292,16 +1269,14 @@ begin
 end;
 
 procedure menu;
-var
-  colindex: Byte;
 
 begin
   // offset for player location colors
-  colindex:= player.loc shl 2;
-  gfxcolors[0]:=piccolors[colindex];
-  gfxcolors[1]:=piccolors[colindex+1];
-  gfxcolors[2]:=piccolors[colindex+2];
-  gfxcolors[3]:=piccolors[colindex+3];
+  y:= player.loc shl 2;
+  gfxcolors[0]:=piccolors[y];
+  gfxcolors[1]:=piccolors[y+1];
+  gfxcolors[2]:=piccolors[y+2];
+  gfxcolors[3]:=piccolors[y+3];
 
 
   EnableVBLI(@vbl);
