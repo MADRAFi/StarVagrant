@@ -27,7 +27,7 @@ var
   strnum: TString; // string used in various routines to display numbers
   txt: String; // Some strings
   offset: Word; // offset counted to get items from arrays
-
+  y: Byte; // index for loops
   //msx: TRMT;
   current_menu: Byte;
 
@@ -135,6 +135,46 @@ var
 
 {$i 'interrupts.inc'}
 
+
+procedure sfx_play(channel: Word; freq: Byte; vol: Byte );
+
+begin
+  poke(channel,freq);
+  poke(channel+1,vol);
+  waitframes(5);
+  poke(channel+1,0);
+end;
+
+procedure sfx_init;
+begin
+  // sound init at pokey
+  poke($d20f,3);
+  poke($d208,0);
+end;
+
+procedure writeRuler;
+begin
+    CRT_Write('--------------------+-------------------'~);
+    sfx_play(voice4,77,200); // vol8
+end;
+
+procedure WriteSpaces(len:byte);
+begin
+  CRT_Write(Atascii2Antic(Space(len)));
+end;
+
+procedure WriteFF(var ptr:word);
+begin
+    CRT_Write(FFTermToString(ptr));
+end;
+
+procedure CRT_ClearRows(start: Byte;num: Byte);
+begin
+  for y:=start to num do
+    CRT_ClearRow(y);
+end;
+
+
 procedure eraseArray(min: Byte; max: Byte; arrptr: Pointer); //forward does not work
 //procedure eraseArray(min: Byte; max: Byte; a: array [0..0] of Word);
 var
@@ -158,7 +198,8 @@ begin
   if xBiosCheck = 0 then
   begin
     CRT_GotoXY(0,5);
-    CRT_Write('xBios not found at address: $'~); CRT_Write(HexStr(xBIOS_ADDRESS,4));
+    //CRT_Write('xBios not found at address: $'~); CRT_Write(HexStr(xBIOS_ADDRESS,4));
+    WriteFF(strings[25]); // no xBios
   end
   else begin
     xBiosOpenFile(tstr);
@@ -172,7 +213,8 @@ begin
   newLoc:=player.loc;
   piclocation_openfile;
 
-  if (xBiosCheck = 1) and (xBiosIOresult = 0) then
+  //if (xBiosCheck = 1) and (xBiosIOresult = 0) then
+  if (xBiosCheck <> 0) and (xBiosIOresult = 0) then
   begin
     xBiosLoadData(Pointer(GFX2_ADDRESS));
     xBiosFlushBuffer;
@@ -198,6 +240,7 @@ begin
   ship.scu:=0;
 
   eraseArray(0,MAXCARGOSLOTS-1, @ship.cargoindex);
+  eraseArray(0,MAXCARGOSLOTS-1, @ship.cargoquantity);
 
 
   // test cargo
@@ -211,49 +254,6 @@ begin
 end;
 
 
-procedure sfx_play(channel: Word; freq: Byte; vol: Byte );
-
-begin
-  poke(channel,freq);
-  poke(channel+1,vol);
-  waitframes(5);
-  poke(channel+1,0);
-end;
-
-procedure sfx_init;
-begin
-  // sound init at pokey
-  poke($d20f,3);
-  poke($d208,0);
-end;
-
-
-procedure writeRuler;
-begin
-    CRT_Write('--------------------+-------------------'~);
-    sfx_play(voice4,77,200); // vol8
-end;
-
-procedure WriteSpaces(len:byte);
-begin
-  CRT_Write(Atascii2Antic(Space(len)));
-end;
-
-procedure WriteFF(var ptr:word);
-begin
-    CRT_Write(FFTermToString(ptr));
-end;
-
-procedure CRT_ClearRows(start: Byte;num: Byte);
-var
-   y: Byte;
-
-begin
-  for y:=start to num do
-    CRT_ClearRow(y);
-end;
-
-
 procedure ListCargo(mode : Boolean);
 const
   LISTWIDTH = 20;
@@ -261,31 +261,30 @@ const
   TOPCARGOMARGIN = 8;
 
 var
-  x: Byte;
   count: Byte = 1;
 
 
 
 begin
   count:=1;
-  for x:=0 to MAXCARGOSLOTS-1 do // max available items
+  for y:=0 to MAXCARGOSLOTS-1 do // max available items
   begin
-    offset:=currentship.cargoindex[x];
+    offset:=currentship.cargoindex[y];
     if offset > 0 then
     begin
       CRT_GotoXY(LISTSTART,7+count); //min count:=1 so we start at 8th row
       tstr:= FFTermToString(items[offset]);
       CRT_Write(tstr);
-      strnum:=IntToStr(currentship.cargoquantity[x]);
+      strnum:=IntToStr(currentship.cargoquantity[y]);
       WriteSpaces(LISTWIDTH-Length(tstr)-Length(strnum));
       CRT_Write(Atascii2Antic(strnum));
       if (count = 1) and mode then CRT_Invert(LISTSTART,8,LISTWIDTH);
       Inc(count);
     end;
   end;
-  for x:=count to MAXCARGOSLOTS-1 do
+  for y:=count to MAXCARGOSLOTS-1 do
   begin
-    CRT_GotoXY(LISTSTART,TOPCARGOMARGIN+x-1);
+    CRT_GotoXY(LISTSTART,TOPCARGOMARGIN+y-1);
     WriteSpaces(LISTWIDTH); // -1 to clear from the end of list
   end;
 
@@ -299,7 +298,6 @@ const
 
 
 var
-  x: byte;
   count:byte = 1;
   countstr: Tstring;
   finalprice: word;
@@ -311,10 +309,10 @@ begin
 
 //load items
   count:=0;
-  for x:=0 to NUMBEROFITEMS-1 do
+  for y:=0 to NUMBEROFITEMS-1 do
     begin
       visible:= false;
-      offset:=(NUMBEROFITEMS * player.loc) + x;
+      offset:=(NUMBEROFITEMS * player.loc) + y;
 
       if mode then
       begin
@@ -340,17 +338,17 @@ begin
 
   // list items
   count:=1;
-  for x:=0 to MAXAVAILABLEITEMS-1 do // max available items
+  for y:=0 to MAXAVAILABLEITEMS-1 do // max available items
     begin
       // offset:=availableitems[x];
-      if (availableitems[x] > 0) then
+      if (availableitems[y] > 0) then
       begin
 
-        offset:=availableitems[x];
+        offset:=availableitems[y];
         CRT_GotoXY(LISTSTART,4+count); //min count:=1 so we start at 4th row
 
         CRT_Write(count);CRT_Write(' '~);
-        tstr:= FFTermToString(items[availableitems[x]-(player.loc * NUMBEROFITEMS)]);
+        tstr:= FFTermToString(items[availableitems[y]-(player.loc * NUMBEROFITEMS)]);
         CRT_Write(tstr);
         //if mode then finalprice:=Trunc(itemprice[offset] * (1-COMMISSION))
         if mode then finalprice:=Round(itemprice[offset] * (1-COMMISSION))
@@ -365,7 +363,7 @@ begin
       end
       else
       begin
-        CRT_GotoXY(LISTSTART,4+x+1);
+        CRT_GotoXY(LISTSTART,4+y+1);
         WriteSpaces(LISTWIDTH);
       end;
 
@@ -379,7 +377,6 @@ const
   LISTSTART = 20;
 
 var
-  x: Byte;
   count: Byte;
 
 
@@ -387,9 +384,9 @@ begin
 
   // Load destinations
   count:=0;
-  for x:=0 to NUMBEROFLOCATIONS-1 do
+  for y:=0 to NUMBEROFLOCATIONS-1 do
   begin
-    offset:=(NUMBEROFLOCATIONS * player.loc) + x;
+    offset:=(NUMBEROFLOCATIONS * player.loc) + y;
     if locationdistance[offset] > 0 then
     begin
       availabledestinations[count]:=offset;
@@ -413,11 +410,11 @@ begin
   // list destinations
   count:=0;
 
-  for x:=0 to MAXAVAILABLEDESTINATIONS-1 do
+  for y:=0 to MAXAVAILABLEDESTINATIONS-1 do
   begin
-    if (availabledestinations[x] > 0) then
+    if (availabledestinations[y] > 0) then
     begin
-      offset:=availabledestinations[x]-(player.loc * NUMBEROFLOCATIONS); // calculate base location index
+      offset:=availabledestinations[y]-(player.loc * NUMBEROFLOCATIONS); // calculate base location index
       CRT_GotoXY(LISTSTART,count);
       CRT_Write(count+1);CRT_Write(' '~);
       WriteFF(locations[offset]);
@@ -517,16 +514,13 @@ begin
 end;
 
 
+
+
 procedure calculateprices(loc: Byte);
-var
-  x: Byte;
-
-
-
 begin
-  for x:=0 to MAXAVAILABLEITEMS-1 do
+  for y:=0 to NUMBEROFITEMS-1 do
     begin
-      offset:= (x * loc)+x;
+      offset:= (NUMBEROFITEMS * loc)+y;
 
       // Produce new items on certain LOCATIONS
       if (itemquantity[offset] > 0) and (itemquantity[offset] <= 10) then
@@ -559,15 +553,80 @@ begin
     end;
 end;
 
-procedure randomEncounter(num: byte);
+procedure encounterMessage;
 begin
+  sfx_play(voice1,230,200); //vol 8
+  sfx_play(voice2,230,200); //vol 8
+
   CRT_ClearRows(0,6);
 
-  case num of
-  24:     begin // Pirates
-            CRT_GotoXY(0,0);
-            WriteFF(strings[]);
+  CRT_GotoXY(0,0);
+  for y:=1 to Length(txt) do
+  begin
+    CRT_Write(txt[y]);
+    if (y mod 4) = 0 then sfx_play(voice1,200,200); //vol 8
+    //waitframes(2);
+    waitframe;
+  end;
+
+  CRT_GotoXY(12,6);
+  WriteFF(strings[26]); // press any key
+
+  repeat
+    Waitframe;
+  until CRT_Keypressed;
+
+end;
+
+procedure randomEncounter;
+begin
+  y:=Random(30);
+  // CRT_GotoXY(0,4);
+  // CRT_Write(y);
+
+  txt:='#';
+  case y of
+
+    1:   begin
+            if player.uec > 0 then
+            begin
+              txt:=FFTermToString(strings[34]);
+              player.uec:=player.uec - 2500;
+            end;
           end;
+    5:   begin
+            y:=Random(5);
+            if ship.cargoindex[y] > 0 then
+            begin
+              txt:=FFTermToString(strings[33]);
+              ship.cargoquantity[y]:=ship.cargoquantity[y]-(1 * Random);
+            end;
+          end;
+    10:   begin
+            txt:=FFTermToString(strings[32]);
+            offset:= Round(Random * 10000);
+            player.uec:=player.uec + offset;
+          end;
+    20:   begin
+            if player.uec > 0 then
+            begin
+              txt:=FFTermToString(strings[31]);
+              player.uec:=0;
+            end;
+          end;
+    22:   begin
+            txt:=FFTermToString(strings[30]);
+          end;
+    24:   begin
+            if ship.cargoindex[0] > 0 then
+            begin
+              txt:=FFTermToString(strings[29]);
+              eraseArray(0,MAXCARGOSLOTS-1, @ship.cargoindex);
+              eraseArray(0,MAXCARGOSLOTS-1, @ship.cargoquantity);
+            end;
+          end;
+  end;
+  If (txt <> '#') then encounterMessage;
 end;
 
 procedure navi_ftljump(distance: Word);
@@ -602,26 +661,28 @@ begin
 
   piclocation_openfile;
   fileoffset:=0;
-  xBiosSetLength(CHUNKSIZE); //size of chunk to read
-
-  y:= Random(24); // should be k48 dice probably
+  If (xBiosCheck <> 0) then xBiosSetLength(CHUNKSIZE); //size of chunk to read
 
   // simulate travel
   repeat
-    //if (xBiosIOerror = 0) then
-    //begin
+    If (xBiosCheck <> 0) then
+    begin
       xBiosLoadData(Pointer(GFX2_ADDRESS+fileoffset));
       fileoffset:=fileoffset+CHUNKSIZE;
+    end;
+    //If distance > 0 then
+    //begin
+       Dec(distance);
+       navi_distanceUpdate(distance);
+       waitframes(5);
+       //waitframe;
     //end;
-    Dec(distance);
-    navi_distanceUpdate(distance);
-    waitframes(5);
-    //waitframe;
-  until (distance = 0) and (xBiosIOresult <> 0);
 
-  xBiosFlushBuffer; // close file
+  until ((distance = 0) and (xBiosIOresult <> 0)) or ((distance = 0) and (xBiosCheck = 0));
+
+  If (xBiosCheck <> 0) then xBiosFlushBuffer; // close file
   sfx_init; // reinitialize pokey
-  randomEncounter(y);
+  randomEncounter;
   calculateprices(player.loc);
   player.loc:=newLoc;
   //calculateprices(player.loc);
@@ -765,7 +826,6 @@ const
   LISTWIDTH = 19;
 
 var
-  y: Byte;
   d: shortInt;
   mode: Boolean = false;
 
@@ -919,7 +979,7 @@ begin
 
                       ListItems(false);
                       ListCargo(false);
-                      selecteditemquantity:= 0;
+                      selecteditemquantity:=0;
                       selecteditemtotal:=0;
                       itemindex:=0;
                       // assign 1st item on the avaiable items
@@ -1356,8 +1416,8 @@ begin
   Randomize;
   SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
   CRT_Init(TXT_ADDRESS);
-
-  piclocation_load; //start location Port Olisar
+  player.loc:=0; //start location Port Olisar
+  piclocation_load;
   sfx_init;
 
   // Initialize RMT player

@@ -24,11 +24,20 @@ strings_list
     dta a(txt_22)
     dta a(txt_23)
     dta a(txt_24)
-    dta a(txt_100)
+    dta a(txt_25)
+    dta a(txt_26)
+    dta a(txt_27)
+    dta a(txt_28)
+    dta a(txt_29)
+    dta a(txt_30)
+    dta a(txt_31)
+    dta a(txt_32)
+    dta a(txt_33)
+    dta a(txt_34)
 
 strings
 txt_0
-    dta d'v.0.1 (c) 2019 MADRAFi. Special thanks to Bocianu for support. ',$ff
+    dta d'v.0.2 (c) 2019 MADRAFi. Special thanks to Bocianu for support. ',$ff
 txt_1
     dta d'[N] New Game',$ff
 txt_2
@@ -77,10 +86,26 @@ txt_23
     dta d'[1-5] Navigation',$ff
 txt_24
     dta d'[J] FTL Jump',$ff
-txt_100
-    dta d'You have been boarded by pirates.',$ff
-
-
+txt_25
+    dta d'No xBios found. Cannot load Pics'*,$ff
+txt_26
+    dta d' Press any key '*,$ff
+txt_27
+    dta d'Do you confirm? [Y/N]'*,$ff
+txt_28
+    dta d'You have lost: ',$ff
+txt_29
+    dta d'  You have been boarded by pirates. You were brave and fought till you could.   They spared your life in exchange for all your cargo.',$ff
+txt_30
+    dta d'There have been a system Multifunction. Explosion has damaged part of your      cargo.',$ff
+txt_31
+    dta d'You have been robed by some thugs.      You have lost all your money.',$ff
+txt_32
+    dta d'   You have taken a Passenger with you. He payed you some extra UEC for a ride.',$ff
+txt_33
+    dta d'You saw some citizens in urgent need.   You have decided to give away some goods.',$ff
+txt_34
+    dta d'You were obligated to use military      escort due to recent pirate activities. You have paid standard service fee.',$ff
 
  .print "STRINGS SIZE: ", *-strings_list
  .print "STRINGS : ", strings_list, "..", *
