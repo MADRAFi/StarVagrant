@@ -32,6 +32,26 @@ var
   //msx: TRMT;
   current_menu: Byte;
 
+//number of ship variables equals NUMBEROFSHIPS
+//  tshp : ^TShip;
+
+  ship0: TShip;
+  ship1: TShip;
+  ship2: TShip;
+  ship3: TShip;
+  ship4: TShip;
+  ship5: TShip;
+  ship6: TShip;
+  ship7: TShip;
+  ship8: TShip;
+  ship9: TShip;
+  ship10: TShip;
+  ship11: TShip;
+
+  shipmatrix: array [0..NUMBEROFSHIPS-1] of pointer = (@ship0, @ship1, @ship2, @ship3, @ship4, @ship5, @ship6, @ship7, @ship8, @ship9, @ship10, @ship11);
+
+{$i 'ships.inc'}
+
   (*
   * 0 - colpf0
   * 1 - colpf1
@@ -66,6 +86,7 @@ var
   strings: array [0..0] of Word absolute STRINGS_ADDRESS;
   locations: array [0..0] of Word absolute LOCATIONS_ADDRESS;
   items: array [0..0] of Word absolute ITEMS_ADDRESS;
+  //ships: array [0..0] of Word absolute SHIPS_ADDRESS;
 
   itemprice: array [0..(NUMBEROFLOCATIONS * NUMBEROFITEMS)-1] of Word = (
   0,0,0,0,83,43,0,25,69,30,0,61,0,0,281,170,0,0,0,34,83,39,1,0,
@@ -132,6 +153,7 @@ var
 
   availableitems: array [0..(MAXAVAILABLEITEMS-1)] of Word; // only 12 avaiable items
   availabledestinations: array [0..(MAXAVAILABLEDESTINATIONS-1)] of Word; // only 6 available destinations
+
 
 
 {$i 'interrupts.inc'}
@@ -224,6 +246,68 @@ begin
 end;
 
 
+procedure generateWorld;
+
+begin
+    // for y:=0 to NUMBEROFSHIPS-1 do
+    // begin
+    //   txt:=FFTermToString(ships[y]);
+    //   tshp:=shipmatrix[y];
+    //   tshp^.sname:=txt;
+    // end;
+
+    ship0.manufacture:=prodmatrix[ARGO];
+    ship0.sname:=ships[0];
+    //move(@txt, @ship0.sname, byte(txt[0])+1);
+    ship0.scu_max:=10;
+
+    ship1.manufacture:=prodmatrix[DRAK];
+    ship1.sname:=ships[1];
+    ship1.scu_max:=46;
+
+    ship2.manufacture:=prodmatrix[RSI];
+    ship2.sname:=ships[2];
+    ship2.scu_max:=96;
+
+    ship3.manufacture:=prodmatrix[MISC];
+    ship3.sname:=ships[3];
+    ship3.scu_max:=122;
+
+    ship4.manufacture:=prodmatrix[AEGIS];
+    ship4.sname:=ships[4];
+    ship4.scu_max:=180;
+
+    ship5.manufacture:=prodmatrix[MISC];
+    ship5.sname:=ships[5];
+    ship5.scu_max:=384;
+
+    ship6.manufacture:=prodmatrix[DRAK];
+    ship6.sname:=ships[6];
+    ship6.scu_max:=577;
+
+    ship7.manufacture:=prodmatrix[CRSD];
+    ship7.sname:=ships[7];
+    ship7.scu_max:=624;
+
+    ship8.manufacture:=prodmatrix[AEGIS];
+    ship8.sname:=ships[8];
+    ship8.scu_max:=995;
+
+    ship9.manufacture:=prodmatrix[ANVL];
+    ship9.sname:=ships[9];
+    ship9.scu_max:=1000;
+
+    ship10.manufacture:=prodmatrix[BANU];
+    ship10.sname:=ships[10];
+    ship10.scu_max:=3584;
+
+    ship11.manufacture:=prodmatrix[MISC];
+    ship11.sname:=ships[11];
+    ship11.scu_max:=4608;
+
+end;
+
+
 procedure start;
 
 begin
@@ -236,9 +320,11 @@ begin
   end;
 
   //mocap starting ship
-  ship.sname:= 'Cuttlas Black';
-  ship.scu_max:=46;
-  ship.scu:=0;
+  // ship.sname:= 'Cuttlas Black';
+  // ship.scu_max:=46;
+  // ship.scu:=0;
+  //
+  ship:= ship0;
 
   eraseArray(0,MAXCARGOSLOTS-1, @ship.cargoindex);
   eraseArray(0,MAXCARGOSLOTS-1, @ship.cargoquantity);
@@ -558,9 +644,9 @@ end;
 
 procedure randomEncounter;
 begin
-  y:=Random(30);
-  // CRT_GotoXY(0,4);
-  // CRT_Write(y);
+  y:=Random(24);
+   // CRT_GotoXY(0,4);
+   // CRT_Write(y);
 
   txt:='#';
   case y of
@@ -1284,8 +1370,6 @@ begin
   Waitframe;
   DLISTL := DISPLAY_LIST_ADDRESS_MENU;
 
-  // for i:=0 to 6 do
-  //   CRT_ClearRow(i);
   CRT_ClearRows(0,6);
 
   CRT_GotoXY(14,0);
@@ -1294,6 +1378,15 @@ begin
   WriteFF(strings[4]); // Trade Console
   CRT_GotoXY(14,2);
   WriteFF(strings[7]); // Back
+
+  // CRT_GotoXY(0,3);
+  // CRT_Write('sname='~);CRT_Write(ship.sname);CRT_Write('|'~);
+  // CRT_GotoXY(0,4);
+  // CRT_Write('scu_max='~);CRT_Write(ship.scu_max);
+  //CRT_GotoXY(0,6);
+  //Write_CRT(ship.sname);
+
+
 
   keyval:=0;
 
@@ -1400,6 +1493,9 @@ begin
   //msx.player:=pointer(RMT_PLAYER_ADDRESS);
   //msx.modul:=pointer(RMT_MODULE_ADDRESS);
   //msx.init(0);
+
+  generateWorld;
+
 
   current_menu := MENU_TITLE;
   //current_menu := MENU_MAIN;
