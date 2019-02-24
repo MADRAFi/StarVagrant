@@ -9,7 +9,7 @@ TXT_ADDRESS = DISPLAY_LIST_ADDRESS_CONSOLE + $100;
 
 SCROLL_ADDRESS = TXT_ADDRESS + $3D0; // $400;
 STRINGS_ADDRESS = SCROLL_ADDRESS + $FA5; // $1800;
-LOCATIONS_ADDRESS = STRINGS_ADDRESS + $41D;
+LOCATIONS_ADDRESS = STRINGS_ADDRESS + $500; //$45C;
 ITEMS_ADDRESS = LOCATIONS_ADDRESS + $100;
 
 
@@ -28,7 +28,8 @@ GFX2_ADDRESS = $1000; // $C000;
 
 NUMBEROFLOCATIONS = 17; // number of locations defined in locations.asm. Needs to match.
 NUMBEROFITEMS = 24; // number of items defined in items.asm. Needs to match.
-NUMBEROFSHIPS = 12; // number of ships defined in ships.asm. Needs to match.
+NUMBEROFSHIPS = 12; // number of ships defined in ships array.
+MAXSHIPPARAMETERS = 6; // number of ship parameters in ship array
 MAXAVAILABLEITEMS = 12; // numer of concurrent items displayed
 MAXCARGOSLOTS = 10;  // number of cargo slots
 MAXAVAILABLEDESTINATIONS = 6;  // number of destinations fron location.
@@ -65,3 +66,4 @@ MENU_MAIN = 1;
 MENU_NAV = 2;
 MENU_TRADE = 3;
 MENU_MAINT = 4;
+MENU_SHIP = 5;

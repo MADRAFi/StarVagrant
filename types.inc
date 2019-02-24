@@ -10,11 +10,13 @@ TManufacture = (ARGO=0, DRAK=1, RSI=2, MISC=3, AEGIS=4, CRSD=5, ANVL=6, BANU=7);
   // end;
 
   TShip = record
-    manufacture: TString;
-    sname: TString;
+    mcode: Byte;
+    sindex: Byte;
     scu_max: Word;
     scu: Word;
     speed: Byte;
+    lenght: Byte;
+    mass: Word;
     cargoindex: array [0..MAXCARGOSLOTS-1] of Word;
     cargoquantity: array [0..MAXCARGOSLOTS-1] of Word;
   end;

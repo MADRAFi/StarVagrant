@@ -34,6 +34,19 @@ strings_list
     dta a(txt_32)
     dta a(txt_33)
     dta a(txt_34)
+    dta a(txt_35)
+    dta a(txt_36)
+    dta a(txt_37)
+    dta a(txt_38)
+    dta a(txt_39)
+    dta a(txt_40)
+    dta a(txt_41)
+    dta a(txt_42)
+    dta a(txt_43)
+    dta a(txt_44)
+    dta a(txt_45)
+    dta a(txt_46)
+    dta a(txt_47)
 
 strings
 txt_0
@@ -106,6 +119,32 @@ txt_33
     dta d'You saw some citizens in urgent need.   You have decided to give away some goods.',$ff
 txt_34
     dta d'You were obligated to use military      escort due to recent pirate activities. You have paid standard service fee.',$ff
+txt_35
+    dta d'Reserved',$ff
+txt_36
+    dta d'Reserved',$ff
+txt_37
+    dta d'Name:',$ff
+txt_38
+    dta d'Prod:',$ff
+txt_39
+    dta d'Cargo:',$ff
+txt_40
+    dta d'Price:',$ff
+txt_41
+    dta d'Speed:',$ff
+txt_42
+    dta d'Lenght:',$ff
+txt_43
+    dta d'Mass:',$ff
+txt_44
+    dta d'Choose',$ff
+txt_45
+    dta d' m/s',$ff
+txt_46
+    dta d' meters',$ff
+txt_47
+    dta d' tons',$ff
 
  .print "STRINGS SIZE: ", *-strings_list
  .print "STRINGS : ", strings_list, "..", *
