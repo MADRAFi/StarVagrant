@@ -1,0 +1,27 @@
+
+items: array [0..NUMBEROFITEMS-1] of TString = (
+    'Agricium',
+    'Agricult. Sup.',
+    'Altru Toxine',
+    'Aluminum',
+    'Astatine',
+    'Beryl',
+    'Chlorine',
+    'Corundum',
+    'Diamond',
+    'Spirits',
+    'Fluorine',
+    'Gold',
+    'Hydrogen',
+    'Iodine',
+    'Laranite',
+    'Medical Sup.',
+    'Processed Food',
+    'Quartz',
+    'Scrap',
+    'Stims',
+    'Titanium',
+    'Tungsten',
+    'Waste',
+    'Widow'
+);

@@ -14,6 +14,7 @@ const
 
 type
 {$i 'types.inc'}
+
 {$r 'resources.rc'}
 
 var
@@ -32,6 +33,13 @@ var
   //msx: TRMT;
   current_menu: Byte;
 
+
+  {$i 'ships.inc'}
+  {$i 'locations.inc'}
+  {$i 'items.inc'}
+
+
+
 //number of ship variables equals NUMBEROFSHIPS
   tshp : ^TShip;
 
@@ -47,11 +55,7 @@ var
   ship9: TShip;
   ship10: TShip;
   ship11: TShip;
-
   shipmatrix: array [0..NUMBEROFSHIPS-1] of pointer = (@ship0, @ship1, @ship2, @ship3, @ship4, @ship5, @ship6, @ship7, @ship8, @ship9, @ship10, @ship11);
-
-{$i 'ships.inc'}
-{$i 'locations.inc'}
 
   (*
   * 0 - colpf0
@@ -85,8 +89,6 @@ var
   );
 
   strings: array [0..0] of Word absolute STRINGS_ADDRESS;
-  items: array [0..0] of Word absolute ITEMS_ADDRESS;
-
 
   itemprice: array [0..(NUMBEROFLOCATIONS * NUMBEROFITEMS)-1] of Word = (
   0,0,0,0,83,43,0,25,69,30,0,61,0,0,281,170,0,0,0,34,83,39,1,0,
@@ -308,8 +310,8 @@ begin
     if offset > 0 then
     begin
       CRT_GotoXY(LISTSTART,7+count); //min count:=1 so we start at 8th row
-      tstr:= FFTermToString(items[offset]);
-      CRT_Write(tstr);
+      tstr:= items[offset];
+      CRT_Write(Atascii2Antic(tstr));
       strnum:=IntToStr(currentship.cargoquantity[y]);
       WriteSpaces(LISTWIDTH-Length(tstr)-Length(strnum));
       CRT_Write(Atascii2Antic(strnum));
@@ -382,8 +384,8 @@ begin
         CRT_GotoXY(LISTSTART,4+count); //min count:=1 so we start at 4th row
 
         CRT_Write(count);WriteSpaces(1);
-        tstr:= FFTermToString(items[availableitems[y]-(player.loc * NUMBEROFITEMS)]);
-        CRT_Write(tstr);
+        tstr:= items[availableitems[y]-(player.loc * NUMBEROFITEMS)];
+        CRT_Write(Atascii2Antic(tstr));
         //if mode then finalprice:=Trunc(itemprice[offset] * (1-COMMISSION))
         if mode then finalprice:=Round(itemprice[offset] * (1-COMMISSION))
         else finalprice:=itemprice[offset];
