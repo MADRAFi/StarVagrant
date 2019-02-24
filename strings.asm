@@ -50,7 +50,7 @@ strings_list
 
 strings
 txt_0
-    dta d'v.0.2 (c) 2019 MADRAFi. Special thanks to Bocianu for support. ',$ff
+    dta d'v.0.3 (c) 2019 MADRAFi. Special thanks to Bocianu for support. ',$ff
 txt_1
     dta d'[N] New Game',$ff
 txt_2

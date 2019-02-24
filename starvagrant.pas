@@ -51,6 +51,7 @@ var
   shipmatrix: array [0..NUMBEROFSHIPS-1] of pointer = (@ship0, @ship1, @ship2, @ship3, @ship4, @ship5, @ship6, @ship7, @ship8, @ship9, @ship10, @ship11);
 
 {$i 'ships.inc'}
+{$i 'locations.inc'}
 
   (*
   * 0 - colpf0
@@ -84,7 +85,6 @@ var
   );
 
   strings: array [0..0] of Word absolute STRINGS_ADDRESS;
-  locations: array [0..0] of Word absolute LOCATIONS_ADDRESS;
   items: array [0..0] of Word absolute ITEMS_ADDRESS;
 
 
@@ -441,7 +441,7 @@ begin
       offset:=availabledestinations[y]-(player.loc * NUMBEROFLOCATIONS); // calculate base location index
       CRT_GotoXY(LISTSTART,count);
       CRT_Write(count+1);WriteSpaces(1);
-      WriteFF(locations[offset]);
+      CRT_Write(Atascii2Antic(locations[offset]));
       //CRT_Write('offset='~); CRT_Write(offset);
       Inc(count);
     end;
@@ -517,7 +517,7 @@ begin
   WriteSpaces(19); // max location lenght
   CRT_GotoXY(0,1);
   WriteFF(strings[21]);
-  WriteFF(locations[locationindex-(player.loc * NUMBEROFLOCATIONS)]);
+  CRT_Write(Atascii2Antic(locations[locationindex-(player.loc * NUMBEROFLOCATIONS)]));
 end;
 
 procedure navi_distanceUpdate(mydistance: Word);
@@ -715,7 +715,7 @@ begin
 
   CRT_GotoXY(0,0);
   WriteFF(strings[20]); // Loc:
-  WriteFF(locations[player.loc]);
+  CRT_Write(Atascii2Antic(locations[player.loc]));
   //CRT_GotoXY(20,0);
   //CRT_Write(FFTermToString(strings[23])); // Navigation:
 
@@ -1029,9 +1029,9 @@ begin
   //   CRT_ClearRow(y);
   CRT_ClearRows(0,CRT_screenHeight);
 
-  tstr:=FFTermToString(locations[player.loc]);
+  tstr:=locations[player.loc];
   CRT_GotoXY(0,0);
-  CRT_Write(tstr);
+  CRT_Write(Atascii2Antic(tstr));
   l:=Length(tstr);
 
   CRT_GotoXY(LISTWIDTH-1,0);
