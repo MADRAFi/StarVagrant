@@ -153,7 +153,7 @@ var
   ); // distance between locations
 
  shipprices: array [0..(NUMBEROFLOCATIONS * NUMBEROFSHIPS)-1] of longword = (
-  1000,0,12000,0,0,0,0,0,0,0,0,0,
+  1000,0,12000,0,0,0,10000,0,0,0,0,15000,
   0,0,0,0,0,0,0,0,0,0,0,0,
   0,0,0,0,0,0,0,0,0,0,0,0,
   0,0,0,0,0,0,0,0,0,0,0,0,
@@ -298,7 +298,11 @@ begin
     piclocation_load;
   end;
 
-  ship:= ship0;
+
+  //ship:= ship0;
+
+  tshp:=shipmatrix[0];
+  ship:= tshp^;
 
   eraseArray(0,MAXCARGOSLOTS-1, @ship.cargoindex);
   eraseArray(0,MAXCARGOSLOTS-1, @ship.cargoquantity);
@@ -834,8 +838,11 @@ procedure console_ship;
 
 var
   shipindex: Byte;
+  selectPressed: Boolean = false;
+  currentshipprice: Longword;
+
   //shp: ^TShip;
-  x,z: byte;
+  //x,z: byte;
 
 begin
   CRT_ClearRows(0,6);
@@ -847,40 +854,47 @@ begin
 
   CRT_WriteRightAligned(0,Atascii2Antic(concat(IntToStr(player.uec), CURRENCY)));
 
+  shipindex:= 0; // show 1st available;
+
+  tshp:=shipmatrix[availableships[shipindex]];
+  offset:=(NUMBEROFSHIPS * player.loc) + availableships[shipindex];
+
   CRT_GotoXY(0,0);
   WriteFF(strings[38]); // Prod:
-  CRT_Write(Atascii2Antic(prodmatrix[ship.mcode]));
+  CRT_Write(Atascii2Antic(prodmatrix[tshp^.mcode]));
 
   CRT_GotoXY(0,1);
   WriteFF(strings[37]); // Name:
-  CRT_Write(Atascii2Antic(ships[ship.sindex * MAXSHIPPARAMETERS]));
+  CRT_Write(Atascii2Antic(ships[tshp^.sindex * MAXSHIPPARAMETERS]));
 
   CRT_GotoXY(0,2);
   WriteFF(strings[39]); // Cargo:
-  //CRT_Write(Atascii2Antic(IntToStr(ship.scu_max)));
-  CRT_Write(ship.scu_max);
-  CRT_GotoXY(11,2);
+  CRT_Write(tshp^.scu_max);
+  CRT_GotoXY(9,2);
   CRT_Write(Atascii2Antic(CARGOUNIT));
 
   CRT_GotoXY(0,3);
   WriteFF(strings[40]); // Price:
-  CRT_Write('-'~);
+  CRT_Write(shipprices[(NUMBEROFSHIPS * player.loc) + tshp^.sindex]);
+  CRT_GotoXY(13,3);
+  CRT_Write(Atascii2Antic(CURRENCY));
+
 
   CRT_GotoXY(23,1);
   WriteFF(strings[41]); // Speed:
-  CRT_Write(ship.speed);
+  CRT_Write(tshp^.speed);
   CRT_GotoXY(33,1);
   WriteFF(strings[45]);
 
   CRT_GotoXY(23,2);
   WriteFF(strings[42]); // Lenght:
-  CRT_Write(ship.lenght);
+  CRT_Write(tshp^.lenght);
   CRT_GotoXY(33,2);
   WriteFF(strings[46]);
 
   CRT_GotoXY(23,3);
   WriteFF(strings[43]); // Mass:
-  CRT_Write(ship.mass);
+  CRT_Write(tshp^.mass);
   CRT_GotoXY(33,3);
   WriteFF(strings[47]);
 
@@ -936,14 +950,13 @@ begin
 // end;
 //
 
-  shipindex:=0;
+
   keyval:= 0;
   repeat
 
     If (CRT_Keypressed) then
     begin
-
-
+        CRT_ClearRow(5);
         keyval := kbcode;
         case keyval of
           KEY_BACK:     begin
@@ -971,10 +984,11 @@ begin
                       end;
 
         end;
-        if (current_menu=MENU_SHIP) and (shipindex >= 0) and (shipindex <= NUMBEROFSHIPS-1) then
-           //and (availableships[shipindex] > 0)
+        if (current_menu=MENU_SHIP) and (shipindex <= NUMBEROFSHIPS-1) then
+
         begin
           tshp:=shipmatrix[availableships[shipindex]];
+          offset:=(NUMBEROFSHIPS * player.loc) + availableships[shipindex];
 
           // CRT_GotoXY(0,4);
           // CRT_Write('shipindex='~);
@@ -982,6 +996,14 @@ begin
           // CRT_GotoXY(0,5);
           // CRT_Write('avail_ships='~);
           // CRT_Write(availableships[shipindex]);
+          //
+          // CRT_GotoXY(20,4);
+          // CRT_Write('offset='~);
+          // CRT_Write(offset);
+          // CRT_GotoXY(20,5);
+          // CRT_Write('price='~);
+          // CRT_Write(shipprices[offset]);
+
 
           CRT_GotoXY(5,0);
           WriteSpaces(24);
@@ -995,7 +1017,8 @@ begin
           CRT_GotoXY(6,2);
           CRT_Write(tshp^.scu_max);WriteSpaces(2);
           CRT_GotoXY(6,3);
-          CRT_Write('10000'~);CRT_Write(Atascii2Antic(CURRENCY));WriteSpaces(4);
+          offset:=(NUMBEROFSHIPS * player.loc) + availableships[shipindex];
+          CRT_Write(shipprices[offset]);WriteSpaces(3);
           CRT_GotoXY(29,1);
           CRT_Write(tshp^.speed);WriteSpaces(1);
           CRT_GotoXY(30,2);
@@ -1005,9 +1028,52 @@ begin
         end;
     end;
 
+
+    if (CRT_SelectPressed) then
+    begin
+      if (selectPressed = false) then
+      begin
+        CRT_GotoXY(0,5);
+        If ship.sindex <> availableships[shipindex] then
+        begin
+          currentshipprice:=shipprices[(NUMBEROFSHIPS * player.loc) + ship.sindex];
+          if player.uec + currentshipprice >= shipprices[offset] then
+          begin
+            // sell current ship
+            player.uec:=player.uec + currentshipprice;
+
+            // buy new ship
+            player.uec:=player.uec - shipprices[offset];
+            ///ship:=shipmatrix[availableships[shipindex]];
+            offset:=availableships[shipindex];
+            tshp:=shipmatrix[offset];
+            ship:= tshp^;
+            current_menu:=MENU_MAIN;
+          end
+          else
+          begin
+            //Message not enough UEC
+            CRT_GotoXY(6,5);
+            WriteFF(strings[48]);CRT_Write(Atascii2Antic(CURRENCY));CRT_Invert(29,5,5)
+          end;
+
+        end
+        else
+        begin
+          //Message that ship is already owned
+          CRT_GotoXY(6,5);
+          WriteFF(strings[49]);
+        end;
+
+      end;
+      selectPressed:=true;
+    end
+    else
+      selectPressed:=false;
+
     Waitframe;
 
-  until (keyval = KEY_BACK); // OR (keyval = KEY_JUMP);
+  until (keyval = KEY_BACK) or (current_menu = MENU_MAIN);
 end;
 
 

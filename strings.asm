@@ -47,10 +47,12 @@ strings_list
     dta a(txt_45)
     dta a(txt_46)
     dta a(txt_47)
+    dta a(txt_48)
+    dta a(txt_49)
 
 strings
 txt_0
-    dta d'v.0.3 (c) 2019 MADRAFi. Special thanks to Bocianu for support. ',$ff
+    dta d'v.0.3 (c) 2019 MADRAFi. Special thanks to Bocianu for the support. ',$ff
 txt_1
     dta d'[N] New Game',$ff
 txt_2
@@ -145,6 +147,11 @@ txt_46
     dta d' meters',$ff
 txt_47
     dta d' tons',$ff
+txt_48
+    dta d' You do not have enough'*,$ff
+txt_49
+    dta d' You already own that ship. '*,$ff
+
 
  .print "STRINGS SIZE: ", *-strings_list
  .print "STRINGS : ", strings_list, "..", *
