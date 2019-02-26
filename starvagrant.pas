@@ -153,23 +153,23 @@ var
   ); // distance between locations
 
  shipprices: array [0..(NUMBEROFLOCATIONS * NUMBEROFSHIPS)-1] of longword = (
-  1000,0,12000,0,0,0,10000,0,0,0,0,15000,
-  0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,
-  0,5000,0,0,25000,0,50000,0,0,0,0,0,
-  1000,0,12000,15000,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0
+ 0,0,0,0,0,0,0,0,0,0,0,0,
+ 0,9000,12990,22700,32000,0,75000,62000,0,0,330000,0,
+ 0,0,0,0,0,0,0,0,0,0,0,0,
+ 0,0,0,0,0,0,0,0,0,0,0,0,
+ 0,0,0,0,0,0,0,0,0,0,0,0,
+ 0,0,0,0,0,0,0,0,0,0,0,0,
+ 0,0,0,0,0,0,0,0,0,0,0,0,
+ 0,0,0,0,0,0,0,59500,0,130000,0,0,
+ 0,0,0,0,0,0,0,0,0,0,0,0,
+ 0,0,0,0,0,0,0,0,0,0,0,0,
+ 0,0,0,0,0,45000,0,0,0,0,0,400000,
+ 0,5000,0,18000,29999,0,50000,0,0,0,0,0,
+ 0,9000,0,20100,0,0,0,0,124900,0,300000,0,
+ 0,0,0,0,0,0,0,0,0,0,0,0,
+ 0,0,0,0,0,0,75000,0,0,0,0,0,
+ 0,0,0,0,31500,0,75000,62000,124900,0,300000,0,
+ 0,8000,11999,22700,32000,0,0,0,124900,166000,330000,0
  ); // ship prices
 
   availableitems: array [0..(MAXAVAILABLEITEMS-1)] of Word; // only 12 avaiable items
@@ -848,8 +848,6 @@ begin
   CRT_ClearRows(0,6);
 
 
-  LoadShips;
-
   //CRT_GotoXY(0,0);
 
   CRT_WriteRightAligned(0,Atascii2Antic(concat(IntToStr(player.uec), CURRENCY)));
@@ -870,13 +868,13 @@ begin
   CRT_GotoXY(0,2);
   WriteFF(strings[39]); // Cargo:
   CRT_Write(tshp^.scu_max);
-  CRT_GotoXY(9,2);
+  CRT_GotoXY(10,2);
   CRT_Write(Atascii2Antic(CARGOUNIT));
 
   CRT_GotoXY(0,3);
   WriteFF(strings[40]); // Price:
   CRT_Write(shipprices[(NUMBEROFSHIPS * player.loc) + tshp^.sindex]);
-  CRT_GotoXY(13,3);
+  CRT_GotoXY(12,3);
   CRT_Write(Atascii2Antic(CURRENCY));
 
 
@@ -1015,16 +1013,26 @@ begin
           offset:=tshp^.sindex * (MAXSHIPPARAMETERS);
           CRT_Write(Atascii2Antic(ships[offset]));
           CRT_GotoXY(6,2);
-          CRT_Write(tshp^.scu_max);WriteSpaces(2);
+          WriteSpaces(4);
+          CRT_GotoXY(6,2);
+          CRT_Write(tshp^.scu_max);
+          CRT_GotoXY(6,3);
+          WriteSpaces(6);
           CRT_GotoXY(6,3);
           offset:=(NUMBEROFSHIPS * player.loc) + availableships[shipindex];
-          CRT_Write(shipprices[offset]);WriteSpaces(3);
+          CRT_Write(shipprices[offset]);
           CRT_GotoXY(29,1);
-          CRT_Write(tshp^.speed);WriteSpaces(1);
+          WriteSpaces(3);
+          CRT_GotoXY(29,1);
+          CRT_Write(tshp^.speed);
           CRT_GotoXY(30,2);
-          CRT_Write(tshp^.lenght);WriteSpaces(1);
+          WriteSpaces(3);
+          CRT_GotoXY(30,2);
+          CRT_Write(tshp^.lenght);
           CRT_GotoXY(28,3);
-          CRT_Write(tshp^.mass);WriteSpaces(1);
+          WriteSpaces(4);
+          CRT_GotoXY(28,3);
+          CRT_Write(tshp^.mass);
         end;
     end;
 
@@ -1613,14 +1621,27 @@ begin
   Waitframe;
   DLISTL := DISPLAY_LIST_ADDRESS_MENU;
 
+
+  // load ship to be able to check if they are avaiable
+  LoadShips;
+
   CRT_ClearRows(0,6);
 
+  for y:=0 to 3 do
+  begin
+    CRT_GotoXY(0,y);
+    CRT_Write(availableships[y]);
+  end;
   CRT_GotoXY(14,0);
   WriteFF(strings[3]); // Navigation
   CRT_GotoXY(14,1);
   WriteFF(strings[4]); // Trade Console
-  CRT_GotoXY(14,2);
-  WriteFF(strings[6]); // Ship Hangar
+  // show ship console only when there are ships avaiable
+  if (availableships[0] > 0) then
+  begin
+    CRT_GotoXY(14,2);
+    WriteFF(strings[6]); // Ship Hangar
+  end;
   CRT_GotoXY(14,3);
   WriteFF(strings[7]); // Back
 
@@ -1644,7 +1665,10 @@ begin
       case keyval of
         KEY_OPTION1: current_menu := MENU_NAV;
         KEY_OPTION2: current_menu := MENU_TRADE;
-        KEY_OPTION4: current_menu := MENU_SHIP;
+        KEY_OPTION4: begin
+                      // if there is an ship in available ship enable console_ship
+                      if (availableships[0] > 0) then current_menu := MENU_SHIP;
+                     end;
         KEY_BACK: begin
                     sfx_play(voice4,255,168); // vol8
                     current_menu := MENU_TITLE;
