@@ -64,7 +64,7 @@ txt_4
 txt_5
     dta d'[3] Repair/Refuel Pad',$ff
 txt_6
-    dta d'[4] Ship Hangar',$ff
+    dta d'[4] Ship Depot',$ff
 txt_7
     dta d'[B] Back',$ff
 txt_8
@@ -96,7 +96,7 @@ txt_20
 txt_21
     dta d'Nav:',$ff
 txt_22
-    dta d'Dis:',$ff
+    dta d'Distance:',$ff
 txt_23
     dta d'[1-5] Navigation',$ff
 txt_24

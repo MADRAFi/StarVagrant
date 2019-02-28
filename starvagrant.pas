@@ -9,7 +9,7 @@ const
 
   CURRENCY = ' UEC';
   CARGOUNIT = ' SCU';
-  DISTANCE = ' DU';
+  DISTANCEUNIT = ' DU';
   COMMISSION = 0.03;
 
 type
@@ -153,7 +153,7 @@ var
   ); // distance between locations
 
  shipprices: array [0..(NUMBEROFLOCATIONS * NUMBEROFSHIPS)-1] of longword = (
- 0,0,0,0,0,0,0,0,0,0,0,0,
+ 1000,0,0,0,0,0,0,0,0,0,0,0,
  0,9000,12990,22700,32000,0,75000,62000,0,0,330000,0,
  0,0,0,0,0,0,0,0,0,0,0,0,
  0,0,0,0,0,0,0,0,0,0,0,0,
@@ -570,11 +570,11 @@ end;
 procedure navi_distanceUpdate(mydistance: Word);
 
 begin
-  CRT_GotoXY(0,2);
-  WriteSpaces(19); // max distance lenght
-  CRT_GotoXY(0,2);
-  WriteFF(strings[22]);
-  CRT_Write(mydistance); CRT_Write(Atascii2Antic(DISTANCE));
+  CRT_GotoXY(9,2);
+  WriteSpaces(3); // max distance lenght
+  CRT_GotoXY(9,2);
+  //WriteFF(strings[22]);
+  CRT_Write(mydistance); //CRT_Write(Atascii2Antic(DISTANCE));
 end;
 
 
@@ -735,10 +735,11 @@ begin
     end;
     //If distance > 0 then
     //begin
+    //reuse of variable count for speed
+      count:=(ROUND(15 / (ship.speed / 100))) - (5 - Trunc(ship.lenght / 25));
        Dec(distance);
        navi_distanceUpdate(distance);
-       waitframes(5);
-       //waitframe;
+       waitframes(count);
     //end;
 
   until ((distance = 0) and (xBiosIOresult <> 0)) or ((distance = 0) and (xBiosCheck = 0));
@@ -769,8 +770,9 @@ begin
   CRT_GotoXY(0,1);
   WriteFF(strings[21]); // Nav:
   CRT_GotoXY(0,2);
-  WriteFF(strings[22]); //CRT_Write(' 2356 SDU'~); // Dis:
-
+  WriteFF(strings[22]);  // Dis:
+  CRT_GotoXY(12,2);
+  CRT_Write(Atascii2Antic(DISTANCEUNIT));
   // Help Keys
   CRT_GotoXY(0,6);
   WriteFF(strings[23]); // Navigation options
@@ -1627,17 +1629,13 @@ begin
 
   CRT_ClearRows(0,6);
 
-  for y:=0 to 3 do
-  begin
-    CRT_GotoXY(0,y);
-    CRT_Write(availableships[y]);
-  end;
   CRT_GotoXY(14,0);
   WriteFF(strings[3]); // Navigation
   CRT_GotoXY(14,1);
   WriteFF(strings[4]); // Trade Console
-  // show ship console only when there are ships avaiable
-  if (availableships[0] > 0) then
+  // show ship console only when there are ships avaiable (price > 0 for 1st ship at a location)
+  offset:=(NUMBEROFSHIPS * player.loc) + availableships[0];
+  if shipprices[offset] > 0 then
   begin
     CRT_GotoXY(14,2);
     WriteFF(strings[6]); // Ship Hangar
@@ -1646,11 +1644,11 @@ begin
   WriteFF(strings[7]); // Back
 
   // CRT_GotoXY(0,3);
-  // CRT_Write('sname='~);CRT_Write(ship.sname);CRT_Write('|'~);
+  // CRT_Write('offset='~);CRT_Write(offset);
   // CRT_GotoXY(0,4);
-  // CRT_Write('scu_max='~);CRT_Write(ship.scu_max);
-  //CRT_GotoXY(0,6);
-  //Write_CRT(ship.sname);
+  // CRT_Write('av_ship[0]='~);CRT_Write(availableships[0]);CRT_Write('|'~);
+  // CRT_GotoXY(0,5);
+  // CRT_Write('price='~);CRT_Write(shipprices[offset]);
 
 
 
@@ -1667,7 +1665,7 @@ begin
         KEY_OPTION2: current_menu := MENU_TRADE;
         KEY_OPTION4: begin
                       // if there is an ship in available ship enable console_ship
-                      if (availableships[0] > 0) then current_menu := MENU_SHIP;
+                      if (shipprices[offset] > 0) then current_menu := MENU_SHIP;
                      end;
         KEY_BACK: begin
                     sfx_play(voice4,255,168); // vol8
