@@ -32,8 +32,6 @@ DISPLAY_LIST_ADDRESS_MENU rcasm 'dlist_menu.asm'
 DISPLAY_LIST_ADDRESS_CONSOLE rcasm 'dlist_console.asm'
 
 STRINGS_ADDRESS rcasm 'strings.asm'
-LOCATIONS_ADDRESS rcasm 'locations.asm'
-ITEMS_ADDRESS rcasm 'items.asm'
 
 ; rmt module
 ;RMT_PLAYER_ADDRESS	RMTPLAY	'assets/titlemusic.feat' 1

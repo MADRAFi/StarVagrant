@@ -1,39 +1,45 @@
 // stale
 
-FREE_TOP = $8000;
+FREE_TOP = $9000;
 
-CHARSET_ADDRESS = FREE_TOP;
-DISPLAY_LIST_ADDRESS_TITLE = CHARSET_ADDRESS + $400;
+DISPLAY_LIST_ADDRESS_TITLE = FREE_TOP + $100;
 DISPLAY_LIST_ADDRESS_MENU = DISPLAY_LIST_ADDRESS_TITLE + $100;
 DISPLAY_LIST_ADDRESS_CONSOLE = DISPLAY_LIST_ADDRESS_MENU + $100;
 TXT_ADDRESS = DISPLAY_LIST_ADDRESS_CONSOLE + $100;
 
 SCROLL_ADDRESS = TXT_ADDRESS + $3D0; // $400;
+STRINGS_ADDRESS = SCROLL_ADDRESS + $FA5; // $1800;
+
+
+
 
 //RMT_PLAYER_ADDRESS = $7000; // begining of a new mem page
 //RMT_MODULE_ADDRESS = RMT_PLAYER_ADDRESS + $800;
-// end at $6F8D
-
-// logo length $178D;
-
-GFX_ADDRESS = $9000;
-GFX2_ADDRESS = $C000;  //GFX_ADDRESS + $2000;
 
 
+CHARSET_ADDRESS = $D800;
+GFX_ADDRESS = $E000;
+GFX2_ADDRESS = $1000; // $C000;
 
-STRINGS_ADDRESS = GFX_ADDRESS + $2000; // $1800;
-LOCATIONS_ADDRESS = STRINGS_ADDRESS + $200;
-ITEMS_ADDRESS = LOCATIONS_ADDRESS + $200;
+
+
+
 
 
 NUMBEROFLOCATIONS = 17; // number of locations defined in locations.asm. Needs to match.
 NUMBEROFITEMS = 24; // number of items defined in items.asm. Needs to match.
+NUMBEROFSHIPS = 12; // number of ships defined in ships array.
+MAXSHIPPARAMETERS = 6; // number of ship parameters in ship array
 MAXAVAILABLEITEMS = 12; // numer of concurrent items displayed
 MAXCARGOSLOTS = 10;  // number of cargo slots
 MAXAVAILABLEDESTINATIONS = 6;  // number of destinations fron location.
 
 // ***************************************************************************//
 
+STARTUEC = 5000;
+STARTLOCATION = 0; // Port Olisar
+
+// ***************************************************************************//
 KEY_OPTION1 = 31; //1
 KEY_OPTION2 = 30; //2
 KEY_OPTION3 = 26;  //3
@@ -60,3 +66,4 @@ MENU_MAIN = 1;
 MENU_NAV = 2;
 MENU_TRADE = 3;
 MENU_MAINT = 4;
+MENU_SHIP = 5;
