@@ -2,7 +2,7 @@ program StarVagrant;
 {$librarypath '../Libs/lib/';'../Libs/blibs/';'../Libs/base/'}
 //{$librarypath 'Libs/lib/';'Libs/blibs/';'Libs/base/'}
 // {$librarypath '../blibs/'}
-uses atari, b_utils, b_system, b_crt, sysutils, xbios; //, mad_xbios;
+uses atari, b_utils, b_system, b_crt, sysutils, xbios, rmt;
 
 const
 {$i 'const.inc'}
@@ -30,7 +30,7 @@ var
   offset: Word; // offset counted to get items from arrays
   y: Byte; // index for loops
   count: Byte; // count in item iterations
-  //msx: TRMT;
+  msx: TRMT;
   current_menu: Byte;
 
 
