@@ -15,10 +15,10 @@ procedure dli_title1;assembler;interrupt;
     ;    mva #$10 ATARI.colpf2
     ;    mva #$00 ATARI.colpf3
     ;    sta ATARI.colbk
-        mva adr.gfxcolors ATARI.colpf0
-        mva adr.gfxcolors+1 ATARI.colpf1
-        mva adr.gfxcolors+2 ATARI.colpf2
-        mva adr.gfxcolors+3 ATARI.colbk
+            mva adr.gfxcolors ATARI.colpf0
+            mva adr.gfxcolors+1 ATARI.colpf1
+            mva adr.gfxcolors+2 ATARI.colpf2
+            mva adr.gfxcolors+3 ATARI.colbk
 
 ;        lda #60
 ;@       cmp vcount
@@ -34,11 +34,13 @@ procedure dli_title2;assembler;interrupt;
         pha
         sta ATARI.WSYNC
         ;mva #$00 ATARI.colbk
-        mva #$00 ATARI.colpf0
+;       mva #$00 ATARI.colpf0
+        mva adr.txtcolors ATARI.colpf0
         sta ATARI.colpf2
         ;mva #$00 ATARI.colpf3
         sta ATARI.colbk
-        mva #$0c ATARI.colpf1
+;        mva #$0c ATARI.colpf1
+        mva adr.txtcolors+1 ATARI.colpf1
         mwa #DLI_TITLE3 __dlivec
         pla
         };

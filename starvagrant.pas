@@ -57,6 +57,8 @@ var
   ship11: TShip;
   shipmatrix: array [0..NUMBEROFSHIPS-1] of pointer = (@ship0, @ship1, @ship2, @ship3, @ship4, @ship5, @ship6, @ship7, @ship8, @ship9, @ship10, @ship11);
 
+
+
   (*
   * 0 - colpf0
   * 1 - colpf1
@@ -87,6 +89,10 @@ var
   gfxcolors: array [0..3] of Byte = (
     $1a,$14,$10,$00
   );
+  txtcolors : array [0..1] of Byte = (
+    $00,$1c
+  );
+
 
   strings: array [0..0] of Word absolute STRINGS_ADDRESS;
 
@@ -240,26 +246,33 @@ begin
     If (gfxcolors[1] and %00001111 <> 0) then Dec(gfxcolors[1]) else gfxcolors[1]:=0;
     If (gfxcolors[2] and %00001111 <> 0) then Dec(gfxcolors[2]) else gfxcolors[2]:=0;
     If (gfxcolors[3] and %00001111 <> 0) then Dec(gfxcolors[3]) else gfxcolors[3]:=0;
-  until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3]) = 0;
+
+    If (txtcolors[0] and %00001111 <> 0) then Dec(txtcolors[0]) else txtcolors[0]:=0;
+    If (txtcolors[1] and %00001111 <> 0) then Dec(txtcolors[1]) else txtcolors[1]:=0;
+
+  until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3] or txtcolors[0] or txtcolors[1]) = 0;
+  //until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3]) = 0;
 end;
 
-procedure gfx_fadein(col1: Byte; col2: Byte; col3: Byte; col4: Byte);
+procedure gfx_fadein;
+
 begin
-  gfxcolors[0]:=0;
-  gfxcolors[1]:=0;
-  gfxcolors[2]:=0;
-  gfxcolors[3]:=0;
+  // gfxcolors[0]:=0;
+  // gfxcolors[1]:=0;
+  // gfxcolors[2]:=0;
+  // gfxcolors[3]:=0;
+  y:= newLoc shl 2; // x 4 for number of colors
   repeat
     Waitframes(2);
-    If (gfxcolors[0] and %00001111 <> col1) then Inc(gfxcolors[0]) else gfxcolors[0]:=col1;
-    If (gfxcolors[1] and %00001111 <> col2) then Inc(gfxcolors[1]) else gfxcolors[1]:=col2;
-    If (gfxcolors[2] and %00001111 <> col3) then Inc(gfxcolors[2]) else gfxcolors[2]:=col3;
-    If (gfxcolors[3] and %00001111 <> col4) then Inc(gfxcolors[3]) else gfxcolors[3]:=col4;
-    // gfxcolors[0]:=col1;
-    // gfxcolors[1]:=col2;
-    // gfxcolors[2]:=col3;
-    // gfxcolors[3]:=col4;
-  until (gfxcolors[0]=col1) or (gfxcolors[1]=col2) or (gfxcolors[2]=col3) or (gfxcolors[3]=col4);
+    If (gfxcolors[0] and %00001111 < piccolors[y] and %00001111 ) then Inc(gfxcolors[0]) else gfxcolors[0]:=piccolors[y];
+    If (gfxcolors[1] and %00001111 < piccolors[y+1] and %00001111) then Inc(gfxcolors[1]) else gfxcolors[1]:=piccolors[y+1];
+    If (gfxcolors[2] and %00001111 < piccolors[y+2] and %00001111) then Inc(gfxcolors[2]) else gfxcolors[2]:=piccolors[y+2];
+    If (gfxcolors[3] and %00001111 < piccolors[y+3] and %00001111) then Inc(gfxcolors[3]) else gfxcolors[3]:=piccolors[y+3];
+
+      If (txtcolors[0] and %00001111 < 0 and %00001111) then inc(txtcolors[0]) else txtcolors[0]:=0;
+      If (txtcolors[1] and %00001111 < $1c and %00001111) then inc(txtcolors[1]) else txtcolors[1]:=$1c;
+
+  until (gfxcolors[0]=piccolors[y]) and (gfxcolors[1]=piccolors[y+1]) and (gfxcolors[2]=piccolors[y+2]) and (gfxcolors[3]=piccolors[y+3]);
 end;
 
 
@@ -304,15 +317,15 @@ procedure start;
 
 begin
   player.uec:= STARTUEC;
-  if player.loc <> 0  then
-  begin
+  //if player.loc <> 0  then
+  //begin
     player.loc:= STARTLOCATION;
-    newLoc:=0;
-  end;
+    newLoc:= STARTLOCATION; //0;
+  //end;
   gfx_fadeout;
-  pic_load(LOC,0);
-
-  //ship:= ship0;
+  pic_load(LOC,player.loc);
+  sfx_init;
+  gfx_fadein;
 
   tshp:=shipmatrix[0];
   ship:= tshp^;
@@ -1625,13 +1638,6 @@ procedure menu;
 
 begin
   // offset for player location colors
-  y:= player.loc shl 2;
-
-  //gfx_fadein(piccolors[y],piccolors[y+1],piccolors[y+2],piccolors[y+3]);
-   gfxcolors[0]:=piccolors[y];
-   gfxcolors[1]:=piccolors[y+1];
-   gfxcolors[2]:=piccolors[y+2];
-   gfxcolors[3]:=piccolors[y+3];
 
 
   EnableVBLI(@vbl);
@@ -1639,9 +1645,14 @@ begin
   Waitframe;
   DLISTL := DISPLAY_LIST_ADDRESS_MENU;
 
+  gfx_fadein;
+   // gfxcolors[0]:=piccolors[y];
+   // gfxcolors[1]:=piccolors[y+1];
+   // gfxcolors[2]:=piccolors[y+2];
+   // gfxcolors[3]:=piccolors[y+3];
 
   // load ship to be able to check if they are avaiable
-  LoadShips;
+
 
   CRT_ClearRows(0,6);
 
@@ -1649,6 +1660,8 @@ begin
   WriteFF(strings[3]); // Navigation
   CRT_GotoXY(14,1);
   WriteFF(strings[4]); // Trade Console
+
+  LoadShips;
   // show ship console only when there are ships avaiable (price > 0 for 1st ship at a location)
   offset:=(NUMBEROFSHIPS * player.loc) + availableships[0];
   if shipprices[offset] > 0 then
@@ -1704,17 +1717,21 @@ begin
   Waitframe;
   DLISTL := DISPLAY_LIST_ADDRESS_TITLE;
 
-  //gfx_fadeout;
-  gfxcolors[0]:=piccolors[0];
-  gfxcolors[1]:=piccolors[1];
-  gfxcolors[2]:=piccolors[2];
-  gfxcolors[3]:=piccolors[3];
+  gfx_fadeout;
+  // gfxcolors[0]:=0;
+  // gfxcolors[1]:=0;
+  // gfxcolors[2]:=0;
+  // gfxcolors[3]:=0;
 
   pic_load(GFX,0);
 
+  // gfxcolors[0]:=piccolors[0];
+  // gfxcolors[1]:=piccolors[1];
+  // gfxcolors[2]:=piccolors[2];
+  // gfxcolors[3]:=piccolors[3];
 
 
-  //gfx_fadein(piccolors[0],piccolors[1],piccolors[2],piccolors[3]);
+  gfx_fadein;
   sfx_init;
 
 
@@ -1782,7 +1799,9 @@ begin
   Randomize;
   SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
   CRT_Init(TXT_ADDRESS);
+  //CRT_Write('Loading...'~);
   player.loc:=0; //start location Port Olisar
+
 
   // EnableVBLI(@vbl_title);
   // EnableDLI(@dli_title1);
