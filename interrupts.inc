@@ -9,17 +9,16 @@ procedure dli_title1;assembler;interrupt;
     asm {
         pha
         sta ATARI.WSYNC
-;        mva #$00 ATARI.colpf0
-;        mva #$1A ATARI.colpf1
-;        mva #$14 ATARI.colpf2
-;        mva #$00 ATARI.colpf3
-;        mva #$10 ATARI.colbk
 
-        mva #$1A ATARI.colpf0
-        mva #$14 ATARI.colpf1
-        mva #$10 ATARI.colpf2
-        mva #$00 ATARI.colpf3
-        sta ATARI.colbk
+    ;    mva #$1A ATARI.colpf0
+    ;    mva #$14 ATARI.colpf1
+    ;    mva #$10 ATARI.colpf2
+    ;    mva #$00 ATARI.colpf3
+    ;    sta ATARI.colbk
+        mva adr.gfxcolors ATARI.colpf0
+        mva adr.gfxcolors+1 ATARI.colpf1
+        mva adr.gfxcolors+2 ATARI.colpf2
+        mva adr.gfxcolors+3 ATARI.colbk
 
 ;        lda #60
 ;@       cmp vcount
@@ -86,6 +85,7 @@ begin
   //msx.play;
   //Waitframe;
   asm {
+
     ;   *** example test routine
     ;    mva 20 atari.colbk // blink background
 

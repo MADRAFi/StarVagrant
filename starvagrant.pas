@@ -2,7 +2,7 @@ program StarVagrant;
 {$librarypath '../Libs/lib/';'../Libs/blibs/';'../Libs/base/'}
 //{$librarypath 'Libs/lib/';'Libs/blibs/';'Libs/base/'}
 // {$librarypath '../blibs/'}
-uses atari, b_utils, b_system, b_crt, sysutils, xbios, rmt;
+uses atari, b_utils, b_system, b_crt, sysutils, xbios; //, rmt;
 
 const
 {$i 'const.inc'}
@@ -30,7 +30,7 @@ var
   offset: Word; // offset counted to get items from arrays
   y: Byte; // index for loops
   count: Byte; // count in item iterations
-  msx: TRMT;
+  //msx: TRMT;
   current_menu: Byte;
 
 
@@ -232,11 +232,45 @@ begin
   end;
 end;
 
-procedure piclocation_openfile;
+procedure gfx_fadeout;
+begin
+  repeat
+    Waitframes(2);
+    If (gfxcolors[0] and %00001111 <> 0) then Dec(gfxcolors[0]) else gfxcolors[0]:=0;
+    If (gfxcolors[1] and %00001111 <> 0) then Dec(gfxcolors[1]) else gfxcolors[1]:=0;
+    If (gfxcolors[2] and %00001111 <> 0) then Dec(gfxcolors[2]) else gfxcolors[2]:=0;
+    If (gfxcolors[3] and %00001111 <> 0) then Dec(gfxcolors[3]) else gfxcolors[3]:=0;
+  until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3]) = 0;
+end;
+
+procedure gfx_fadein(col1: Byte; col2: Byte; col3: Byte; col4: Byte);
+begin
+  gfxcolors[0]:=0;
+  gfxcolors[1]:=0;
+  gfxcolors[2]:=0;
+  gfxcolors[3]:=0;
+  repeat
+    Waitframes(2);
+    If (gfxcolors[0] and %00001111 <> col1) then Inc(gfxcolors[0]) else gfxcolors[0]:=col1;
+    If (gfxcolors[1] and %00001111 <> col2) then Inc(gfxcolors[1]) else gfxcolors[1]:=col2;
+    If (gfxcolors[2] and %00001111 <> col3) then Inc(gfxcolors[2]) else gfxcolors[2]:=col3;
+    If (gfxcolors[3] and %00001111 <> col4) then Inc(gfxcolors[3]) else gfxcolors[3]:=col4;
+    // gfxcolors[0]:=col1;
+    // gfxcolors[1]:=col2;
+    // gfxcolors[2]:=col3;
+    // gfxcolors[3]:=col4;
+  until (gfxcolors[0]=col1) or (gfxcolors[1]=col2) or (gfxcolors[2]=col3) or (gfxcolors[3]=col4);
+end;
+
+
+procedure pic_openfile(myname: TString; mynum: Byte);
 
 begin
-  if (newLoc < 10) then tstr:=concat('LOC0',IntToStr(newLoc))
-  else tstr:=concat('LOC',inttostr(newLoc));
+  tstr:='';
+  if (mynum < 10) then tstr:=concat(myname,'0')
+  else tstr:=myname;
+
+  tstr:=concat(tstr,inttostr(mynum));
   tstr:=concat(tstr,'   DAT');
 
   if xBiosCheck = 0 then
@@ -251,38 +285,17 @@ begin
 
 end;
 
-procedure piclocation_load;
+procedure pic_load(mytype: Byte; num: Byte);
 
 begin
-  newLoc:=player.loc;
-  piclocation_openfile;
-
+  If mytype = LOC then pic_openfile('LOC',num)
+  else pic_openfile('GFX',num);
   //if (xBiosCheck = 1) and (xBiosIOresult = 0) then
   if (xBiosCheck <> 0) and (xBiosIOresult = 0) then
   begin
-    xBiosLoadData(Pointer(GFX2_ADDRESS));
+    xBiosLoadData(Pointer(GFX_ADDRESS));
     xBiosFlushBuffer;
   end
-
-end;
-
-
-procedure generateWorld;
-
-begin
-
-    // load ships data into an array of records.
-    for y:=0 to NUMBEROFSHIPS-1 do
-    begin
-      tshp:=shipmatrix[y];
-      offset:=(y * MAXSHIPPARAMETERS);
-      tshp^.mcode:=byte(ships[offset+1]);
-      tshp^.sindex:=y;
-      tshp^.scu_max:=Word(ships[offset+2]);
-      tshp^.speed:=byte(ships[offset+3]);
-      tshp^.lenght:=byte(ships[offset+4]);
-      tshp^.mass:=Word(ships[offset+5]);
-    end;
 
 end;
 
@@ -295,9 +308,9 @@ begin
   begin
     player.loc:= STARTLOCATION;
     newLoc:=0;
-    piclocation_load;
   end;
-
+  gfx_fadeout;
+  pic_load(LOC,0);
 
   //ship:= ship0;
 
@@ -714,15 +727,16 @@ begin
   sfx_play(voice4, 236,200); // vol 8
 
   // fade out
-  repeat
-    Waitframes(2);
-    If (gfxcolors[0] and %00001111 <> 0) then Dec(gfxcolors[0]) else gfxcolors[0]:=0;
-    If (gfxcolors[1] and %00001111 <> 0) then Dec(gfxcolors[1]) else gfxcolors[1]:=0;
-    If (gfxcolors[2] and %00001111 <> 0) then Dec(gfxcolors[2]) else gfxcolors[2]:=0;
-    If (gfxcolors[3] and %00001111 <> 0) then Dec(gfxcolors[3]) else gfxcolors[3]:=0;
-  until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3]) = 0;
+  // repeat
+  //   Waitframes(2);
+  //   If (gfxcolors[0] and %00001111 <> 0) then Dec(gfxcolors[0]) else gfxcolors[0]:=0;
+  //   If (gfxcolors[1] and %00001111 <> 0) then Dec(gfxcolors[1]) else gfxcolors[1]:=0;
+  //   If (gfxcolors[2] and %00001111 <> 0) then Dec(gfxcolors[2]) else gfxcolors[2]:=0;
+  //   If (gfxcolors[3] and %00001111 <> 0) then Dec(gfxcolors[3]) else gfxcolors[3]:=0;
+  // until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3]) = 0;
+  gfx_fadeout;
 
-  piclocation_openfile;
+  pic_openfile('LOC',newLoc);
   fileoffset:=0;
   If (xBiosCheck <> 0) then xBiosSetLength(CHUNKSIZE); //size of chunk to read
 
@@ -730,7 +744,7 @@ begin
   repeat
     If (xBiosCheck <> 0) then
     begin
-      xBiosLoadData(Pointer(GFX2_ADDRESS+fileoffset));
+      xBiosLoadData(Pointer(GFX_ADDRESS+fileoffset));
       fileoffset:=fileoffset+CHUNKSIZE;
     end;
     //If distance > 0 then
@@ -1612,10 +1626,12 @@ procedure menu;
 begin
   // offset for player location colors
   y:= player.loc shl 2;
-  gfxcolors[0]:=piccolors[y];
-  gfxcolors[1]:=piccolors[y+1];
-  gfxcolors[2]:=piccolors[y+2];
-  gfxcolors[3]:=piccolors[y+3];
+
+  //gfx_fadein(piccolors[y],piccolors[y+1],piccolors[y+2],piccolors[y+3]);
+   gfxcolors[0]:=piccolors[y];
+   gfxcolors[1]:=piccolors[y+1];
+   gfxcolors[2]:=piccolors[y+2];
+   gfxcolors[3]:=piccolors[y+3];
 
 
   EnableVBLI(@vbl);
@@ -1688,6 +1704,19 @@ begin
   Waitframe;
   DLISTL := DISPLAY_LIST_ADDRESS_TITLE;
 
+  //gfx_fadeout;
+  gfxcolors[0]:=piccolors[0];
+  gfxcolors[1]:=piccolors[1];
+  gfxcolors[2]:=piccolors[2];
+  gfxcolors[3]:=piccolors[3];
+
+  pic_load(GFX,0);
+
+
+
+  //gfx_fadein(piccolors[0],piccolors[1],piccolors[2],piccolors[3]);
+  sfx_init;
+
 
   CRT_ClearRows(0,5);
 
@@ -1754,15 +1783,34 @@ begin
   SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
   CRT_Init(TXT_ADDRESS);
   player.loc:=0; //start location Port Olisar
-  piclocation_load;
-  sfx_init;
+
+  // EnableVBLI(@vbl_title);
+  // EnableDLI(@dli_title1);
+  // Waitframe;
+  // DLISTL := DISPLAY_LIST_ADDRESS_TITLE;
+  //
+  // gfx_fadeout;
+  // pic_load(GFX,0);
+  // gfx_fadein(piccolors[0],piccolors[1],piccolors[2],piccolors[3]);
+  // sfx_init;
 
   // Initialize RMT player
-  //msx.player:=pointer(RMT_PLAYER_ADDRESS);
-  //msx.modul:=pointer(RMT_MODULE_ADDRESS);
-  //msx.init(0);
+  // msx.player:=pointer(RMT_PLAYER_ADDRESS);
+  // msx.modul:=pointer(RMT_MODULE_ADDRESS);
+  // msx.init(0);
 
-  generateWorld;
+  // load ships data into an array of records.
+  for y:=0 to NUMBEROFSHIPS-1 do
+  begin
+    tshp:=shipmatrix[y];
+    offset:=(y * MAXSHIPPARAMETERS);
+    tshp^.mcode:=byte(ships[offset+1]);
+    tshp^.sindex:=y;
+    tshp^.scu_max:=Word(ships[offset+2]);
+    tshp^.speed:=byte(ships[offset+3]);
+    tshp^.lenght:=byte(ships[offset+4]);
+    tshp^.mass:=Word(ships[offset+5]);
+  end;
 
 
   current_menu := MENU_TITLE;
