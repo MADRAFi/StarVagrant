@@ -1,5 +1,5 @@
 {$librarypath '../../Libs/lib/';'../../Libs/blibs/';'../../Libs/base/'}
-uses atari, crt, sysutils, rmt, xbios;
+uses atari, b_utils, b_system, b_crt, sysutils, rmt, xbios;
 
 const
 {$i const.inc}
@@ -11,8 +11,11 @@ var
   gfxcolors: array [0..3] of Byte = (
     $10,$14,$1a,$00
   );
-
-  main: TString;
+  piccolors: array [0..3] of Byte = (
+    $10,$14,$1a,$00
+  );
+  msx: TRMT;
+  filename: TString;
 
 
 {$i interrupts.inc}
@@ -30,6 +33,27 @@ begin
      // until (colpf1 or colpf2) = 0;
 end;
 
+procedure gfx_fadein;
+
+begin
+  gfxcolors[0]:=0;
+  gfxcolors[1]:=0;
+  gfxcolors[2]:=0;
+  gfxcolors[3]:=0;
+
+  repeat
+    Waitframes(2);
+    If (gfxcolors[0] and %00001111 < piccolors[0] and %00001111 ) then Inc(gfxcolors[0]) else gfxcolors[0]:=piccolors[0];
+    If (gfxcolors[1] and %00001111 < piccolors[1] and %00001111) then Inc(gfxcolors[1]) else gfxcolors[1]:=piccolors[1];
+    If (gfxcolors[2] and %00001111 < piccolors[2] and %00001111) then Inc(gfxcolors[2]) else gfxcolors[2]:=piccolors[2];
+    If (gfxcolors[3] and %00001111 < piccolors[3] and %00001111) then Inc(gfxcolors[3]) else gfxcolors[3]:=piccolors[3];
+
+      // If (txtcolors[0] and %00001111 < 0 and %00001111) then inc(txtcolors[0]) else txtcolors[0]:=0;
+      // If (txtcolors[1] and %00001111 < $1c and %00001111) then inc(txtcolors[1]) else txtcolors[1]:=$1c;
+
+  until (gfxcolors[0]=piccolors[0]) and (gfxcolors[1]=piccolors[1]) and (gfxcolors[2]=piccolors[2]) and (gfxcolors[3]=piccolors[3]);
+end;
+
 // procedure putNumber2(x,y:byte;num:TString);
 // var dest:word;
 // begin
@@ -42,46 +66,68 @@ end;
 
 
 begin
-  CursorOff;
+  //CursorOff;
+  //clrscr;
+
   // old_dli:=pointer(0);
   // old_vbl:=pointer(0);
 
-  clrscr;
-  fadeoff;
-  GetIntVec(iDLI, old_dli);
-  GetIntVec(iVBL, old_vbl);
+
+  //fadeoff;
+//  GetIntVec(iDLI, old_dli);
+//  GetIntVec(iVBL, old_vbl);
 //  repeat until keypressed;
 
-  SetIntVec(iDLI, @dli_title1);
-  SetIntVec(iVBL, @vbl_title);
-  nmien:=$c0;
+//  SetIntVec(iDLI, @dli_title1);
+//  SetIntVec(iVBL, @vbl_title);
+//  nmien:=$c0;
 
-  SDLSTL:= DISPLAY_LIST_ADDRESS_TITLE;
+  //SDLSTL:= DISPLAY_LIST_ADDRESS_TITLE;
+  fadeoff;
+  SystemOff;
+  SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
+  CRT_Init(GFX_ADDRESS);
 
+  EnableVBLI(@vbl_title);
+  EnableDLI(@dli_title1);
+  Waitframe;
+  DLISTL := DISPLAY_LIST_ADDRESS_TITLE;
+
+  gfx_fadein;
+
+  // Initialize RMT player
+  msx.player:=pointer(RMT_PLAYER_ADDRESS);
+  msx.modul:=pointer(RMT_MODULE_ADDRESS);
+  msx.init(0);
 
   repeat
-    pause;
-  until keypressed;
+    waitframe;
+    msx.play;
+  until CRT_keypressed;
+  msx.stop;
 
-  // if xBiosCheck = 0 then
-  // begin
+  if xBiosCheck = 0 then
+  begin
   //   // SetIntVec(iDLI, old_dli);
   //   // SetIntVec(iVBL, old_vbl);
   //   // nmien := $40;
-  //   // color1:=White;
-  //   // color2:=black;
-  //   // GotoXY(5,1);
-  //   // Writeln(' No xBios found. Cannot load '*);
-  //   // repeat
-  //   //   pause;
-  //   // until keypressed;
+    // colpf1:=$1c;
+    // colpf2:=$00;
+    // CRT_GotoXY(5,1);
+    // CRT_Write(' No xBios found. Cannot load '*~);
+
+    // TODO new DLI  for text mode or write on GFX screen to  display no xbios
+    repeat
+      waitframe;
+    until CRT_keypressed;
   //
-  // end
-  // else begin
-  //   // main:= 'STARV   XEX';
-  //   // xbiosloadfile(main);
-  // end;
-  SetIntVec(iDLI, old_dli);
-  SetIntVec(iVBL, old_vbl);
-  nmien := $40;
+  end
+  else begin
+    filename:= 'STARV   XEX';
+    xbiosloadfile(filename);
+  end;
+  // SetIntVec(iDLI, old_dli);
+  // SetIntVec(iVBL, old_vbl);
+  // nmien := $40;
+  //SystemReset;
 end.
