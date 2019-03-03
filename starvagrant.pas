@@ -1718,18 +1718,8 @@ begin
   DLISTL := DISPLAY_LIST_ADDRESS_TITLE;
 
   gfx_fadeout;
-  // gfxcolors[0]:=0;
-  // gfxcolors[1]:=0;
-  // gfxcolors[2]:=0;
-  // gfxcolors[3]:=0;
 
   pic_load(GFX,0);
-
-  // gfxcolors[0]:=piccolors[0];
-  // gfxcolors[1]:=piccolors[1];
-  // gfxcolors[2]:=piccolors[2];
-  // gfxcolors[3]:=piccolors[3];
-
 
   gfx_fadein;
   sfx_init;
