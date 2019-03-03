@@ -39,4 +39,4 @@ DISPLAY_LIST_ADDRESS_TITLE rcasm 'dlist_title.asm'
 ;RMT_MODULE_ADDRESS	RMT	'assets/title.rmt'
 
 ; graphics
-GFX_ADDRESS RCDATA 'intro.dat'
+GFX_ADDRESS RCDATA 'assets/intro.dat'
