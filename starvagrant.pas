@@ -739,14 +739,6 @@ begin
   sfx_play(voice3,236,200); //vol 8
   sfx_play(voice4, 236,200); // vol 8
 
-  // fade out
-  // repeat
-  //   Waitframes(2);
-  //   If (gfxcolors[0] and %00001111 <> 0) then Dec(gfxcolors[0]) else gfxcolors[0]:=0;
-  //   If (gfxcolors[1] and %00001111 <> 0) then Dec(gfxcolors[1]) else gfxcolors[1]:=0;
-  //   If (gfxcolors[2] and %00001111 <> 0) then Dec(gfxcolors[2]) else gfxcolors[2]:=0;
-  //   If (gfxcolors[3] and %00001111 <> 0) then Dec(gfxcolors[3]) else gfxcolors[3]:=0;
-  // until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3]) = 0;
   gfx_fadeout;
 
   pic_openfile('LOC',newLoc);
@@ -929,16 +921,12 @@ begin
   CRT_GotoXY(3,6);
   txt:=concat(char(30),char(31));
   CRT_Write(Atascii2Antic(txt));
-  CRT_Write('-'~);
   WriteFF(strings[44]);  // Choose
   WriteSpaces(1);
   CRT_Write('SELECT'*~);
-  CRT_Write('-'~);
   WriteFF(strings[19]);  // Confirm
   WriteSpaces(1);
   WriteFF(strings[7]);   // Back
-
-
 
   // CRT_GotoXY(0,0);
   // CRT_Write('shipindex='~);
@@ -1160,6 +1148,7 @@ begin
   CRT_Write(Atascii2Antic(tstr)); CRT_Write(Atascii2Antic(CARGOUNIT));CRT_Write('|'~);
 end;
 
+
 procedure console_trade;
 
 const
@@ -1278,10 +1267,17 @@ begin
   // CRT_Write(StringOfChar('-'~,19));
 
 
-  CRT_GotoXY(27,22);
+  CRT_GotoXY(0,22);
+  txt:=concat(char(30+128),char(31+128));
+  CRT_Write(Atascii2Antic(txt));
+  CRT_Write('-x1 +'~);
+  CRT_Write('CONTROL'*~);
+  CRT_Write('-x100 +'~);
+  CRT_Write('SHIFT'*~);
+  WriteFF(strings[50]); WriteSpaces(1);
   WriteFF(strings[16]); WriteSpaces(1);
   WriteFF(strings[17]);
-  // CRT_WriteRightAligned('[Cancel] [OK]'~);
+
 
   // help
   CRT_GotoXY(0,23);
@@ -1292,7 +1288,6 @@ begin
   WriteFF(strings[9]);
   WriteSpaces(1);
   CRT_Write('SELECT'*~);
-  CRT_Write('-'~);
   WriteFF(strings[19]);
   WriteSpaces(1);
   WriteFF(strings[7]);
@@ -1314,6 +1309,14 @@ begin
     If (CRT_Keypressed) then
     begin
       keyval := kbcode;
+
+      selectitem:= false;
+      if (selecteditemquantity < currentitemquantity) then
+          if (mode = false) then begin
+              if (selecteditemquantity < currentShip.scu_max-currentShip.scu)
+                and (selecteditemtotal + currentitemprice <= currentuec ) then selectitem := true;
+          end else // when selling
+              if cargoPresent then selectitem:= true;
 
       case keyval of
         KEY_CANCEL: begin
@@ -1414,14 +1417,35 @@ begin
 
                       end;
                     end;
+        KEY_CTRLLEFT:
+                    begin
+                      if (selecteditemquantity > 100) then
+                      begin
+                        selecteditemquantity:=selecteditemquantity - 100;
+                        selecteditemtotal:=selecteditemquantity * currentitemprice;
+                      end
+                      else
+                      begin
+                        selecteditemquantity:=0;
+                        selecteditemtotal:=0;
+                      end;
+                    end;
+        KEY_SHIFTLEFT:
+                    begin
+                      if (selecteditemquantity > 0) then
+                      begin
+                        selecteditemquantity:=0;
+                        selecteditemtotal:=0;
+                      end;
+                    end;
         KEY_RIGHT:  begin
-                      selectitem:= false;
-                      if (selecteditemquantity < currentitemquantity) then
-                          if (mode = false) then begin
-                              if (selecteditemquantity < currentShip.scu_max-currentShip.scu)
-                                and (selecteditemtotal + currentitemprice <= currentuec ) then selectitem := true;
-                          end else // when selling
-                              if cargoPresent then selectitem:= true;
+                      // selectitem:= false;
+                      // if (selecteditemquantity < currentitemquantity) then
+                      //     if (mode = false) then begin
+                      //         if (selecteditemquantity < currentShip.scu_max-currentShip.scu)
+                      //           and (selecteditemtotal + currentitemprice <= currentuec ) then selectitem := true;
+                      //     end else // when selling
+                      //         if cargoPresent then selectitem:= true;
 
                       if selectitem then
                       begin
@@ -1442,6 +1466,37 @@ begin
                       // CRT_GotoXY(0,15);
                       // CRT_Write('cargoPresent='~);CRT_Write(cargoPresent);CRT_Write('           '~);
                     end;
+
+        KEY_CTRLRIGHT:
+                    begin
+                      if selectitem then
+                      begin
+                        selecteditemquantity:=currentShip.scu_max-currentShip.scu;
+                        selecteditemtotal:=selecteditemquantity * currentitemprice;
+                      end;
+//                      else
+//                       CRT_WriteRightAligned(19,FFTermToString(strings[??]));
+                    end;
+
+        KEY_SHIFTRIGHT:
+                    begin
+                      if selectitem then
+                      begin
+                        If selecteditemquantity < currentShip.scu_max-currentShip.scu then
+                        begin
+                          selecteditemquantity:= selecteditemquantity + 100;
+                        end
+                        else
+                        begin
+                          selecteditemquantity:=currentShip.scu_max-currentShip.scu;
+                          selecteditemtotal:=selecteditemquantity * currentitemprice;
+                        end;
+                      end;
+//                      else
+//                       CRT_WriteRightAligned(19,FFTermToString(strings[??]));
+
+                    end;
+
       end;
       If (keyval = KEY_LEFT) or (keyval = KEY_RIGHT) then trade_UpdateSelectedItem(selecteditemquantity,selecteditemtotal);
     end;

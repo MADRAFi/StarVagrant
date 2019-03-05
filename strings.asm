@@ -54,19 +54,19 @@ strings
 txt_0
     dta d'v.0.5 (c) 2019 Code: MADRAFi, Gfx: XxX, Msx: XxX. Special thanks to Bocianu for the support. ',$ff
 txt_1
-    dta d'[N] New Game',$ff
+    dta d'N'*, d'ew Game',$ff
 txt_2
-    dta d'[Q] Quit',$ff
+    dta d'Q'*, d'uit',$ff
 txt_3
-    dta d'[1] Navigation',$ff
+    dta d'1'*, d' Navigation',$ff
 txt_4
-    dta d'[2] Trade Console',$ff
+    dta d'2'*, d' Trade Console',$ff
 txt_5
-    dta d'[3] Repair/Refuel Pad',$ff
+    dta d'3'*, d' Repair/Refuel Pad',$ff
 txt_6
-    dta d'[4] Ship Depot',$ff
+    dta d'4'*, d' Ship Depot',$ff
 txt_7
-    dta d'[B] Back',$ff
+    dta d'B'*, d'ack',$ff
 txt_8
     dta d'Buy',$ff
 txt_9
@@ -84,13 +84,13 @@ txt_14
 txt_15
     dta d'Empty Cargo',$ff
 txt_16
-    dta d'[C]ancel',$ff
+    dta d'C'*, d'ancel',$ff
 txt_17
-    dta d'[O]K',$ff
+    dta d'O'*, d'K',$ff
 txt_18
     dta d' for ',$ff
 txt_19
-    dta d'Confirm',$ff
+    dta d'-Confirm',$ff
 txt_20
     dta d'Loc:',$ff
 txt_21
@@ -98,9 +98,9 @@ txt_21
 txt_22
     dta d'Distance:',$ff
 txt_23
-    dta d'[1-5] Navigation',$ff
+    dta d'1-5'*, d'-Navigation',$ff
 txt_24
-    dta d'[J] FTL Jump',$ff
+    dta d'J'*, d'-FTL Jump',$ff
 txt_25
     dta d'No xBios found. Cannot load Pics'*,$ff
 txt_26
@@ -140,7 +140,7 @@ txt_42
 txt_43
     dta d'Mass:',$ff
 txt_44
-    dta d'Choose',$ff
+    dta d'-Choose',$ff
 txt_45
     dta d' m/s',$ff
 txt_46
@@ -151,7 +151,8 @@ txt_48
     dta d' You do not have enough'*,$ff
 txt_49
     dta d' You already own that ship. '*,$ff
-
+txt_50
+    dta d'-All',$ff
 
  .print "STRINGS SIZE: ", *-strings_list
  .print "STRINGS : ", strings_list, "..", *

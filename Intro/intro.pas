@@ -125,6 +125,11 @@ begin
   else begin
     filename:= 'STARV   XEX';
     xbiosloadfile(filename);
+    if xBiosIOresult <> 0 then
+    begin
+      CRT_Write('IOerror: '~);CRT_Write(xBiosIOerror);
+    end
+    else xBiosLoadBinaryFile;
   end;
   // SetIntVec(iDLI, old_dli);
   // SetIntVec(iVBL, old_vbl);

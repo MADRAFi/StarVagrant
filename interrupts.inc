@@ -85,7 +85,7 @@ begin
     dec(count);
 
   //msx.play;
-  //Waitframe;
+
   asm {
 
     ;   *** example test routine
@@ -143,7 +143,7 @@ begin
   };
 
   //msx.play;
-  //Waitframe;
+
   asm {
     ;   *** example test routine
     ;    mva 20 atari.colbk // blink background
@@ -180,6 +180,9 @@ procedure vbl_console;interrupt;
 begin
   asm {
       pha ; store registers
+  };
+  //msx.play;
+  asm {
       mwa #dli_console __dlivec
       pla ; restore registers
   };
