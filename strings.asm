@@ -49,6 +49,7 @@ strings_list
     dta a(txt_47)
     dta a(txt_48)
     dta a(txt_49)
+    dta a(txt_50)
 
 strings
 txt_0

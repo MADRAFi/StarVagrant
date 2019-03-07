@@ -327,7 +327,7 @@ begin
   sfx_init;
   gfx_fadein;
 
-  tshp:=shipmatrix[0];
+  tshp:=shipmatrix[7];
   ship:= tshp^;
 
   eraseArray(0,MAXCARGOSLOTS-1, @ship.cargoindex);
@@ -1241,7 +1241,9 @@ begin
   writeRuler;
   CRT_GotoXY(0,5);
   WriteFF(strings[14]); WriteSpaces(1);
-  CRT_GotoXY(LISTWIDTH-5,5);
+  tstr:=IntToStr(currentship.scu_max);
+  //CRT_GotoXY(LISTWIDTH-5,5);
+  CRT_GotoXY(LISTSTART-(Length(tstr)+5),5);
   CRT_Write(Atascii2Antic(IntToStr(currentship.scu_max))); CRT_Write(Atascii2Antic(CARGOUNIT));CRT_Write('|'~);
   CRT_GotoXY(0,6);
   WriteFF(strings[15]); WriteSpaces(1);
@@ -1313,8 +1315,8 @@ begin
       selectitem:= false;
       if (selecteditemquantity < currentitemquantity) then
           if (mode = false) then begin
-              if (selecteditemquantity < currentShip.scu_max-currentShip.scu)
-                and (selecteditemtotal + currentitemprice <= currentuec ) then selectitem := true;
+              if //(selecteditemquantity < currentShip.scu_max-currentShip.scu) and
+                 (selecteditemtotal + currentitemprice <= currentuec ) then selectitem := true;
           end else // when selling
               if cargoPresent then selectitem:= true;
 
@@ -1359,7 +1361,7 @@ begin
                       if keyval = KEY_UP then d:=-1;
                       if (mode = false) then
                       begin
-                        if CheckItemPosition(itemindex+d) and (availableitems[itemindex+d] > 0) then
+                        if checkItemPosition(itemindex+d) and (availableitems[itemindex+d] > 0) then
                         begin
                           CRT_Invert(LISTSTART,itemindex + LISTTOPMARGIN,LISTWIDTH);
                           itemindex:=itemindex+d;
@@ -1447,7 +1449,7 @@ begin
                       //     end else // when selling
                       //         if cargoPresent then selectitem:= true;
 
-                      if selectitem then
+                      if selectitem and (selecteditemquantity < currentShip.scu_max-currentShip.scu) then
                       begin
                         Inc(selecteditemquantity);
                         selecteditemtotal:=selecteditemquantity * currentitemprice;
@@ -1469,9 +1471,18 @@ begin
 
         KEY_CTRLRIGHT:
                     begin
-                      if selectitem then
+                      if selectitem and (selecteditemquantity < currentShip.scu_max-currentShip.scu) and
+                        (selecteditemquantity + 100 < currentShip.scu_max-currentShip.scu) and
+                        (selecteditemtotal + (100 * currentitemprice) <= currentuec) then
                       begin
-                        selecteditemquantity:=currentShip.scu_max-currentShip.scu;
+                        selecteditemquantity:= selecteditemquantity + 100;
+                        selecteditemtotal:=selecteditemquantity * currentitemprice;
+                      end
+                      else
+                      begin
+                        selecteditemquantity:=trunc(currentuec / currentitemprice);
+                        if selecteditemquantity > currentShip.scu_max-currentShip.scu then
+                          selecteditemquantity:=currentShip.scu_max-currentShip.scu;
                         selecteditemtotal:=selecteditemquantity * currentitemprice;
                       end;
 //                      else
@@ -1480,25 +1491,24 @@ begin
 
         KEY_SHIFTRIGHT:
                     begin
-                      if selectitem then
+                      if selectitem and (selecteditemquantity < currentShip.scu_max-currentShip.scu) then
                       begin
-                        If selecteditemquantity < currentShip.scu_max-currentShip.scu then
-                        begin
-                          selecteditemquantity:= selecteditemquantity + 100;
-                        end
-                        else
-                        begin
+                        selecteditemquantity:=trunc(currentuec / currentitemprice);
+                        if selecteditemquantity > currentShip.scu_max-currentShip.scu then
                           selecteditemquantity:=currentShip.scu_max-currentShip.scu;
-                          selecteditemtotal:=selecteditemquantity * currentitemprice;
-                        end;
+                        selecteditemtotal:=selecteditemquantity * currentitemprice;
                       end;
 //                      else
 //                       CRT_WriteRightAligned(19,FFTermToString(strings[??]));
 
                     end;
 
+
+
       end;
-      If (keyval = KEY_LEFT) or (keyval = KEY_RIGHT) then trade_UpdateSelectedItem(selecteditemquantity,selecteditemtotal);
+      //If keyval = (KEY_LEFT or KEY_RIGHT or KEY_CTRLLEFT or KEY_CTRLRIGHT or KEY_SHIFTLEFT or KEY_SHIFTRIGHT) then trade_UpdateSelectedItem(selecteditemquantity,selecteditemtotal);
+      If (keyval = KEY_LEFT) or (keyval = KEY_RIGHT) or (keyval = KEY_CTRLLEFT) or (keyval = KEY_CTRLRIGHT) or
+         (keyval = KEY_SHIFTLEFT) or (keyval = KEY_SHIFTRIGHT) then trade_UpdateSelectedItem(selecteditemquantity,selecteditemtotal);
     end;
 
     if (CRT_OptionPressed) and (optionPressed=false) then
