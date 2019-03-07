@@ -1282,7 +1282,7 @@ begin
 
 
   // help
-  CRT_GotoXY(0,23);
+  CRT_GotoXY(2,23);
   CRT_Write('OPTION'*~);
   CRT_Write('-'~);
   WriteFF(strings[8]);

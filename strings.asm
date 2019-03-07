@@ -73,9 +73,9 @@ txt_8
 txt_9
     dta d'Sell',$ff
 txt_10
-    dta d'/Delivery_Location',$ff
+    dta d' Delivery Location',$ff
 txt_11
-    dta d'../Available_Items',$ff
+    dta d'  Available Items',$ff
 txt_12
     dta d'commodity',$ff
 txt_13
