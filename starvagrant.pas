@@ -1324,6 +1324,13 @@ begin
         KEY_CANCEL: begin
                       currentuec:= player.uec;
                       currentShip:= ship;
+                      mode:= false;
+
+                      CRT_GotoXY(LISTSTART-3,0);
+                      WriteSpaces(1);
+                      WriteFF(strings[8]); // Buy
+                      WriteSpaces(2);
+                      CRT_Invert(LISTSTART-3,0,5);
 
                       ListItems(false);
                       ListCargo(false);
