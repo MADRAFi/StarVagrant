@@ -1471,36 +1471,64 @@ begin
 
         KEY_CTRLRIGHT:
                     begin
-                      if selectitem and (selecteditemquantity < currentShip.scu_max-currentShip.scu) and
-                        (selecteditemquantity + 100 < currentShip.scu_max-currentShip.scu) and
-                        (selecteditemtotal + (100 * currentitemprice) <= currentuec) then
+                      if (mode = false) then   //buying mode
                       begin
-                        selecteditemquantity:= selecteditemquantity + 100;
-                        selecteditemtotal:=selecteditemquantity * currentitemprice;
+                        //if selectitem and (selecteditemquantity < currentShip.scu_max-currentShip.scu) and
+                        if selectitem and
+                          (selecteditemquantity + 100 < currentShip.scu_max-currentShip.scu) and
+                          (selecteditemtotal + (100 * currentitemprice) <= currentuec) then
+                        begin
+                          selecteditemquantity:= selecteditemquantity + 100;
+//                          selecteditemtotal:=selecteditemquantity * currentitemprice;
+                        end
+                        else
+                        begin
+                          selecteditemquantity:=trunc(currentuec / currentitemprice);
+                          if selecteditemquantity > currentShip.scu_max-currentShip.scu then selecteditemquantity:=currentShip.scu_max-currentShip.scu;
+//                          selecteditemtotal:=selecteditemquantity * currentitemprice;
+                        end;
+  //                      else
+  //                       CRT_WriteRightAligned(19,FFTermToString(strings[??]));
                       end
-                      else
+                      else  // selling mode
                       begin
-                        selecteditemquantity:=trunc(currentuec / currentitemprice);
-                        if selecteditemquantity > currentShip.scu_max-currentShip.scu then
-                          selecteditemquantity:=currentShip.scu_max-currentShip.scu;
-                        selecteditemtotal:=selecteditemquantity * currentitemprice;
+                        If selectitem and (selecteditemquantity + 100 < currentShip.cargoquantity[itemindex]) then
+                        begin
+                          selecteditemquantity:= selecteditemquantity + 100;
+//                          selecteditemtotal:=selecteditemquantity * currentitemprice;
+                        end
+                        else
+                        begin
+                          selecteditemquantity:=currentShip.cargoquantity[itemindex];
+//                          selecteditemtotal:=selecteditemquantity * currentitemprice;
+                        end;
                       end;
-//                      else
-//                       CRT_WriteRightAligned(19,FFTermToString(strings[??]));
+                      selecteditemtotal:=selecteditemquantity * currentitemprice;
                     end;
 
         KEY_SHIFTRIGHT:
                     begin
-                      if selectitem and (selecteditemquantity < currentShip.scu_max-currentShip.scu) then
+                      if (mode = false) then   //buying mode
                       begin
-                        selecteditemquantity:=trunc(currentuec / currentitemprice);
-                        if selecteditemquantity > currentShip.scu_max-currentShip.scu then
-                          selecteditemquantity:=currentShip.scu_max-currentShip.scu;
-                        selecteditemtotal:=selecteditemquantity * currentitemprice;
+                        if selectitem and (selecteditemquantity < currentShip.scu_max-currentShip.scu) then
+                        begin
+                          selecteditemquantity:=trunc(currentuec / currentitemprice);
+                          if selecteditemquantity > currentShip.scu_max-currentShip.scu then
+                            selecteditemquantity:=currentShip.scu_max-currentShip.scu;
+//                          selecteditemtotal:=selecteditemquantity * currentitemprice;
+                        end;
+  //                      else
+  //                       CRT_WriteRightAligned(19,FFTermToString(strings[??]));
+                      end
+                      else  // selling mode
+                      begin
+                        if selectitem and (selecteditemquantity < currentShip.cargoquantity[itemindex]) then
+                        begin
+                            selecteditemquantity:=currentShip.cargoquantity[itemindex];
+//                          selecteditemtotal:=selecteditemquantity * currentitemprice;
+                        end;
                       end;
-//                      else
-//                       CRT_WriteRightAligned(19,FFTermToString(strings[??]));
-
+                      selecteditemtotal:=selecteditemquantity * currentitemprice;
                     end;
 
 
