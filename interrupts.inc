@@ -34,13 +34,13 @@ procedure dli_title2;assembler;interrupt;
         pha
         sta ATARI.WSYNC
         ;mva #$00 ATARI.colbk
-;       mva #$00 ATARI.colpf0
-        mva adr.txtcolors ATARI.colpf0
+       mva #$00 ATARI.colpf0
+;        mva adr.txtcolors ATARI.colpf0
         sta ATARI.colpf2
         ;mva #$00 ATARI.colpf3
         sta ATARI.colbk
-;        mva #$0c ATARI.colpf1
-        mva adr.txtcolors+1 ATARI.colpf1
+        mva #$0c ATARI.colpf1
+;        mva adr.txtcolors+1 ATARI.colpf1
         mwa #DLI_TITLE3 __dlivec
         pla
         };

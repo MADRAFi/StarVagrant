@@ -117,7 +117,7 @@ txt_30
 txt_31
     dta d'You have been robed by some thugs.      You have lost all your money.',$ff
 txt_32
-    dta d'   You have taken a Passenger with you. He payed you some extra UEC for a ride.',$ff
+    dta d'   You have taken a Passenger with you. He payed you some extra cash for a ride.',$ff
 txt_33
     dta d'You saw some citizens in urgent need.   You have decided to give away some goods.',$ff
 txt_34
@@ -137,7 +137,7 @@ txt_40
 txt_41
     dta d'Speed:',$ff
 txt_42
-    dta d'Lenght:',$ff
+    dta d'Length:',$ff
 txt_43
     dta d'Mass:',$ff
 txt_44

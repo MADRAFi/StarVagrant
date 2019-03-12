@@ -89,9 +89,9 @@ var
   gfxcolors: array [0..3] of Byte = (
     $1a,$14,$10,$00
   );
-  txtcolors : array [0..1] of Byte = (
-    $00,$1c
-  );
+//txtcolors : array [0..1] of Byte = (
+//    $00,$1c
+//  );
 
 
   strings: array [0..0] of Word absolute STRINGS_ADDRESS;
@@ -247,11 +247,12 @@ begin
     If (gfxcolors[2] and %00001111 <> 0) then Dec(gfxcolors[2]) else gfxcolors[2]:=0;
     If (gfxcolors[3] and %00001111 <> 0) then Dec(gfxcolors[3]) else gfxcolors[3]:=0;
 
-    If (txtcolors[0] and %00001111 <> 0) then Dec(txtcolors[0]) else txtcolors[0]:=0;
-    If (txtcolors[1] and %00001111 <> 0) then Dec(txtcolors[1]) else txtcolors[1]:=0;
+    //If (txtcolors[0] and %00001111 <> 0) then Dec(txtcolors[0]) else txtcolors[0]:=0;
+    //If (txtcolors[1] and %00001111 <> 0) then Dec(txtcolors[1]) else txtcolors[1]:=0;
 
-  until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3] or txtcolors[0] or txtcolors[1]) = 0;
-  //until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3]) = 0;
+  //until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3] or txtcolors[0] or txtcolors[1]) = 0;
+  until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3]) = 0;
+  waitframes(10);
 end;
 
 procedure gfx_fadein;
@@ -269,8 +270,8 @@ begin
     If (gfxcolors[2] and %00001111 < piccolors[y+2] and %00001111) then Inc(gfxcolors[2]) else gfxcolors[2]:=piccolors[y+2];
     If (gfxcolors[3] and %00001111 < piccolors[y+3] and %00001111) then Inc(gfxcolors[3]) else gfxcolors[3]:=piccolors[y+3];
 
-      If (txtcolors[0] and %00001111 < 0 and %00001111) then inc(txtcolors[0]) else txtcolors[0]:=0;
-      If (txtcolors[1] and %00001111 < $1c and %00001111) then inc(txtcolors[1]) else txtcolors[1]:=$1c;
+      //If (txtcolors[0] and %00001111 < 0 and %00001111) then inc(txtcolors[0]) else txtcolors[0]:=0;
+      //If (txtcolors[1] and %00001111 < $1c and %00001111) then inc(txtcolors[1]) else txtcolors[1]:=$1c;
 
   until (gfxcolors[0]=piccolors[y]) and (gfxcolors[1]=piccolors[y+1]) and (gfxcolors[2]=piccolors[y+2]) and (gfxcolors[3]=piccolors[y+3]);
 end;
@@ -607,46 +608,73 @@ end;
 
 
 procedure calculateprices(loc: Byte);
+var
+  percent: shortreal;
+
 begin
-  for y:=0 to NUMBEROFITEMS-1 do
+  percent:=Random(100)/100;
+  for y:=0 to NUMBEROFITEMS-1 do begin
+    offset:= (NUMBEROFITEMS * loc)+y;
+
+    // Produce new items on certain LOCATIONS
+    if (itemquantity[offset] > 0) and (itemquantity[offset] <= 20) then
     begin
-      offset:= (NUMBEROFITEMS * loc)+y;
-
-      // Produce new items on certain LOCATIONS
-      if (itemquantity[offset] > 0) and (itemquantity[offset] <= 10) then
-      begin
-        case loc of
-          2..9,13,14:   begin
-                          itemquantity[offset]:= itemquantity[offset] + Random(200);
-                        end;
-        end;
+      case loc of
+        2..9,13,14:   begin
+                        itemquantity[offset]:= itemquantity[offset] + Random(500);
+                      end;
       end;
-
-      // Increase price if less then 1000
-      if (itemquantity[offset] > 0) and (itemquantity[offset] < 1000) and (itemprice[offset] > 0) then
-      begin
-        itemprice[offset]:=itemprice[offset] * (1 + COMMISSION);
-      end;
-
-      // Decrease price if more then 5000
-      if (itemquantity[offset] > 5000) and (itemquantity[offset] < 10000) and (itemprice[offset] > 0) then
-      begin
-        itemprice[offset]:=itemprice[offset] * (1 - COMMISSION);
-      end;
-
-      // Simulate item sell
-      if (itemquantity[offset] > 10000) and (itemprice[offset] > 0) then
-      begin
-        itemquantity[offset]:=itemquantity[offset] * (1 - COMMISSION);
-      end;
-
     end;
+
+    // Increase price if less then 1000
+    if (itemquantity[offset] > 0) and (itemquantity[offset] < 1000) and (itemprice[offset] > 0) then
+    begin
+      itemprice[offset]:=itemprice[offset] * (1 + COMMISSION);
+    end;
+
+    // Decrease price if more then 5000
+    if (itemquantity[offset] > 5000) and (itemquantity[offset] < 10000) and (itemprice[offset] > 0) then
+    begin
+      itemprice[offset]:=itemprice[offset] * (1 - COMMISSION);
+    end;
+
+    // Simulate item sell
+    if (itemquantity[offset] > 10000) and (itemprice[offset] > 0) then
+    begin
+//      percent:=Random(100)/100;
+      //itemquantity[offset]:=itemquantity[offset] * (1 - COMMISSION);
+      itemquantity[offset]:=itemquantity[offset] * (1 - percent);
+    end;
+
+  end;
+
+//   for y:=0 to NUMBEROFSHIPS-1 do begin
+//     offset:= (NUMBEROFSHIPS * loc)+y;
+//     if shipprices[offset] > 1000 then // do not change price of starting ship
+//     begin
+//       count:=Random(2);
+// //      percent:=Random(100)/100;
+//       if count = 0 then
+//       begin
+//         // price drop
+//         shipprices[offset]:=shipprices[offset] * (1 - percent);
+//       end
+//       else
+//       begin
+//         // price increase
+//         shipprices[offset]:=shipprices[offset] * (1 + percent);
+//       end;
+//       CRT_GotoXY(0,6);
+//       CRT_Write(real(percent));
+//     //  CRT_Write('newprice='~);CRT_Write(shipprices[offset]);
+//     end;
+//   end;
 end;
 
 procedure encounterMessage;
 begin
   sfx_play(voice1,230,200); //vol 8
-  sfx_play(voice2,230,200); //vol 8
+  //sfx_play(voice2,230,200); //vol 8
 
   CRT_ClearRows(0,6);
 
@@ -736,8 +764,8 @@ begin
 
   sfx_play(voice1,230,200); //vol 8
   sfx_play(voice2,230,200); //vol 8
-  sfx_play(voice3,236,200); //vol 8
-  sfx_play(voice4, 236,200); // vol 8
+  // sfx_play(voice3,236,200); //vol 8
+  // sfx_play(voice4, 236,200); // vol 8
 
   gfx_fadeout;
 
@@ -766,9 +794,8 @@ begin
   If (xBiosCheck <> 0) then xBiosFlushBuffer; // close file
   sfx_init; // reinitialize pokey
   randomEncounter;
-  calculateprices(player.loc);
   player.loc:=newLoc;
-  //calculateprices(player.loc);
+  calculateprices(player.loc);
 end;
 
 procedure console_navigation;
@@ -889,36 +916,36 @@ begin
   CRT_GotoXY(0,2);
   WriteFF(strings[39]); // Cargo:
   CRT_Write(tshp^.scu_max);
-  CRT_GotoXY(10,2);
+  // CRT_GotoXY(10,2);
   CRT_Write(Atascii2Antic(CARGOUNIT));
 
   CRT_GotoXY(0,3);
   WriteFF(strings[40]); // Price:
   CRT_Write(shipprices[(NUMBEROFSHIPS * player.loc) + tshp^.sindex]);
-  CRT_GotoXY(12,3);
+  // CRT_GotoXY(12,3);
   CRT_Write(Atascii2Antic(CURRENCY));
 
 
   CRT_GotoXY(23,1);
   WriteFF(strings[41]); // Speed:
   CRT_Write(tshp^.speed);
-  CRT_GotoXY(33,1);
+  // CRT_GotoXY(33,1);
   WriteFF(strings[45]);
 
   CRT_GotoXY(23,2);
   WriteFF(strings[42]); // Lenght:
   CRT_Write(tshp^.lenght);
-  CRT_GotoXY(33,2);
+  // CRT_GotoXY(33,2);
   WriteFF(strings[46]);
 
   CRT_GotoXY(23,3);
   WriteFF(strings[43]); // Mass:
   CRT_Write(tshp^.mass);
-  CRT_GotoXY(33,3);
+  // CRT_GotoXY(33,3);
   WriteFF(strings[47]);
 
   // Help Keys
-  CRT_GotoXY(3,6);
+  CRT_GotoXY(5,6);
   txt:=concat(char(30),char(31));
   CRT_Write(Atascii2Antic(txt));
   WriteFF(strings[44]);  // Choose
@@ -1032,24 +1059,24 @@ begin
           CRT_GotoXY(6,2);
           WriteSpaces(4);
           CRT_GotoXY(6,2);
-          CRT_Write(tshp^.scu_max);
+          CRT_Write(tshp^.scu_max);CRT_Write(Atascii2Antic(CARGOUNIT));
           CRT_GotoXY(6,3);
-          WriteSpaces(6);
+          WriteSpaces(8);
           CRT_GotoXY(6,3);
           offset:=(NUMBEROFSHIPS * player.loc) + availableships[shipindex];
-          CRT_Write(shipprices[offset]);
+          CRT_Write(shipprices[offset]);CRT_Write(Atascii2Antic(CURRENCY));
           CRT_GotoXY(29,1);
-          WriteSpaces(3);
+          WriteSpaces(5);
           CRT_GotoXY(29,1);
-          CRT_Write(tshp^.speed);
+          CRT_Write(tshp^.speed);WriteFF(strings[45]);
           CRT_GotoXY(30,2);
-          WriteSpaces(3);
-          CRT_GotoXY(30,2);
-          CRT_Write(tshp^.lenght);
-          CRT_GotoXY(28,3);
           WriteSpaces(4);
+          CRT_GotoXY(30,2);
+          CRT_Write(tshp^.lenght);WriteFF(strings[46]);
           CRT_GotoXY(28,3);
-          CRT_Write(tshp^.mass);
+          WriteSpaces(5);
+          CRT_GotoXY(28,3);
+          CRT_Write(tshp^.mass);WriteFF(strings[47]);
         end;
     end;
 
@@ -1361,6 +1388,7 @@ begin
         KEY_BACK:   begin
                       sfx_play(voice4,255,168); // vol8
                       current_menu := MENU_MAIN;
+                      //gfx_fadeout;
                     end;
         KEY_UP, KEY_DOWN:
                     begin
@@ -1672,21 +1700,23 @@ begin
               begin
                 if currentShip.cargoquantity[y] = 0 then
                 begin
-                  for l:=y to MAXCARGOSLOTS-1 do
-                  begin
-                    if (l < MAXCARGOSLOTS-1) then
-                    begin
-                      currentShip.cargoindex[l]:=currentShip.cargoindex[l+1];
-                      currentShip.cargoquantity[l]:=currentShip.cargoquantity[l+1];
-                    end
-                    else
-                    begin
-                      currentShip.cargoindex[l]:=0;
-                      currentShip.cargoquantity[l]:=0;
-                    end;
-                  end;
-                  //move (currentShip.cargoindex[y],currentShip.cargoindex[y+1],1);
-                  //move (currentShip.cargoquantity[y],currentShip.cargoquantity[y+1],1);
+                  // for l:=y to MAXCARGOSLOTS-1 do
+                  // begin
+                  //   if (l < MAXCARGOSLOTS-1) then
+                  //   begin
+                  //     currentShip.cargoindex[l]:=currentShip.cargoindex[l+1];
+                  //     currentShip.cargoquantity[l]:=currentShip.cargoquantity[l+1];
+                  //   end
+                  //   else
+                  //   begin
+                  //     currentShip.cargoindex[l]:=0;
+                  //     currentShip.cargoquantity[l]:=0;
+                  //   end;
+                  // end;
+                  move (currentShip.cargoindex[y+1],currentShip.cargoindex[y],High(currentShip.cargoindex)-y);
+                  move (currentShip.cargoquantity[y+1],currentShip.cargoquantity[y],High(currentShip.cargoquantity)-y);
+                  currentShip.cargoindex[High(currentShip.cargoindex)]:=0;
+                  currentShip.cargoquantity[High(currentShip.cargoquantity)]:=0;
                 end;
               end;
 
@@ -1847,8 +1877,8 @@ begin
           KEY_NEW:  begin
                       sfx_play(voice1,80,200); // vol8
                       sfx_play(voice2,84,200); // vol8
-                      sfx_play(voice3,86,200); // vol8
-                      sfx_play(voice4,88,200); // vol8
+                      // sfx_play(voice3,86,200); // vol8
+                      // sfx_play(voice4,88,200); // vol8
                       start;
                       current_menu := MENU_MAIN;
                     end;
@@ -1926,7 +1956,10 @@ begin
   //current_menu := MENU_MAIN;
   repeat
     case current_menu of
-      MENU_TITLE: title;
+      MENU_TITLE: begin
+                    //gfx_fadeout;
+                    title;
+                  end;
       MENU_MAIN:  menu;
       MENU_NAV:   console_navigation;
       MENU_TRADE: console_trade;
