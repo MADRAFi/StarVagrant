@@ -89,9 +89,9 @@ var
   gfxcolors: array [0..3] of Byte = (
     $1a,$14,$10,$00
   );
-//txtcolors : array [0..1] of Byte = (
-//    $00,$1c
-//  );
+txtcolors : array [0..1] of Byte = (
+    $00,$1c
+);
 
 
   strings: array [0..0] of Word absolute STRINGS_ADDRESS;
@@ -240,6 +240,7 @@ end;
 
 procedure gfx_fadeout;
 begin
+
   repeat
     Waitframes(2);
     If (gfxcolors[0] and %00001111 <> 0) then Dec(gfxcolors[0]) else gfxcolors[0]:=0;
@@ -247,11 +248,11 @@ begin
     If (gfxcolors[2] and %00001111 <> 0) then Dec(gfxcolors[2]) else gfxcolors[2]:=0;
     If (gfxcolors[3] and %00001111 <> 0) then Dec(gfxcolors[3]) else gfxcolors[3]:=0;
 
-    //If (txtcolors[0] and %00001111 <> 0) then Dec(txtcolors[0]) else txtcolors[0]:=0;
-    //If (txtcolors[1] and %00001111 <> 0) then Dec(txtcolors[1]) else txtcolors[1]:=0;
+    If (txtcolors[0] and %00001111 <> 0) then Dec(txtcolors[0]) else txtcolors[0]:=0;
+    If (txtcolors[1] and %00001111 <> 0) then Dec(txtcolors[1]) else txtcolors[1]:=0;
 
-  //until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3] or txtcolors[0] or txtcolors[1]) = 0;
-  until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3]) = 0;
+  until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3] or txtcolors[0] or txtcolors[1]) = 0;
+  //until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3]) = 0;
   waitframes(10);
 end;
 
@@ -270,8 +271,8 @@ begin
     If (gfxcolors[2] and %00001111 < piccolors[y+2] and %00001111) then Inc(gfxcolors[2]) else gfxcolors[2]:=piccolors[y+2];
     If (gfxcolors[3] and %00001111 < piccolors[y+3] and %00001111) then Inc(gfxcolors[3]) else gfxcolors[3]:=piccolors[y+3];
 
-      //If (txtcolors[0] and %00001111 < 0 and %00001111) then inc(txtcolors[0]) else txtcolors[0]:=0;
-      //If (txtcolors[1] and %00001111 < $1c and %00001111) then inc(txtcolors[1]) else txtcolors[1]:=$1c;
+      If (txtcolors[0] and %00001111 < 0 and %00001111) then inc(txtcolors[0]) else txtcolors[0]:=0;
+      If (txtcolors[1] and %00001111 < $1c and %00001111) then inc(txtcolors[1]) else txtcolors[1]:=$1c;
 
   until (gfxcolors[0]=piccolors[y]) and (gfxcolors[1]=piccolors[y+1]) and (gfxcolors[2]=piccolors[y+2]) and (gfxcolors[3]=piccolors[y+3]);
 end;
@@ -1768,14 +1769,9 @@ procedure menu;
 
 begin
   // offset for player location colors
+  //gfx_fadeout;
 
-
-  EnableVBLI(@vbl);
-  EnableDLI(@dli1);
-  Waitframe;
-  DLISTL := DISPLAY_LIST_ADDRESS_MENU;
-
-  gfx_fadein;
+  // gfx_fadein;
    // gfxcolors[0]:=piccolors[y];
    // gfxcolors[1]:=piccolors[y+1];
    // gfxcolors[2]:=piccolors[y+2];
@@ -1799,7 +1795,7 @@ begin
     CRT_GotoXY(14,2);
     WriteFF(strings[6]); // Ship Hangar
   end;
-  CRT_GotoXY(14,3);
+  CRT_GotoXY(18,3);
   WriteFF(strings[7]); // Back
 
   // CRT_GotoXY(0,3);
@@ -1811,8 +1807,13 @@ begin
 
 
 
-  keyval:=0;
+  EnableVBLI(@vbl);
+  EnableDLI(@dli1);
+  Waitframe;
+  DLISTL := DISPLAY_LIST_ADDRESS_MENU;
+  gfx_fadein;
 
+  keyval:=0;
   repeat
   //  pause;
   //  msx.play;
@@ -1842,16 +1843,12 @@ end;
 procedure title;
 
 begin
-  EnableVBLI(@vbl_title);
-  EnableDLI(@dli_title1);
-  Waitframe;
-  DLISTL := DISPLAY_LIST_ADDRESS_TITLE;
 
   gfx_fadeout;
 
   pic_load(GFX,0);
 
-  gfx_fadein;
+
   sfx_init;
 
 
@@ -1859,12 +1856,18 @@ begin
 
   CRT_GotoXY(14,0);
   WriteFF(strings[1]); // New game;
-  CRT_GotoXY(14,1);
+  CRT_GotoXY(16,1);
   WriteFF(strings[2]); // Quit;
 
   txt:= FFTermToString(strings[0]); // read scroll text
   move(txt[1],pointer(SCROLL_ADDRESS+42),sizeOf(txt)); // copy text to vram
 
+  EnableVBLI(@vbl_title);
+  EnableDLI(@dli_title1);
+  Waitframe;
+  DLISTL := DISPLAY_LIST_ADDRESS_TITLE;
+
+  gfx_fadein;
   //keyval:=chr(0);
   keyval:=0;
   repeat
