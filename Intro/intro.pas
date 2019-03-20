@@ -1,5 +1,5 @@
 {$librarypath '../../Libs/lib/';'../../Libs/blibs/';'../../Libs/base/'}
-uses atari, b_utils, b_system, b_crt, sysutils, rmt, xbios;
+uses atari, b_utils, b_system, b_crt, sysutils, rmt;//, xbios;
 
 const
 {$i const.inc}
@@ -106,33 +106,36 @@ begin
   until CRT_keypressed;
   msx.stop;
 
-  if xBiosCheck = 0 then
-  begin
-  //   // SetIntVec(iDLI, old_dli);
-  //   // SetIntVec(iVBL, old_vbl);
-  //   // nmien := $40;
-    // colpf1:=$1c;
-    // colpf2:=$00;
-    // CRT_GotoXY(5,1);
-    // CRT_Write(' No xBios found. Cannot load '*~);
-
-    // TODO new DLI  for text mode or write on GFX screen to  display no xbios
-    repeat
-      waitframe;
-    until CRT_keypressed;
+  // if xBiosCheck = 0 then
+  // begin
+  // //   // SetIntVec(iDLI, old_dli);
+  // //   // SetIntVec(iVBL, old_vbl);
+  // //   // nmien := $40;
+  //   // colpf1:=$1c;
+  //   // colpf2:=$00;
+  //   // CRT_GotoXY(5,1);
+  //   // CRT_Write(' No xBios found. Cannot load '*~);
   //
-  end
-  else begin
-    filename:= 'STARV   XEX';
-    xbiosloadfile(filename);
-    if xBiosIOresult <> 0 then
-    begin
-      CRT_Write('IOerror: '~);CRT_Write(xBiosIOerror);
-    end
-    else xBiosLoadBinaryFile;
-  end;
-  // SetIntVec(iDLI, old_dli);
-  // SetIntVec(iVBL, old_vbl);
-  // nmien := $40;
-  //SystemReset;
+  //   // TODO new DLI  for text mode or write on GFX screen to  display no xbios
+  //   // repeat
+  //   //   waitframe;
+  //   // until CRT_keypressed;
+  // //
+  // end
+  // else begin
+  //   // filename:= 'STARV   XEX';
+  //   // xbiosloadfile(filename);
+  //   // if xBiosIOresult <> 0 then
+  //   // begin
+  //   //   CRT_Write('IOerror: '~);CRT_Write(xBiosIOerror);
+  //   // end
+  //   // else xBiosLoadBinaryFile;
+  // end;
+  // // SetIntVec(iDLI, old_dli);
+  // // SetIntVec(iVBL, old_vbl);
+  // // nmien := $40;
+  // //SystemReset;
+  // repeat
+  //   waitframe;
+  // until CRT_keypressed;
 end.
