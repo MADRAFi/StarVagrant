@@ -1,20 +1,21 @@
 
 locations: array [0..NUMBEROFLOCATIONS-1] of TString = (
-'Port Olisar',
-'Grim Hex',
-'Mining Area 157',
-'Jumptown',
-'Kudre Ore',
-'Mining Area 141',
-'Harvest Hydro',
-'Hickers Research',
-'Terra HydroFarm',
-'HDMS-Han',
-'R&R Hur-L1',
-'Levski',
-'Lorville',
-'HDMS-Edmond',
-'HDMS-Anderson',
-'Orison',
-'Area18'
+'Port Alistair',
+'Glum Hex',
+'Gas Mine 158',
+'Ambiguous  Lab',
+'Kudrow Ore',
+'Mining Area 147',
+'Hydro Harvest',
+'Hikers Research',
+'Oasis Depot',
+'LKRM-Highdust',
+'Yantar-4K2M',
+'Tycho Station',
+'Lourvil',
+'LKRM-Westforge',
+'LKRM-Sandy',
+'Cloud City',
+'Area 64'
+
 );

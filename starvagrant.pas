@@ -2,7 +2,7 @@ program StarVagrant;
 {$librarypath '../Libs/lib/';'../Libs/blibs/';'../Libs/base/'}
 //{$librarypath 'Libs/lib/';'Libs/blibs/';'Libs/base/'}
 // {$librarypath '../blibs/'}
-uses atari, b_utils, b_system, b_crt, sysutils, xbios; //, mad_xbios;
+uses atari, b_utils, b_system, b_crt, sysutils, xbios; //, rmt;
 
 const
 {$i 'const.inc'}
@@ -57,6 +57,8 @@ var
   ship11: TShip;
   shipmatrix: array [0..NUMBEROFSHIPS-1] of pointer = (@ship0, @ship1, @ship2, @ship3, @ship4, @ship5, @ship6, @ship7, @ship8, @ship9, @ship10, @ship11);
 
+
+
   (*
   * 0 - colpf0
   * 1 - colpf1
@@ -87,6 +89,10 @@ var
   gfxcolors: array [0..3] of Byte = (
     $1a,$14,$10,$00
   );
+txtcolors : array [0..1] of Byte = (
+    $00,$1c
+);
+
 
   strings: array [0..0] of Word absolute STRINGS_ADDRESS;
 
@@ -232,11 +238,54 @@ begin
   end;
 end;
 
-procedure piclocation_openfile;
+procedure gfx_fadeout;
+begin
+
+  repeat
+    Waitframes(2);
+    If (gfxcolors[0] and %00001111 <> 0) then Dec(gfxcolors[0]) else gfxcolors[0]:=0;
+    If (gfxcolors[1] and %00001111 <> 0) then Dec(gfxcolors[1]) else gfxcolors[1]:=0;
+    If (gfxcolors[2] and %00001111 <> 0) then Dec(gfxcolors[2]) else gfxcolors[2]:=0;
+    If (gfxcolors[3] and %00001111 <> 0) then Dec(gfxcolors[3]) else gfxcolors[3]:=0;
+
+    If (txtcolors[0] and %00001111 <> 0) then Dec(txtcolors[0]) else txtcolors[0]:=0;
+    If (txtcolors[1] and %00001111 <> 0) then Dec(txtcolors[1]) else txtcolors[1]:=0;
+
+  until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3] or txtcolors[0] or txtcolors[1]) = 0;
+  //until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3]) = 0;
+  waitframes(10);
+end;
+
+procedure gfx_fadein;
 
 begin
-  if (newLoc < 10) then tstr:=concat('LOC0',IntToStr(newLoc))
-  else tstr:=concat('LOC',inttostr(newLoc));
+  // gfxcolors[0]:=0;
+  // gfxcolors[1]:=0;
+  // gfxcolors[2]:=0;
+  // gfxcolors[3]:=0;
+  y:= newLoc shl 2; // x 4 for number of colors
+  repeat
+    Waitframes(2);
+    If (gfxcolors[0] and %00001111 < piccolors[y] and %00001111 ) then Inc(gfxcolors[0]) else gfxcolors[0]:=piccolors[y];
+    If (gfxcolors[1] and %00001111 < piccolors[y+1] and %00001111) then Inc(gfxcolors[1]) else gfxcolors[1]:=piccolors[y+1];
+    If (gfxcolors[2] and %00001111 < piccolors[y+2] and %00001111) then Inc(gfxcolors[2]) else gfxcolors[2]:=piccolors[y+2];
+    If (gfxcolors[3] and %00001111 < piccolors[y+3] and %00001111) then Inc(gfxcolors[3]) else gfxcolors[3]:=piccolors[y+3];
+
+      If (txtcolors[0] and %00001111 < 0 and %00001111) then inc(txtcolors[0]) else txtcolors[0]:=0;
+      If (txtcolors[1] and %00001111 < $1c and %00001111) then inc(txtcolors[1]) else txtcolors[1]:=$1c;
+
+  until (gfxcolors[0]=piccolors[y]) and (gfxcolors[1]=piccolors[y+1]) and (gfxcolors[2]=piccolors[y+2]) and (gfxcolors[3]=piccolors[y+3]);
+end;
+
+
+procedure pic_openfile(myname: TString; mynum: Byte);
+
+begin
+  tstr:='';
+  if (mynum < 10) then tstr:=concat(myname,'0')
+  else tstr:=myname;
+
+  tstr:=concat(tstr,inttostr(mynum));
   tstr:=concat(tstr,'   DAT');
 
   if xBiosCheck = 0 then
@@ -251,38 +300,17 @@ begin
 
 end;
 
-procedure piclocation_load;
+procedure pic_load(mytype: Byte; num: Byte);
 
 begin
-  newLoc:=player.loc;
-  piclocation_openfile;
-
+  If mytype = LOC then pic_openfile('LOC',num)
+  else pic_openfile('GFX',num);
   //if (xBiosCheck = 1) and (xBiosIOresult = 0) then
   if (xBiosCheck <> 0) and (xBiosIOresult = 0) then
   begin
-    xBiosLoadData(Pointer(GFX2_ADDRESS));
+    xBiosLoadData(Pointer(GFX_ADDRESS));
     xBiosFlushBuffer;
   end
-
-end;
-
-
-procedure generateWorld;
-
-begin
-
-    // load ships data into an array of records.
-    for y:=0 to NUMBEROFSHIPS-1 do
-    begin
-      tshp:=shipmatrix[y];
-      offset:=(y * MAXSHIPPARAMETERS);
-      tshp^.mcode:=byte(ships[offset+1]);
-      tshp^.sindex:=y;
-      tshp^.scu_max:=Word(ships[offset+2]);
-      tshp^.speed:=byte(ships[offset+3]);
-      tshp^.lenght:=byte(ships[offset+4]);
-      tshp^.mass:=Word(ships[offset+5]);
-    end;
 
 end;
 
@@ -291,17 +319,17 @@ procedure start;
 
 begin
   player.uec:= STARTUEC;
-  if player.loc <> 0  then
-  begin
+  //if player.loc <> 0  then
+  //begin
     player.loc:= STARTLOCATION;
-    newLoc:=0;
-    piclocation_load;
-  end;
+    newLoc:= STARTLOCATION; //0;
+  //end;
+  gfx_fadeout;
+  pic_load(LOC,player.loc);
+  sfx_init;
+  gfx_fadein;
 
-
-  //ship:= ship0;
-
-  tshp:=shipmatrix[0];
+  tshp:=shipmatrix[7];
   ship:= tshp^;
 
   eraseArray(0,MAXCARGOSLOTS-1, @ship.cargoindex);
@@ -581,46 +609,73 @@ end;
 
 
 procedure calculateprices(loc: Byte);
+var
+  percent: shortreal;
+
 begin
-  for y:=0 to NUMBEROFITEMS-1 do
+  percent:=Random(100)/100;
+  for y:=0 to NUMBEROFITEMS-1 do begin
+    offset:= (NUMBEROFITEMS * loc)+y;
+
+    // Produce new items on certain LOCATIONS
+    if (itemquantity[offset] > 0) and (itemquantity[offset] <= 20) then
     begin
-      offset:= (NUMBEROFITEMS * loc)+y;
-
-      // Produce new items on certain LOCATIONS
-      if (itemquantity[offset] > 0) and (itemquantity[offset] <= 10) then
-      begin
-        case loc of
-          2..9,13,14:   begin
-                          itemquantity[offset]:= itemquantity[offset] + Random(200);
-                        end;
-        end;
+      case loc of
+        2..9,13,14:   begin
+                        itemquantity[offset]:= itemquantity[offset] + Random(500);
+                      end;
       end;
-
-      // Increase price if less then 1000
-      if (itemquantity[offset] > 0) and (itemquantity[offset] < 1000) and (itemprice[offset] > 0) then
-      begin
-        itemprice[offset]:=itemprice[offset] * (1 + COMMISSION);
-      end;
-
-      // Decrease price if more then 5000
-      if (itemquantity[offset] > 5000) and (itemquantity[offset] < 10000) and (itemprice[offset] > 0) then
-      begin
-        itemprice[offset]:=itemprice[offset] * (1 - COMMISSION);
-      end;
-
-      // Simulate item sell
-      if (itemquantity[offset] > 10000) and (itemprice[offset] > 0) then
-      begin
-        itemquantity[offset]:=itemquantity[offset] * (1 - COMMISSION);
-      end;
-
     end;
+
+    // Increase price if less then 1000
+    if (itemquantity[offset] > 0) and (itemquantity[offset] < 1000) and (itemprice[offset] > 0) then
+    begin
+      itemprice[offset]:=itemprice[offset] * (1 + COMMISSION);
+    end;
+
+    // Decrease price if more then 5000
+    if (itemquantity[offset] > 5000) and (itemquantity[offset] < 10000) and (itemprice[offset] > 0) then
+    begin
+      itemprice[offset]:=itemprice[offset] * (1 - COMMISSION);
+    end;
+
+    // Simulate item sell
+    if (itemquantity[offset] > 10000) and (itemprice[offset] > 0) then
+    begin
+//      percent:=Random(100)/100;
+      //itemquantity[offset]:=itemquantity[offset] * (1 - COMMISSION);
+      itemquantity[offset]:=itemquantity[offset] * (1 - percent);
+    end;
+
+  end;
+
+//   for y:=0 to NUMBEROFSHIPS-1 do begin
+//     offset:= (NUMBEROFSHIPS * loc)+y;
+//     if shipprices[offset] > 1000 then // do not change price of starting ship
+//     begin
+//       count:=Random(2);
+// //      percent:=Random(100)/100;
+//       if count = 0 then
+//       begin
+//         // price drop
+//         shipprices[offset]:=shipprices[offset] * (1 - percent);
+//       end
+//       else
+//       begin
+//         // price increase
+//         shipprices[offset]:=shipprices[offset] * (1 + percent);
+//       end;
+//       CRT_GotoXY(0,6);
+//       CRT_Write(real(percent));
+//     //  CRT_Write('newprice='~);CRT_Write(shipprices[offset]);
+//     end;
+//   end;
 end;
 
 procedure encounterMessage;
 begin
   sfx_play(voice1,230,200); //vol 8
-  sfx_play(voice2,230,200); //vol 8
+  //sfx_play(voice2,230,200); //vol 8
 
   CRT_ClearRows(0,6);
 
@@ -710,19 +765,12 @@ begin
 
   sfx_play(voice1,230,200); //vol 8
   sfx_play(voice2,230,200); //vol 8
-  sfx_play(voice3,236,200); //vol 8
-  sfx_play(voice4, 236,200); // vol 8
+  // sfx_play(voice3,236,200); //vol 8
+  // sfx_play(voice4, 236,200); // vol 8
 
-  // fade out
-  repeat
-    Waitframes(2);
-    If (gfxcolors[0] and %00001111 <> 0) then Dec(gfxcolors[0]) else gfxcolors[0]:=0;
-    If (gfxcolors[1] and %00001111 <> 0) then Dec(gfxcolors[1]) else gfxcolors[1]:=0;
-    If (gfxcolors[2] and %00001111 <> 0) then Dec(gfxcolors[2]) else gfxcolors[2]:=0;
-    If (gfxcolors[3] and %00001111 <> 0) then Dec(gfxcolors[3]) else gfxcolors[3]:=0;
-  until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3]) = 0;
+  gfx_fadeout;
 
-  piclocation_openfile;
+  pic_openfile('LOC',newLoc);
   fileoffset:=0;
   If (xBiosCheck <> 0) then xBiosSetLength(CHUNKSIZE); //size of chunk to read
 
@@ -730,7 +778,7 @@ begin
   repeat
     If (xBiosCheck <> 0) then
     begin
-      xBiosLoadData(Pointer(GFX2_ADDRESS+fileoffset));
+      xBiosLoadData(Pointer(GFX_ADDRESS+fileoffset));
       fileoffset:=fileoffset+CHUNKSIZE;
     end;
     //If distance > 0 then
@@ -747,9 +795,8 @@ begin
   If (xBiosCheck <> 0) then xBiosFlushBuffer; // close file
   sfx_init; // reinitialize pokey
   randomEncounter;
-  calculateprices(player.loc);
   player.loc:=newLoc;
-  //calculateprices(player.loc);
+  calculateprices(player.loc);
 end;
 
 procedure console_navigation;
@@ -870,48 +917,44 @@ begin
   CRT_GotoXY(0,2);
   WriteFF(strings[39]); // Cargo:
   CRT_Write(tshp^.scu_max);
-  CRT_GotoXY(10,2);
+  // CRT_GotoXY(10,2);
   CRT_Write(Atascii2Antic(CARGOUNIT));
 
   CRT_GotoXY(0,3);
   WriteFF(strings[40]); // Price:
   CRT_Write(shipprices[(NUMBEROFSHIPS * player.loc) + tshp^.sindex]);
-  CRT_GotoXY(12,3);
+  // CRT_GotoXY(12,3);
   CRT_Write(Atascii2Antic(CURRENCY));
 
 
   CRT_GotoXY(23,1);
   WriteFF(strings[41]); // Speed:
   CRT_Write(tshp^.speed);
-  CRT_GotoXY(33,1);
+  // CRT_GotoXY(33,1);
   WriteFF(strings[45]);
 
   CRT_GotoXY(23,2);
   WriteFF(strings[42]); // Lenght:
   CRT_Write(tshp^.lenght);
-  CRT_GotoXY(33,2);
+  // CRT_GotoXY(33,2);
   WriteFF(strings[46]);
 
   CRT_GotoXY(23,3);
   WriteFF(strings[43]); // Mass:
   CRT_Write(tshp^.mass);
-  CRT_GotoXY(33,3);
+  // CRT_GotoXY(33,3);
   WriteFF(strings[47]);
 
   // Help Keys
-  CRT_GotoXY(3,6);
+  CRT_GotoXY(5,6);
   txt:=concat(char(30),char(31));
   CRT_Write(Atascii2Antic(txt));
-  CRT_Write('-'~);
   WriteFF(strings[44]);  // Choose
   WriteSpaces(1);
   CRT_Write('SELECT'*~);
-  CRT_Write('-'~);
   WriteFF(strings[19]);  // Confirm
   WriteSpaces(1);
   WriteFF(strings[7]);   // Back
-
-
 
   // CRT_GotoXY(0,0);
   // CRT_Write('shipindex='~);
@@ -1017,24 +1060,24 @@ begin
           CRT_GotoXY(6,2);
           WriteSpaces(4);
           CRT_GotoXY(6,2);
-          CRT_Write(tshp^.scu_max);
+          CRT_Write(tshp^.scu_max);CRT_Write(Atascii2Antic(CARGOUNIT));
           CRT_GotoXY(6,3);
-          WriteSpaces(6);
+          WriteSpaces(8);
           CRT_GotoXY(6,3);
           offset:=(NUMBEROFSHIPS * player.loc) + availableships[shipindex];
-          CRT_Write(shipprices[offset]);
+          CRT_Write(shipprices[offset]);CRT_Write(Atascii2Antic(CURRENCY));
           CRT_GotoXY(29,1);
-          WriteSpaces(3);
+          WriteSpaces(5);
           CRT_GotoXY(29,1);
-          CRT_Write(tshp^.speed);
+          CRT_Write(tshp^.speed);WriteFF(strings[45]);
           CRT_GotoXY(30,2);
-          WriteSpaces(3);
-          CRT_GotoXY(30,2);
-          CRT_Write(tshp^.lenght);
-          CRT_GotoXY(28,3);
           WriteSpaces(4);
+          CRT_GotoXY(30,2);
+          CRT_Write(tshp^.lenght);WriteFF(strings[46]);
           CRT_GotoXY(28,3);
-          CRT_Write(tshp^.mass);
+          WriteSpaces(5);
+          CRT_GotoXY(28,3);
+          CRT_Write(tshp^.mass);WriteFF(strings[47]);
         end;
     end;
 
@@ -1133,6 +1176,7 @@ begin
   CRT_Write(Atascii2Antic(tstr)); CRT_Write(Atascii2Antic(CARGOUNIT));CRT_Write('|'~);
 end;
 
+
 procedure console_trade;
 
 const
@@ -1225,7 +1269,9 @@ begin
   writeRuler;
   CRT_GotoXY(0,5);
   WriteFF(strings[14]); WriteSpaces(1);
-  CRT_GotoXY(LISTWIDTH-5,5);
+  tstr:=IntToStr(currentship.scu_max);
+  //CRT_GotoXY(LISTWIDTH-5,5);
+  CRT_GotoXY(LISTSTART-(Length(tstr)+5),5);
   CRT_Write(Atascii2Antic(IntToStr(currentship.scu_max))); CRT_Write(Atascii2Antic(CARGOUNIT));CRT_Write('|'~);
   CRT_GotoXY(0,6);
   WriteFF(strings[15]); WriteSpaces(1);
@@ -1251,13 +1297,20 @@ begin
   // CRT_Write(StringOfChar('-'~,19));
 
 
-  CRT_GotoXY(27,22);
+  CRT_GotoXY(0,22);
+  txt:=concat(char(30+128),char(31+128));
+  CRT_Write(Atascii2Antic(txt));
+  CRT_Write('-x1 +'~);
+  CRT_Write('CONTROL'*~);
+  CRT_Write('-x100 +'~);
+  CRT_Write('SHIFT'*~);
+  WriteFF(strings[50]); WriteSpaces(1);
   WriteFF(strings[16]); WriteSpaces(1);
   WriteFF(strings[17]);
-  // CRT_WriteRightAligned('[Cancel] [OK]'~);
+
 
   // help
-  CRT_GotoXY(0,23);
+  CRT_GotoXY(2,23);
   CRT_Write('OPTION'*~);
   CRT_Write('-'~);
   WriteFF(strings[8]);
@@ -1265,7 +1318,6 @@ begin
   WriteFF(strings[9]);
   WriteSpaces(1);
   CRT_Write('SELECT'*~);
-  CRT_Write('-'~);
   WriteFF(strings[19]);
   WriteSpaces(1);
   WriteFF(strings[7]);
@@ -1288,10 +1340,25 @@ begin
     begin
       keyval := kbcode;
 
+      selectitem:= false;
+      if (selecteditemquantity < currentitemquantity) then
+          if (mode = false) then begin
+              if //(selecteditemquantity < currentShip.scu_max-currentShip.scu) and
+                 (selecteditemtotal + currentitemprice <= currentuec ) then selectitem := true;
+          end else // when selling
+              if cargoPresent then selectitem:= true;
+
       case keyval of
         KEY_CANCEL: begin
                       currentuec:= player.uec;
                       currentShip:= ship;
+                      mode:= false;
+
+                      CRT_GotoXY(LISTSTART-3,0);
+                      WriteSpaces(1);
+                      WriteFF(strings[8]); // Buy
+                      WriteSpaces(2);
+                      CRT_Invert(LISTSTART-3,0,5);
 
                       ListItems(false);
                       ListCargo(false);
@@ -1322,6 +1389,7 @@ begin
         KEY_BACK:   begin
                       sfx_play(voice4,255,168); // vol8
                       current_menu := MENU_MAIN;
+                      //gfx_fadeout;
                     end;
         KEY_UP, KEY_DOWN:
                     begin
@@ -1329,7 +1397,7 @@ begin
                       if keyval = KEY_UP then d:=-1;
                       if (mode = false) then
                       begin
-                        if CheckItemPosition(itemindex+d) and (availableitems[itemindex+d] > 0) then
+                        if checkItemPosition(itemindex+d) and (availableitems[itemindex+d] > 0) then
                         begin
                           CRT_Invert(LISTSTART,itemindex + LISTTOPMARGIN,LISTWIDTH);
                           itemindex:=itemindex+d;
@@ -1387,16 +1455,37 @@ begin
 
                       end;
                     end;
+        KEY_CTRLLEFT:
+                    begin
+                      if (selecteditemquantity > 100) then
+                      begin
+                        selecteditemquantity:=selecteditemquantity - 100;
+                        selecteditemtotal:=selecteditemquantity * currentitemprice;
+                      end
+                      else
+                      begin
+                        selecteditemquantity:=0;
+                        selecteditemtotal:=0;
+                      end;
+                    end;
+        KEY_SHIFTLEFT:
+                    begin
+                      if (selecteditemquantity > 0) then
+                      begin
+                        selecteditemquantity:=0;
+                        selecteditemtotal:=0;
+                      end;
+                    end;
         KEY_RIGHT:  begin
-                      selectitem:= false;
-                      if (selecteditemquantity < currentitemquantity) then
-                          if (mode = false) then begin
-                              if (selecteditemquantity < currentShip.scu_max-currentShip.scu)
-                                and (selecteditemtotal + currentitemprice <= currentuec ) then selectitem := true;
-                          end else // when selling
-                              if cargoPresent then selectitem:= true;
+                      // selectitem:= false;
+                      // if (selecteditemquantity < currentitemquantity) then
+                      //     if (mode = false) then begin
+                      //         if (selecteditemquantity < currentShip.scu_max-currentShip.scu)
+                      //           and (selecteditemtotal + currentitemprice <= currentuec ) then selectitem := true;
+                      //     end else // when selling
+                      //         if cargoPresent then selectitem:= true;
 
-                      if selectitem then
+                      if selectitem and (selecteditemquantity < currentShip.scu_max-currentShip.scu) then
                       begin
                         Inc(selecteditemquantity);
                         selecteditemtotal:=selecteditemquantity * currentitemprice;
@@ -1415,8 +1504,75 @@ begin
                       // CRT_GotoXY(0,15);
                       // CRT_Write('cargoPresent='~);CRT_Write(cargoPresent);CRT_Write('           '~);
                     end;
+
+        KEY_CTRLRIGHT:
+                    begin
+                      if (mode = false) then   //buying mode
+                      begin
+                        //if selectitem and (selecteditemquantity < currentShip.scu_max-currentShip.scu) and
+                        if selectitem and
+                          (selecteditemquantity + 100 < currentShip.scu_max-currentShip.scu) and
+                          (selecteditemtotal + (100 * currentitemprice) <= currentuec) then
+                        begin
+                          selecteditemquantity:= selecteditemquantity + 100;
+//                          selecteditemtotal:=selecteditemquantity * currentitemprice;
+                        end
+                        else
+                        begin
+                          selecteditemquantity:=trunc(currentuec / currentitemprice);
+                          if selecteditemquantity > currentShip.scu_max-currentShip.scu then selecteditemquantity:=currentShip.scu_max-currentShip.scu;
+//                          selecteditemtotal:=selecteditemquantity * currentitemprice;
+                        end;
+  //                      else
+  //                       CRT_WriteRightAligned(19,FFTermToString(strings[??]));
+                      end
+                      else  // selling mode
+                      begin
+                        If selectitem and (selecteditemquantity + 100 < currentShip.cargoquantity[itemindex]) then
+                        begin
+                          selecteditemquantity:= selecteditemquantity + 100;
+//                          selecteditemtotal:=selecteditemquantity * currentitemprice;
+                        end
+                        else
+                        begin
+                          selecteditemquantity:=currentShip.cargoquantity[itemindex];
+//                          selecteditemtotal:=selecteditemquantity * currentitemprice;
+                        end;
+                      end;
+                      selecteditemtotal:=selecteditemquantity * currentitemprice;
+                    end;
+
+        KEY_SHIFTRIGHT:
+                    begin
+                      if (mode = false) then   //buying mode
+                      begin
+                        if selectitem and (selecteditemquantity < currentShip.scu_max-currentShip.scu) then
+                        begin
+                          selecteditemquantity:=trunc(currentuec / currentitemprice);
+                          if selecteditemquantity > currentShip.scu_max-currentShip.scu then
+                            selecteditemquantity:=currentShip.scu_max-currentShip.scu;
+//                          selecteditemtotal:=selecteditemquantity * currentitemprice;
+                        end;
+  //                      else
+  //                       CRT_WriteRightAligned(19,FFTermToString(strings[??]));
+                      end
+                      else  // selling mode
+                      begin
+                        if selectitem and (selecteditemquantity < currentShip.cargoquantity[itemindex]) then
+                        begin
+                            selecteditemquantity:=currentShip.cargoquantity[itemindex];
+//                          selecteditemtotal:=selecteditemquantity * currentitemprice;
+                        end;
+                      end;
+                      selecteditemtotal:=selecteditemquantity * currentitemprice;
+                    end;
+
+
+
       end;
-      If (keyval = KEY_LEFT) or (keyval = KEY_RIGHT) then trade_UpdateSelectedItem(selecteditemquantity,selecteditemtotal);
+      //If keyval = (KEY_LEFT or KEY_RIGHT or KEY_CTRLLEFT or KEY_CTRLRIGHT or KEY_SHIFTLEFT or KEY_SHIFTRIGHT) then trade_UpdateSelectedItem(selecteditemquantity,selecteditemtotal);
+      If (keyval = KEY_LEFT) or (keyval = KEY_RIGHT) or (keyval = KEY_CTRLLEFT) or (keyval = KEY_CTRLRIGHT) or
+         (keyval = KEY_SHIFTLEFT) or (keyval = KEY_SHIFTRIGHT) then trade_UpdateSelectedItem(selecteditemquantity,selecteditemtotal);
     end;
 
     if (CRT_OptionPressed) and (optionPressed=false) then
@@ -1545,21 +1701,23 @@ begin
               begin
                 if currentShip.cargoquantity[y] = 0 then
                 begin
-                  for l:=y to MAXCARGOSLOTS-1 do
-                  begin
-                    if (l < MAXCARGOSLOTS-1) then
-                    begin
-                      currentShip.cargoindex[l]:=currentShip.cargoindex[l+1];
-                      currentShip.cargoquantity[l]:=currentShip.cargoquantity[l+1];
-                    end
-                    else
-                    begin
-                      currentShip.cargoindex[l]:=0;
-                      currentShip.cargoquantity[l]:=0;
-                    end;
-                  end;
-                  //move (currentShip.cargoindex[y],currentShip.cargoindex[y+1],1);
-                  //move (currentShip.cargoquantity[y],currentShip.cargoquantity[y+1],1);
+                  // for l:=y to MAXCARGOSLOTS-1 do
+                  // begin
+                  //   if (l < MAXCARGOSLOTS-1) then
+                  //   begin
+                  //     currentShip.cargoindex[l]:=currentShip.cargoindex[l+1];
+                  //     currentShip.cargoquantity[l]:=currentShip.cargoquantity[l+1];
+                  //   end
+                  //   else
+                  //   begin
+                  //     currentShip.cargoindex[l]:=0;
+                  //     currentShip.cargoquantity[l]:=0;
+                  //   end;
+                  // end;
+                  move (currentShip.cargoindex[y+1],currentShip.cargoindex[y],High(currentShip.cargoindex)-y);
+                  move (currentShip.cargoquantity[y+1],currentShip.cargoquantity[y],High(currentShip.cargoquantity)-y);
+                  currentShip.cargoindex[High(currentShip.cargoindex)]:=0;
+                  currentShip.cargoquantity[High(currentShip.cargoquantity)]:=0;
                 end;
               end;
 
@@ -1611,21 +1769,16 @@ procedure menu;
 
 begin
   // offset for player location colors
-  y:= player.loc shl 2;
-  gfxcolors[0]:=piccolors[y];
-  gfxcolors[1]:=piccolors[y+1];
-  gfxcolors[2]:=piccolors[y+2];
-  gfxcolors[3]:=piccolors[y+3];
+  //gfx_fadeout;
 
-
-  EnableVBLI(@vbl);
-  EnableDLI(@dli1);
-  Waitframe;
-  DLISTL := DISPLAY_LIST_ADDRESS_MENU;
-
+  // gfx_fadein;
+   // gfxcolors[0]:=piccolors[y];
+   // gfxcolors[1]:=piccolors[y+1];
+   // gfxcolors[2]:=piccolors[y+2];
+   // gfxcolors[3]:=piccolors[y+3];
 
   // load ship to be able to check if they are avaiable
-  LoadShips;
+
 
   CRT_ClearRows(0,6);
 
@@ -1633,6 +1786,8 @@ begin
   WriteFF(strings[3]); // Navigation
   CRT_GotoXY(14,1);
   WriteFF(strings[4]); // Trade Console
+
+  LoadShips;
   // show ship console only when there are ships avaiable (price > 0 for 1st ship at a location)
   offset:=(NUMBEROFSHIPS * player.loc) + availableships[0];
   if shipprices[offset] > 0 then
@@ -1640,7 +1795,7 @@ begin
     CRT_GotoXY(14,2);
     WriteFF(strings[6]); // Ship Hangar
   end;
-  CRT_GotoXY(14,3);
+  CRT_GotoXY(18,3);
   WriteFF(strings[7]); // Back
 
   // CRT_GotoXY(0,3);
@@ -1652,8 +1807,13 @@ begin
 
 
 
-  keyval:=0;
+  EnableVBLI(@vbl);
+  EnableDLI(@dli1);
+  Waitframe;
+  DLISTL := DISPLAY_LIST_ADDRESS_MENU;
+  gfx_fadein;
 
+  keyval:=0;
   repeat
   //  pause;
   //  msx.play;
@@ -1683,22 +1843,31 @@ end;
 procedure title;
 
 begin
-  EnableVBLI(@vbl_title);
-  EnableDLI(@dli_title1);
-  Waitframe;
-  DLISTL := DISPLAY_LIST_ADDRESS_TITLE;
+
+  gfx_fadeout;
+
+  pic_load(GFX,0);
+
+
+  sfx_init;
 
 
   CRT_ClearRows(0,5);
 
   CRT_GotoXY(14,0);
   WriteFF(strings[1]); // New game;
-  CRT_GotoXY(14,1);
+  CRT_GotoXY(16,1);
   WriteFF(strings[2]); // Quit;
 
   txt:= FFTermToString(strings[0]); // read scroll text
   move(txt[1],pointer(SCROLL_ADDRESS+42),sizeOf(txt)); // copy text to vram
 
+  EnableVBLI(@vbl_title);
+  EnableDLI(@dli_title1);
+  Waitframe;
+  DLISTL := DISPLAY_LIST_ADDRESS_TITLE;
+
+  gfx_fadein;
   //keyval:=chr(0);
   keyval:=0;
   repeat
@@ -1711,8 +1880,8 @@ begin
           KEY_NEW:  begin
                       sfx_play(voice1,80,200); // vol8
                       sfx_play(voice2,84,200); // vol8
-                      sfx_play(voice3,86,200); // vol8
-                      sfx_play(voice4,88,200); // vol8
+                      // sfx_play(voice3,86,200); // vol8
+                      // sfx_play(voice4,88,200); // vol8
                       start;
                       current_menu := MENU_MAIN;
                     end;
@@ -1753,23 +1922,47 @@ begin
   Randomize;
   SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
   CRT_Init(TXT_ADDRESS);
+  //CRT_Write('Loading...'~);
   player.loc:=0; //start location Port Olisar
-  piclocation_load;
-  sfx_init;
+
+
+  // EnableVBLI(@vbl_title);
+  // EnableDLI(@dli_title1);
+  // Waitframe;
+  // DLISTL := DISPLAY_LIST_ADDRESS_TITLE;
+  //
+  // gfx_fadeout;
+  // pic_load(GFX,0);
+  // gfx_fadein(piccolors[0],piccolors[1],piccolors[2],piccolors[3]);
+  // sfx_init;
 
   // Initialize RMT player
-  //msx.player:=pointer(RMT_PLAYER_ADDRESS);
-  //msx.modul:=pointer(RMT_MODULE_ADDRESS);
-  //msx.init(0);
+  // msx.player:=pointer(RMT_PLAYER_ADDRESS);
+  // msx.modul:=pointer(RMT_MODULE_ADDRESS);
+  // msx.init(0);
 
-  generateWorld;
+  // load ships data into an array of records.
+  for y:=0 to NUMBEROFSHIPS-1 do
+  begin
+    tshp:=shipmatrix[y];
+    offset:=(y * MAXSHIPPARAMETERS);
+    tshp^.mcode:=byte(ships[offset+1]);
+    tshp^.sindex:=y;
+    tshp^.scu_max:=Word(ships[offset+2]);
+    tshp^.speed:=byte(ships[offset+3]);
+    tshp^.lenght:=byte(ships[offset+4]);
+    tshp^.mass:=Word(ships[offset+5]);
+  end;
 
 
   current_menu := MENU_TITLE;
   //current_menu := MENU_MAIN;
   repeat
     case current_menu of
-      MENU_TITLE: title;
+      MENU_TITLE: begin
+                    //gfx_fadeout;
+                    title;
+                  end;
       MENU_MAIN:  menu;
       MENU_NAV:   console_navigation;
       MENU_TRADE: console_trade;

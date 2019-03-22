@@ -9,17 +9,16 @@ procedure dli_title1;assembler;interrupt;
     asm {
         pha
         sta ATARI.WSYNC
-;        mva #$00 ATARI.colpf0
-;        mva #$1A ATARI.colpf1
-;        mva #$14 ATARI.colpf2
-;        mva #$00 ATARI.colpf3
-;        mva #$10 ATARI.colbk
 
-        mva #$1A ATARI.colpf0
-        mva #$14 ATARI.colpf1
-        mva #$10 ATARI.colpf2
-        mva #$00 ATARI.colpf3
-        sta ATARI.colbk
+    ;    mva #$1A ATARI.colpf0
+    ;    mva #$14 ATARI.colpf1
+    ;    mva #$10 ATARI.colpf2
+    ;    mva #$00 ATARI.colpf3
+    ;    sta ATARI.colbk
+            mva adr.gfxcolors ATARI.colpf0
+            mva adr.gfxcolors+1 ATARI.colpf1
+            mva adr.gfxcolors+2 ATARI.colpf2
+            mva adr.gfxcolors+3 ATARI.colbk
 
 ;        lda #60
 ;@       cmp vcount
@@ -35,11 +34,13 @@ procedure dli_title2;assembler;interrupt;
         pha
         sta ATARI.WSYNC
         ;mva #$00 ATARI.colbk
-        mva #$00 ATARI.colpf0
+;       mva #$00 ATARI.colpf0
+        mva adr.txtcolors ATARI.colpf0
         sta ATARI.colpf2
         ;mva #$00 ATARI.colpf3
         sta ATARI.colbk
-        mva #$0c ATARI.colpf1
+;        mva #$0c ATARI.colpf1
+        mva adr.txtcolors+1 ATARI.colpf1
         mwa #DLI_TITLE3 __dlivec
         pla
         };
@@ -84,8 +85,9 @@ begin
     dec(count);
 
   //msx.play;
-  //Waitframe;
+
   asm {
+
     ;   *** example test routine
     ;    mva 20 atari.colbk // blink background
 
@@ -125,11 +127,13 @@ procedure dli2;assembler;interrupt;
     asm {
         pha
         sta ATARI.WSYNC
-        mva #$00 ATARI.colbk
+;        mva #$00 ATARI.colbk
+        mva adr.txtcolors ATARI.colbk
         sta ATARI.colpf0
         sta ATARI.colpf2
         sta ATARI.colpf3
-        mva #$0c ATARI.colpf1
+;        mva #$0c ATARI.colpf1
+        mva adr.txtcolors+1 ATARI.colpf1
         pla
         };
 end;
@@ -141,7 +145,7 @@ begin
   };
 
   //msx.play;
-  //Waitframe;
+
   asm {
     ;   *** example test routine
     ;    mva 20 atari.colbk // blink background
@@ -178,6 +182,9 @@ procedure vbl_console;interrupt;
 begin
   asm {
       pha ; store registers
+  };
+  //msx.play;
+  asm {
       mwa #dli_console __dlivec
       pla ; restore registers
   };
