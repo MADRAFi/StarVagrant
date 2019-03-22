@@ -2,7 +2,7 @@ program StarVagrant;
 {$librarypath '../Libs/lib/';'../Libs/blibs/';'../Libs/base/'}
 //{$librarypath 'Libs/lib/';'Libs/blibs/';'Libs/base/'}
 // {$librarypath '../blibs/'}
-uses atari, b_utils, b_system, b_crt, sysutils, xbios; //, rmt;
+uses atari, b_utils, b_system, b_crt, sysutils, xbios, rmt;
 
 const
 {$i 'const.inc'}
@@ -30,7 +30,7 @@ var
   offset: Word; // offset counted to get items from arrays
   y: Byte; // index for loops
   count: Byte; // count in item iterations
-  //msx: TRMT;
+  msx: TRMT;
   current_menu: Byte;
 
 
@@ -238,7 +238,7 @@ begin
   end;
 end;
 
-procedure gfx_fadeout;
+procedure gfx_fadeout(hidetext: Boolean);
 begin
 
   repeat
@@ -247,12 +247,13 @@ begin
     If (gfxcolors[1] and %00001111 <> 0) then Dec(gfxcolors[1]) else gfxcolors[1]:=0;
     If (gfxcolors[2] and %00001111 <> 0) then Dec(gfxcolors[2]) else gfxcolors[2]:=0;
     If (gfxcolors[3] and %00001111 <> 0) then Dec(gfxcolors[3]) else gfxcolors[3]:=0;
-
-    If (txtcolors[0] and %00001111 <> 0) then Dec(txtcolors[0]) else txtcolors[0]:=0;
-    If (txtcolors[1] and %00001111 <> 0) then Dec(txtcolors[1]) else txtcolors[1]:=0;
-
-  until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3] or txtcolors[0] or txtcolors[1]) = 0;
-  //until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3]) = 0;
+    If hidetext then
+    begin
+      If (txtcolors[0] and %00001111 <> 0) then Dec(txtcolors[0]) else txtcolors[0]:=0;
+      If (txtcolors[1] and %00001111 <> 0) then Dec(txtcolors[1]) else txtcolors[1]:=0;
+    end;
+  //until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3] or txtcolors[0] or txtcolors[1]) = 0;
+  until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3]) = 0;
   waitframes(10);
 end;
 
@@ -324,7 +325,7 @@ begin
     player.loc:= STARTLOCATION;
     newLoc:= STARTLOCATION; //0;
   //end;
-  gfx_fadeout;
+  gfx_fadeout(true);
   pic_load(LOC,player.loc);
   sfx_init;
   gfx_fadein;
@@ -599,10 +600,10 @@ procedure navi_distanceUpdate(mydistance: Word);
 
 begin
   CRT_GotoXY(9,2);
-  WriteSpaces(3); // max distance lenght
+  WriteSpaces(6); // max distance lenght + distance symbol
   CRT_GotoXY(9,2);
   //WriteFF(strings[22]);
-  CRT_Write(mydistance); //CRT_Write(Atascii2Antic(DISTANCE));
+  CRT_Write(mydistance); CRT_Write(Atascii2Antic(DISTANCEUNIT));
 end;
 
 
@@ -610,10 +611,11 @@ end;
 
 procedure calculateprices(loc: Byte);
 var
-  percent: shortreal;
+  percent: Shortreal;
+  modify: Real;
 
 begin
-  percent:=Random(100)/100;
+  percent:=Random(40)/100;
   for y:=0 to NUMBEROFITEMS-1 do begin
     offset:= (NUMBEROFITEMS * loc)+y;
 
@@ -622,7 +624,7 @@ begin
     begin
       case loc of
         2..9,13,14:   begin
-                        itemquantity[offset]:= itemquantity[offset] + Random(500);
+                        itemquantity[offset]:= itemquantity[offset] + Random(500); // adding up to 500 items
                       end;
       end;
     end;
@@ -630,46 +632,53 @@ begin
     // Increase price if less then 1000
     if (itemquantity[offset] > 0) and (itemquantity[offset] < 1000) and (itemprice[offset] > 0) then
     begin
-      itemprice[offset]:=itemprice[offset] * (1 + COMMISSION);
+      modify:=(1 + COMMISSION);
+      // itemprice[offset]:=Round(itemprice[offset] * modify);
     end;
 
     // Decrease price if more then 5000
     if (itemquantity[offset] > 5000) and (itemquantity[offset] < 10000) and (itemprice[offset] > 0) then
     begin
-      itemprice[offset]:=itemprice[offset] * (1 - COMMISSION);
+      modify:=(1 - COMMISSION);
+      // itemprice[offset]:=Round(itemprice[offset] * modify);
     end;
 
     // Simulate item sell
     if (itemquantity[offset] > 10000) and (itemprice[offset] > 0) then
     begin
-//      percent:=Random(100)/100;
-      //itemquantity[offset]:=itemquantity[offset] * (1 - COMMISSION);
-      itemquantity[offset]:=itemquantity[offset] * (1 - percent);
+      modify:=(1 - percent);
+      // itemquantity[offset]:=itemquantity[offset] * modify;
     end;
-
+    itemprice[offset]:=Round(itemprice[offset] * modify);
   end;
 
-//   for y:=0 to NUMBEROFSHIPS-1 do begin
-//     offset:= (NUMBEROFSHIPS * loc)+y;
-//     if shipprices[offset] > 1000 then // do not change price of starting ship
-//     begin
-//       count:=Random(2);
-// //      percent:=Random(100)/100;
-//       if count = 0 then
-//       begin
-//         // price drop
-//         shipprices[offset]:=shipprices[offset] * (1 - percent);
-//       end
-//       else
-//       begin
-//         // price increase
-//         shipprices[offset]:=shipprices[offset] * (1 + percent);
-//       end;
-//       CRT_GotoXY(0,6);
-//       CRT_Write(real(percent));
-//     //  CRT_Write('newprice='~);CRT_Write(shipprices[offset]);
-//     end;
-//   end;
+  for y:=0 to NUMBEROFSHIPS-1 do begin
+    offset:= (NUMBEROFSHIPS * loc)+y;
+    if shipprices[offset] > shipprices[0] then // do not change price of starting ship
+    begin
+      count:=Random(2);
+      if count = 0 then
+      begin
+        // price drop
+        modify:=(1 - percent);
+        //newprice:=Round(shipprices[offset] * (1 - percent));
+        //shipprices[offset]:=Longword(shipprices[offset] * (1 - percent));
+      end
+      else
+      begin
+        // price increase
+        modify:=(1 + percent);
+        //newprice:=Round(shipprices[offset] * (1 + percent));
+        //shipprices[offset]:=Longword(shipprices[offset] * (1 + percent));
+      end;
+      shipprices[offset]:=Round(shipprices[offset] * modify);
+      // CRT_GotoXY(0,6);
+      // if offset = 22 then begin
+      //   CRT_Write(real(percent)); WriteSpaces(1); CRT_Write(modify);WriteSpaces(1);CRT_Write(shipprices[offset]);
+      //   repeat until CRT_Keypressed;
+      // end;
+    end;
+  end;
 end;
 
 procedure encounterMessage;
@@ -768,7 +777,7 @@ begin
   // sfx_play(voice3,236,200); //vol 8
   // sfx_play(voice4, 236,200); // vol 8
 
-  gfx_fadeout;
+  gfx_fadeout(false);
 
   pic_openfile('LOC',newLoc);
   fileoffset:=0;
@@ -818,8 +827,8 @@ begin
   WriteFF(strings[21]); // Nav:
   CRT_GotoXY(0,2);
   WriteFF(strings[22]);  // Dis:
-  CRT_GotoXY(12,2);
-  CRT_Write(Atascii2Antic(DISTANCEUNIT));
+  // CRT_GotoXY(12,2);
+  // CRT_Write(Atascii2Antic(DISTANCEUNIT));
   // Help Keys
   CRT_GotoXY(0,6);
   WriteFF(strings[23]); // Navigation options
@@ -1058,24 +1067,24 @@ begin
           offset:=tshp^.sindex * (MAXSHIPPARAMETERS);
           CRT_Write(Atascii2Antic(ships[offset]));
           CRT_GotoXY(6,2);
-          WriteSpaces(4);
+          WriteSpaces(7);
           CRT_GotoXY(6,2);
           CRT_Write(tshp^.scu_max);CRT_Write(Atascii2Antic(CARGOUNIT));
           CRT_GotoXY(6,3);
-          WriteSpaces(8);
+          WriteSpaces(12);
           CRT_GotoXY(6,3);
           offset:=(NUMBEROFSHIPS * player.loc) + availableships[shipindex];
           CRT_Write(shipprices[offset]);CRT_Write(Atascii2Antic(CURRENCY));
           CRT_GotoXY(29,1);
-          WriteSpaces(5);
+          WriteSpaces(9);
           CRT_GotoXY(29,1);
           CRT_Write(tshp^.speed);WriteFF(strings[45]);
           CRT_GotoXY(30,2);
-          WriteSpaces(4);
+          WriteSpaces(7);
           CRT_GotoXY(30,2);
           CRT_Write(tshp^.lenght);WriteFF(strings[46]);
           CRT_GotoXY(28,3);
-          WriteSpaces(5);
+          WriteSpaces(9);
           CRT_GotoXY(28,3);
           CRT_Write(tshp^.mass);WriteFF(strings[47]);
         end;
@@ -1389,7 +1398,7 @@ begin
         KEY_BACK:   begin
                       sfx_play(voice4,255,168); // vol8
                       current_menu := MENU_MAIN;
-                      //gfx_fadeout;
+                      //gfx_fadeout(true);
                     end;
         KEY_UP, KEY_DOWN:
                     begin
@@ -1769,7 +1778,7 @@ procedure menu;
 
 begin
   // offset for player location colors
-  //gfx_fadeout;
+  //gfx_fadeout(true);
 
   // gfx_fadein;
    // gfxcolors[0]:=piccolors[y];
@@ -1844,7 +1853,7 @@ procedure title;
 
 begin
 
-  gfx_fadeout;
+  gfx_fadeout(true);
 
   pic_load(GFX,0);
 
@@ -1868,6 +1877,8 @@ begin
   DLISTL := DISPLAY_LIST_ADDRESS_TITLE;
 
   gfx_fadein;
+
+
   //keyval:=chr(0);
   keyval:=0;
   repeat
@@ -1937,9 +1948,9 @@ begin
   // sfx_init;
 
   // Initialize RMT player
-  // msx.player:=pointer(RMT_PLAYER_ADDRESS);
-  // msx.modul:=pointer(RMT_MODULE_ADDRESS);
-  // msx.init(0);
+  msx.player:=pointer(RMT_PLAYER_ADDRESS);
+  msx.modul:=pointer(RMT_MODULE_ADDRESS);
+  msx.init(0);
 
   // load ships data into an array of records.
   for y:=0 to NUMBEROFSHIPS-1 do

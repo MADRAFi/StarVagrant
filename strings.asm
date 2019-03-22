@@ -53,7 +53,7 @@ strings_list
 
 strings
 txt_0
-    dta d'v.0.5 (c) 2019 Code: MADRAFi, Gfx: XxX, Msx: XxX. Special thanks to Bocianu for the support. ',$ff
+    dta d'v.0.6 (c) 2019 Code: MADRAFi, Gfx: XxX, Msx: XxX. Special thanks to Bocianu for the support. ',$ff
 txt_1
     dta d'N'*, d'ew Game',$ff
 txt_2

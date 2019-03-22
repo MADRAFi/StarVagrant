@@ -84,7 +84,7 @@ begin
     hscrol := count; // set hscroll
     dec(count);
 
-  //msx.play;
+  msx.play;
 
   asm {
 
@@ -144,7 +144,7 @@ begin
         pha ; store registers
   };
 
-  //msx.play;
+  msx.play;
 
   asm {
     ;   *** example test routine
@@ -183,7 +183,7 @@ begin
   asm {
       pha ; store registers
   };
-  //msx.play;
+  msx.play;
   asm {
       mwa #dli_console __dlivec
       pla ; restore registers

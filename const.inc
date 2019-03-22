@@ -1,33 +1,19 @@
 // stale
 
-//FREE_TOP = $9f00;
-FREE_TOP = $A000;
-
-//RMT_PLAYER_ADDRESS = FREE_TOP;
-//RMT_MODULE_ADDRESS = RMT_PLAYER_ADDRESS + $800;
-//DISPLAY_LIST_ADDRESS_TITLE = RMT_MODULE_ADDRESS + $A00;
+FREE_TOP = $9000;
 
 DISPLAY_LIST_ADDRESS_TITLE = FREE_TOP;
 DISPLAY_LIST_ADDRESS_MENU = DISPLAY_LIST_ADDRESS_TITLE + $100;
 DISPLAY_LIST_ADDRESS_CONSOLE = DISPLAY_LIST_ADDRESS_MENU + $100;
-
 TXT_ADDRESS = DISPLAY_LIST_ADDRESS_CONSOLE + $100;
-//TXT_ADDRESS = $C000;
 
 SCROLL_ADDRESS = TXT_ADDRESS + $3D0; // $400;
-STRINGS_ADDRESS = SCROLL_ADDRESS + $FA5;
-//RMT_PLAYER_ADDRESS = $B800;
-//RMT_MODULE_ADDRESS = $1000;
-// lenght 1A05
+STRINGS_ADDRESS = SCROLL_ADDRESS + $FA5; //end at $A675
+RMT_PLAYER_ADDRESS = $A800;
+RMT_MODULE_ADDRESS = RMT_PLAYER_ADDRESS + $800;
 
 CHARSET_ADDRESS = $D800;
 GFX_ADDRESS = $E000;
-
-
-
-
-
-
 
 NUMBEROFLOCATIONS = 17; // number of locations defined in locations.asm. Needs to match.
 NUMBEROFITEMS = 24; // number of items defined in items.asm. Needs to match.
@@ -40,7 +26,7 @@ MAXAVAILABLEDESTINATIONS = 6;  // number of destinations fron location.
 // ***************************************************************************//
 
 STARTUEC = 5000;
-STARTLOCATION = 0; // Port Olisar
+STARTLOCATION = 0; 
 
 // ***************************************************************************//
 KEY_OPTION1 = 31; //1
