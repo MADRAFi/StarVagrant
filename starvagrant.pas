@@ -322,15 +322,15 @@ begin
   player.uec:= STARTUEC;
   //if player.loc <> 0  then
   //begin
-    player.loc:= STARTLOCATION;
-    newLoc:= STARTLOCATION; //0;
+  player.loc:= STARTLOCATION;
+  newLoc:= STARTLOCATION; //0;
   //end;
   gfx_fadeout(true);
   pic_load(LOC,player.loc);
   sfx_init;
   gfx_fadein;
 
-  tshp:=shipmatrix[7];
+  tshp:=shipmatrix[0];
   ship:= tshp^;
 
   eraseArray(0,MAXCARGOSLOTS-1, @ship.cargoindex);
@@ -1179,7 +1179,7 @@ begin
   //liststart:=(CRT_screenWidth shr 1)+1;
   // update cargo Total
   tstr:=IntToStr(currentship.scu_max-currentship.scu);
-  CRT_GotoXY(LISTSTART-(Length(tstr)+5)-4,6);
+  CRT_GotoXY(LISTSTART-(Length(tstr)+5),6); // -4 as 4 spaces will be drawn
   WriteSpaces(4); // fixed 4 chars for cargo size
   CRT_GotoXY(LISTSTART-(Length(tstr)+5),6);
   CRT_Write(Atascii2Antic(tstr)); CRT_Write(Atascii2Antic(CARGOUNIT));CRT_Write('|'~);
@@ -1277,16 +1277,15 @@ begin
   CRT_GotoXY(0,4);
   writeRuler;
   CRT_GotoXY(0,5);
-  WriteFF(strings[14]); WriteSpaces(1);
+  WriteFF(strings[14]); //WriteSpaces(1);
   tstr:=IntToStr(currentship.scu_max);
-  //CRT_GotoXY(LISTWIDTH-5,5);
   CRT_GotoXY(LISTSTART-(Length(tstr)+5),5);
   CRT_Write(Atascii2Antic(IntToStr(currentship.scu_max))); CRT_Write(Atascii2Antic(CARGOUNIT));CRT_Write('|'~);
   CRT_GotoXY(0,6);
   WriteFF(strings[15]); WriteSpaces(1);
-  tstr:=IntToStr(currentship.scu_max-currentship.scu);
-  CRT_GotoXY(LISTSTART-(Length(tstr)+5),6);
-  CRT_Write(Atascii2Antic(tstr)); CRT_Write(Atascii2Antic(CARGOUNIT));CRT_Write('|'~);
+
+  trade_UpdateCargo;
+
   CRT_GotoXY(0,7);
   CRT_Write('--------------------+'~);
   sfx_play(voice4,77,200); // vol8
@@ -1934,7 +1933,7 @@ begin
   SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
   CRT_Init(TXT_ADDRESS);
   //CRT_Write('Loading...'~);
-  player.loc:=0; //start location Port Olisar
+  //player.loc:=STARTLOCATION; //start location Port Olisar
 
 
   // EnableVBLI(@vbl_title);

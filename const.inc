@@ -9,7 +9,7 @@ TXT_ADDRESS = DISPLAY_LIST_ADDRESS_CONSOLE + $100;
 
 SCROLL_ADDRESS = TXT_ADDRESS + $3D0; // $400;
 STRINGS_ADDRESS = SCROLL_ADDRESS + $FA5; //end at $A675
-RMT_PLAYER_ADDRESS = $A800;
+RMT_PLAYER_ADDRESS = $B000;
 RMT_MODULE_ADDRESS = RMT_PLAYER_ADDRESS + $800;
 
 CHARSET_ADDRESS = $D800;
@@ -26,7 +26,7 @@ MAXAVAILABLEDESTINATIONS = 6;  // number of destinations fron location.
 // ***************************************************************************//
 
 STARTUEC = 5000;
-STARTLOCATION = 0; 
+STARTLOCATION = 0;
 
 // ***************************************************************************//
 KEY_OPTION1 = 31; //1
