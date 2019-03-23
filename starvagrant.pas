@@ -615,7 +615,7 @@ var
   modify: Real;
 
 begin
-  percent:=Random(40)/100;
+  percent:=Random(100)/100;
   for y:=0 to NUMBEROFITEMS-1 do begin
     offset:= (NUMBEROFITEMS * loc)+y;
 
@@ -630,55 +630,58 @@ begin
     end;
 
     // Increase price if less then 1000
-    if (itemquantity[offset] > 0) and (itemquantity[offset] < 1000) and (itemprice[offset] > 0) then
+    if (itemquantity[offset] > 0) and (itemquantity[offset] < 1000) and (itemprice[offset] > 0) and (percent < 30 ) then
     begin
-      modify:=(1 + COMMISSION);
-      // itemprice[offset]:=Round(itemprice[offset] * modify);
+      modify:=(1 + percent);
+      itemprice[offset]:=Round(itemprice[offset] * modify);
     end;
 
     // Decrease price if more then 5000
-    if (itemquantity[offset] > 5000) and (itemquantity[offset] < 10000) and (itemprice[offset] > 0) then
+    if (itemquantity[offset] > 5000) and (itemquantity[offset] < 10000) and (itemprice[offset] > 0) and (percent < 30) then
     begin
-      modify:=(1 - COMMISSION);
-      // itemprice[offset]:=Round(itemprice[offset] * modify);
+      modify:=(1 - percent);
+      itemprice[offset]:=Round(itemprice[offset] * modify);
     end;
 
     // Simulate item sell
-    if (itemquantity[offset] > 10000) and (itemprice[offset] > 0) then
+    if (itemquantity[offset] > 10000) and (itemprice[offset] > 0) and (percent < 40) then
     begin
       modify:=(1 - percent);
-      // itemquantity[offset]:=itemquantity[offset] * modify;
+      itemquantity[offset]:=itemquantity[offset] * modify;
     end;
-    itemprice[offset]:=Round(itemprice[offset] * modify);
+
   end;
 
-  for y:=0 to NUMBEROFSHIPS-1 do begin
-    offset:= (NUMBEROFSHIPS * loc)+y;
-    if shipprices[offset] > shipprices[0] then // do not change price of starting ship
-    begin
-      count:=Random(2);
-      if count = 0 then
+  if (percent < 40) then
+  begin
+    for y:=0 to NUMBEROFSHIPS-1 do begin
+      offset:= (NUMBEROFSHIPS * loc)+y;
+      if shipprices[offset] > shipprices[0] then // do not change price of starting ship
       begin
-        // price drop
-        modify:=(1 - percent);
-        //newprice:=Round(shipprices[offset] * (1 - percent));
-        //shipprices[offset]:=Longword(shipprices[offset] * (1 - percent));
-      end
-      else
-      begin
-        // price increase
-        modify:=(1 + percent);
-        //newprice:=Round(shipprices[offset] * (1 + percent));
-        //shipprices[offset]:=Longword(shipprices[offset] * (1 + percent));
+        count:=Random(2);
+        if count = 0 then
+        begin
+          // price drop
+          modify:=(1 - percent);
+          //newprice:=Round(shipprices[offset] * (1 - percent));
+          //shipprices[offset]:=Longword(shipprices[offset] * (1 - percent));
+        end
+        else
+        begin
+          // price increase
+          modify:=(1 + percent);
+          //newprice:=Round(shipprices[offset] * (1 + percent));
+          //shipprices[offset]:=Longword(shipprices[offset] * (1 + percent));
+        end;
+        shipprices[offset]:=Round(shipprices[offset] * modify);
+        // CRT_GotoXY(0,6);
+        // if offset = 22 then begin
+        //   CRT_Write(real(percent)); WriteSpaces(1); CRT_Write(modify);WriteSpaces(1);CRT_Write(shipprices[offset]);
+        //   repeat until CRT_Keypressed;
+        // end;
       end;
-      shipprices[offset]:=Round(shipprices[offset] * modify);
-      // CRT_GotoXY(0,6);
-      // if offset = 22 then begin
-      //   CRT_Write(real(percent)); WriteSpaces(1); CRT_Write(modify);WriteSpaces(1);CRT_Write(shipprices[offset]);
-      //   repeat until CRT_Keypressed;
-      // end;
     end;
-  end;
+  end; 
 end;
 
 procedure encounterMessage;
