@@ -32,7 +32,7 @@ var
   count: Byte; // count in item iterations
   msx: TRMT;
   current_menu: Byte;
-
+  gamestate: TGameState;
 
   {$i 'ships.inc'}
   {$i 'locations.inc'}
@@ -319,6 +319,12 @@ end;
 procedure start;
 
 begin
+  sfx_play(voice1,80,200); // vol8
+  sfx_play(voice2,84,200); // vol8
+  // sfx_play(voice3,86,200); // vol8
+  // sfx_play(voice4,88,200); // vol8
+
+  gamestate:=GAMEINPROGRESS;
   player.uec:= STARTUEC;
   //if player.loc <> 0  then
   //begin
@@ -344,6 +350,7 @@ begin
   // ship.cargoquantity[1]:=20;
   // ship.scu:= 30;
 
+  current_menu := MENU_MAIN;
 
 end;
 
@@ -681,7 +688,7 @@ begin
         // end;
       end;
     end;
-  end; 
+  end;
 end;
 
 procedure encounterMessage;
@@ -1853,21 +1860,27 @@ end;
 
 procedure title;
 
+var
+  startPressed: Boolean = false;
+
 begin
+  startPressed:=false;
 
   gfx_fadeout(true);
-
   pic_load(GFX,0);
-
-
   sfx_init;
 
-
   CRT_ClearRows(0,5);
-
   CRT_GotoXY(14,0);
   WriteFF(strings[1]); // New game;
-  CRT_GotoXY(16,1);
+  y:=1;
+  if gamestate = GAMEINPROGRESS then
+  begin
+      CRT_GotoXY(14,y);
+      WriteFF(strings[51]); // Continue game;
+      Inc(y);
+  end;
+  CRT_GotoXY(16,y);
   WriteFF(strings[2]); // Quit;
 
   txt:= FFTermToString(strings[0]); // read scroll text
@@ -1877,7 +1890,7 @@ begin
   EnableDLI(@dli_title1);
   Waitframe;
   DLISTL := DISPLAY_LIST_ADDRESS_TITLE;
-
+  Waitframe;
   gfx_fadein;
 
 
@@ -1890,14 +1903,11 @@ begin
       //keyval := char(CRT_Keycode[kbcode]);
       keyval := kbcode;
       case keyval of
-          KEY_NEW:  begin
-                      sfx_play(voice1,80,200); // vol8
-                      sfx_play(voice2,84,200); // vol8
-                      // sfx_play(voice3,86,200); // vol8
-                      // sfx_play(voice4,88,200); // vol8
-                      start;
-                      current_menu := MENU_MAIN;
-                    end;
+          KEY_NEW:      start;
+          KEY_CANCEL:   begin
+                          gfx_fadeout(true);
+                          current_menu:=MENU_MAIN;
+                        end;
       // else
       // begin
       //   CRT_GotoXY(0,5);
@@ -1917,9 +1927,15 @@ begin
 *)
       end;
     end;
+    If CRT_StartPressed and (startPressed = false) then
+    begin
+      startPressed:=true;
+      start;
+    end;
+
     Waitframe;
 
-  until (keyval = KEY_QUIT) or (keyval = KEY_NEW);
+  until (keyval = KEY_QUIT) or (keyval = KEY_NEW) or (startPressed = true) or (keyval = KEY_CANCEL);
 end;
 
 
@@ -1967,15 +1983,12 @@ begin
     tshp^.mass:=Word(ships[offset+5]);
   end;
 
-
+  gamestate:= NEWGAME;
   current_menu := MENU_TITLE;
   //current_menu := MENU_MAIN;
   repeat
     case current_menu of
-      MENU_TITLE: begin
-                    //gfx_fadeout;
-                    title;
-                  end;
+      MENU_TITLE: title;
       MENU_MAIN:  menu;
       MENU_NAV:   console_navigation;
       MENU_TRADE: console_trade;

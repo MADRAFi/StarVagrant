@@ -33,6 +33,7 @@ procedure dli_title2;assembler;interrupt;
     asm {
         pha
         sta ATARI.WSYNC
+
         ;mva #$00 ATARI.colbk
 ;       mva #$00 ATARI.colpf0
         mva adr.txtcolors ATARI.colpf0
@@ -84,7 +85,7 @@ begin
     hscrol := count; // set hscroll
     dec(count);
 
-  msx.play;
+  //msx.play;
 
   asm {
 
@@ -126,9 +127,10 @@ end;
 procedure dli2;assembler;interrupt;
     asm {
         pha
-        sta ATARI.WSYNC
+
 ;        mva #$00 ATARI.colbk
         mva adr.txtcolors ATARI.colbk
+        sta ATARI.WSYNC
         sta ATARI.colpf0
         sta ATARI.colpf2
         sta ATARI.colpf3
@@ -144,7 +146,7 @@ begin
         pha ; store registers
   };
 
-  msx.play;
+  //msx.play;
 
   asm {
     ;   *** example test routine
@@ -183,7 +185,7 @@ begin
   asm {
       pha ; store registers
   };
-  msx.play;
+  //msx.play;
   asm {
       mwa #dli_console __dlivec
       pla ; restore registers

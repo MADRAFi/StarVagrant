@@ -50,6 +50,7 @@ strings_list
     dta a(txt_48)
     dta a(txt_49)
     dta a(txt_50)
+    dta a(txt_51)
 
 strings
 txt_0
@@ -154,6 +155,10 @@ txt_49
     dta d' You already own that ship. '*,$ff
 txt_50
     dta d'-All',$ff
+txt_51
+    dta d'C'*, d'ontinue',$ff
+
+
 
  .print "STRINGS SIZE: ", *-strings_list
  .print "STRINGS : ", strings_list, "..", *
