@@ -7,7 +7,7 @@ procedure dli_title1;assembler;interrupt;
 // $1A
 // $00 -
     asm {
-        pha
+        phr ; store registers
         sta ATARI.WSYNC
 
     ;    mva #$1A ATARI.colpf0
@@ -25,13 +25,13 @@ procedure dli_title1;assembler;interrupt;
 ;        bpl @-
 ;        mva #$00 ATARI.colpf2
         mwa #DLI_TITLE2 __dlivec
-        pla
+        plr ; restore registers
         };
 end;
 
 procedure dli_title2;assembler;interrupt;
     asm {
-        pha
+        phr ; store registers
         sta ATARI.WSYNC
 
         ;mva #$00 ATARI.colbk
@@ -43,13 +43,13 @@ procedure dli_title2;assembler;interrupt;
 ;        mva #$0c ATARI.colpf1
         mva adr.txtcolors+1 ATARI.colpf1
         mwa #DLI_TITLE3 __dlivec
-        pla
+        plr ; restore registers
         };
 end;
 
 procedure dli_title3;assembler;interrupt;
     asm {
-        pha
+        phr ; store registers
         mva #$06 ATARI.colpf1
         :3 sta ATARI.WSYNC
         mva #$08 ATARI.colpf1
@@ -61,7 +61,7 @@ procedure dli_title3;assembler;interrupt;
         mva #$0a ATARI.colpf1
         sta ATARI.WSYNC
         mva #$08 ATARI.colpf1
-        pla
+        plr ; restore registers
         };
 end;
 
@@ -85,7 +85,7 @@ begin
     hscrol := count; // set hscroll
     dec(count);
 
-  //msx.play;
+  msx.play;
 
   asm {
 
@@ -110,7 +110,7 @@ end;
 
 procedure dli1;assembler;interrupt;
   asm {
-        pha
+        phr ; store registers
         sta ATARI.WSYNC
 
         mva adr.gfxcolors ATARI.colpf0
@@ -119,15 +119,14 @@ procedure dli1;assembler;interrupt;
         mva adr.gfxcolors+3 ATARI.colbk
 
         mwa #DLI2 __dlivec
-        pla
+        plr ; restore registers
   };
 
 end;
 
 procedure dli2;assembler;interrupt;
     asm {
-        pha
-
+        phr ; store registers
 ;        mva #$00 ATARI.colbk
         mva adr.txtcolors ATARI.colbk
         sta ATARI.WSYNC
@@ -136,17 +135,17 @@ procedure dli2;assembler;interrupt;
         sta ATARI.colpf3
 ;        mva #$0c ATARI.colpf1
         mva adr.txtcolors+1 ATARI.colpf1
-        pla
+        plr ; restore registers
         };
 end;
 
 procedure vbl;interrupt;
 begin
   asm {
-        pha ; store registers
+        phr ; store registers
   };
 
-  //msx.play;
+  msx.play;
 
   asm {
     ;   *** example test routine
@@ -160,7 +159,7 @@ begin
       ;mwa #dli1 ATARI.VDSLST
       mwa #DLI1 __dlivec
 
-      pla ; restore registers
+      plr ; restore registers
   };
 end;
 
@@ -171,23 +170,23 @@ end;
 
 procedure dli_console;assembler;interrupt;
     asm {
-        pha
+        phr ; store registers
         sta ATARI.WSYNC
         mva #$06 ATARI.colbk
         sta ATARI.colpf2
         mva #$02 ATARI.colpf1
-        pla
+        plr ; restore registers
         };
 end;
 
 procedure vbl_console;interrupt;
 begin
   asm {
-      pha ; store registers
+      phr ; store registers
   };
-  //msx.play;
+  msx.play;
   asm {
       mwa #dli_console __dlivec
-      pla ; restore registers
+      plr ; restore registers
   };
 end;
