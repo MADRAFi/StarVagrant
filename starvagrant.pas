@@ -2000,6 +2000,7 @@ end;
 procedure menu_save_load(mode: Boolean);
 var
   slot, oldslot : Byte;
+  selectPressed: Boolean = false;
 
 begin
   CRT_ClearRows(0,6);
@@ -2035,6 +2036,7 @@ begin
 
   slot:=0;
   oldslot:=0;
+  selectPressed:=false;
 
   keyval:= 0;
   repeat
@@ -2077,10 +2079,11 @@ begin
           CRT_Invert(14,slot,count+8);
         end;
     end;
-    if CRT_SelectPressed and (slot > 0) then
+    if CRT_SelectPressed and (slot > 0) and (selectPressed = false) then
     begin
       if mode then disk_save(slot)
       else disk_load(slot);
+      selectPressed:= true;
       current_menu:=MENU_TITLE;
     end;
     Waitframe;
