@@ -186,26 +186,28 @@ txtcolors : array [0..1] of Byte = (
 {$i 'interrupts.inc'}
 
 
-procedure sfx_play(channel: Word; freq: Byte; vol: Byte );
+// procedure sfx_play(channel: Word; freq: Byte; vol: Byte );
+//
+// begin
+  // poke(channel,freq);
+  // poke(channel+1,vol);
+  // waitframes(5);
+  // poke(channel+1,0);
+//
+//
+// end;
 
-begin
-  poke(channel,freq);
-  poke(channel+1,vol);
-  waitframes(5);
-  poke(channel+1,0);
-end;
-
-procedure sfx_init;
-begin
-  // sound init at pokey
-  poke($d20f,3);
-  poke($d208,0);
-end;
+// procedure sfx_init;
+// begin
+//   // sound init at pokey
+//   poke($d20f,3);
+//   poke($d208,0);
+// end;
 
 procedure writeRuler;
 begin
     CRT_Write('--------------------+-------------------'~);
-    sfx_play(voice4,77,200); // vol8
+    // sfx_play(voice4,77,200); // vol8
 end;
 
 procedure WriteSpaces(len:byte);
@@ -319,8 +321,8 @@ end;
 procedure start;
 
 begin
-  sfx_play(voice1,80,200); // vol8
-  sfx_play(voice2,84,200); // vol8
+  // sfx_play(voice1,80,200); // vol8
+  // sfx_play(voice2,84,200); // vol8
   // sfx_play(voice3,86,200); // vol8
   // sfx_play(voice4,88,200); // vol8
 
@@ -333,7 +335,7 @@ begin
   //end;
   gfx_fadeout(true);
   pic_load(LOC,player.loc);
-  sfx_init;
+  // sfx_init;
   gfx_fadein;
 
   tshp:=shipmatrix[0];
@@ -463,7 +465,7 @@ begin
       end;
 
     end;
-  sfx_play(voice4,185,200); // vol8
+  // sfx_play(voice4,185,200); // vol8
 end;
 
 
@@ -513,7 +515,7 @@ begin
   //   CRT_Write(availabledestinations[x]);
   //   Inc(count);
   end;
-  sfx_play(voice4,185,200); // vol8
+  // sfx_play(voice4,185,200); // vol8
 
 end;
 
@@ -693,7 +695,7 @@ end;
 
 procedure encounterMessage;
 begin
-  sfx_play(voice1,230,200); //vol 8
+  // sfx_play(voice1,230,200); //vol 8
   //sfx_play(voice2,230,200); //vol 8
 
   CRT_ClearRows(0,6);
@@ -702,7 +704,7 @@ begin
   for y:=1 to Length(txt) do
   begin
     CRT_Write(txt[y]);
-    if (y mod 4) = 0 then sfx_play(voice1,200,200); //vol 8
+    //if (y mod 4) = 0 then sfx_play(voice1,200,200); //vol 8
     //waitframes(2);
     waitframe;
   end;
@@ -782,8 +784,8 @@ begin
     WriteSpaces(18); // clear rows
   end;
 
-  sfx_play(voice1,230,200); //vol 8
-  sfx_play(voice2,230,200); //vol 8
+  // sfx_play(voice1,230,200); //vol 8
+  // sfx_play(voice2,230,200); //vol 8
   // sfx_play(voice3,236,200); //vol 8
   // sfx_play(voice4, 236,200); // vol 8
 
@@ -812,10 +814,10 @@ begin
   until ((distance = 0) and (xBiosIOresult <> 0)) or ((distance = 0) and (xBiosCheck = 0));
 
   If (xBiosCheck <> 0) then xBiosFlushBuffer; // close file
-  sfx_init; // reinitialize pokey
+  // sfx_init; // reinitialize pokey
   randomEncounter;
-  player.loc:=newLoc;
   calculateprices(player.loc);
+  player.loc:=newLoc;
 end;
 
 procedure console_navigation;
@@ -860,7 +862,7 @@ begin
         keyval := kbcode;
         case keyval of
           KEY_BACK:     begin
-                          sfx_play(voice4,255,168); // vol8
+                          // sfx_play(voice4,255,168); // vol8
                           current_menu := MENU_MAIN;
                         end;
           KEY_OPTION1:  begin
@@ -1022,27 +1024,27 @@ begin
         keyval := kbcode;
         case keyval of
           KEY_BACK:     begin
-                          sfx_play(voice4,255,168); // vol8
+                          // sfx_play(voice4,255,168); // vol8
                           current_menu := MENU_MAIN;
                         end;
           KEY_LEFT:   begin
                           if (shipindex > 0) then
                           begin
-                            sfx_play(voice1,80,168); // vol8
+                            // sfx_play(voice1,80,168); // vol8
                             Dec(shipindex);
                           end
                           else
-                            sfx_play(voice1,255,168); // vol8
+                            // sfx_play(voice1,255,168); // vol8
 
                       end;
           KEY_RIGHT:  begin
                         if (shipindex < NUMBEROFSHIPS-1) and (availableships[shipindex+1] > 0) then
                         begin
-                          sfx_play(voice1,80,168); // vol8
+                          // sfx_play(voice1,80,168); // vol8
                           Inc(shipindex);
                         end
                         else
-                          sfx_play(voice1,255,168); // vol8
+                          // sfx_play(voice1,255,168); // vol8
                       end;
 
         end;
@@ -1298,7 +1300,7 @@ begin
 
   CRT_GotoXY(0,7);
   CRT_Write('--------------------+'~);
-  sfx_play(voice4,77,200); // vol8
+  // sfx_play(voice4,77,200); // vol8
 
   for y:=8 to 17 do
   begin
@@ -1395,17 +1397,17 @@ begin
                       // update cargo Total
                       currentShip.scu:=currentShip.scu-selecteditemquantity;
                       trade_UpdateCargo;
-                      sfx_play(voice4,255,168); // vol8
+                      // sfx_play(voice4,255,168); // vol8
                     end;
         KEY_OK:     begin
                       player.uec:= currentuec;
                       ship:= currentShip;
                       itemquantity[currentitemindex]:=itemquantity[currentitemindex]-selecteditemquantity;
                       current_menu:= MENU_MAIN;
-                      sfx_play(voice4,52,200); // vol8
+                      // sfx_play(voice4,52,200); // vol8
                     end;
         KEY_BACK:   begin
-                      sfx_play(voice4,255,168); // vol8
+                      // sfx_play(voice4,255,168); // vol8
                       current_menu := MENU_MAIN;
                       //gfx_fadeout(true);
                     end;
@@ -1783,6 +1785,9 @@ begin
   until (keyval = KEY_BACK) or (keyval = KEY_OK);
 end;
 
+
+
+
 procedure menu;
 
 begin
@@ -1846,7 +1851,7 @@ begin
                       if (shipprices[offset] > 0) then current_menu := MENU_SHIP;
                      end;
         KEY_BACK: begin
-                    sfx_play(voice4,255,168); // vol8
+                    // sfx_play(voice4,255,168); // vol8
                     current_menu := MENU_TITLE;
                   end;
       end;
@@ -1855,8 +1860,6 @@ begin
 
   until (keyval = KEY_BACK) or (keyval = KEY_OPTION1) or (keyval = KEY_OPTION2) or (keyval = KEY_OPTION3) or (keyval = KEY_OPTION4);
 end;
-
-
 
 procedure title;
 
@@ -1868,7 +1871,7 @@ begin
 
   gfx_fadeout(true);
   pic_load(GFX,0);
-  sfx_init;
+  // sfx_init;
 
   CRT_ClearRows(0,5);
   CRT_GotoXY(14,0);
@@ -1878,6 +1881,12 @@ begin
   begin
       CRT_GotoXY(14,y);
       WriteFF(strings[51]); // Continue game;
+      Inc(y);
+      CRT_GotoXY(15,y);
+      CRT_Write('1'*~); WriteSpaces(1); WriteFF(strings[52]); // Save
+      Inc(y);
+      CRT_GotoXY(15,y);
+      CRT_Write('2'*~); WriteSpaces(1); WriteFF(strings[53]); // Load
       Inc(y);
   end;
   CRT_GotoXY(16,y);
@@ -1908,6 +1917,14 @@ begin
                           gfx_fadeout(true);
                           current_menu:=MENU_MAIN;
                         end;
+          KEY_OPTION1:  begin
+                          gfx_fadeout(true);
+                          current_menu:=MENU_SAVE;
+                        end;
+          KEY_OPTION2:  begin
+                          gfx_fadeout(true);
+                          current_menu:=MENU_LOAD;
+                        end;
       // else
       // begin
       //   CRT_GotoXY(0,5);
@@ -1918,12 +1935,20 @@ begin
       //   WriteSpaces(2);
       // end;
 (*
-          KEY_OPTION1: sfx_play(185,16*12+4);
-          KEY_OPTION2: sfx_play(110,16*12+4);
-          KEY_OPTION3: sfx_play(60,16*12+4);
-          KEY_OPTION4: sfx_play(20,16*12+4);
-          KEY_OPTION5: sfx_play(10,16*12+4);
-          KEY_OPTION6: sfx_play(5,16*12+4);
+          // KEY_OPTION1: sfx_play(185,16*12+4);
+          // KEY_OPTION2: sfx_play(110,16*12+4);
+          // KEY_OPTION3: sfx_play(60,16*12+4);
+          // KEY_OPTION4: sfx_play(20,16*12+4);
+          // KEY_OPTION5: sfx_play(10,16*12+4);
+          // KEY_OPTION6: sfx_play(5,16*12+4);
+*)
+(*
+          KEY_OPTION1: msx.sfx(0,voice4,185);
+          KEY_OPTION2: msx.sfx(0,voice4,110);
+          KEY_OPTION4: msx.sfx(0,voice4,20);
+          KEY_OPTION3: msx.sfx(0,voice4,60);
+          KEY_OPTION5: msx.sfx(0,voice4,10);
+          KEY_OPTION6: msx.sfx(0,voice4,5);
 *)
       end;
     end;
@@ -1935,9 +1960,133 @@ begin
 
     Waitframe;
 
-  until (keyval = KEY_QUIT) or (keyval = KEY_NEW) or (startPressed = true) or (keyval = KEY_CANCEL);
+  until (keyval = KEY_QUIT) or (keyval = KEY_NEW) or (startPressed = true) or (keyval = KEY_CANCEL) or (keyval = KEY_OPTION1) or (keyval = KEY_OPTION2);
 end;
 
+procedure disk_save(num: byte);
+begin
+  tstr:='slot';
+  tstr:=concat(tstr,inttostr(num));
+  tstr:=concat(tstr,'   SAV');
+  if (xBiosCheck <> 0) then
+  begin
+    xBiosOpenFile(tstr);
+
+    if (xBiosIOresult = 0) then
+    begin
+      xBiosWriteData(@player.uec);
+      xBiosFlushBuffer;
+    end
+  end;
+end;
+
+procedure disk_load(num: byte);
+begin
+  tstr:='slot';
+  tstr:=concat(tstr,inttostr(num));
+  tstr:=concat(tstr,'   SAV');
+  if (xBiosCheck <> 0) then
+  begin
+    xBiosOpenFile(tstr);
+
+    if (xBiosIOresult = 0) then
+    begin
+      xBiosLoadData(@player.uec);
+      xBiosFlushBuffer;
+    end
+  end;
+end;
+
+procedure menu_save_load(mode: Boolean);
+var
+  slot, oldslot : Byte;
+
+begin
+  CRT_ClearRows(0,6);
+
+  CRT_GotoXY(10,0);
+  if mode then txt:=FFTermToString(strings[52])  // save mode
+  else txt:=FFTermToString(strings[53]);          // load mode
+
+  WriteSpaces(8);CRT_Write(txt);WriteSpaces(8); // Save
+  CRT_Invert(10,0,Length(txt)+16); // plus all 16 spaces
+  txt:=FFTermToString(strings[54]);
+  count:=Length(txt);
+  for y:=1 to 5 do
+  begin
+    CRT_GotoXY(14,y);
+    WriteSpaces(3);CRT_Write(txt);CRT_Write(y);WriteSpaces(3);
+  end;
+
+  // Help Keys
+  CRT_GotoXY(0,6);
+  WriteFF(strings[23]); // Navigation options
+  WriteSpaces(1);
+  CRT_Write('SELECT'*~);
+  WriteFF(strings[19]);  // Confirm
+  WriteSpaces(1);
+  WriteFF(strings[7]); // Back
+
+  EnableVBLI(@vbl);
+  EnableDLI(@dli1);
+  Waitframe;
+  DLISTL := DISPLAY_LIST_ADDRESS_MENU;
+  gfx_fadein;
+
+  slot:=0;
+  oldslot:=0;
+
+  keyval:= 0;
+  repeat
+
+    If (CRT_Keypressed) then
+    begin
+
+
+        keyval := kbcode;
+        case keyval of
+          KEY_BACK:     begin
+                          // sfx_play(voice4,255,168); // vol8
+                          current_menu := MENU_TITLE;
+                        end;
+          KEY_OPTION1:  begin
+                          oldslot:=slot;
+                          slot:=1;
+                         end;
+          KEY_OPTION2:  begin
+                          oldslot:=slot;
+                          slot:=2;
+                        end;
+          KEY_OPTION3:  begin
+                          oldslot:=slot;
+                          slot:=3;
+                        end;
+          KEY_OPTION4:  begin
+                          oldslot:=slot;
+                          slot:=4;
+                        end;
+          KEY_OPTION5:  begin
+                          oldslot:=slot;
+                          slot:=5;
+                        end;
+
+        end;
+        if (current_menu=MENU_SAVE) and (slot > 0) then
+        begin
+          If (oldslot > 0) then CRT_Invert(14,oldslot,count+8);
+          CRT_Invert(14,slot,count+8);
+        end;
+    end;
+    if CRT_SelectPressed and (slot > 0) then
+    begin
+      if mode then disk_save(slot)
+      else disk_load(slot);
+      current_menu:=MENU_TITLE;
+    end;
+    Waitframe;
+
+  until (keyval = KEY_BACK) or CRT_SelectPressed;
+end;
 
 
 {
@@ -1985,7 +2134,7 @@ begin
 
   gamestate:= NEWGAME;
   current_menu := MENU_TITLE;
-  //current_menu := MENU_MAIN;
+
   repeat
     case current_menu of
       MENU_TITLE: title;
@@ -1994,6 +2143,8 @@ begin
       MENU_TRADE: console_trade;
       //MENU_MAINT: console_maint;
       MENU_SHIP:  console_ship;
+      MENU_SAVE:  menu_save_load(true);
+      MENU_LOAD:  menu_save_load(false);
     end;
     repeat Waitframe until not CRT_Keypressed;
 

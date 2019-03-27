@@ -51,6 +51,9 @@ strings_list
     dta a(txt_49)
     dta a(txt_50)
     dta a(txt_51)
+    dta a(txt_52)
+    dta a(txt_53)
+    dta a(txt_54)
 
 strings
 txt_0
@@ -157,8 +160,12 @@ txt_50
     dta d'-All',$ff
 txt_51
     dta d'C'*, d'ontinue',$ff
-
-
+txt_52
+    dta d'Save',$ff
+txt_53
+    dta d'Load',$ff
+txt_54
+    dta d'Slot ',$ff
 
  .print "STRINGS SIZE: ", *-strings_list
  .print "STRINGS : ", strings_list, "..", *
