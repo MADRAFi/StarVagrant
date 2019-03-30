@@ -1915,6 +1915,7 @@ begin
           KEY_NEW:      start;
           KEY_CANCEL:   begin
                           gfx_fadeout(true);
+                          pic_load(LOC,player.loc);
                           current_menu:=MENU_MAIN;
                         end;
           KEY_OPTION1:  begin
@@ -1963,10 +1964,10 @@ begin
   until (keyval = KEY_QUIT) or (keyval = KEY_NEW) or (startPressed = true) or (keyval = KEY_CANCEL) or (keyval = KEY_OPTION1) or (keyval = KEY_OPTION2);
 end;
 
-procedure disk_save(num: byte);
+procedure disk_save(num: Byte);
 begin
-  tstr:='slot';
-  tstr:=concat(tstr,inttostr(num));
+  tstr:='SLOT';
+  tstr:=concat(tstr,IntToStr(num));
   tstr:=concat(tstr,'   SAV');
   if (xBiosCheck <> 0) then
   begin
@@ -1974,16 +1975,37 @@ begin
 
     if (xBiosIOresult = 0) then
     begin
-      xBiosWriteData(@player.uec);
+      xBiosSetLength(55); // 5+10+20+20
+      xBiosWriteData(@player);
+      xBiosWriteData(@ship);
+      if (xBiosIOresult = 0) then
+      begin
+        CRT_GotoXY(5,5); // success
+        //CRT_Write('Save Successfull. Press any key'~);
+        WriteFF(strings[52]);WriteFF(strings[56]);CRT_Write('.'~);WriteFF(strings[26]);
+      end
+      else
+      begin
+        CRT_GotoXY(7,5); // error
+        //CRT_WriteXY(0,5,'Save error. Press any key'~);
+        WriteFF(strings[52]);WriteFF(strings[55]);CRT_Write('.'~);WriteFF(strings[26]);
+      end;
       xBiosFlushBuffer;
     end
+    else
+    begin
+      CRT_GotoXY(5,5); // error opening
+      //CRT_WriteXY(0,5,'Open file error. Press any key'~*);
+      WriteFF(strings[57]);WriteFF(strings[55]);CRT_Write('.'~);WriteFF(strings[26]);
+    end;
+    repeat until CRT_Keypressed;
   end;
 end;
 
-procedure disk_load(num: byte);
+procedure disk_load(num: Byte);
 begin
-  tstr:='slot';
-  tstr:=concat(tstr,inttostr(num));
+  tstr:='SLOT';
+  tstr:=concat(tstr,IntToStr(num));
   tstr:=concat(tstr,'   SAV');
   if (xBiosCheck <> 0) then
   begin
@@ -1991,9 +2013,28 @@ begin
 
     if (xBiosIOresult = 0) then
     begin
-      xBiosLoadData(@player.uec);
+      xBiosSetLength(55); // 5+10+20+20
+      xBiosLoadData(@player);
+      xBiosLoadData(@ship);
+      if (xBiosIOresult = 0) then
+      begin
+        CRT_GotoXY(5,5); // success
+        WriteFF(strings[53]);WriteFF(strings[56]);CRT_Write('.'~);WriteFF(strings[26]);
+      end
+      else
+      begin
+        CRT_GotoXY(7,5); // error
+        WriteFF(strings[53]);WriteFF(strings[55]);CRT_Write('.'~);WriteFF(strings[26]);
+      end;
       xBiosFlushBuffer;
     end
+    else
+    begin
+      CRT_GotoXY(5,5); // error opening
+      WriteFF(strings[57]);WriteFF(strings[55]);CRT_Write('.'~);WriteFF(strings[26]);
+    end;
+
+    repeat until CRT_Keypressed;
   end;
 end;
 
@@ -2073,22 +2114,30 @@ begin
                         end;
 
         end;
-        if (current_menu=MENU_SAVE) and (slot > 0) then
+        if (slot > 0) then
         begin
           If (oldslot > 0) then CRT_Invert(14,oldslot,count+8);
           CRT_Invert(14,slot,count+8);
         end;
     end;
-    if CRT_SelectPressed and (slot > 0) and (selectPressed = false) then
+
+    if CRT_SelectPressed then
     begin
-      if mode then disk_save(slot)
-      else disk_load(slot);
+      if (slot > 0 ) and (selectPressed = false) then
+      // if (selectPressed = false) then
+      begin
+        if mode then disk_save(slot)
+        else disk_load(slot);
+        current_menu:=MENU_TITLE;
+        // CRT_WriteXY(0,5,'SELECT PRESSED'~*)
+      end;
       selectPressed:= true;
-      current_menu:=MENU_TITLE;
-    end;
+    end
+    else
+      selectPressed:=false;
     Waitframe;
 
-  until (keyval = KEY_BACK) or CRT_SelectPressed;
+  until (keyval = KEY_BACK) or (current_menu=MENU_TITLE);
 end;
 
 
@@ -2118,9 +2167,9 @@ begin
   // sfx_init;
 
   // Initialize RMT player
-  msx.player:=pointer(RMT_PLAYER_ADDRESS);
-  msx.modul:=pointer(RMT_MODULE_ADDRESS);
-  msx.init(0);
+  // msx.player:=pointer(RMT_PLAYER_ADDRESS);
+  // msx.modul:=pointer(RMT_MODULE_ADDRESS);
+  // msx.init(0);
 
   // load ships data into an array of records.
   for y:=0 to NUMBEROFSHIPS-1 do

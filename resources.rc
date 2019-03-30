@@ -34,8 +34,8 @@ DISPLAY_LIST_ADDRESS_CONSOLE rcasm 'dlist_console.asm'
 STRINGS_ADDRESS rcasm 'strings.asm'
 
 ; rmt module
-RMT_PLAYER_ADDRESS	RMTPLAY	'assets/title.feat' 0
-RMT_MODULE_ADDRESS	RMT	'assets/title.rmt'
+;RMT_PLAYER_ADDRESS	RMTPLAY	'assets/title.feat' 0
+;RMT_MODULE_ADDRESS	RMT	'assets/title.rmt'
 
 ; graphics
 ;GFX_ADDRESS RCDATA 'assets/StarVagrandLogo.dat'

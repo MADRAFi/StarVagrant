@@ -54,10 +54,13 @@ strings_list
     dta a(txt_52)
     dta a(txt_53)
     dta a(txt_54)
+    dta a(txt_55)
+    dta a(txt_56)
+    dta a(txt_57)
 
 strings
 txt_0
-    dta d'v.0.6 (c) 2019 Code: MADRAFi, Gfx: XxX, Msx: XxX. Special thanks to Bocianu for the support. ',$ff
+    dta d'v.0.7 (c) 2019 Code: MADRAFi, Gfx: XxX, Msx: XxX. Special thanks to Bocianu for the support. ',$ff
 txt_1
     dta d'N'*, d'ew Game',$ff
 txt_2
@@ -109,7 +112,7 @@ txt_24
 txt_25
     dta d'No xBios found. Cannot load Pics'*,$ff
 txt_26
-    dta d' Press any key '*,$ff
+    dta d' Press any key ',$ff
 txt_27
     dta d'Do you confirm? [Y/N]'*,$ff
 txt_28
@@ -166,6 +169,12 @@ txt_53
     dta d'Load',$ff
 txt_54
     dta d'Slot ',$ff
+txt_55
+    dta d' error',$ff
+txt_56
+    dta d' successfull',$ff
+txt_57
+    dta d'Open file ',$ff
 
  .print "STRINGS SIZE: ", *-strings_list
  .print "STRINGS : ", strings_list, "..", *
