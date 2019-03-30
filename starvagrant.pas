@@ -321,6 +321,7 @@ end;
 procedure start;
 
 begin
+  current_menu := MENU_MAIN;
   // sfx_play(voice1,80,200); // vol8
   // sfx_play(voice2,84,200); // vol8
   // sfx_play(voice3,86,200); // vol8
@@ -352,7 +353,7 @@ begin
   // ship.cargoquantity[1]:=20;
   // ship.scu:= 30;
 
-  current_menu := MENU_MAIN;
+
 
 end;
 
@@ -1914,9 +1915,9 @@ begin
       case keyval of
           KEY_NEW:      start;
           KEY_CANCEL:   begin
+                          current_menu:=MENU_MAIN;
                           gfx_fadeout(true);
                           pic_load(LOC,player.loc);
-                          current_menu:=MENU_MAIN;
                         end;
           KEY_OPTION1:  begin
                           gfx_fadeout(true);
@@ -1926,15 +1927,7 @@ begin
                           gfx_fadeout(true);
                           current_menu:=MENU_LOAD;
                         end;
-      // else
-      // begin
-      //   CRT_GotoXY(0,5);
-      //   CRT_Write('Klawisz='~);
-      //   CRT_Write(asc(keyval));
-      //   CRT_Write('   Kod='~);
-      //   CRT_Write(keyval);
-      //   WriteSpaces(2);
-      // end;
+
 (*
           // KEY_OPTION1: sfx_play(185,16*12+4);
           // KEY_OPTION2: sfx_play(110,16*12+4);

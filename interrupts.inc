@@ -75,15 +75,19 @@ begin
   asm {
         phr ; store registers
   };
-    if count = $ff then begin // $ff is one below zero
+  if (current_menu = MENU_TITLE) then begin
+    if (count = $ff) then begin // $ff is one below zero
         count := 3;
         Inc(offset);
         if offset=140 then offset:= 0;  // 140 = 2x string size
         dpoke(DISPLAY_LIST_ADDRESS_TITLE + 114, SCROLL_ADDRESS + offset); // 114 bytes for DLI lines
     end;
-
-    hscrol := count; // set hscroll
+    hscrol:=count; // set hscroll
     dec(count);
+  end
+  else
+    dpoke(DISPLAY_LIST_ADDRESS_TITLE + 114, SCROLL_ADDRESS + 140); // 114 bytes for DLI lines
+
 
   //msx.play;
 
