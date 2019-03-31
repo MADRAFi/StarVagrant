@@ -619,7 +619,7 @@ end;
 
 
 
-procedure calculateprices(loc: Byte);
+procedure calculateprices;
 var
   percent: Shortreal;
   modify: Real;
@@ -627,7 +627,7 @@ var
 begin
   percent:=Random(100)/100;
   for y:=0 to NUMBEROFITEMS-1 do begin
-    offset:= (NUMBEROFITEMS * loc)+y;
+    offset:= (NUMBEROFITEMS * player.loc)+y;
 
     // Produce new items on certain LOCATIONS
     if (itemquantity[offset] > 0) and (itemquantity[offset] <= 20) then
@@ -848,7 +848,7 @@ begin
   If (xBiosCheck <> 0) then xBiosFlushBuffer; // close file
   // sfx_init; // reinitialize pokey
   randomEncounter;
-  calculateprices(player.loc);
+  calculateprices;
   player.loc:=newLoc;
 end;
 
