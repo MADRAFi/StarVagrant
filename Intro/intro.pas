@@ -106,36 +106,9 @@ begin
   until CRT_keypressed;
   msx.stop;
 
-  // if xBiosCheck = 0 then
-  // begin
-  // //   // SetIntVec(iDLI, old_dli);
-  // //   // SetIntVec(iVBL, old_vbl);
-  // //   // nmien := $40;
-  //   // colpf1:=$1c;
-  //   // colpf2:=$00;
-  //   // CRT_GotoXY(5,1);
-  //   // CRT_Write(' No xBios found. Cannot load '*~);
-  //
-  //   // TODO new DLI  for text mode or write on GFX screen to  display no xbios
-  //   // repeat
-  //   //   waitframe;
-  //   // until CRT_keypressed;
-  // //
-  // end
-  // else begin
-  //   // filename:= 'STARV   XEX';
-  //   // xbiosloadfile(filename);
-  //   // if xBiosIOresult <> 0 then
-  //   // begin
-  //   //   CRT_Write('IOerror: '~);CRT_Write(xBiosIOerror);
-  //   // end
-  //   // else xBiosLoadBinaryFile;
-  // end;
-  // // SetIntVec(iDLI, old_dli);
-  // // SetIntVec(iVBL, old_vbl);
-  // // nmien := $40;
-  // //SystemReset;
-  // repeat
-  //   waitframe;
-  // until CRT_keypressed;
+// asm {
+//   jmp $05CE
+//
+// };
+//SystemReset;
 end.

@@ -1,5 +1,5 @@
 {$librarypath '../../Libs/lib/';'../../Libs/blibs/';'../../Libs/base/'}
-uses atari; //, b_crt, b_system, xbios;
+uses atari, b_crt, b_system, xbios;
 
 const
   CHARSET_ADDRESS = $D800;
@@ -16,9 +16,9 @@ begin
   // until (color1 or color2) = 0;
 
 
-
-  // if xBiosCheck = 0 then
-  // begin
+  CRT_Init(GFX_ADDRESS);
+  if xBiosCheck = 0 then
+  begin
   //   CRT_Init(GFX_ADDRESS);
   //   colpf1:=$1c;
   //   colpf2:=$00;
@@ -29,17 +29,17 @@ begin
   //     Waitframe;
   //   until CRT_Keypressed;
   //
-  // end
-  // else begin
-  //   SystemOff;
-  //   filename:= 'intro   XEX';
-  //   xbiosloadfile(filename);
-  //   if xBiosIOresult <> 0 then
-  //   begin
-  //     // CRT_GotoXY(0,2);
-  //     CRT_WriteXY(0,2,'IOerror: '~);CRT_Write(xBiosIOerror);
-  //   end;
-  //   SystemReset;
-  // end;
+  end
+  else begin
+    SystemOff;
+    filename:= 'INTRO   XEX';
+    xbiosloadfile(filename);
+    if xBiosIOresult <> 0 then
+    begin
+      CRT_GotoXY(0,2);
+      CRT_WriteXY(0,2,'IOerror: '~);CRT_Write(xBiosIOerror);
+    end;
+    SystemReset;
+  end;
 
 end.
