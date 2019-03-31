@@ -719,28 +719,53 @@ begin
 
 end;
 
+function getcargotypenum : Byte;
+var
+  count : Byte;
+
+begin
+  count:=0;
+  for y:=0 to MAXCARGOSLOTS do
+  begin
+    If ship.cargoindex[y] > 0 then Inc(count)
+    else break;
+  end;
+  Result:=count;
+end;
 procedure randomEncounter;
+
+var
+  modify: Real;
+
 begin
   y:=Random(24);
-   // CRT_GotoXY(0,4);
-   // CRT_Write(y);
 
   txt:='#';
   case y of
 
-    1:   begin
+    1:    begin
             if player.uec > 0 then
             begin
               txt:=FFTermToString(strings[34]);
               player.uec:=player.uec - 2500;
             end;
           end;
-    5:   begin
-            y:=Random(5);
-            if ship.cargoindex[y] > 0 then
+    3:    begin
+              txt:=FFTermToString(strings[35]);
+              offset:=Round(Random * 50000);
+              player.uec:=player.uec + offset;
+          end;
+    5:    begin
+            if ship.cargoquantity[0] > 0 then
             begin
-              txt:=FFTermToString(strings[33]);
-              ship.cargoquantity[y]:=ship.cargoquantity[y]-(1 * Random);
+              count:=getcargotypenum;
+              y:=Random(count);
+              if ship.cargoindex[y] > 0 then
+              begin
+                txt:=FFTermToString(strings[33]);
+                modify:=(1 - Random(100)/100);
+                ship.cargoquantity[y]:=Round(ship.cargoquantity[y] * modify);
+              end;
             end;
           end;
     10:   begin
@@ -756,7 +781,13 @@ begin
             end;
           end;
     22:   begin
-            txt:=FFTermToString(strings[30]);
+            if ship.cargoquantity[0] > 0 then
+            begin
+              txt:=FFTermToString(strings[30]);
+              offset:=Random(getcargotypenum);
+              ship.cargoindex[offset]:=0;
+              ship.cargoquantity[offset]:=0;
+            end;
           end;
     24:   begin
             if ship.cargoindex[0] > 0 then
@@ -1192,7 +1223,8 @@ begin
   //liststart:=(CRT_screenWidth shr 1)+1;
   // update cargo Total
   tstr:=IntToStr(currentship.scu_max-currentship.scu);
-  CRT_GotoXY(LISTSTART-(Length(tstr)+5),6); // -4 as 4 spaces will be drawn
+  //CRT_GotoXY(LISTSTART-(Length(tstr)+5),6); // -4 as 4 spaces will be drawn
+  CRT_GotoXY(LISTSTART-8,6); // -8 to clear all space right after string Total Cargo
   WriteSpaces(4); // fixed 4 chars for cargo size
   CRT_GotoXY(LISTSTART-(Length(tstr)+5),6);
   CRT_Write(Atascii2Antic(tstr)); CRT_Write(Atascii2Antic(CARGOUNIT));CRT_Write('|'~);

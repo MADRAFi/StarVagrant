@@ -114,7 +114,7 @@ txt_25
 txt_26
     dta d' Press any key ',$ff
 txt_27
-    dta d'Do you confirm? [Y/N]'*,$ff
+    dta d'Do you confirm? [Y/N]'*,$ff ; not used
 txt_28
     dta d'You have lost: ',$ff
 txt_29
@@ -126,11 +126,11 @@ txt_31
 txt_32
     dta d'   You have taken a Passenger with you. He payed you some extra cash for a ride.',$ff
 txt_33
-    dta d'You saw some citizens in urgent need.   You have decided to give away some goods.',$ff
+    dta d'You saw some citizens in urgent need.   You decided to give away some goods.',$ff
 txt_34
     dta d'You were obligated to use military      escort due to recent pirate activities. You have paid standard service fee.',$ff
 txt_35
-    dta d'Reserved',$ff
+    dta d'It seems your lottery ticket won.       The prize was transferred to your account.',$ff
 txt_36
     dta d'Reserved',$ff
 txt_37
