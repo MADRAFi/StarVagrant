@@ -108,6 +108,7 @@ begin
   DisableDLI;
   DisableVBLI;
   nmien:=0;
+  Dmactl:= 0;
   asm {
       clc
       rts

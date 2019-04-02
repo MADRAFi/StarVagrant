@@ -74,9 +74,9 @@ main
 
           jsr printf
 	        dta c'Loading...',$9b,0
-;          mva <introfile adr1+1
-;          mva >introfile adr2+1
-;          jsr loadfile
+          mva <introfile adr1+1
+          mva >introfile adr2+1
+          jsr loadfile
 game      mva <gamefile adr1+1
           mva >gamefile adr2+1
           jmp loadfile
@@ -85,3 +85,4 @@ game      mva <gamefile adr1+1
           .link 'd:\Atari\Mad_Asm\examples\LIBRARIES\stdio\lib\printf.obx'
 
 ;.print "game address: ", game, "..", *
+.print "Loader:", main, "..", *

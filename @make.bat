@@ -12,7 +12,7 @@ D:\Atari\MAD_PASCAL\mads.exe starvagrant.a65 -x -i:D:\Atari\MAD_PASCAL\base -o:s
 copy /Y D:\Atari\tools\xbios.com Release\xbios.com
 copy /Y D:\Atari\tools\xbios.cfg Release\xbios.cfg
 copy /Y Loader\loader.xex Release\XAUTORUN
-rem copy /Y Intro\intro.xex Release\intro.xex
+copy /Y Intro\intro.xex Release\intro.xex
 copy /Y starvagrant.xex Release\starv.xex
 rem copy /Y starvagrant.xex Release\XAUTORUN
 D:\Atari\tools\dir2atr -md -B D:\Atari\tools\xboot.obx starvagrant.atr Release
