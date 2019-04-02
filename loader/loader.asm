@@ -43,13 +43,13 @@ xDCMD           equ xBIOS+$3fd ; CMD (1 byte)
 xDAUX1          equ xBIOS+$3fe ; Sector lo byte (1 byte)
 xDAUX2          equ xBIOS+$3ff ; Sector hi byte (1 byte)
 
+          icl 'atari.hea'
           org $0580
 introfile .byte c'INTRO   XEX' ; 11 characters ATASCII (8.3 without the dot, space padded)
 gamefile .byte c'STARV   XEX'
 xBiosIOresult .byte
 xBiosIOerror .byte
 
-;          icl 'printf.asm'
 
 loadfile
           mva #0 xBiosIOresult
@@ -63,17 +63,25 @@ adr2      ldx #0
 @         rts
 
 main
-;          mva	#1c	$2c4
+          mva #28 colpf1s
+          mva #0 colpf0s
+          mva #0 colpf2s
+          mva #0 colpf3s
+          mva #0 colbaks
+
+          ;mva savmsc #65
+          ;mva savmsc #20
+
           jsr printf
 	        dta c'Loading...',$9b,0
-          mva <introfile adr1+1
-          mva >introfile adr2+1
-          jsr loadfile
+;          mva <introfile adr1+1
+;          mva >introfile adr2+1
+;          jsr loadfile
 game      mva <gamefile adr1+1
           mva >gamefile adr2+1
-          jsr loadfile
+          jmp loadfile
 
           run main
           .link 'd:\Atari\Mad_Asm\examples\LIBRARIES\stdio\lib\printf.obx'
 
-.print "game address: ", game, "..", *
+;.print "game address: ", game, "..", *

@@ -1350,7 +1350,7 @@ begin
   // CRT_Write(StringOfChar('-'~,19));
 
 
-  CRT_GotoXY(0,22);
+  CRT_GotoXY(1,22);
   txt:=concat(char(30+128),char(31+128));
   CRT_Write(Atascii2Antic(txt));
   CRT_Write('-x1 +'~);
@@ -1358,8 +1358,8 @@ begin
   CRT_Write('-x100 +'~);
   CRT_Write('SHIFT'*~);
   WriteFF(strings[50]); WriteSpaces(1);
-  WriteFF(strings[16]); WriteSpaces(1);
-  WriteFF(strings[17]);
+  WriteFF(strings[16]); //WriteSpaces(1);
+  // WriteFF(strings[17]);
 
 
   // help
@@ -1396,7 +1396,7 @@ begin
       selectitem:= false;
       if (selecteditemquantity < currentitemquantity) then
           if (mode = false) then begin
-              if //(selecteditemquantity < currentShip.scu_max-currentShip.scu) and
+              if (selecteditemquantity < currentShip.scu_max-currentShip.scu) and
                  (selecteditemtotal + currentitemprice <= currentuec ) then selectitem := true;
           end else // when selling
               if cargoPresent then selectitem:= true;
@@ -1432,15 +1432,18 @@ begin
                       trade_UpdateCargo;
                       // sfx_play(voice4,255,168); // vol8
                     end;
-        KEY_OK:     begin
+        // KEY_OK:     begin
+        //               player.uec:= currentuec;
+        //               ship:= currentShip;
+        //               itemquantity[currentitemindex]:=itemquantity[currentitemindex]-selecteditemquantity;
+        //               current_menu:= MENU_MAIN;
+        //               // sfx_play(voice4,52,200); // vol8
+        //             end;
+        KEY_BACK:   begin
+                      // sfx_play(voice4,255,168); // vol8
                       player.uec:= currentuec;
                       ship:= currentShip;
                       itemquantity[currentitemindex]:=itemquantity[currentitemindex]-selecteditemquantity;
-                      current_menu:= MENU_MAIN;
-                      // sfx_play(voice4,52,200); // vol8
-                    end;
-        KEY_BACK:   begin
-                      // sfx_play(voice4,255,168); // vol8
                       current_menu := MENU_MAIN;
                       //gfx_fadeout(true);
                     end;
@@ -1538,24 +1541,27 @@ begin
                       //     end else // when selling
                       //         if cargoPresent then selectitem:= true;
 
-                      if selectitem and (selecteditemquantity < currentShip.scu_max-currentShip.scu) then
+                      //if selectitem and (selecteditemquantity < currentShip.scu_max-currentShip.scu) then
+                      if selectitem then
                       begin
                         Inc(selecteditemquantity);
                         selecteditemtotal:=selecteditemquantity * currentitemprice;
-
-                      end;
-//                      else
-//                       CRT_WriteRightAligned(19,FFTermToString(strings[??]));
+                        CRT_GotoXY(0,16);
+                        CRT_Write('INC'~);
+                      end
+                      else
+                        CRT_Write('NOT'~);
+                        //CRT_WriteRightAligned(19,FFTermToString(strings[??]));
 
                       //
-                      // CRT_GotoXY(0,12);
-                      // CRT_Write('selectitem='~);CRT_Write(selectitem);CRT_Write('           '~);
-                      // CRT_GotoXY(0,13);
-                      // CRT_Write('selecteditemquantity='~);CRT_Write(selecteditemquantity);CRT_Write('           '~);
-                      // CRT_GotoXY(0,14);
-                      // CRT_Write('currentitemquantity='~);CRT_Write(currentitemquantity);CRT_Write('           '~);
-                      // CRT_GotoXY(0,15);
-                      // CRT_Write('cargoPresent='~);CRT_Write(cargoPresent);CRT_Write('           '~);
+                      CRT_GotoXY(0,12);
+                      CRT_Write('selectitem='~);CRT_Write(selectitem);CRT_Write('           '~);
+                      CRT_GotoXY(0,13);
+                      CRT_Write('selecteditemquantity='~);CRT_Write(selecteditemquantity);CRT_Write('           '~);
+                      CRT_GotoXY(0,14);
+                      CRT_Write('currentitemquantity='~);CRT_Write(currentitemquantity);CRT_Write('           '~);
+                      CRT_GotoXY(0,15);
+                      CRT_Write('cargoPresent='~);CRT_Write(cargoPresent);CRT_Write('           '~);
                     end;
 
         KEY_CTRLRIGHT:
@@ -1815,7 +1821,7 @@ begin
       selectPressed:=false;
     Waitframe;
 
-  until (keyval = KEY_BACK) or (keyval = KEY_OK);
+  until (keyval = KEY_BACK); // or (keyval = KEY_OK);
 end;
 
 
@@ -2227,6 +2233,8 @@ begin
 
   until keyval = KEY_QUIT;
 
+  DisableDLI;
+  DisableVBLI;
   // restore system
   SystemReset;
 end.

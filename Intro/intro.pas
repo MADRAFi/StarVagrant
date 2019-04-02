@@ -105,10 +105,12 @@ begin
     msx.play;
   until CRT_keypressed;
   msx.stop;
+  DisableDLI;
+  DisableVBLI;
+  nmien:=0;
+  asm {
+      clc
+      rts
+  };
 
-// asm {
-//   jmp $05CE
-//
-// };
-//SystemReset;
 end.
