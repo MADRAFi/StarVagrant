@@ -2183,19 +2183,11 @@ begin
   Randomize;
   SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
   CRT_Init(TXT_ADDRESS);
-  //CRT_Write('Loading...'~);
+  // clear video memory after intro
+  // fillbyte(pointer(SCROLL_ADDRESS),255,0);
+  fillbyte(pointer(SCROLL_ADDRESS),100,0);
+
   //player.loc:=STARTLOCATION; //start location Port Olisar
-
-
-  // EnableVBLI(@vbl_title);
-  // EnableDLI(@dli_title1);
-  // Waitframe;
-  // DLISTL := DISPLAY_LIST_ADDRESS_TITLE;
-  //
-  // gfx_fadeout;
-  // pic_load(GFX,0);
-  // gfx_fadein(piccolors[0],piccolors[1],piccolors[2],piccolors[3]);
-  // sfx_init;
 
   // Initialize RMT player
   // msx.player:=pointer(RMT_PLAYER_ADDRESS);
