@@ -2185,7 +2185,7 @@ begin
   CRT_Init(TXT_ADDRESS);
   // clear video memory after intro
   // fillbyte(pointer(SCROLL_ADDRESS),255,0);
-  fillbyte(pointer(SCROLL_ADDRESS),100,0);
+  //fillbyte(pointer(SCROLL_ADDRESS),100,0);
 
   //player.loc:=STARTLOCATION; //start location Port Olisar
 
