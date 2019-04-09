@@ -82,7 +82,7 @@ DL_JVB equ %01000001; // Jump to begining
 
           icl 'atari.hea'
 
-CHARSET_ADDRESS equ $D800; // same as in intro and game
+CHARSET_ADDRESS equ $9C00; // same as in intro and game
           org CHARSET_ADDRESS
           ins '../assets/Nvdi8.fnt'
           org $0580
@@ -104,47 +104,27 @@ adr2      ldx #0
           mva #1 xBiosIOresult
 @         rts
 
+; .proc	systemoff
 
-;systemoff
-;      		lda:cmp:req 20
-;      		sei
-;      		mva #0 NMIEN
-;
-;      		mva port_b PORTB
-;      		mwa #__nmi NMIVEC
-;
-;      		lda <__iret
-;      		sta IRQVEC
-;      		sta __vblvec
-;      		sta __dlivec
-;
-;      		lda >__iret
-;      		sta IRQVEC+1
-;      		sta __vblvec+1
-;      		sta __dlivec+1
-;
-;      		mva #$40 NMIEN
-;      		sta __nmien
-;      		bne __stop
-;__nmi
-;      		bit NMIST
-;      		bpl __vbl
-;      		jmp __dlivec
-;.def :__dlivec = *-2
-;		      rti
-;__vbl
-;      		inc rtclok+2
-;      		bne __vblvec-1
-;      		inc rtclok+1
-;      		bne __vblvec-1
-;      		inc rtclok
-;      		jmp __vblvec
-;.def :__vblvec = *-2
-;.def :__iret
-;    	    rti
-;__stop
+; 	lda:rne vcount
 
+; 	sei
+; 	inc nmien
+; 	mva #$fe portb
 
+; 	rts
+; .endp
+
+; .proc	systemon
+
+; 	lda:rne vcount
+
+; 	mva #$ff portb
+; 	dec nmien
+; 	cli
+
+; 	rts
+; .endp
 
 ;-------------------------------------------------------------------------------
 dlist
@@ -157,21 +137,28 @@ vmem
 main
           ;jsr systemoff
 
+;          mva #.hi(CHARSET_ADDRESS) chbase
+
+;          mva #28 colpf1
+;          mva #0 colpf0
+;          mva #0 colpf2
+;          mva #0 colpf3
+;          mva #0 colbak
+
+;          sta colpf0
+;          sta colpf1
+;          sta colpf2
+;          sta colpf3
+;          sta colbak
+
+;          mwa #dlist dlistl
+
+;intro     mva <introfile adr1+1
+;          mva >introfile adr2+1
+;          jsr loadfile
 
 
-          mva CHARSET_ADDRESS chbas
-          mva #28 colpf1s
-          mva #0 colpf0s
-          mva #0 colpf2s
-          mva #0 colpf3s
-          mva #0 colbaks
-          mwa #dlist sdlstl
-
-intro     mva <introfile adr1+1
-          mva >introfile adr2+1
-          jsr loadfile
-
-          mva CHARSET_ADDRESS chbase
+          mva #.hi(CHARSET_ADDRESS) chbase
           mva #28 colpf1
           mva #0 colpf0
           mva #0 colpf2
@@ -182,6 +169,8 @@ intro     mva <introfile adr1+1
 game      mva <gamefile adr1+1
           mva >gamefile adr2+1
           jmp loadfile
+
+          ;jmp systemon
 
           run main
 
