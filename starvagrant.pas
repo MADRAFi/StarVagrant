@@ -1,7 +1,8 @@
 program StarVagrant;
 {$librarypath '../Libs/lib/';'../Libs/blibs/';'../Libs/base/'}
-//{$librarypath 'Libs/lib/';'Libs/blibs/';'Libs/base/'}
-// {$librarypath '../blibs/'}
+{$librarypath '../MADS/lib/'}
+{$librarypath '../MADS/base/'}
+{$librarypath '../MADS/blibs/'}
 uses atari, b_utils, b_system, b_crt, sysutils, xbios, rmt;
 
 const
@@ -1546,22 +1547,22 @@ begin
                       begin
                         Inc(selecteditemquantity);
                         selecteditemtotal:=selecteditemquantity * currentitemprice;
-                        CRT_GotoXY(0,16);
-                        CRT_Write('INC'~);
-                      end
-                      else
-                        CRT_Write('NOT'~);
+                        // CRT_GotoXY(0,16);
+                        // CRT_Write('INC'~);
+                      end;
+                      // else
+                        // CRT_Write('NOT'~);
                         //CRT_WriteRightAligned(19,FFTermToString(strings[??]));
 
                       //
-                      CRT_GotoXY(0,12);
-                      CRT_Write('selectitem='~);CRT_Write(selectitem);CRT_Write('           '~);
-                      CRT_GotoXY(0,13);
-                      CRT_Write('selecteditemquantity='~);CRT_Write(selecteditemquantity);CRT_Write('           '~);
-                      CRT_GotoXY(0,14);
-                      CRT_Write('currentitemquantity='~);CRT_Write(currentitemquantity);CRT_Write('           '~);
-                      CRT_GotoXY(0,15);
-                      CRT_Write('cargoPresent='~);CRT_Write(cargoPresent);CRT_Write('           '~);
+                      // CRT_GotoXY(0,12);
+                      // CRT_Write('selectitem='~);CRT_Write(selectitem);CRT_Write('           '~);
+                      // CRT_GotoXY(0,13);
+                      // CRT_Write('selecteditemquantity='~);CRT_Write(selecteditemquantity);CRT_Write('           '~);
+                      // CRT_GotoXY(0,14);
+                      // CRT_Write('currentitemquantity='~);CRT_Write(currentitemquantity);CRT_Write('           '~);
+                      // CRT_GotoXY(0,15);
+                      // CRT_Write('cargoPresent='~);CRT_Write(cargoPresent);CRT_Write('           '~);
                     end;
 
         KEY_CTRLRIGHT:
