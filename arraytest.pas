@@ -1,5 +1,6 @@
 program arraytest;
-{$librarypath '../Libs/lib/';'../Libs/blibs/';'../Libs/base/'}
+{$librarypath '../LIBS/lib/'}
+{$librarypath '../LIBS/base/'}
 
 uses crt, sysutils;
 

@@ -6,3 +6,4 @@
 Release
 *.atr
 .vscode
+.DS_Store
