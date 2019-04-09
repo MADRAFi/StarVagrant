@@ -50,10 +50,17 @@ strings_list
     dta a(txt_48)
     dta a(txt_49)
     dta a(txt_50)
+    dta a(txt_51)
+    dta a(txt_52)
+    dta a(txt_53)
+    dta a(txt_54)
+    dta a(txt_55)
+    dta a(txt_56)
+    dta a(txt_57)
 
 strings
 txt_0
-    dta d'v.0.5 (c) 2019 Code: MADRAFi, Gfx: XxX, Msx: XxX. Special thanks to Bocianu for the support. ',$ff
+    dta d'v.0.8 (c) 2019 Code: MADRAFi, Gfx: XxX, Msx: XxX. Special thanks to Bocianu for the support. ',$ff
 txt_1
     dta d'N'*, d'ew Game',$ff
 txt_2
@@ -105,9 +112,9 @@ txt_24
 txt_25
     dta d'No xBios found. Cannot load Pics'*,$ff
 txt_26
-    dta d' Press any key '*,$ff
+    dta d' Press any key ',$ff
 txt_27
-    dta d'Do you confirm? [Y/N]'*,$ff
+    dta d'Do you confirm? [Y/N]'*,$ff ; not used
 txt_28
     dta d'You have lost: ',$ff
 txt_29
@@ -119,11 +126,11 @@ txt_31
 txt_32
     dta d'   You have taken a Passenger with you. He payed you some extra cash for a ride.',$ff
 txt_33
-    dta d'You saw some citizens in urgent need.   You have decided to give away some goods.',$ff
+    dta d'You saw some citizens in urgent need.   You decided to give away some goods.',$ff
 txt_34
     dta d'You were obligated to use military      escort due to recent pirate activities. You have paid standard service fee.',$ff
 txt_35
-    dta d'Reserved',$ff
+    dta d'It seems your lottery ticket won.       The prize was transferred to your account.',$ff
 txt_36
     dta d'Reserved',$ff
 txt_37
@@ -154,6 +161,20 @@ txt_49
     dta d' You already own that ship. '*,$ff
 txt_50
     dta d'-All',$ff
+txt_51
+    dta d'C'*, d'ontinue',$ff
+txt_52
+    dta d'Save',$ff
+txt_53
+    dta d'Load',$ff
+txt_54
+    dta d'Slot ',$ff
+txt_55
+    dta d' error',$ff
+txt_56
+    dta d' successfull',$ff
+txt_57
+    dta d'Open file ',$ff
 
  .print "STRINGS SIZE: ", *-strings_list
  .print "STRINGS : ", strings_list, "..", *
