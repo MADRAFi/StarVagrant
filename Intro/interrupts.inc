@@ -54,36 +54,14 @@ end;
 
 
 procedure vbl_title;interrupt;
-// var
-//   count: byte = 3;
-//   offset: byte = 0;
-
 begin
   asm {
         phr ; store registers
   };
-    // if count = $ff then begin // $ff is one below zero
-    //     count := 3;
-    //     Inc(offset);
-    //     if offset=140 then offset:= 0;  // 140 = 2x string size
-    //     dpoke(DISPLAY_LIST_ADDRESS_TITLE + 114, SCROLL_ADDRESS + offset); // 114 bytes for DLI lines
-    // end;
-    //
-    // hscrol := count; // set hscroll
-    // dec(count);
 
-  //msx.play;
-  //Waitframe;
+  // msx.play;
   asm {
-
-    ;   *** RMT play routine
-    ;    lda MSX
-    ;    ldy MSX+1
-    ;    jsr RMT.TRMT.PLAY
-
-;      mwa #DLI_TITLE1 __dlivec
       mwa #DLI_TITLE1 ATARI.VDSLST
-
       plr ; restore registers
   };
 end;

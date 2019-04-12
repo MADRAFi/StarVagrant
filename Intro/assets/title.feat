@@ -1,6 +1,6 @@
 ;* --------BEGIN--------
 ;* C:\Users\MADRAFi\Dropbox\Atari\DEV\StarVagrant\Intro\assets\title.rmt
-FEAT_SFX		equ 1
+FEAT_SFX		equ 0
 FEAT_GLOBALVOLUMEFADE	equ 1		;RMTGLOBALVOLUMEFADE variable
 FEAT_NOSTARTINGSONGLINE	equ 0
 FEAT_INSTRSPEED		equ 1
