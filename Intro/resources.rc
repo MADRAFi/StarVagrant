@@ -40,5 +40,6 @@ CMC_PLAYER_ADDRESS  CMCPLAY
 CMC_MODULE_ADDRESS  CMC 'assets/echo.cmc'
 
 ; graphics
-;PIC1_ADDRESS RCDATA 'assets/pic1.dat'
-;PIC2_ADDRESS RCDATA 'assets/pic2.dat'
+PIC1_ADDRESS RCDATA 'assets/pic1.dat'
+PIC2_ADDRESS RCDATA 'assets/pic2.dat'
+PIC3_ADDRESS RCDATA 'assets/pic3.dat'

@@ -18,7 +18,8 @@ var
   strings: array [0..0] of Word absolute STRINGS_ADDRESS;
   msx: TCMC;
   txt: String;
-
+  line: Word;
+  skip: Boolean;
 
 
 {$i interrupts.inc}
@@ -114,53 +115,44 @@ var
   mem: Word;
   i: Byte;
 
-  tmem: Word;
-  tstr: String;
+  // tmem: Word;
+  // tstr: String;
 
 begin
   mem:=GFX_ADDRESS + word(y * 320) + (x * 2); // 40 is screen size in bytes
-  tmem:= GFX_ADDRESS;
-  tstr:=Atascii2Antic(InttoStr(mem));
-  for i:=1 to tstr[0] do
-    begin
-      putChar(tmem, Ord(tstr[i]));
-      Inc(tmem,2);
-    end;
+  // tmem:= GFX_ADDRESS;
+  // tstr:=Atascii2Antic(InttoStr(mem));
+  // for i:=1 to tstr[0] do
+  //   begin
+  //     putChar(tmem, Ord(tstr[i]));
+  //     Inc(tmem,2);
+  //   end;
 
   for i:=1 to text[0] do
     begin
+      // putChar(line1, Ord(' '~));
+      // putChar(line2, Ord(' '~));
       putChar(mem, Ord(text[i]));
       Inc(mem,2);
+      // Inc(line1,2);
+      // Inc(line2,2);
     end;
 end;
 
 begin
-  //CursorOff;
-  //clrscr;
-
-  // old_dli:=pointer(0);
-  // old_vbl:=pointer(0);
-
-
-  //fadeoff;
-//  GetIntVec(iDLI, old_dli);
-//  GetIntVec(iVBL, old_vbl);
-//  repeat until keypressed;
-
-//  SetIntVec(iDLI, @dli_title1);
-//  SetIntVec(iVBL, @vbl_title);
-//  nmien:=$c0;
-
-  //SDLSTL:= DISPLAY_LIST_ADDRESS_TITLE;
   fadeoff;
   SystemOff;
+  skip:=false;
+  fillbyte(pointer(GFX_ADDRESS), 7684, 0);
   SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
   //CRT_Init(GFX_ADDRESS);
 
+  // VDSLST:=Word(@DLI_TITLE1);
   EnableVBLI(@vbl_title);
   EnableDLI(@dli_title1);
   Waitframe;
-  DLISTL := DISPLAY_LIST_ADDRESS_TITLE;
+  DLISTL:= DISPLAY_LIST_ADDRESS_TITLE;
+
 
   // Initialize player
   // msx.player:=pointer(RMT_PLAYER_ADDRESS);
@@ -170,14 +162,86 @@ begin
   msx.modul:=pointer(CMC_MODULE_ADDRESS);
   msx.init;
 
-  // waitframes(50);
-  // txt:=FFTermToString(strings[0]);
-  // putString(0,140,txt);
-  // gfx_fadein;
-  // waitframes(100);
-  //
-  // gfx_fadeout;
-  // fillbyte(dest,word(txt[0]),0);
+  waitframes(100);
+
+  if skip = false then begin
+    txt:=FFTermToString(strings[0]);
+    putString(10,20,txt);
+    gfx_fadein;
+    waitframes(100);
+  end;
+
+  if skip = false then begin
+    gfx_fadeout;
+    move(pointer(PIC1_ADDRESS), pointer(GFX_ADDRESS), 7684);
+    putString(0,20,'                    '~);
+    putString(0,21,'                    '~);
+    // line:=GFX_ADDRESS + word(20 * 40 * 8)-(40*2) + (0 * 2);
+    // 20 - y, 40 - screen size,  8 char size, 2 - 2 line before, 0 - x
+    txt:=FFTermToString(strings[1]);
+    line:=GFX_ADDRESS + 6320;
+    fillbyte(pointer(line), 80, 0); // 2 lines before
+    putString(0,20,txt);
+    txt:=FFTermToString(strings[2]);
+    line:=GFX_ADDRESS + 6800;
+    fillbyte(pointer(line), 80, 0); // 2 lines after
+    putString(0,21,txt);
+    gfx_fadein;
+    waitframes(250);waitframes(250);
+  end;
+
+  if skip = false then begin
+    gfx_fadeout;
+    move(pointer(PIC2_ADDRESS), pointer(GFX_ADDRESS), 7684);
+    putString(0,20,'                    '~);
+    putString(0,21,'                    '~);
+    txt:=FFTermToString(strings[3]);
+    line:=GFX_ADDRESS + 6320;
+    fillbyte(pointer(line), 80, 0);
+    putString(0,20,txt);
+    txt:=FFTermToString(strings[4]);
+    line:=GFX_ADDRESS + 6800;
+    fillbyte(pointer(line), 80, 0);
+    putString(0,21,txt);
+    gfx_fadein;
+    waitframes(250);
+  end;
+  if skip = false then begin
+    putString(0,20,'                    '~);
+    putString(0,21,'                    '~);
+    txt:=FFTermToString(strings[5]);
+    line:=GFX_ADDRESS + 6320;
+    fillbyte(pointer(line), 80, 0);
+    putString(0,20,txt);
+    txt:=FFTermToString(strings[6]);
+    line:=GFX_ADDRESS + 6800;
+    fillbyte(pointer(line), 80, 0);
+    putString(0,21,txt);
+
+    waitframes(250);
+  end;
+
+  if skip = false then begin
+    gfx_fadeout;
+    // putString(0,22,'                    '~);
+    fillbyte(pointer(GFX_ADDRESS), 7684, 0);
+
+
+    // putString(0,20,'                    '~);
+    // putString(0,21,'                    '~);
+    txt:=FFTermToString(strings[17]);
+    // line1:=GFX_ADDRESS + word(20 * 320)-(40*2) + (0 * 2);
+    // fillbyte(pointer(line1), 40*2, 0);
+    putString(0,20,txt);
+    txt:=FFTermToString(strings[18]);
+    // line2:=GFX_ADDRESS + word(21 * 320)+(40*2) + (0 * 2);
+    // fillbyte(pointer(line2), 40*2, 0);
+    putString(0,21,txt);
+    gfx_fadein;
+
+    waitframes(250);waitframes(250);
+  end;
+
   // txt:=FFTermToString(strings[1]);
   // putString(0,140,txt);
   // gfx_fadein;
@@ -197,24 +261,24 @@ begin
   // gfx_fadein;
   // waitframes(100);
 
-  gfx_fadeout;
-  putString(0,0,'                    '~);
-  // txt:=FFTermToString(strings[4]);
-  // putString(0,140,txt);
-  putString(0,5,'Ala ma kota'~);
-  gfx_fadein;
-  waitframes(255);
-
-  gfx_fadeout;
-  putString(0,5,'                    '~);
-  txt:=FFTermToString(strings[6]);
-  putString(0,6,txt);
-  gfx_fadein;
+  // gfx_fadeout;
+  // putString(0,0,'                    '~);
+  // // txt:=FFTermToString(strings[4]);
+  // // putString(0,140,txt);
+  // putString(0,5,'Ala ma kota'~);
+  // gfx_fadein;
+  // waitframes(255);
+  //
+  // gfx_fadeout;
+  // putString(0,5,'                    '~);
+  // txt:=FFTermToString(strings[6]);
+  // putString(0,6,txt);
+  // gfx_fadein;
   // waitframes(300);
 
   repeat
     waitframe;
-    msx.play;
+    // msx.play;
   until CRT_keypressed;
   msx.stop;
   DisableDLI;
