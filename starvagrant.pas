@@ -279,10 +279,10 @@ begin
     Waitframes(2);
     if current_menu = MENU_TITLE then
     begin
-      If (gfxcolors[0] and %00001111 < titlecolors[y] and %00001111 ) then Inc(gfxcolors[0]) else gfxcolors[0]:=titlecolors[y];
-      If (gfxcolors[1] and %00001111 < titlecolors[y+1] and %00001111) then Inc(gfxcolors[1]) else gfxcolors[1]:=titlecolors[y+1];
-      If (gfxcolors[2] and %00001111 < titlecolors[y+2] and %00001111) then Inc(gfxcolors[2]) else gfxcolors[2]:=titlecolors[y+2];
-      If (gfxcolors[3] and %00001111 < titlecolors[y+3] and %00001111) then Inc(gfxcolors[3]) else gfxcolors[3]:=titlecolors[y+3];
+      If (gfxcolors[0] and %00001111 < titlecolors[0] and %00001111 ) then Inc(gfxcolors[0]) else gfxcolors[0]:=titlecolors[0];
+      If (gfxcolors[1] and %00001111 < titlecolors[1] and %00001111) then Inc(gfxcolors[1]) else gfxcolors[1]:=titlecolors[1];
+      If (gfxcolors[2] and %00001111 < titlecolors[2] and %00001111) then Inc(gfxcolors[2]) else gfxcolors[2]:=titlecolors[2];
+      If (gfxcolors[3] and %00001111 < titlecolors[3] and %00001111) then Inc(gfxcolors[3]) else gfxcolors[3]:=titlecolors[3];
     end
     else
     begin
@@ -295,7 +295,7 @@ begin
     If (txtcolors[0] and %00001111 < txtback and %00001111) then inc(txtcolors[0]) else txtcolors[0]:=txtback;
     If (txtcolors[1] and %00001111 < txtcolor and %00001111) then inc(txtcolors[1]) else txtcolors[1]:=txtcolor;
 
-  until (gfxcolors[0]=piccolors[y]) and (gfxcolors[1]=piccolors[y+1]) and (gfxcolors[2]=piccolors[y+2]) and (gfxcolors[3]=piccolors[y+3]);
+  until ((gfxcolors[0]=piccolors[y]) or (gfxcolors[0]=titlecolors[0])) and ((gfxcolors[1]=piccolors[y+1]) or (gfxcolors[1]=titlecolors[1])) and ((gfxcolors[2]=piccolors[y+2]) or (gfxcolors[2]=titlecolors[2])) and ((gfxcolors[3]=piccolors[y+3]) or (gfxcolors[3]=titlecolors[3]));
 end;
 
 
@@ -675,7 +675,7 @@ begin
     if (itemquantity[offset] > 10000) and (itemprice[offset] > 0) and (percent < 40) then
     begin
       modify:=(1 - percent);
-      itemquantity[offset]:=itemquantity[offset] * modify;
+      itemquantity[offset]:=Trunc(itemquantity[offset] * modify);
     end;
 
   end;
@@ -1919,11 +1919,11 @@ var
   startPressed: Boolean = false;
 
 begin
-  startPressed:=false;
-
   gfx_fadeout(true);
   pic_load(GFX,0);
   // sfx_init;
+
+  startPressed:=false;
 
   CRT_ClearRows(0,5);
   CRT_GotoXY(16,0);
@@ -1934,10 +1934,10 @@ begin
       CRT_GotoXY(16,y);
       WriteFF(strings[51]); // Continue game;
       Inc(y);
-      CRT_GotoXY(18,y);
+      CRT_GotoXY(17,y);
       CRT_Write('1'*~); WriteSpaces(1); WriteFF(strings[52]); // Save
       Inc(y);
-      CRT_GotoXY(18,y);
+      CRT_GotoXY(17,y);
       CRT_Write('2'*~); WriteSpaces(1); WriteFF(strings[53]); // Load
       Inc(y);
   end;
@@ -1958,7 +1958,6 @@ begin
   //keyval:=chr(0);
   keyval:=0;
   repeat
-    //msx.play;
     if CRT_Keypressed then
     begin
       //keyval := char(CRT_Keycode[kbcode]);

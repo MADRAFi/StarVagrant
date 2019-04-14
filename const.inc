@@ -23,7 +23,7 @@ STRINGS_ADDRESS = FREE_DOWN;
 // RMT_MODULE_ADDRESS = $E000;
 
 
-
+// ***************************************************************************//
 
 NUMBEROFLOCATIONS = 17; // number of locations defined in locations.asm. Needs to match.
 NUMBEROFITEMS = 24; // number of items defined in items.asm. Needs to match.
@@ -32,8 +32,6 @@ MAXSHIPPARAMETERS = 6; // number of ship parameters in ship array
 MAXAVAILABLEITEMS = 12; // numer of concurrent items displayed
 MAXCARGOSLOTS = 10;  // number of cargo slots
 MAXAVAILABLEDESTINATIONS = 6;  // number of destinations fron location.
-
-// ***************************************************************************//
 
 STARTUEC = 5000;
 STARTLOCATION = 0;

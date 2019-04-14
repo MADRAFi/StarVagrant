@@ -1,9 +1,9 @@
 #!/bin/bash
 cd Loader
-~/Applications/MAD_PASCAL/mads loader.asm -x -i:/Applications/MAD_PASCAL/base -o:loader.xex
+../../MADS/mads loader.asm -x -i:../../MADS/base -o:loader.xex
 cd ..
-~/Applications/MAD_PASCAL/mp starvagrant.pas -code:0c00
-~/Applications/MAD_PASCAL/mads starvagrant.a65 -x -i:~/Applications/MAD_PASCAL/base -o:starvagrant.xex
+../MADS/mp starvagrant.pas -code:0c00
+../MADS/mads starvagrant.a65 -x -i:../MADS/base -o:starvagrant.xex
 cp ~/Applications/xbios/xbios.com Release/xbios.com
 # cp D:\Atari\tools\xbios.cfg Release\xbios.cfg
 cp Loader/loader.xex Release/XAUTORUN
