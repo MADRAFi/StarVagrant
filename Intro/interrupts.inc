@@ -24,8 +24,8 @@ begin
 
   };
 
-  msx.play;
-  if CRT_keypressed then skip:=true;
+   // msx.play;
+  // if CRT_keypressed then skip:=true;
 
   asm {
       ; mwa #DLI_TITLE1 ATARI.VDSLST
