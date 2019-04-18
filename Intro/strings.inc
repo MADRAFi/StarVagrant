@@ -1,0 +1,21 @@
+strings: array [0..18] of String = (
+    'Year 2419,'~,
+    'United Earth Empire '~,
+    'is still fighting.  '~,
+    'After 8 years in    '~,
+	'military, you have  '~,
+	'finally fulfilled   '~,
+	'your contract.      '~,
+    'For a long time you '~,
+    'dreamed about your  '~,
+    'own venture and to  '~,
+    'be able to do       '~,
+    'whatever you want.  '~,
+    'With received pay   '~,
+    'check you were able '~,
+    'to buy cheapest ship'~,
+    'and still have some '~,
+    'change left.        '~,
+    'It is up to you     '~,
+    'where to go now...  '~
+);

@@ -15,13 +15,14 @@ var
   piccolors: array [0..3] of Byte = (
     $10,$14,$1a,$00
   );
-  strings: array [0..0] of Word absolute STRINGS_ADDRESS;
+  // strings: array [0..0] of Word absolute STRINGS_ADDRESS;
   // msx: TCMC;
   msx: TRMT;
   txt: String;
   line: Word;
   skip: Boolean;
 
+{$i strings.inc}
 
 {$i interrupts.inc}
 
@@ -163,8 +164,7 @@ begin
 
   if skip = false then begin
     gfx_fadeout;
-    txt:=FFTermToString(strings[0]);
-    putString(0,20,txt);
+    putString(0,20,strings[0]);
     gfx_fadein;
     waitframes(150);
   end;
@@ -172,11 +172,9 @@ begin
   if skip = false then begin
     gfx_fadeout;
     putString(0,20,'                    '~);
-    // putString(0,21,'                    '~);
-    txt:=FFTermToString(strings[1]);
-    putString(0,20,txt);
-    txt:=FFTermToString(strings[2]);
-    putString(0,21,txt);
+    putString(0,21,'                    '~);
+    putString(0,20,strings[1]);
+    putString(0,21,strings[2]);
     gfx_fadein;
     waitframes(150);
   end;
@@ -190,10 +188,8 @@ begin
     // // 20 - y, 40 - screen size,  8 char size, 2 - 2 line before, 0 - x
     line:=GFX_ADDRESS + 6320;
     fillbyte(pointer(line), 80, 0); // 2 lines before
-    txt:=FFTermToString(strings[3]);
-    putString(0,20,txt);
-    txt:=FFTermToString(strings[4]);
-    putString(0,21,txt);
+    putString(0,20,strings[3]);
+    putString(0,21,strings[4]);
     line:=GFX_ADDRESS + 7040;  // 22 * 40 * 8 - next line after text
     fillbyte(pointer(line), 80, 0); // 2 lines after
     gfx_fadein;
@@ -205,10 +201,8 @@ begin
     putString(0,21,'                    '~);
     line:=GFX_ADDRESS + 6320;
     fillbyte(pointer(line), 80, 0);
-    txt:=FFTermToString(strings[5]);
-    putString(0,20,txt);
-    txt:=FFTermToString(strings[6]);
-    putString(0,21,txt);
+    putString(0,20,strings[5]);
+    putString(0,21,strings[6]);
     line:=GFX_ADDRESS + 7040;
     fillbyte(pointer(line), 80, 0);
     waitframes(150);
@@ -221,10 +215,8 @@ begin
     // putString(0,21,'                    '~);
     line:=GFX_ADDRESS + 6320;
     fillbyte(pointer(line), 80, 0);
-    txt:=FFTermToString(strings[7]);
-    putString(0,20,txt);
-    txt:=FFTermToString(strings[8]);
-    putString(0,21,txt);
+    putString(0,20,strings[7]);
+    putString(0,21,strings[8]);
     line:=GFX_ADDRESS + 7040;
     fillbyte(pointer(line), 80, 0);
     gfx_fadein;
@@ -235,12 +227,9 @@ begin
     putString(0,21,'                    '~);
     line:=GFX_ADDRESS + 6320;
     fillbyte(pointer(line), 80, 0);
-    txt:=FFTermToString(strings[9]);
-    putString(0,20,txt);
-    txt:=FFTermToString(strings[10]);
-    putString(0,21,txt);
-    txt:=FFTermToString(strings[11]);
-    putString(0,22,txt);
+    putString(0,20,strings[9]);
+    putString(0,21,strings[10]);
+    putString(0,22,strings[11]);
     line:=GFX_ADDRESS + 7360;
     fillbyte(pointer(line), 80, 0);
     waitframes(150);waitframes(150);
@@ -253,10 +242,8 @@ begin
     // putString(0,21,'                    '~);
     line:=GFX_ADDRESS + 6320;
     fillbyte(pointer(line), 80, 0);
-    txt:=FFTermToString(strings[12]);
-    putString(0,20,txt);
-    txt:=FFTermToString(strings[13]);
-    putString(0,21,txt);
+    putString(0,20,strings[12]);
+    putString(0,21,strings[13]);
     line:=GFX_ADDRESS + 7040;
     fillbyte(pointer(line), 80, 0);
     gfx_fadein;
@@ -267,12 +254,9 @@ begin
     putString(0,21,'                    '~);
     line:=GFX_ADDRESS + 6320;
     fillbyte(pointer(line), 80, 0);
-    txt:=FFTermToString(strings[14]);
-    putString(0,20,txt);
-    txt:=FFTermToString(strings[15]);
-    putString(0,21,txt);
-    txt:=FFTermToString(strings[16]);
-    putString(0,22,txt);
+    putString(0,20,strings[14]);
+    putString(0,21,strings[15]);
+    putString(0,22,strings[16]);
     line:=GFX_ADDRESS + 7360;
     fillbyte(pointer(line), 80, 0);
     waitframes(150);waitframes(150);
@@ -283,10 +267,8 @@ begin
     fillbyte(pointer(GFX_ADDRESS), 7684, 0);
     // putString(0,20,'                    '~);
     // putString(0,21,'                    '~);
-    txt:=FFTermToString(strings[17]);
-    putString(0,20,txt);
-    txt:=FFTermToString(strings[18]);
-    putString(0,21,txt);
+    putString(0,20,strings[17]);
+    putString(0,21,strings[18]);
     gfx_fadein;
     waitframes(150);//waitframes(250);
   end;

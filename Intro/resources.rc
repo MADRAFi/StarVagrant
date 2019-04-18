@@ -30,7 +30,7 @@ CHARSET_ADDRESS rcdata '../assets/Nvdi8.fnt'
 DISPLAY_LIST_ADDRESS_TITLE rcasm 'dlist_title.asm'
 
 
-STRINGS_ADDRESS rcasm 'strings.asm'
+;STRINGS_ADDRESS rcasm 'strings.asm'
 
 ; rmt module
 PLAYER_ADDRESS	RMTPLAY	'assets/title.feat' 0
