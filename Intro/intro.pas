@@ -135,8 +135,6 @@ begin
   fadeoff;
   SystemOff;
 
-  // poke($0c, $f2);
-
   // Initialize player
   msx.player:=pointer(PLAYER_ADDRESS);
   msx.modul:=pointer(MODULE_ADDRESS);
@@ -157,8 +155,9 @@ begin
   EnableDLI(@dli_title1);
   Waitframe;
   DLISTL:= DISPLAY_LIST_ADDRESS_TITLE;
-
-  waitframes(150);
+  DMACTL:=$22; //%00100010;
+  
+  if skip = false then waitframes(150);
 
 
 

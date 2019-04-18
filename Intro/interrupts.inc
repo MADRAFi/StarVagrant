@@ -21,11 +21,10 @@ procedure vbl_title;interrupt;
 begin
   asm {
         phr ; store registers
-
+        ;inc 20
   };
-
-   // msx.play;
-  // if CRT_keypressed then skip:=true;
+  msx.play;
+  if CRT_keypressed then skip:=true;
 
   asm {
       ; mwa #DLI_TITLE1 ATARI.VDSLST

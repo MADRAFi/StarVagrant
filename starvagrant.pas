@@ -1951,6 +1951,7 @@ begin
   EnableDLI(@dli_title1);
   Waitframe;
   DLISTL := DISPLAY_LIST_ADDRESS_TITLE;
+  DMACTL:=$22; //%00100010;
   Waitframe;
   gfx_fadein;
 
@@ -2195,6 +2196,7 @@ begin
   Randomize;
   SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
   CRT_Init(TXT_ADDRESS);
+
   // clear video memory after intro
   // fillbyte(pointer(SCROLL_ADDRESS),255,0);
   //fillbyte(pointer(SCROLL_ADDRESS),100,0);

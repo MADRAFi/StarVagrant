@@ -78,9 +78,20 @@ DL_JVB equ %01000001; // Jump to begining
 ;PORTB_BASIC_OFF equ %00000010;	// portb bit value to turn Basic off
 ;PORTB_SYSTEM_ON equ %00000001;	// portb bit value to turn System on
 
-;port_b equ PORTB_BASIC_OFF + PORTB_SELFTEST_OFF + %01111100;
+ANTIC_MODE_NARROW equ %00100001;
+ANTIC_MODE_NORMAL equ %00100010;
+ANTIC_MODE_WIDE equ %00100011;
+
+;myport_b equ PORTB_BASIC_OFF + PORTB_SELFTEST_OFF + %01111100;
+
+
+
+
 
           icl 'atari.hea'
+
+          org $d301
+          .byte $fe
 
 CHARSET_ADDRESS equ $9C00; // same as in intro and game
           org CHARSET_ADDRESS
@@ -134,8 +145,21 @@ dlist
 
 vmem
 	        .byte "    LOADING... Star Vagrant.            "
+
+;initialize  clc
+;            cld
+;            lda PORTB
+;            ora #$02
+;            sta PORTB
+;            rts
+
 main
+
           ;jsr systemoff
+
+
+sync      lda VCOUNT
+          bne sync
 
 ;          mva #.hi(CHARSET_ADDRESS) chbase
 
@@ -165,6 +189,7 @@ main
           mva #0 colpf3
           mva #0 colbak
           mwa #dlist dlistl
+          mva #ANTIC_MODE_NARROW DMACTL
 
 game      mva <gamefile adr1+1
           mva >gamefile adr2+1
@@ -172,6 +197,7 @@ game      mva <gamefile adr1+1
 
           ;jmp systemon
 
+;          ini initialize
           run main
 
 .print "Loader:", main, "..", *
