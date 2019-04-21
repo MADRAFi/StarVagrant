@@ -31,7 +31,7 @@ DISPLAY_LIST_ADDRESS_TITLE rcasm 'dlist_title.asm'
 DISPLAY_LIST_ADDRESS_MENU rcasm 'dlist_menu.asm'
 DISPLAY_LIST_ADDRESS_CONSOLE rcasm 'dlist_console.asm'
 
-STRINGS_ADDRESS rcasm 'strings.asm'
+;STRINGS_ADDRESS rcasm 'strings.asm'
 
 ; rmt module
 ;RMT_PLAYER_ADDRESS	RMTPLAY	'assets/title.feat' 0
