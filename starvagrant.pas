@@ -1,8 +1,9 @@
 program StarVagrant;
-{$librarypath '../Libs/lib/';'../Libs/blibs/';'../Libs/base/'}
-//{$librarypath 'Libs/lib/';'Libs/blibs/';'Libs/base/'}
-// {$librarypath '../blibs/'}
-uses atari, b_utils, b_system, b_crt, sysutils, xbios, rmt;
+// {$librarypath '../Libs/lib/';'../Libs/blibs/';'../Libs/base/'}
+{$librarypath '../MADS/lib/'}
+{$librarypath '../MADS/base/'}
+{$librarypath '../MADS/blibs/'}
+uses atari, b_utils, b_system, b_crt, sysutils, xbios, cmc;
 
 const
 {$i 'const.inc'}
@@ -30,7 +31,7 @@ var
   offset: Word; // offset counted to get items from arrays
   y: Byte; // index for loops
   count: Byte; // count in item iterations
-  msx: TRMT;
+  msx: TCMC;
   current_menu: Byte;
   gamestate: TGameState;
 
@@ -86,8 +87,9 @@ var
   );
 
 // current gfx colors
+//  $10,$14,$1a,$00
   gfxcolors: array [0..3] of Byte = (
-    $1a,$14,$10,$00
+    $1a,$1a,$1a,$00
   );
 txtcolors : array [0..1] of Byte = (
     $00,$1c
@@ -261,6 +263,12 @@ end;
 
 procedure gfx_fadein;
 
+const
+  txtcolor = $1c;
+  txtback = 0;
+  titlecolors : array [0..3] of Byte = ($10,$14,$1a,$00);
+
+
 begin
   // gfxcolors[0]:=0;
   // gfxcolors[1]:=0;
@@ -269,15 +277,25 @@ begin
   y:= newLoc shl 2; // x 4 for number of colors
   repeat
     Waitframes(2);
-    If (gfxcolors[0] and %00001111 < piccolors[y] and %00001111 ) then Inc(gfxcolors[0]) else gfxcolors[0]:=piccolors[y];
-    If (gfxcolors[1] and %00001111 < piccolors[y+1] and %00001111) then Inc(gfxcolors[1]) else gfxcolors[1]:=piccolors[y+1];
-    If (gfxcolors[2] and %00001111 < piccolors[y+2] and %00001111) then Inc(gfxcolors[2]) else gfxcolors[2]:=piccolors[y+2];
-    If (gfxcolors[3] and %00001111 < piccolors[y+3] and %00001111) then Inc(gfxcolors[3]) else gfxcolors[3]:=piccolors[y+3];
+    if current_menu = MENU_TITLE then
+    begin
+      If (gfxcolors[0] and %00001111 < titlecolors[0] and %00001111 ) then Inc(gfxcolors[0]) else gfxcolors[0]:=titlecolors[0];
+      If (gfxcolors[1] and %00001111 < titlecolors[1] and %00001111) then Inc(gfxcolors[1]) else gfxcolors[1]:=titlecolors[1];
+      If (gfxcolors[2] and %00001111 < titlecolors[2] and %00001111) then Inc(gfxcolors[2]) else gfxcolors[2]:=titlecolors[2];
+      If (gfxcolors[3] and %00001111 < titlecolors[3] and %00001111) then Inc(gfxcolors[3]) else gfxcolors[3]:=titlecolors[3];
+    end
+    else
+    begin
+      If (gfxcolors[0] and %00001111 < piccolors[y] and %00001111 ) then Inc(gfxcolors[0]) else gfxcolors[0]:=piccolors[y];
+      If (gfxcolors[1] and %00001111 < piccolors[y+1] and %00001111) then Inc(gfxcolors[1]) else gfxcolors[1]:=piccolors[y+1];
+      If (gfxcolors[2] and %00001111 < piccolors[y+2] and %00001111) then Inc(gfxcolors[2]) else gfxcolors[2]:=piccolors[y+2];
+      If (gfxcolors[3] and %00001111 < piccolors[y+3] and %00001111) then Inc(gfxcolors[3]) else gfxcolors[3]:=piccolors[y+3];
+    end;
 
-      If (txtcolors[0] and %00001111 < 0 and %00001111) then inc(txtcolors[0]) else txtcolors[0]:=0;
-      If (txtcolors[1] and %00001111 < $1c and %00001111) then inc(txtcolors[1]) else txtcolors[1]:=$1c;
+    If (txtcolors[0] and %00001111 < txtback and %00001111) then inc(txtcolors[0]) else txtcolors[0]:=txtback;
+    If (txtcolors[1] and %00001111 < txtcolor and %00001111) then inc(txtcolors[1]) else txtcolors[1]:=txtcolor;
 
-  until (gfxcolors[0]=piccolors[y]) and (gfxcolors[1]=piccolors[y+1]) and (gfxcolors[2]=piccolors[y+2]) and (gfxcolors[3]=piccolors[y+3]);
+  until ((gfxcolors[0]=piccolors[y]) or (gfxcolors[0]=titlecolors[0])) and ((gfxcolors[1]=piccolors[y+1]) or (gfxcolors[1]=titlecolors[1])) and ((gfxcolors[2]=piccolors[y+2]) or (gfxcolors[2]=titlecolors[2])) and ((gfxcolors[3]=piccolors[y+3]) or (gfxcolors[3]=titlecolors[3]));
 end;
 
 
@@ -657,7 +675,7 @@ begin
     if (itemquantity[offset] > 10000) and (itemprice[offset] > 0) and (percent < 40) then
     begin
       modify:=(1 - percent);
-      itemquantity[offset]:=itemquantity[offset] * modify;
+      itemquantity[offset]:=Trunc(itemquantity[offset] * modify);
     end;
 
   end;
@@ -1154,6 +1172,9 @@ begin
             offset:=availableships[shipindex];
             tshp:=shipmatrix[offset];
             ship:= tshp^;
+            CRT_GotoXY(6,5);
+            WriteFF(strings[27]);
+            repeat until CRT_Keypressed;
             current_menu:=MENU_MAIN;
           end
           else
@@ -1546,22 +1567,17 @@ begin
                       begin
                         Inc(selecteditemquantity);
                         selecteditemtotal:=selecteditemquantity * currentitemprice;
-                        CRT_GotoXY(0,16);
-                        CRT_Write('INC'~);
                       end
-                      else
-                        CRT_Write('NOT'~);
-                        //CRT_WriteRightAligned(19,FFTermToString(strings[??]));
 
                       //
-                      CRT_GotoXY(0,12);
-                      CRT_Write('selectitem='~);CRT_Write(selectitem);CRT_Write('           '~);
-                      CRT_GotoXY(0,13);
-                      CRT_Write('selecteditemquantity='~);CRT_Write(selecteditemquantity);CRT_Write('           '~);
-                      CRT_GotoXY(0,14);
-                      CRT_Write('currentitemquantity='~);CRT_Write(currentitemquantity);CRT_Write('           '~);
-                      CRT_GotoXY(0,15);
-                      CRT_Write('cargoPresent='~);CRT_Write(cargoPresent);CRT_Write('           '~);
+                      // CRT_GotoXY(0,12);
+                      // CRT_Write('selectitem='~);CRT_Write(selectitem);CRT_Write('           '~);
+                      // CRT_GotoXY(0,13);
+                      // CRT_Write('selecteditemquantity='~);CRT_Write(selecteditemquantity);CRT_Write('           '~);
+                      // CRT_GotoXY(0,14);
+                      // CRT_Write('currentitemquantity='~);CRT_Write(currentitemquantity);CRT_Write('           '~);
+                      // CRT_GotoXY(0,15);
+                      // CRT_Write('cargoPresent='~);CRT_Write(cargoPresent);CRT_Write('           '~);
                     end;
 
         KEY_CTRLRIGHT:
@@ -1830,6 +1846,11 @@ end;
 procedure menu;
 
 begin
+  EnableVBLI(@vbl);
+  EnableDLI(@dli1);
+  Waitframe;
+  DLISTL := DISPLAY_LIST_ADDRESS_MENU;
+  Waitframe;
   // offset for player location colors
   //gfx_fadeout(true);
 
@@ -1839,16 +1860,14 @@ begin
    // gfxcolors[2]:=piccolors[y+2];
    // gfxcolors[3]:=piccolors[y+3];
 
-  // load ship to be able to check if they are avaiable
-
-
   CRT_ClearRows(0,6);
 
   CRT_GotoXY(14,0);
   WriteFF(strings[3]); // Navigation
   CRT_GotoXY(14,1);
-  WriteFF(strings[4]); // Trade Console
+  WriteFF(strings[4]); // Trade
 
+  // load ship to be able to check if they are avaiable
   LoadShips;
   // show ship console only when there are ships avaiable (price > 0 for 1st ship at a location)
   offset:=(NUMBEROFSHIPS * player.loc) + availableships[0];
@@ -1867,12 +1886,6 @@ begin
   // CRT_GotoXY(0,5);
   // CRT_Write('price='~);CRT_Write(shipprices[offset]);
 
-
-
-  EnableVBLI(@vbl);
-  EnableDLI(@dli1);
-  Waitframe;
-  DLISTL := DISPLAY_LIST_ADDRESS_MENU;
   gfx_fadein;
 
   keyval:=0;
@@ -1906,29 +1919,29 @@ var
   startPressed: Boolean = false;
 
 begin
-  startPressed:=false;
-
   gfx_fadeout(true);
   pic_load(GFX,0);
   // sfx_init;
 
+  startPressed:=false;
+
   CRT_ClearRows(0,5);
-  CRT_GotoXY(14,0);
+  CRT_GotoXY(16,0);
   WriteFF(strings[1]); // New game;
   y:=1;
   if gamestate = GAMEINPROGRESS then
   begin
-      CRT_GotoXY(14,y);
+      CRT_GotoXY(16,y);
       WriteFF(strings[51]); // Continue game;
       Inc(y);
-      CRT_GotoXY(15,y);
+      CRT_GotoXY(17,y);
       CRT_Write('1'*~); WriteSpaces(1); WriteFF(strings[52]); // Save
       Inc(y);
-      CRT_GotoXY(15,y);
+      CRT_GotoXY(17,y);
       CRT_Write('2'*~); WriteSpaces(1); WriteFF(strings[53]); // Load
       Inc(y);
   end;
-  CRT_GotoXY(16,y);
+  CRT_GotoXY(18,y);
   WriteFF(strings[2]); // Quit;
 
   txt:= FFTermToString(strings[0]); // read scroll text
@@ -1938,6 +1951,7 @@ begin
   EnableDLI(@dli_title1);
   Waitframe;
   DLISTL := DISPLAY_LIST_ADDRESS_TITLE;
+  DMACTL:=$22; //%00100010;
   Waitframe;
   gfx_fadein;
 
@@ -1945,7 +1959,6 @@ begin
   //keyval:=chr(0);
   keyval:=0;
   repeat
-    //msx.play;
     if CRT_Keypressed then
     begin
       //keyval := char(CRT_Keycode[kbcode]);
@@ -2183,6 +2196,7 @@ begin
   Randomize;
   SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
   CRT_Init(TXT_ADDRESS);
+
   // clear video memory after intro
   // fillbyte(pointer(SCROLL_ADDRESS),255,0);
   //fillbyte(pointer(SCROLL_ADDRESS),100,0);

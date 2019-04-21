@@ -60,7 +60,7 @@ strings_list
 
 strings
 txt_0
-    dta d'v.0.8 (c) 2019 Code: MADRAFi, Gfx: XxX, Msx: XxX. Special thanks to Bocianu for the support. ',$ff
+    dta d'v.0.9 (c) 2019 Code: MADRAFi, Gfx: XxX, Msx: XxX. Special thanks to Bocianu for the support. ',$ff
 txt_1
     dta d'N'*, d'ew Game',$ff
 txt_2
@@ -114,7 +114,7 @@ txt_25
 txt_26
     dta d' Press any key ',$ff
 txt_27
-    dta d'Do you confirm? [Y/N]'*,$ff ; not used
+    dta d'You`ve bought that ship. Press any key.'*,$ff
 txt_28
     dta d'You have lost: ',$ff
 txt_29
@@ -130,7 +130,7 @@ txt_33
 txt_34
     dta d'You were obligated to use military      escort due to recent pirate activities. You have paid standard service fee.',$ff
 txt_35
-    dta d'It seems your lottery ticket won.       The prize was transferred to your account.',$ff
+    dta d'It seems your lottery ticket won.       The prize has been transferred          to your account.',$ff
 txt_36
     dta d'Reserved',$ff
 txt_37
