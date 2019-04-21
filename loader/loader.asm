@@ -86,12 +86,10 @@ ANTIC_MODE_WIDE equ %00100011;
 
 
 
-
-
           icl 'atari.hea'
 
-          org $d301
-          .byte $fe
+        ;   org $d301
+        ;   .byte $fe
 
 CHARSET_ADDRESS equ $9C00; // same as in intro and game
           org CHARSET_ADDRESS
@@ -115,27 +113,27 @@ adr2      ldx #0
           mva #1 xBiosIOresult
 @         rts
 
-; .proc	systemoff
+.proc	systemoff
 
-; 	lda:rne vcount
+	lda:rne vcount
 
-; 	sei
-; 	inc nmien
-; 	mva #$fe portb
+	sei
+	inc nmien
+	mva #$fe portb
 
-; 	rts
-; .endp
+	rts
+.endp
 
-; .proc	systemon
+.proc	systemon
 
-; 	lda:rne vcount
+	lda:rne vcount
 
-; 	mva #$ff portb
-; 	dec nmien
-; 	cli
+	mva #$ff portb
+	dec nmien
+	cli
 
-; 	rts
-; .endp
+	rts
+.endp
 
 ;-------------------------------------------------------------------------------
 dlist
@@ -158,42 +156,35 @@ main
           ;jsr systemoff
 
 
-sync      lda VCOUNT
-          bne sync
+sync     lda VCOUNT
+         bne sync
 
-;          mva #.hi(CHARSET_ADDRESS) chbase
+         mva #.hi(CHARSET_ADDRESS) chbase
+         mva #28 colpf1
+         mva #0 colpf0
+         mva #0 colpf2
+         mva #0 colpf3
+         mva #0 colbak
+         mwa #dlist dlistl
+         mva #ANTIC_MODE_NARROW DMACTL
 
-;          mva #28 colpf1
-;          mva #0 colpf0
-;          mva #0 colpf2
-;          mva #0 colpf3
-;          mva #0 colbak
-
-;          sta colpf0
-;          sta colpf1
-;          sta colpf2
-;          sta colpf3
-;          sta colbak
-
-;          mwa #dlist dlistl
-
-;intro     mva <introfile adr1+1
-;          mva >introfile adr2+1
-;          jsr loadfile
+intro    mva <introfile adr1+1
+         mva >introfile adr2+1
+         jsr loadfile
 
 
-          mva #.hi(CHARSET_ADDRESS) chbase
-          mva #28 colpf1
-          mva #0 colpf0
-          mva #0 colpf2
-          mva #0 colpf3
-          mva #0 colbak
-          mwa #dlist dlistl
-          mva #ANTIC_MODE_NARROW DMACTL
+         mva #.hi(CHARSET_ADDRESS) chbase
+         mva #28 colpf1
+         mva #0 colpf0
+         mva #0 colpf2
+         mva #0 colpf3
+         mva #0 colbak
+         mwa #dlist dlistl
+         mva #ANTIC_MODE_NARROW DMACTL
 
-game      mva <gamefile adr1+1
-          mva >gamefile adr2+1
-          jmp loadfile
+game     mva <gamefile adr1+1
+         mva >gamefile adr2+1
+         jmp loadfile
 
           ;jmp systemon
 
