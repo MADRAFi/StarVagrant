@@ -18,30 +18,33 @@ var
   // strings: array [0..0] of Word absolute STRINGS_ADDRESS;
   // msx: TCMC;
   msx: TRMT;
-  txt: String;
+  // txt: String;
   line: Word;
   skip: Boolean;
+  music: Boolean;
+  count: Word;
 
 {$i strings.inc}
 
 {$i interrupts.inc}
 
-procedure fadeoff;
-begin
-    repeat
-  //    Delay(50);
-      pause;pause;
-      If (color2 and %00001111 <> 0) then Dec(color2) else color2:=0;
-      If (color1 and %00001111 <> 0) then Dec(color1) else color1:=0;
-    until (color1 or color2) = 0;
-     //  If (colpf2 and %00001111 <> 0) then Dec(colpf2) else colpf2:=0;
-     //  If (colpf1 and %00001111 <> 0) then Dec(colpf1) else colpf1:=0;
-     // until (colpf1 or colpf2) = 0;
-end;
+// procedure fadeoff;
+// begin
+//     repeat
+//   //    Delay(50);
+//       pause;pause;
+//       If (color2 and %00001111 <> 0) then Dec(color2) else color2:=0;
+//       If (color1 and %00001111 <> 0) then Dec(color1) else color1:=0;
+//     until (color1 or color2) = 0;
+//      //  If (colpf2 and %00001111 <> 0) then Dec(colpf2) else colpf2:=0;
+//      //  If (colpf1 and %00001111 <> 0) then Dec(colpf1) else colpf1:=0;
+//      // until (colpf1 or colpf2) = 0;
+// end;
 
 procedure gfx_fadein;
 
 begin
+  count:=0;
   repeat
     Waitframes(2);
     If (gfxcolors[0] and %00001111 <> piccolors[0] and %00001111) then Inc(gfxcolors[0]) else gfxcolors[0]:=piccolors[0];
@@ -67,7 +70,7 @@ begin
     // end;
   //until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3] or txtcolors[0] or txtcolors[1]) = 0;
   until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3]) = 0;
-  waitframes(10);
+  // waitframes(10);
 end;
 
 function extendNibble(n:byte):byte;
@@ -112,7 +115,7 @@ var
   // tstr: String;
 
 begin
-  mem:=GFX_ADDRESS + word(y * 320) + (x * 2); // 40 is screen size in bytes
+  mem:=GFX_ADDRESS + (y * 320) + (x * 2); // 40 is screen size in bytes
   // tmem:= GFX_ADDRESS;
   // tstr:=Atascii2Antic(InttoStr(mem));
   // for i:=1 to tstr[0] do
@@ -133,7 +136,7 @@ begin
 end;
 
 begin
-  fadeoff;
+  //fadeoff;
   SystemOff;
 
   // Initialize player
@@ -144,7 +147,8 @@ begin
   // msx.modul:=pointer(CMC_MODULE_ADDRESS);
   // msx.init;
 
-  skip:=false;
+  skip:= false;
+  music:= true;
 
   // clear gfx memory
   fillbyte(pointer(GFX_ADDRESS), 7684, 0);
@@ -158,26 +162,43 @@ begin
   DLISTL:= DISPLAY_LIST_ADDRESS_TITLE;
   DMACTL:=$22; //%00100010;
   
-  if skip = false then waitframes(150);
-
-
+  // if skip = false then waitframes(150);
+  count:= 0;
+  repeat 
+    inc(count);
+    waitframe;
+    if CRT_Keypressed then skip:= true;
+  until skip=true or count > 150;
 
   if skip = false then begin
     gfx_fadeout;
     putString(0,20,strings[0]);
     gfx_fadein;
-    waitframes(150);
   end;
+
+  count:= 0;
+  repeat 
+    inc(count);
+    waitframe;
+    if CRT_Keypressed then skip:= true;
+  until skip=true or count > 150;
+
 
   if skip = false then begin
     gfx_fadeout;
-    putString(0,20,'                    '~);
-    putString(0,21,'                    '~);
+    // putString(0,20,'                    '~);
+    // putString(0,21,'                    '~);
     putString(0,20,strings[1]);
     putString(0,21,strings[2]);
     gfx_fadein;
-    waitframes(150);
   end;
+
+  count:= 0;
+  repeat 
+    inc(count);
+    waitframe;
+    if CRT_Keypressed then skip:= true;
+  until skip=true or count > 150;
 
   if skip = false then begin
     gfx_fadeout;
@@ -193,20 +214,32 @@ begin
     line:=GFX_ADDRESS + 7040;  // 22 * 40 * 8 - next line after text
     fillbyte(pointer(line), 80, 0); // 2 lines after
     gfx_fadein;
-    waitframes(150);
   end;
 
+  count:= 0;
+  repeat 
+    inc(count);
+    waitframe;
+    if CRT_Keypressed then skip:= true;
+  until skip=true or count > 150;
+
   if skip = false then begin
-    putString(0,20,'                    '~);
-    putString(0,21,'                    '~);
+    // putString(0,20,'                    '~);
+    // putString(0,21,'                    '~);
     line:=GFX_ADDRESS + 6320;
     fillbyte(pointer(line), 80, 0);
     putString(0,20,strings[5]);
     putString(0,21,strings[6]);
     line:=GFX_ADDRESS + 7040;
     fillbyte(pointer(line), 80, 0);
-    waitframes(150);
   end;
+
+  count:= 0;
+  repeat 
+    inc(count);
+    waitframe;
+    if CRT_Keypressed then skip:= true;
+  until skip or count > 300;
 
   if skip = false then begin
     gfx_fadeout;
@@ -220,11 +253,17 @@ begin
     line:=GFX_ADDRESS + 7040;
     fillbyte(pointer(line), 80, 0);
     gfx_fadein;
-    waitframes(150);
   end;
+  count:= 0;
+  repeat 
+    inc(count);
+    waitframe;
+    if CRT_Keypressed then skip:= true;
+  until skip or count > 150;
+
   if skip = false then begin
-    putString(0,20,'                    '~);
-    putString(0,21,'                    '~);
+    // putString(0,20,'                    '~);
+    // putString(0,21,'                    '~);
     line:=GFX_ADDRESS + 6320;
     fillbyte(pointer(line), 80, 0);
     putString(0,20,strings[9]);
@@ -232,8 +271,14 @@ begin
     putString(0,22,strings[11]);
     line:=GFX_ADDRESS + 7360;
     fillbyte(pointer(line), 80, 0);
-    waitframes(150);waitframes(150);
   end;
+
+  count:= 0;
+  repeat 
+    inc(count);
+    waitframe;
+    if CRT_Keypressed then skip:= true;
+  until skip or count > 300;
 
   if skip = false then begin
     gfx_fadeout;
@@ -247,11 +292,18 @@ begin
     line:=GFX_ADDRESS + 7040;
     fillbyte(pointer(line), 80, 0);
     gfx_fadein;
-    waitframes(150);
   end;
+
+  count:= 0;
+  repeat 
+    inc(count);
+    waitframe;
+    if CRT_Keypressed then skip:= true;
+  until skip or count > 150;
+
   if skip = false then begin
-    putString(0,20,'                    '~);
-    putString(0,21,'                    '~);
+    // putString(0,20,'                    '~);
+    // putString(0,21,'                    '~);
     line:=GFX_ADDRESS + 6320;
     fillbyte(pointer(line), 80, 0);
     putString(0,20,strings[14]);
@@ -259,8 +311,15 @@ begin
     putString(0,22,strings[16]);
     line:=GFX_ADDRESS + 7360;
     fillbyte(pointer(line), 80, 0);
-    waitframes(150);waitframes(150);
   end;
+
+  count:= 0;
+  repeat 
+    inc(count);
+    waitframe;
+    if CRT_Keypressed then skip:= true;
+  until skip or count > 300;
+
   if skip = false then begin
     gfx_fadeout;
     // putString(0,22,'                    '~);
@@ -270,10 +329,18 @@ begin
     putString(0,20,strings[17]);
     putString(0,21,strings[18]);
     gfx_fadein;
-    waitframes(150);//waitframes(250);
   end;
 
-  gfx_fadeout;
+  count:= 0;
+  repeat 
+    inc(count);
+    waitframe;
+    if CRT_Keypressed then skip:= true;
+  until skip or count > 300;
+
+  gfx_fadeout;  
+  music:= false;
+  waitframe;
   msx.stop;
   DisableDLI;
   DisableVBLI;

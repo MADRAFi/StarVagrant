@@ -23,8 +23,7 @@ begin
         phr ; store registers
         ;inc 20
   };
-  msx.play;
-  if CRT_keypressed then skip:=true;
+  if music then msx.play;
 
   asm {
       ; mwa #DLI_TITLE1 ATARI.VDSLST
