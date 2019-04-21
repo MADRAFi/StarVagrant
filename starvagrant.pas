@@ -277,7 +277,7 @@ begin
   y:= newLoc shl 2; // x 4 for number of colors
   repeat
     Waitframes(2);
-    if current_menu = MENU_TITLE then
+    if (current_menu = MENU_TITLE) or (current_menu = MENU_SAVE) or (current_menu = MENU_LOAD) then
     begin
       If (gfxcolors[0] and %00001111 < titlecolors[0] and %00001111 ) then Inc(gfxcolors[0]) else gfxcolors[0]:=titlecolors[0];
       If (gfxcolors[1] and %00001111 < titlecolors[1] and %00001111) then Inc(gfxcolors[1]) else gfxcolors[1]:=titlecolors[1];
