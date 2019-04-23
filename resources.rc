@@ -27,7 +27,7 @@
 
 CHARSET_ADDRESS rcdata 'assets/Nvdi8.fnt'
 
-DISPLAY_LIST_ADDRESS_TITLE rcasm 'dlist_title.asm'
+;DISPLAY_LIST_ADDRESS_TITLE rcasm 'dlist_title.asm'
 DISPLAY_LIST_ADDRESS_MENU rcasm 'dlist_menu.asm'
 DISPLAY_LIST_ADDRESS_CONSOLE rcasm 'dlist_console.asm'
 
@@ -37,6 +37,4 @@ DISPLAY_LIST_ADDRESS_CONSOLE rcasm 'dlist_console.asm'
 ;RMT_PLAYER_ADDRESS	RMTPLAY	'assets/title.feat' 0
 ;RMT_MODULE_ADDRESS	RMT	'assets/title.rmt'
 
-; graphics
-;GFX_ADDRESS RCDATA 'assets/StarVagrandLogo.dat'
-;GFX2_ADDRESS RCDATA 'assets/portolisar.dat'
+

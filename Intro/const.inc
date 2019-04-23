@@ -13,9 +13,9 @@ PIC2_ADDRESS = PIC1_ADDRESS + 7684;
 PIC3_ADDRESS = PIC2_ADDRESS + 7684;
 // STRINGS_ADDRESS = PIC3_ADDRESS + 7684;
 
-CHARSET_ADDRESS = $9C00;
-GFX_ADDRESS = $A010;
 
+GFX_ADDRESS = $B010;
+CHARSET_ADDRESS = $E400;
 
 // ***************************************************************************//
 

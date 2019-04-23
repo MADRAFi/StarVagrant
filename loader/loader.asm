@@ -91,7 +91,7 @@ ANTIC_MODE_WIDE equ %00100011;
         ;   org $d301
         ;   .byte $fe
 
-CHARSET_ADDRESS equ $9C00; // same as in intro and game
+CHARSET_ADDRESS equ $E400; // same as in intro and game
           org CHARSET_ADDRESS
           ins '../assets/Nvdi8.fnt'
           org $0580
