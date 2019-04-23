@@ -86,14 +86,14 @@ var
     $1a,$14,$10,$00     // 16
   );
 
-// current gfx colors
-//  $10,$14,$1a,$00
+  // current gfx colors
+  //  $10,$14,$1a,$00
   gfxcolors: array [0..3] of Byte = (
     $1a,$1a,$1a,$00
   );
-txtcolors : array [0..1] of Byte = (
+  txtcolors : array [0..1] of Byte = (
     $00,$1c
-);
+  );
 
 
   // strings: array [0..0] of Word absolute STRINGS_ADDRESS;
@@ -140,50 +140,79 @@ txtcolors : array [0..1] of Byte = (
   ); // quantities of items
 
   locationdistance: array[0..(NUMBEROFLOCATIONS * NUMBEROFLOCATIONS)-1] of Word = (
-  0,50,0,0,0,0,0,0,60,0,0,365,120,0,0,50,50,
-  50,0,20,30,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,30,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,20,0,0,0,0,0,0,0,0,0,20,
-  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,30,
-  0,0,0,0,20,0,0,0,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,30,0,0,0,0,0,0,0,0,
-  60,0,0,0,0,0,0,30,0,0,0,0,0,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,50,0,60,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,50,0,0,0,0,0,0,0,
-  365,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  120,0,0,0,0,0,0,0,0,60,0,0,0,10,70,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,10,0,0,0,0,
-  0,0,0,0,0,0,0,0,0,0,0,0,70,0,0,0,0,
-  50,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-  50,0,0,0,20,30,0,0,0,0,0,0,0,0,0,0,0
-
+    0,50,0,0,0,0,0,0,60,0,0,365,120,0,0,50,50,
+    50,0,20,30,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,30,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,20,0,0,0,0,0,0,0,0,0,20,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,30,
+    0,0,0,0,20,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,30,0,0,0,0,0,0,0,0,
+    60,0,0,0,0,0,0,30,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,50,0,60,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,50,0,0,0,0,0,0,0,
+    365,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    120,0,0,0,0,0,0,0,0,60,0,0,0,10,70,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,10,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,70,0,0,0,0,
+    50,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    50,0,0,0,20,30,0,0,0,0,0,0,0,0,0,0,0
   ); // distance between locations
 
- shipprices: array [0..(NUMBEROFLOCATIONS * NUMBEROFSHIPS)-1] of longword = (
- 1000,0,0,0,0,0,0,0,0,0,0,0,
- 0,9000,12990,22700,32000,0,75000,62000,0,0,330000,0,
- 0,0,0,0,0,0,0,0,0,0,0,0,
- 0,0,0,0,0,0,0,0,0,0,0,0,
- 0,0,0,0,0,0,0,0,0,0,0,0,
- 0,0,0,0,0,0,0,0,0,0,0,0,
- 0,0,0,0,0,0,0,0,0,0,0,0,
- 0,0,0,0,0,0,0,59500,0,130000,0,0,
- 0,0,0,0,0,0,0,0,0,0,0,0,
- 0,0,0,0,0,0,0,0,0,0,0,0,
- 0,0,0,0,0,45000,0,0,0,0,0,400000,
- 0,5000,0,18000,29999,0,50000,0,0,0,0,0,
- 0,9000,0,20100,0,0,0,0,124900,0,300000,0,
- 0,0,0,0,0,0,0,0,0,0,0,0,
- 0,0,0,0,0,0,75000,0,0,0,0,0,
- 0,0,0,0,31500,0,75000,62000,124900,0,300000,0,
- 0,8000,11999,22700,32000,0,0,0,124900,166000,330000,0
- ); // ship prices
+  shipprices: array [0..(NUMBEROFLOCATIONS * NUMBEROFSHIPS)-1] of longword = (
+    1000,0,0,0,0,0,0,0,0,0,0,0,
+    0,9000,12990,22700,32000,0,75000,62000,0,0,330000,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,59500,0,130000,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,45000,0,0,0,0,0,400000,
+    0,5000,0,18000,29999,0,50000,0,0,0,0,0,
+    0,9000,0,20100,0,0,0,0,124900,0,300000,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,75000,0,0,0,0,0,
+    0,0,0,0,31500,0,75000,62000,124900,0,300000,0,
+    0,8000,11999,22700,32000,0,0,0,124900,166000,330000,0
+  ); // ship prices
+
+
+  bannertxt: array [0..11] of String = (
+    '               _____ _'~,
+    '              / ____| |'~,
+    '             | (___ | |_ __ _ _ __'~,
+    '              \___ \| __/ _` | `__|'~,
+    ' __      __   ____) | || (_| | |    _'~,
+    ' \ \    / /  |_____/ \__\__,_|_|   | |'~,
+    '  \ \  / /_ _  __ _ _ __ __ _ _ __ | |_'~,
+    '   \ \/ / _` |/ _` | `__/ _` | `_ \| __|'~,
+    '    \  / (_| | (_| | | | (_| | | | | |_'~,
+    '     \/ \__,_|\__, |_|  \__,_|_| |_|\__|'~,
+    '               __/ |'~,
+    '              |___/   (c) 2019 MADsoft'~ // 11
+
+  );
+
+  creditstxt: array [0..10] of String = (
+      ''~,
+    'Programming'~,
+    'MADRAFi'~,
+    ''~,
+    'Graphics'~,
+    'Bronek'~,
+    'XXXXXXXX'~,
+    ''~,
+    'Music'~, // 20
+    'XXXXXXXX'~,
+    ''~
+);
 
   availableitems: array [0..(MAXAVAILABLEITEMS-1)] of Word; // only 12 avaiable items
   availabledestinations: array [0..(MAXAVAILABLEDESTINATIONS-1)] of Word; // only 6 available destinations
   availableships: array [0..(NUMBEROFSHIPS-1)] of Word; // only available ships
-
 
 {$i 'interrupts.inc'}
 
@@ -1370,7 +1399,7 @@ begin
   // CRT_Write('+'~);
   // CRT_Write(StringOfChar('-'~,19));
 
-
+  // help
   CRT_GotoXY(1,22);
   txt:=concat(char(30+128),char(31+128));
   CRT_Write(Atascii2Antic(txt));
@@ -1383,7 +1412,7 @@ begin
   // CRT_Write(strings[17]);
 
 
-  // help
+
   CRT_GotoXY(2,23);
   CRT_Write('OPTION'*~);
   CRT_Write('-'~);
@@ -1409,7 +1438,6 @@ begin
 
   repeat
     Waitframe;
-    //msx.play;
     If (CRT_Keypressed) then
     begin
       keyval := kbcode;
@@ -1840,7 +1868,61 @@ begin
   until (keyval = KEY_BACK); // or (keyval = KEY_OK);
 end;
 
+procedure credits;
 
+// const
+//   LISTTOPMARGIN = 5;
+//   CARGOTOPMARGIN = 8;
+//   LISTSTART = 21;
+//   LISTWIDTH = 19;
+
+// var
+//   x: Byte;
+//   z: Char;
+
+begin
+  keyval:= 0;
+
+  EnableVBLI(@vbl_console);
+  EnableDLI(@dli_console);
+  Waitframe;
+  DLISTL:= DISPLAY_LIST_ADDRESS_CONSOLE;
+
+  CRT_ClearRows(0,CRT_screenHeight);
+  
+  for y:=0 to 11 do
+    begin
+      CRT_GotoXY(0,y);
+      CRT_Write(bannertxt[y]);
+    end;
+    
+  for y:=0 to 10 do
+    begin
+      // CRT_GotoXY(0,y + 12);
+      CRT_WriteCentered(y + 12, creditstxt[y]);
+    end;
+
+  // // help
+  CRT_WriteRightAligned(23, strings[7]);
+  gfx_fadein;
+
+  repeat
+    Waitframe;
+    If (CRT_Keypressed) then
+    begin
+      keyval := kbcode;
+      case keyval of
+        KEY_BACK:   begin
+                      // sfx_play(voice4,255,168); // vol8
+                      current_menu := MENU_TITLE;
+                      gfx_fadeout(true);
+                    end;
+      end;
+    end;
+  until (keyval = KEY_BACK);
+
+
+end;
 
 
 procedure menu;
@@ -1920,12 +2002,13 @@ var
 
 begin
   gfx_fadeout(true);
+
   pic_load(GFX,0);
   // sfx_init;
 
   startPressed:=false;
 
-  CRT_ClearRows(0,5);
+  CRT_ClearRows(0,6);
   CRT_GotoXY(16,0);
   CRT_Write(strings[1]); // New game;
   y:=1;
@@ -1941,16 +2024,26 @@ begin
       CRT_Write('2'*~); WriteSpaces(1); CRT_Write(strings[53]); // Load
       Inc(y);
   end;
+  CRT_GotoXY(16,y);
+  CRT_Write(strings[58]);
+  CRT_Invert(17,y,1);
+  Inc(y);
   CRT_GotoXY(18,y);
   CRT_Write(strings[2]); // Quit;
 
-  txt:= strings[0]; // read scroll text
-  move(txt[1],pointer(SCROLL_ADDRESS+42),sizeOf(txt)); // copy text to vram
+  CRT_GotoXY(16,6);
+  CRT_Write(strings[0]); // copyright
 
-  EnableVBLI(@vbl_title);
-  EnableDLI(@dli_title1);
+  // txt:= strings[0]; // read scroll text
+  // move(txt[1],pointer(SCROLL_ADDRESS+42),sizeOf(txt)); // copy text to vram
+
+  // EnableVBLI(@vbl_title);
+  // EnableDLI(@dli_title1);
+  EnableVBLI(@vbl);
+  EnableDLI(@dli1);
   Waitframe;
-  DLISTL := DISPLAY_LIST_ADDRESS_TITLE;
+  // DLISTL := DISPLAY_LIST_ADDRESS_TITLE;
+  DLISTL := DISPLAY_LIST_ADDRESS_MENU;
   DMACTL:=$22; //%00100010;
   Waitframe;
   gfx_fadein;
@@ -1965,10 +2058,13 @@ begin
       keyval := kbcode;
       case keyval of
           KEY_NEW:      start;
-          KEY_CANCEL:   begin
-                          current_menu:=MENU_MAIN;
-                          gfx_fadeout(true);
-                          pic_load(LOC,player.loc);
+          KEY_CANCEL:   begin // continue game
+                            if gamestate = GAMEINPROGRESS then
+                            begin
+                              current_menu:=MENU_MAIN;
+                              gfx_fadeout(true);
+                              pic_load(LOC,player.loc);
+                             end; 
                         end;
           KEY_OPTION1:  begin
                           gfx_fadeout(true);
@@ -1977,6 +2073,10 @@ begin
           KEY_OPTION2:  begin
                           gfx_fadeout(true);
                           current_menu:=MENU_LOAD;
+                        end;
+          KEY_CREDITS:  begin
+                          gfx_fadeout(true);
+                          current_menu:=MENU_CREDITS;
                         end;
 
 (*
@@ -2005,7 +2105,7 @@ begin
 
     Waitframe;
 
-  until (keyval = KEY_QUIT) or (keyval = KEY_NEW) or (startPressed = true) or (keyval = KEY_CANCEL) or (keyval = KEY_OPTION1) or (keyval = KEY_OPTION2);
+  until (keyval = KEY_QUIT) or (keyval = KEY_NEW) or (startPressed = true) or (keyval = KEY_CANCEL) or (keyval = KEY_OPTION1) or (keyval = KEY_OPTION2) or (keyval = KEY_CREDITS);
 end;
 
 procedure disk_save(num: Byte);
@@ -2197,10 +2297,6 @@ begin
   SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
   CRT_Init(TXT_ADDRESS);
 
-  // clear video memory after intro
-  // fillbyte(pointer(SCROLL_ADDRESS),255,0);
-  //fillbyte(pointer(SCROLL_ADDRESS),100,0);
-
   //player.loc:=STARTLOCATION; //start location Port Olisar
 
   // Initialize RMT player
@@ -2234,6 +2330,7 @@ begin
       MENU_SHIP:  console_ship;
       MENU_SAVE:  menu_save_load(true);
       MENU_LOAD:  menu_save_load(false);
+      MENU_CREDITS: credits;
     end;
     repeat Waitframe until not CRT_Keypressed;
 

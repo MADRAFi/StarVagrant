@@ -1,61 +1,62 @@
-    
-strings: array [0..57] of String = (
-    'v.0.10 (c) 2019 Code: MADRAFi~, Gfx: XxX~, Msx: XxX. Special thanks to Bocianu for the support. '~,
+strings: array [0..58] of String = (
+    // 'v.0.10 (c) 2019 Code: MADRAFi, Gfx: XxX, Msx: XxX. Special thanks to Bocianu for the support. '~,
+    'v.0.11 (c) 2019 MADsoft'~, // 0
     'N'*'ew Game'~,
     'Q'*'uit'~,
     '1'*' Navigation'~,
     '2'*' Trade Console'~,
-    '3'*' Repair/Refuel Pad'~,
+    '3'*' Repair/Refuel Pad'~, // 5
     '4'*' Ship Depot'~,
     'B'*'ack'~,
     'Buy'~,
     'Sell'~,
-    ' Delivery Location'~,
+    ' Delivery Location'~, // 10
     '  Available Items'~,
     'commodity'~,
     'price'~,
     'Total Cargo'~,
-    'Empty Cargo'~,
+    'Empty Cargo'~, // 15
     'C'*'ancel'~,
     'O'*'K'~,
     ' for '~,
     '-Confirm'~,
-    'Loc:'~,
+    'Loc:'~, // 20
     'Nav:'~,
     'Distance:'~,
     '1-5'*'-Navigation'~,
     'J'*'-FTL Jump'~,
-    'No xBios found. Cannot load Pics'*~,
+    'No xBios found. Cannot load Pics'*~, // 25
     ' Press any key '~,
     'You`ve bought that ship. Press any key.'*~,
     'You have lost: '~,
     '  You have been boarded by pirates. You were brave and fought till you could.   They spared your life in exchange for all your cargo.'~,
-    'There have been a system Multifunction. Explosion has damaged part of your      cargo.'~,
+    'There have been a system Multifunction. Explosion has damaged part of your      cargo.'~, // 30
     'You have been robed by some thugs.      You have lost all your money.'~,
     '   You have taken a Passenger with you. He payed you some extra cash for a ride.'~,
     'You saw some citizens in urgent need.   You decided to give away some goods.'~,
     'You were obligated to use military      escort due to recent pirate activities. You have paid standard service fee.'~,
-    'It seems your lottery ticket won.       The prize has been transferred          to your account.'~,
+    'It seems your lottery ticket won.       The prize has been transferred          to your account.'~, // 35
     'Reserved'~,
     'Name:'~,
     'Prod:'~,
     'Cargo:'~,
-    'Price:'~,
+    'Price:'~, // 40
     'Speed:'~,
     'Length:'~,
     'Mass:'~,
     '-Choose'~,
-    ' m/s'~,
+    ' m/s'~, // 45
     ' meters'~,
     ' tons'~,
     ' You do not have enough'*~,
     ' You already own that ship. '*~,
-    '-All'~,
+    '-All'~, // 50
     'C'*'ontinue'~,
     'Save'~,
     'Load'~,
     'Slot '~,
-    ' error'~,
+    ' error'~, // 55
     ' successfull'~,
-    'Open file '~
+    'Open file '~,
+    'Credits'~
 );
