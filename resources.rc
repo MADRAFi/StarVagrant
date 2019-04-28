@@ -33,8 +33,10 @@ DISPLAY_LIST_ADDRESS_CONSOLE rcasm 'dlist_console.asm'
 
 ;STRINGS_ADDRESS rcasm 'strings.asm'
 
-; rmt module
+; music module
 ;RMT_PLAYER_ADDRESS	RMTPLAY	'assets/title.feat' 0
 ;RMT_MODULE_ADDRESS	RMT	'assets/title.rmt'
-
+PLAYER_ADDRESS  CMCPLAY
+;MODULE_ADDRESS  CMC 'assets/best.cmc'
+MODULE_ADDRESS  CMC 'assets/lostp.cmc'
 

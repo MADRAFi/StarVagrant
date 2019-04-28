@@ -149,7 +149,7 @@ begin
         phr ; store registers
   };
 
-  //msx.play;
+  if music then msx.play;
 
   asm {
     ;   *** example test routine
@@ -188,7 +188,7 @@ begin
   asm {
       phr ; store registers
   };
-  //msx.play;
+  if music then msx.play;
   asm {
       mwa #dli_console __dlivec
       plr ; restore registers
