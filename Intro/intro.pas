@@ -1,7 +1,7 @@
 {$librarypath '../../MADS/lib/'}
 {$librarypath '../../MADS/base/'}
 {$librarypath '../../MADS/blibs/'}
-uses atari, b_utils, b_system, b_crt, sysutils, rmt; //cmc;
+uses atari, b_utils, b_system, b_crt, sysutils, cmc;
 
 const
 {$i const.inc}
@@ -10,14 +10,15 @@ const
 
 var
   gfxcolors: array [0..3] of Byte = (
-    $10,$14,$1a,$00
+   // $10,$14,$1a,$00
+   $04,$0a,$0e,$00
   );
   piccolors: array [0..3] of Byte = (
-    $10,$14,$1a,$00
+    $04,$0a,$0e,$00
+    // $0e,$04,$0c,$00
   );
   // strings: array [0..0] of Word absolute STRINGS_ADDRESS;
-  // msx: TCMC;
-  msx: TRMT;
+  msx: TCMC;
   // txt: String;
   line: Word;
   skip: Boolean;
@@ -140,12 +141,12 @@ begin
   SystemOff;
 
   // Initialize player
+  // msx.player:=pointer(PLAYER_ADDRESS);
+  // msx.modul:=pointer(MODULE_ADDRESS);
+  // msx.init(0);
   msx.player:=pointer(PLAYER_ADDRESS);
   msx.modul:=pointer(MODULE_ADDRESS);
-  msx.init(0);
-  // msx.player:=pointer(CMC_PLAYER_ADDRESS);
-  // msx.modul:=pointer(CMC_MODULE_ADDRESS);
-  // msx.init;
+  msx.init;
 
   skip:= false;
   music:= true;
