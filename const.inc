@@ -1,20 +1,25 @@
 // stale
 
-FREE_TOP = $9C00;
+FREE_TOP = $A000;
 
 DISPLAY_LIST_ADDRESS_TITLE = FREE_TOP;
 DISPLAY_LIST_ADDRESS_MENU = DISPLAY_LIST_ADDRESS_TITLE + $100;
 DISPLAY_LIST_ADDRESS_CONSOLE = DISPLAY_LIST_ADDRESS_MENU + $100;
-MODULE_ADDRESS = DISPLAY_LIST_ADDRESS_CONSOLE + $100;
-PLAYER_ADDRESS = $AC00; // CMC only6
+PLAYER_ADDRESS = $A300; // CMC only
+MODULE_ADDRESS = PLAYER_ADDRESS + $800;
+
 CHARSET_ADDRESS = $BC00;
+LOGO_CHARSET_ADDRESS  = $DC00;
+LOGO_CHARSET_ADDRESS2  = LOGO_CHARSET_ADDRESS + $400;
+//LOGO_CHARSET_ADDRESS3 = LOGO_CHARSET_ADDRESS2 + $400;
+
 
 
 // RMT_PLAYER_ADDRESS = $B500; // + 100 due to rmt player mem alloc
 // RMT_MODULE_ADDRESS = $E000;
 
 GFX_ADDRESS = $C000; // $C000 - $D000
-TXT_ADDRESS = $E000;
+TXT_ADDRESS = $D800;
 // ***************************************************************************//
 
 NUMBEROFLOCATIONS = 17; // number of locations defined in locations.asm. Needs to match.
@@ -24,6 +29,7 @@ MAXSHIPPARAMETERS = 6; // number of ship parameters in ship array
 MAXAVAILABLEITEMS = 12; // numer of concurrent items displayed
 MAXCARGOSLOTS = 10;  // number of cargo slots
 MAXAVAILABLEDESTINATIONS = 6;  // number of destinations fron location.
+MAXLOGOCHARS = 479;
 
 STARTUEC = 5000;
 STARTLOCATION = 0;
@@ -42,6 +48,9 @@ KEY_NEW = 35;      //n
 KEY_JUMP = 1;      //j
 KEY_CREDITS = 40; //r
 
+KEY_BUYSELL = 33;
+KEY_SELECT = 12;
+
 KEY_UP = 14;
 KEY_DOWN = 15;
 KEY_LEFT = 6;
@@ -53,14 +62,14 @@ KEY_SHIFTRIGHT = 71;
 
 
 KEY_CANCEL = 18;  //c
-KEY_OK = 8;      //o
+//KEY_OK = 8;      //o
 
 //----------------------------------------------------------------------------//
 MENU_TITLE = 0;
 MENU_MAIN = 1;
 MENU_NAV = 2;
 MENU_TRADE = 3;
-MENU_MAINT = 4;
+//MENU_MAINT = 4;
 MENU_SHIP = 5;
 MENU_SAVE = 6;
 MENU_LOAD = 7;

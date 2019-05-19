@@ -11,7 +11,6 @@ begin
   if xBiosCheck = 0 then
   begin
     CRT_GotoXY(0,5);
-    //CRT_Write('xBios not found at address: $'~); CRT_Write(HexStr(xBIOS_ADDRESS,4));
     CRT_Write(strings[25]); // no xBios
   end
   else begin
@@ -24,7 +23,7 @@ procedure pic_load(mytype: Byte; num: Byte);
 begin
   music:= false;
   waitframe;
-  msx.stop;
+  msx.interrupt_play;
 
   If mytype = LOC then pic_openfile('LOC',num)
   else pic_openfile('GFX',num);
@@ -34,8 +33,9 @@ begin
     xBiosLoadData(Pointer(GFX_ADDRESS));
     xBiosFlushBuffer;
   end;
-  msx.init;
+  msx.continue_play;
   music:= true;
+  // sfx_init;
 end;
 
 procedure navi_ftljump(distance: Word);
@@ -53,15 +53,12 @@ begin
     WriteSpaces(18); // clear rows
   end;
 
-  // sfx_play(voice1,230,200); //vol 8
-  // sfx_play(voice2,230,200); //vol 8
-  // sfx_play(voice3,236,200); //vol 8
-  // sfx_play(voice4, 236,200); // vol 8
+  sfx_play(voice4, 236,202); // vol 10
 
   gfx_fadeout(false);
   music:=false;
   waitframe;
-  msx.stop;
+  msx.interrupt_play;
 
   pic_openfile('LOC',newLoc);
   fileoffset:=0;
@@ -74,11 +71,11 @@ begin
       xBiosLoadData(Pointer(GFX_ADDRESS+fileoffset));
       fileoffset:=fileoffset+CHUNKSIZE;
     end;
-    // If (xBiosIOresult <> 0) and (music = false) then
-    // begin
-    //   msx.init;
-    //   music:= true;
-    // end;
+    If (xBiosIOresult <> 0) and (music = false) then
+    begin
+      msx.continue_play;
+      music:= true;
+    end;
     //If distance > 0 then
     //begin
     //reuse of variable count for speed
@@ -90,11 +87,15 @@ begin
 
   until ((distance = 0) and (xBiosIOresult <> 0)) or ((distance = 0) and (xBiosCheck = 0));
 
-  If (xBiosCheck <> 0) then xBiosFlushBuffer; // close file
-  // sfx_init; // reinitialize pokey
-  msx.init;
-  waitframe;
-  music:= true;
+  If (xBiosCheck <> 0) then
+  begin
+    msx.interrupt_play;
+    xBiosFlushBuffer; // close file
+    // sfx_init; // reinitialize pokey
+    msx.continue_play;
+    waitframe;
+    music:= true;
+  end; 
   
   randomEncounter;
   calculateprices;
