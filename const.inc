@@ -29,7 +29,7 @@ MAXSHIPPARAMETERS = 6; // number of ship parameters in ship array
 MAXAVAILABLEITEMS = 12; // numer of concurrent items displayed
 MAXCARGOSLOTS = 10;  // number of cargo slots
 MAXAVAILABLEDESTINATIONS = 6;  // number of destinations fron location.
-MAXLOGOCHARS = 479;
+MAXLOGOCHARS = 519;
 
 STARTUEC = 5000;
 STARTLOCATION = 0;

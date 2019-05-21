@@ -201,30 +201,42 @@ end;
 procedure dli_credits;assembler;interrupt;
     asm {
         phr ; store registers
-        mva #.hi(LOGO_CHARSET_ADDRESS) ATARI.chbase
         sta ATARI.WSYNC
-        mva #$06 ATARI.colbk
-        sta ATARI.colpf2
-        mva #$02 ATARI.colpf1
+        mva #.hi(LOGO_CHARSET_ADDRESS) ATARI.chbase
+        ;sta ATARI.WSYNC
+        mva adr.gfxcolors ATARI.colpf0
+        mva adr.gfxcolors+1 ATARI.colpf1
+        mva adr.gfxcolors+2 ATARI.colpf2
+        mva adr.gfxcolors+3 ATARI.colbk
         
         lda #31
 @       cmp vcount
         bpl @-
+        ;sta ATARI.WSYNC
         mva #.hi(LOGO_CHARSET_ADDRESS2) ATARI.chbase
 
         lda #51
 @       cmp vcount
         bpl @-
+        ;sta ATARI.WSYNC
         mva #.hi(LOGO_CHARSET_ADDRESS) ATARI.chbase
 
-        lda #55
+        ;lda #55
+        lda #58
 @       cmp vcount
         bpl @-
+        sta ATARI.WSYNC
         mva #.hi(CHARSET_ADDRESS) ATARI.chbase
-
+        ;sta ATARI.WSYNC
+        mva adr.txtcolors ATARI.colbk
+        sta ATARI.colpf2
+        mva adr.txtcolors+1 ATARI.colpf1
+        
+        
         plr ; restore registers
         };
 end;
+
 
 procedure vbl_credits;interrupt;
 begin
