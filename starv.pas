@@ -551,6 +551,7 @@ end;
 procedure start;
 
 begin
+  gfx_fadeout(true);
   current_menu := MENU_MAIN;
   sfx_play(voice4,88,202); // vol10
 
@@ -561,9 +562,9 @@ begin
   player.loc:= STARTLOCATION;
   newLoc:= STARTLOCATION; //0;
   //end;
-  gfx_fadeout(true);
+  
   pic_load(LOC,player.loc);
-  gfx_fadein;
+  
 
   tshp:=shipmatrix[0];
   ship:= tshp^;
@@ -579,7 +580,7 @@ begin
   // ship.cargoquantity[1]:=20;
   // ship.scu:= 30;
 
-
+  // gfx_fadein;
 
 end;
 
