@@ -1,6 +1,6 @@
 strings: array [0..58] of String = (
     // 'v.0.10 (c) 2019 Code: MADRAFi, Gfx: XxX, Msx: XxX. Special thanks to Bocianu for the support. '~,
-    'v.0.14 (c) 2019 MADsoft'~, // 0
+    'v.0.12 (c) 2019 MADsoft'~, // 0
     'N'*'ew Game'~,
     'Q'*'uit'~,
     '1'*' Navigation'~,
