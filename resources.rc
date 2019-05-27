@@ -26,17 +26,16 @@
 ; remove # to uncomment and use examples below:
 
 CHARSET_ADDRESS rcdata 'assets/Nvdi8.fnt'
+LOGO_CHARSET_ADDRESS rcdata 'assets/Logo.fnt'
+
 
 DISPLAY_LIST_ADDRESS_TITLE rcasm 'dlist_title.asm'
 DISPLAY_LIST_ADDRESS_MENU rcasm 'dlist_menu.asm'
 DISPLAY_LIST_ADDRESS_CONSOLE rcasm 'dlist_console.asm'
 
-STRINGS_ADDRESS rcasm 'strings.asm'
+;STRINGS_ADDRESS rcasm 'strings.asm'
 
-; rmt module
-;RMT_PLAYER_ADDRESS	RMTPLAY	'assets/title.feat' 0
-;RMT_MODULE_ADDRESS	RMT	'assets/title.rmt'
+; music module
+;PLAYER_ADDRESS  CMCPLAY
+;MODULE_ADDRESS  CMC 'assets/lostp.cmc'
 
-; graphics
-;GFX_ADDRESS RCDATA 'assets/StarVagrandLogo.dat'
-;GFX2_ADDRESS RCDATA 'assets/portolisar.dat'

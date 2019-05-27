@@ -7,7 +7,7 @@ strings: array [0..18] of String = (
 	'finally fulfilled   '~,
 	'your contract.      '~,
     'For a long time you '~,
-    'dreamed about your  '~,
+    'have dreamed about  '~,
     'own venture and to  '~,
     'be able to do       '~,
     'whatever you want.  '~,
@@ -16,6 +16,6 @@ strings: array [0..18] of String = (
     'to buy cheapest ship'~,
     'and still have some '~,
     'change left.        '~,
-    'It is up to you     '~,
+    'It is up to you,    '~,
     'where to go now...  '~
 );

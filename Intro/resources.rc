@@ -33,11 +33,11 @@ DISPLAY_LIST_ADDRESS_TITLE rcasm 'dlist_title.asm'
 ;STRINGS_ADDRESS rcasm 'strings.asm'
 
 ; rmt module
-PLAYER_ADDRESS	RMTPLAY	'assets/title.feat' 0
-MODULE_ADDRESS	RMT	'assets/title.rmt'
+;PLAYER_ADDRESS	RMTPLAY	'assets/title.feat' 0
+;MODULE_ADDRESS	RMT	'assets/title.rmt'
 
-;CMC_PLAYER_ADDRESS  CMCPLAY
-;CMC_MODULE_ADDRESS  CMC 'assets/echo.cmc'
+PLAYER_ADDRESS  CMCPLAY
+MODULE_ADDRESS  CMC 'assets/echo.cmc'
 
 ; graphics
 PIC1_ADDRESS RCDATA 'assets/pic1.dat'
