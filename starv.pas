@@ -1833,8 +1833,10 @@ var
 begin
   keyval:= 0;
 
-  EnableVBLI(@vbl_credits);
-  EnableDLI(@dli_credits);
+  EnableVBLI(@vbl_title);
+  EnableDLI(@dli_title1);
+  // EnableVBLI(@vbl_credits);
+  // EnableDLI(@dli_credits);
   Waitframe;
   DLISTL:= DISPLAY_LIST_ADDRESS_TITLE;
 
@@ -2266,9 +2268,9 @@ begin
 
   //player.loc:=STARTLOCATION; //start location Port Olisar
 
-  msx.player:=pointer(PLAYER_ADDRESS);
-  msx.modul:=pointer(MODULE_ADDRESS);
-  msx.init;
+  // msx.player:=pointer(PLAYER_ADDRESS);
+  // msx.modul:=pointer(MODULE_ADDRESS);
+  // msx.init;
 
   // load ships data into an array of records.
   for y:=0 to NUMBEROFSHIPS-1 do

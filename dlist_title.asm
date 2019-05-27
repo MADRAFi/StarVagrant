@@ -34,9 +34,16 @@ DL_JVB = %01000001; // Jump to begining
 
 ; and declare display list itself
 
+
 dl_start
     dta DL_DLI + DL_BLANK8                                        
     dta DL_MODE_40x24T5 + DL_LMS, a(TXT_ADDRESS)
-    :12 dta DL_MODE_40x24T5                                       
-    :11 dta DL_MODE_40x24T2
+    :4 dta DL_MODE_40x24T5
+    dta DL_DLI + DL_MODE_40x24T5
+    :4 dta DL_MODE_40x24T5
+    dta DL_DLI + DL_MODE_40x24T5
+    :1 dta DL_MODE_40x24T5
+    dta DL_DLI + DL_MODE_40x24T5
+    :12 dta DL_MODE_40x24T2
+    dta DL_BLANK8 
     dta DL_JVB, a(dl_start)                                       ; // jump to beginning
