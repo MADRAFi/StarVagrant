@@ -188,7 +188,7 @@ begin
     inc(count);
     waitframe;
     if CRT_Keypressed then skip:= true;
-  until skip or (count > 300);
+  until skip or (count > 450);
 
   if skip = false then begin
     gfx_fadeout;
@@ -211,7 +211,7 @@ begin
     inc(count);
     waitframe;
     if CRT_Keypressed then skip:= true;
-  until skip or (count > 300);
+  until skip or (count > 450);
 
   if skip = false then begin
     // putString(0,20,'                    '~);
@@ -249,7 +249,7 @@ begin
     inc(count);
     waitframe;
     if CRT_Keypressed then skip:= true;
-  until (skip = true) or (count > 300);
+  until (skip = true) or (count > 450);
 
   if skip = false then begin
     // putString(0,20,'                    '~);
@@ -289,7 +289,7 @@ begin
     inc(count);
     waitframe;
     if CRT_Keypressed then skip:= true;
-  until skip or (count > 300);
+  until skip or (count > 450);
 
   if skip = false then begin
     // putString(0,20,'                    '~);
