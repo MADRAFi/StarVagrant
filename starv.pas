@@ -1818,6 +1818,27 @@ begin
   until (keyval = KEY_BACK); // or (keyval = KEY_OK);
 end;
 
+procedure draw_logo;
+
+var
+  i: Word;
+
+begin
+  EnableVBLI(@vbl_title);
+  EnableDLI(@dli_title1);
+  Waitframe;
+  DLISTL:= DISPLAY_LIST_ADDRESS_TITLE;
+
+  CRT_ClearRows(0,CRT_screenHeight);
+  
+  count:= 0;
+  CRT_GotoXY(0,0);
+  for i:=0 to MAXLOGOCHARS do
+    begin
+      CRT_Write(Chr(logodata[i]));
+    end;
+end;
+
 procedure credits;
 
 // const
@@ -1826,55 +1847,11 @@ procedure credits;
 //   LISTSTART = 21;
 //   LISTWIDTH = 19;
 
-var
-  i: Word;
-//   z: Char;
-
 begin
   keyval:= 0;
 
-  EnableVBLI(@vbl_title);
-  EnableDLI(@dli_title1);
-  // EnableVBLI(@vbl_credits);
-  // EnableDLI(@dli_credits);
-  Waitframe;
-  DLISTL:= DISPLAY_LIST_ADDRESS_TITLE;
+  draw_logo;
 
-  CRT_ClearRows(0,CRT_screenHeight);
-  
-  // for y:=0 to 11 do
-  //   begin
-  //     CRT_GotoXY(0,y);
-  //     CRT_Write(bannertxt[y]);
-  //   end;
-  count:= 0;
-  CRT_GotoXY(0,0);
-  for i:=0 to MAXLOGOCHARS do
-    begin
-    // CRT_GotoXY(i,Trunc(i/40));
-      // If (i mod 40) = 0 then 
-      // begin
-      //   Inc(count);
-      //   CRT_GotoXY(0,count);
-      // end;
-      CRT_Write(Chr(logodata[i]));
-    end;
-//   CRT_GotoXY(0,0);
-//   for y:=0 to 39 do
-//     begin
-//       CRT_Write(Chr(logodata[y]));
-//     end;
-// CRT_GotoXY(0,1);
-//   for y:=40 to 80 do
-//   begin
-//     CRT_Write(Chr(logodata[y]));
-//   end;
-//   CRT_GotoXY(0,2);
-//   for y:=81 to 121 do
-//     begin
-//       CRT_Write(Chr(logodata[y]));
-//     end;
-    
   for y:=0 to 10 do
     begin
       // CRT_GotoXY(0,y + 12);
@@ -1978,16 +1955,15 @@ var
   startPressed: Boolean = false;
 
 begin
-  gfx_fadeout(true);
-
-  pic_load(GFX,0);
-
   startPressed:=false;
 
-  CRT_ClearRows(0,6);
-  CRT_GotoXY(16,0);
+  gfx_fadeout(true);
+  draw_logo;
+
+
+  CRT_GotoXY(16,13);
   CRT_Write(strings[1]); // New game;
-  y:=1;
+  y:=14;
   if gamestate = GAMEINPROGRESS then
   begin
       CRT_GotoXY(16,y);
@@ -2007,19 +1983,9 @@ begin
   CRT_GotoXY(18,y);
   CRT_Write(strings[2]); // Quit;
 
-  CRT_GotoXY(16,6);
+  CRT_GotoXY(16,CRT_screenHeight - 3);
   CRT_Write(strings[0]); // copyright
 
-  // txt:= strings[0]; // read scroll text
-  // move(txt[1],pointer(SCROLL_ADDRESS+42),sizeOf(txt)); // copy text to vram
-
-  // EnableVBLI(@vbl_title);
-  // EnableDLI(@dli_title1);
-  EnableVBLI(@vbl);
-  EnableDLI(@dli1);
-  Waitframe;
-  // DLISTL := DISPLAY_LIST_ADDRESS_TITLE;
-  DLISTL := DISPLAY_LIST_ADDRESS_MENU;
   DMACTL:=$22; //%00100010;
   Waitframe;
   gfx_fadein;
@@ -2039,7 +2005,7 @@ begin
                             begin
                               current_menu:=MENU_MAIN;
                               gfx_fadeout(true);
-                              pic_load(LOC,player.loc);
+                              // pic_load(LOC,player.loc);
                              end; 
                         end;
           KEY_OPTION1:  begin
@@ -2093,13 +2059,13 @@ begin
       xBiosWriteData(@ship);
       if (xBiosIOresult = 0) then
       begin
-        CRT_GotoXY(5,5); // success
+        CRT_GotoXY(5,20); // success
         //CRT_Write('Save Successfull. Press any key'~);
         CRT_Write(strings[52]);CRT_Write(strings[56]);CRT_Write('.'~);CRT_Write(strings[26]);
       end
       else
       begin
-        CRT_GotoXY(7,5); // error
+        CRT_GotoXY(7,20); // error
         //CRT_WriteXY(0,5,'Save error. Press any key'~);
         CRT_Write(strings[52]);CRT_Write(strings[55]);CRT_Write('.'~);CRT_Write(strings[26]);
       end;
@@ -2107,7 +2073,7 @@ begin
     end
     else
     begin
-      CRT_GotoXY(5,5); // error opening
+      CRT_GotoXY(5,20); // error opening
       //CRT_WriteXY(0,5,'Open file error. Press any key'~*);
       CRT_Write(strings[57]);CRT_Write(strings[55]);CRT_Write('.'~);CRT_Write(strings[26]);
     end;
@@ -2131,19 +2097,19 @@ begin
       xBiosLoadData(@ship);
       if (xBiosIOresult = 0) then
       begin
-        CRT_GotoXY(5,5); // success
+        CRT_GotoXY(5,20); // success
         CRT_Write(strings[53]);CRT_Write(strings[56]);CRT_Write('.'~);CRT_Write(strings[26]);
       end
       else
       begin
-        CRT_GotoXY(7,5); // error
+        CRT_GotoXY(7,20); // error
         CRT_Write(strings[53]);CRT_Write(strings[55]);CRT_Write('.'~);CRT_Write(strings[26]);
       end;
       xBiosFlushBuffer;
     end
     else
     begin
-      CRT_GotoXY(5,5); // error opening
+      CRT_GotoXY(5,20); // error opening
       CRT_Write(strings[57]);CRT_Write(strings[55]);CRT_Write('.'~);CRT_Write(strings[26]);
     end;
 
@@ -2157,35 +2123,33 @@ var
   selectPressed: Boolean = false;
 
 begin
-  CRT_ClearRows(0,6);
+  CRT_ClearRows(13,CRT_screenHeight);
 
-  CRT_GotoXY(10,0);
+
   if mode then txt:=strings[52]  // save mode
   else txt:=strings[53];          // load mode
 
+  CRT_GotoXY(10,13);
   WriteSpaces(8);CRT_Write(txt);WriteSpaces(8); // Save
-  CRT_Invert(10,0,Length(txt)+16); // plus all 16 spaces
+  CRT_Invert(10,13,Length(txt)+16); // plus all 16 spaces
   txt:=strings[54];
   count:=Length(txt);
   for y:=1 to 5 do
   begin
-    CRT_GotoXY(14,y);
+    CRT_GotoXY(14,y + 14);
     WriteSpaces(3);CRT_Write(txt);CRT_Write(y);WriteSpaces(3);
   end;
 
   // Help Keys
-  CRT_GotoXY(0,6);
+  CRT_GotoXY(0,CRT_screenHeight - 3);
   CRT_Write(strings[23]); // Navigation options
   WriteSpaces(1);
-  CRT_Write('SELECT'*~);
+  CRT_Write('RETURN'*~);
   CRT_Write(strings[19]);  // Confirm
   WriteSpaces(1);
   CRT_Write(strings[7]); // Back
 
-  EnableVBLI(@vbl);
-  EnableDLI(@dli1);
-  Waitframe;
-  DLISTL := DISPLAY_LIST_ADDRESS_MENU;
+
   gfx_fadein;
 
   slot:=0;
@@ -2197,8 +2161,6 @@ begin
 
     If (CRT_Keypressed) then
     begin
-
-
         keyval := kbcode;
         case keyval of
           KEY_BACK:     begin
@@ -2225,29 +2187,28 @@ begin
                           oldslot:=slot;
                           slot:=5;
                         end;
+          KEY_SELECT:   begin
+                          if (slot > 0 ) and (selectPressed = false) then
+                          begin
+                            if mode then disk_save(slot)
+                            else disk_load(slot);
+                            current_menu:=MENU_TITLE;
+                            // CRT_WriteXY(0,5,'SELECT PRESSED'~*)
+                          end;
+                          selectPressed:= true;
+                        end;
 
         end;
         if (slot > 0) then
         begin
-          If (oldslot > 0) then CRT_Invert(14,oldslot,count+8);
-          CRT_Invert(14,slot,count+8);
+          If (oldslot > 0) then CRT_Invert(14,oldslot + 14,count+8);
+          CRT_Invert(14,slot + 14 ,count+8);
         end;
-    end;
-
-    if CRT_SelectPressed then
-    begin
-      if (slot > 0 ) and (selectPressed = false) then
-      // if (selectPressed = false) then
-      begin
-        if mode then disk_save(slot)
-        else disk_load(slot);
-        current_menu:=MENU_TITLE;
-        // CRT_WriteXY(0,5,'SELECT PRESSED'~*)
-      end;
-      selectPressed:= true;
     end
     else
+    begin
       selectPressed:=false;
+    end;
     Waitframe;
 
   until (keyval = KEY_BACK) or (current_menu=MENU_TITLE);

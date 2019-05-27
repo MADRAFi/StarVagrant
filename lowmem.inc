@@ -25,8 +25,8 @@ begin
   waitframe;
   // msx.interrupt_play;
 
-  If mytype = LOC then pic_openfile('LOC',num)
-  else pic_openfile('GFX',num);
+  If mytype = LOC then pic_openfile('LOC',num);
+  // else pic_openfile('GFX',num);
   //if (xBiosCheck = 1) and (xBiosIOresult = 0) then
   if (xBiosCheck <> 0) and (xBiosIOresult = 0) then
   begin
