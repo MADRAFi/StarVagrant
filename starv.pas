@@ -405,7 +405,7 @@ var
   modify: Real;
 
 begin
-  y:=Random(24);
+  y:=Random(28);
 
   txt:='#';
   case y of
@@ -467,6 +467,8 @@ begin
   end;
   If (txt <> '#') then encounterMessage;
 end;
+
+
 procedure calculateprices;
 var
   percent: Shortreal;
@@ -510,7 +512,7 @@ begin
 
   end;
 
-  if (percent < 40) then
+  if (percent < 40) then // only 40% chance for ship's price change
   begin
     for y:=0 to NUMBEROFSHIPS-1 do begin
       offset:= (NUMBEROFSHIPS * loc)+y;
@@ -915,9 +917,6 @@ var
   selectPressed: Boolean = false;
   currentshipprice: Longword;
 
-  //shp: ^TShip;
-  //x,z: byte;
-
 begin
   CRT_ClearRows(0,6);
 
@@ -976,7 +975,7 @@ begin
   CRT_Write(Atascii2Antic(txt));
   CRT_Write(strings[44]);  // Choose
   WriteSpaces(1);
-  CRT_Write('SELECT'*~);
+  CRT_Write('RETURN'*~);
   CRT_Write(strings[19]);  // Confirm
   WriteSpaces(1);
   CRT_Write(strings[7]);   // Back
@@ -1050,8 +1049,48 @@ begin
                         else
                           sfx_play(voice4,255,170); // vol10
                       end;
+          KEY_SELECT: begin
+                        if (selectPressed = false) then
+                        begin
+                          CRT_GotoXY(0,5);
+                          If ship.sindex <> availableships[shipindex] then
+                          begin
+                            currentshipprice:=shipprices[(NUMBEROFSHIPS * player.loc) + ship.sindex];
+                            if player.uec + currentshipprice >= shipprices[offset] then
+                            begin
+                              // sell current ship
+                              player.uec:=player.uec + currentshipprice;
+
+                              // buy new ship
+                              player.uec:=player.uec - shipprices[offset];
+                              ///ship:=shipmatrix[availableships[shipindex]];
+                              offset:=availableships[shipindex];
+                              tshp:=shipmatrix[offset];
+                              ship:= tshp^;
+                              CRT_GotoXY(6,5);
+                              CRT_Write(strings[27]);
+                              repeat until CRT_Keypressed;
+                              current_menu:=MENU_MAIN;
+                            end
+                            else
+                            begin
+                              //Message not enough UEC
+                              CRT_GotoXY(6,5);
+                              CRT_Write(strings[48]);CRT_Write(Atascii2Antic(CURRENCY));CRT_Invert(29,5,5)
+                            end;
+                          end
+                          else
+                          begin
+                            //Message that ship is already owned
+                            CRT_GotoXY(6,5);
+                            CRT_Write(strings[49]);
+                          end;
+                        end;
+                        selectPressed:=true;
+                      end;
 
         end;
+   
         if (current_menu=MENU_SHIP) and (shipindex <= NUMBEROFSHIPS-1) then
 
         begin
@@ -1104,53 +1143,11 @@ begin
           CRT_GotoXY(28,3);
           CRT_Write(tshp^.mass);CRT_Write(strings[47]);
         end;
-    end;
-
-
-    if (CRT_SelectPressed) then
-    begin
-      if (selectPressed = false) then
-      begin
-        CRT_GotoXY(0,5);
-        If ship.sindex <> availableships[shipindex] then
-        begin
-          currentshipprice:=shipprices[(NUMBEROFSHIPS * player.loc) + ship.sindex];
-          if player.uec + currentshipprice >= shipprices[offset] then
-          begin
-            // sell current ship
-            player.uec:=player.uec + currentshipprice;
-
-            // buy new ship
-            player.uec:=player.uec - shipprices[offset];
-            ///ship:=shipmatrix[availableships[shipindex]];
-            offset:=availableships[shipindex];
-            tshp:=shipmatrix[offset];
-            ship:= tshp^;
-            CRT_GotoXY(6,5);
-            CRT_Write(strings[27]);
-            repeat until CRT_Keypressed;
-            current_menu:=MENU_MAIN;
-          end
-          else
-          begin
-            //Message not enough UEC
-            CRT_GotoXY(6,5);
-            CRT_Write(strings[48]);CRT_Write(Atascii2Antic(CURRENCY));CRT_Invert(29,5,5)
-          end;
-
-        end
-        else
-        begin
-          //Message that ship is already owned
-          CRT_GotoXY(6,5);
-          CRT_Write(strings[49]);
-        end;
-
-      end;
-      selectPressed:=true;
     end
     else
+    begin
       selectPressed:=false;
+    end;
 
     Waitframe;
 
