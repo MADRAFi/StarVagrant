@@ -46,7 +46,7 @@ var
   txt: String; // Some strings
   offset: Word; // offset counted to get items from arrays
   y: Byte; // index for loops
-  count: Byte; // count in item iterations
+  count: Word; // count in item iterations
   msx: TCMC;
   current_menu: Byte;
   gamestate: TGameState;
@@ -211,14 +211,14 @@ var
 );
 
   thankstxt: array [0..9] of String = (
+    'Special thanks to:'~,
     ''~,
+    'BOCiANu for all the support'~,
     ''~,
+    'XXL for xBios support'~,
+    'Tebe for providing MAD-Pascal help'~,
+    'Kaz for testing and advise'~,
     ''~,
-    ''~,
-    ''~,
-    ''~,
-    ''~,
-    ''~, // 20
     ''~,
     ''~
 );
@@ -902,26 +902,33 @@ begin
                           current_menu := MENU_MAIN;
                         end;
           KEY_OPTION1:  begin
+                          sfx_play(voice4,230,202); //vol 10
                           destinationindex:=availabledestinations[0];
                          end;
           KEY_OPTION2:  begin
+                          sfx_play(voice4,230,202); //vol 10
                           destinationindex:=availabledestinations[1];
                         end;
           KEY_OPTION3:  begin
+                          sfx_play(voice4,230,202); //vol 10
                           destinationindex:=availabledestinations[2];
                         end;
           KEY_OPTION4:  begin
+                          sfx_play(voice4,230,202); //vol 10
                           destinationindex:=availabledestinations[3];
                         end;
           KEY_OPTION5:  begin
+                          sfx_play(voice4,230,202); //vol 10
                           destinationindex:=availabledestinations[4];
                         end;
           KEY_OPTION6:  begin
+                          sfx_play(voice4,230,202); //vol 10
                           destinationindex:=availabledestinations[5];
                         end;
           KEY_JUMP:     begin
                           if (destinationindex > 0) then
                           begin
+                            sfx_play(voice4,200,202); //vol 10
                             newLoc:=destinationindex-(player.loc * NUMBEROFLOCATIONS);
                             navi_ftljump(distance);
                             current_menu:=MENU_MAIN;
@@ -948,6 +955,7 @@ var
   currentshipprice: Longword;
 
 begin
+  sfx_play(voice4,230,202); //vol 10
   CRT_ClearRows(0,6);
 
 
@@ -1085,6 +1093,7 @@ begin
                           CRT_GotoXY(0,5);
                           If ship.sindex <> availableships[shipindex] then
                           begin
+                            sfx_play(voice4,230,202); //vol 10
                             currentshipprice:=shipprices[(NUMBEROFSHIPS * player.loc) + ship.sindex];
                             if player.uec + currentshipprice >= shipprices[offset] then
                             begin
@@ -1105,6 +1114,7 @@ begin
                             else
                             begin
                               //Message not enough UEC
+                              sfx_play(voice4,255,170); // vol10
                               CRT_GotoXY(6,5);
                               CRT_Write(strings[48]);CRT_Write(Atascii2Antic(CURRENCY));CRT_Invert(29,5,5)
                             end;
@@ -1112,6 +1122,7 @@ begin
                           else
                           begin
                             //Message that ship is already owned
+                            sfx_play(voice4,255,170); // vol10
                             CRT_GotoXY(6,5);
                             CRT_Write(strings[49]);
                           end;
@@ -1639,6 +1650,7 @@ begin
                         begin
                           if (selecteditemquantity > 0) then
                           begin
+                            sfx_play(voice4,200,202); //vol 10
                             for y:=0 to MAXCARGOSLOTS-1 do
                             begin
                               if currentShip.cargoindex[y] = 0 then
@@ -1687,6 +1699,7 @@ begin
                         else begin // Selling mode
                           if (selecteditemquantity > 0) then
                           begin
+                            sfx_play(voice4,200,202); //vol 10
                             currentShip.cargoquantity[itemindex]:=currentShip.cargoquantity[itemindex]-selecteditemquantity;
                             If currentShip.cargoquantity[itemindex] = 0 then currentShip.cargoindex[itemindex]:= 0; // erasing item form cargoindex
 
@@ -1758,6 +1771,7 @@ begin
                     begin
                       if (optionPressed=false) then
                       begin
+                        sfx_play(voice4,200,202); //vol 10
                         mode:= not mode;
                         CRT_ClearRow(19);
                         if (mode = false) then
@@ -1869,28 +1883,37 @@ end;
 
 procedure credits;
 
-// const
-//   LISTTOPMARGIN = 5;
-//   CARGOTOPMARGIN = 8;
-//   LISTSTART = 21;
-//   LISTWIDTH = 19;
+const
+  SHOWTIME = 400;
 
 begin
   keyval:= 0;
 
   draw_logo;
 
-  for y:=0 to 9 do
-    begin
-      CRT_WriteCentered(y + 15, creditstxt[y]);
-    end;
-
   // // help
-  CRT_WriteRightAligned(23, strings[7]);
+  CRT_WriteRightAligned(24, strings[7]);
   gfx_fadein;
 
+  count:= 0;
   repeat
-    Waitframe;
+    if (count = 0) then
+    begin
+      CRT_ClearRows(15,CRT_screenHeight - 1);
+      for y:=0 to 9 do
+      begin
+        CRT_WriteCentered(y + 15, creditstxt[y]);
+      end;
+    end;
+
+    if (count = SHOWTIME) then
+    begin
+      CRT_ClearRows(15,CRT_screenHeight - 1);
+      for y:=0 to 9 do
+      begin
+        CRT_WriteCentered(y + 15, thankstxt[y]);
+      end;
+    end;    
     If (CRT_Keypressed) then
     begin
       keyval := kbcode;
@@ -1901,7 +1924,10 @@ begin
                       gfx_fadeout(true);
                     end;
       end;
-    end;
+    end;    
+    if (count = SHOWTIME * 2) then count:= 0
+    else inc(count);
+    Waitframe;
   until (keyval = KEY_BACK);
 
 
@@ -2030,20 +2056,24 @@ begin
           KEY_CANCEL:   begin // continue game
                             if gamestate = GAMEINPROGRESS then
                             begin
+                              sfx_play(voice4,255,170); // vol10
                               current_menu:=MENU_MAIN;
                               gfx_fadeout(true);
                               // pic_load(LOC,player.loc);
                              end; 
                         end;
           KEY_OPTION1:  begin
+                          sfx_play(voice4,230,202); //vol 10
                           gfx_fadeout(true);
                           current_menu:=MENU_SAVE;
                         end;
           KEY_OPTION2:  begin
+                          sfx_play(voice4,230,202); //vol 10
                           gfx_fadeout(true);
                           current_menu:=MENU_LOAD;
                         end;
           KEY_CREDITS:  begin
+                          sfx_play(voice4,230,202); //vol 10
                           gfx_fadeout(true);
                           current_menu:=MENU_CREDITS;
                         end;
@@ -2199,26 +2229,32 @@ begin
           KEY_OPTION1:  begin
                           oldslot:=slot;
                           slot:=1;
+                          sfx_play(voice4,230,202); //vol 10
                          end;
           KEY_OPTION2:  begin
                           oldslot:=slot;
                           slot:=2;
+                          sfx_play(voice4,230,202); //vol 10
                         end;
           KEY_OPTION3:  begin
                           oldslot:=slot;
                           slot:=3;
+                          sfx_play(voice4,230,202); //vol 10
                         end;
           KEY_OPTION4:  begin
                           oldslot:=slot;
                           slot:=4;
+                          sfx_play(voice4,230,202); //vol 10
                         end;
           KEY_OPTION5:  begin
                           oldslot:=slot;
                           slot:=5;
+                          sfx_play(voice4,230,202); //vol 10
                         end;
           KEY_SELECT:   begin
                           if (slot > 0 ) and (selectPressed = false) then
                           begin
+                            sfx_play(voice4,200,202); //vol 10
                             if mode then disk_save(slot)
                             else disk_load(slot);
                             current_menu:=MENU_TITLE;
@@ -2262,6 +2298,7 @@ begin
   // msx.modul:=pointer(MODULE_ADDRESS);
   // msx.init;
 
+  sfx_init;
   // load ships data into an array of records.
   for y:=0 to NUMBEROFSHIPS-1 do
   begin
