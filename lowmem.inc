@@ -73,8 +73,10 @@ begin
     end;
     If (xBiosIOresult <> 0) and (music = false) then
     begin
+      xBiosFlushBuffer; // close file
       // msx.continue_play;
       // music:= true;
+      sfx_init; // reinitialize pokey
     end;
     count:=(ROUND(15 / (ship.speed / 100))) - (5 - Trunc(ship.lenght / 25));
     Dec(distance);
@@ -84,15 +86,15 @@ begin
 
   until ((distance = 0) and (xBiosIOresult <> 0)) or ((distance = 0) and (xBiosCheck = 0));
 
-  If (xBiosCheck <> 0) then
-  begin
-    // msx.interrupt_play;
-    xBiosFlushBuffer; // close file
-    // sfx_init; // reinitialize pokey
-    // msx.continue_play;
-    waitframe;
-    // music:= true;
-  end; 
+  // If (xBiosCheck <> 0) then
+  // begin
+  //   // msx.interrupt_play;
+  //       xBiosFlushBuffer; // close file
+  //   // msx.continue_play;
+  //   waitframe;
+  //   // music:= true;
+    
+  // end; 
   
   randomEncounter;
   calculateprices;
