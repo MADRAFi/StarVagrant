@@ -1873,7 +1873,6 @@ begin
 
   CRT_ClearRows(0,CRT_screenHeight);
   
-  count:= 0;
   CRT_GotoXY(0,0);
   for i:=0 to MAXLOGOCHARS do
     begin

@@ -40,7 +40,7 @@ end;
 
 procedure navi_ftljump(distance: Word);
 const
-    CHUNKSIZE = 800;
+    CHUNKSIZE = 600;
 
 var
   fileoffset: Cardinal;
