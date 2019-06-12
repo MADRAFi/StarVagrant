@@ -13,13 +13,15 @@ TGameState = (NEWGAME=0, GAMEINPROGRESS=1);
   // end;
 
   TShip = record
-    mcode: Byte;
-    sindex: Byte;
+    mcode: Byte; // manufacture ship code
+    sindex: Byte; // ship index
     scu_max: Word;
     scu: Word;
     speed: Byte;
     lenght: Byte;
     mass: Word;
+    qf_max: Word;
+    qf : Word;  // quantum fuel
     cargoindex: array [0..MAXCARGOSLOTS-1] of Word;
     cargoquantity: array [0..MAXCARGOSLOTS-1] of Word;
   end;

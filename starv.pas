@@ -117,28 +117,29 @@ var
   // strings: array [0..0] of Word absolute STRINGS_ADDRESS;
 
   itemprice: array [0..(NUMBEROFLOCATIONS * NUMBEROFITEMS)-1] of Word = (
-    0,0,0,0,83,43,0,25,69,30,0,61,0,0,281,170,0,0,0,34,83,39,1,0,
-    256,0,116,0,83,43,0,0,69,30,0,61,0,0,0,180,0,0,10,0,0,39,1,150,
+    0,0,0,0,83,43,0,25,69,0,0,61,16,0,281,170,0,0,0,34,83,39,1,0,
+    256,0,116,0,83,43,0,0,69,30,0,61,20,0,0,180,0,0,10,0,0,39,0,150,
     0,0,118,0,0,0,15,0,0,30,16,0,13,15,0,178,14,0,0,34,0,0,0,160,
     0,12,97,0,0,0,17,0,0,30,0,0,11,0,0,180,14,0,0,34,0,0,1,146,
-    245,0,118,0,0,42,0,0,0,30,0,57,0,0,0,178,14,13,0,34,0,37,1,240,
-    243,0,118,0,0,31,0,24,0,30,0,0,0,0,0,178,14,12,0,34,0,35,0,240,
+    245,0,118,0,0,42,0,0,0,30,0,57,25,0,0,178,14,13,0,34,0,37,1,0,
+    243,0,118,0,0,31,0,24,0,30,0,0,25,0,0,178,14,12,0,34,0,35,0,240,
     0,35,0,0,0,0,17,0,0,20,0,0,15,0,0,0,10,0,0,22,0,0,3,0,
-    0,31,0,22,0,42,0,0,0,0,0,68,0,0,0,176,0,0,8,0,0,0,0,0,
+    0,31,0,22,0,42,0,0,0,0,0,68,15,0,0,176,0,0,8,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,34,15,0,8,13,0,0,10,0,0,24,0,0,3,0,
-    225,0,0,0,0,0,0,22,39,0,0,0,0,16,0,0,14,21,18,0,0,0,2,0,
+    225,0,0,0,0,0,0,22,39,0,0,0,18,16,0,0,14,21,18,0,0,0,2,0,
     225,26,0,0,0,0,0,27,0,27,18,0,14,10,0,0,0,21,20,0,0,0,1,249,
-    205,0,125,0,78,49,0,0,46,38,0,61,0,0,291,195,0,0,0,0,78,47,0,280,
-    0,0,0,22,73,38,0,0,44,36,0,61,0,0,291,181,0,0,20,0,89,47,0,249,
-    0,0,118,12,0,42,10,0,39,37,0,0,0,0,0,181,14,0,0,0,0,0,1,249,
-    0,26,118,12,0,0,0,0,0,37,0,56,0,0,0,181,14,0,0,0,0,0,1,249,
+    205,0,125,0,78,49,0,0,46,38,0,61,10,0,291,0,0,0,0,0,78,47,0,280,
+    0,0,0,22,73,38,0,0,44,0,0,61,15,0,291,181,0,0,20,0,89,47,0,249,
+    0,0,118,12,0,42,10,0,39,37,0,0,18,0,0,181,14,0,0,0,0,0,1,249,
+    0,26,118,12,0,0,0,0,0,37,0,56,18,0,0,181,14,0,0,0,0,0,1,249,
     0,26,0,0,0,0,10,23,0,0,22,61,11,10,271,0,14,33,0,0,89,0,0,240,
     0,0,0,22,0,0,11,25,0,40,24,0,12,16,281,185,16,0,0,36,99,0,0,0
+
   );  // price matrix for items
 
   itemquantity: array [0..(NUMBEROFLOCATIONS * NUMBEROFITEMS)-1] of Word = (
-    0,0,0,0,5000,5000,0,5000,0,1000,0,0,0,0,0,5000,0,0,0,5000,2000,0,10000,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10000,0,
+    0,0,0,0,5000,5000,0,5000,0,0,0,0,0,0,0,5000,0,0,0,5000,2000,0,10000,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,5000,0,0,0,5000,0,2500,2500,0,0,0,0,0,0,0,0,10000,0,
     0,2500,1000,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10000,1000,
     5000,0,0,0,0,2500,0,0,0,0,0,5000,0,0,0,0,0,2500,0,0,0,5000,10000,0,
@@ -148,8 +149,8 @@ var
     0,0,0,0,0,0,0,0,0,2500,500,0,2500,2500,0,0,5000,0,0,2500,0,0,10000,0,
     5000,0,0,0,0,0,0,1500,0,0,0,0,0,1000,0,0,0,0,5000,0,0,0,10000,0,
     0,2500,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2500,0,0,0,10000,0,
-    5000,0,0,0,5000,5000,0,0,5000,100,0,500,0,0,5000,1000,0,0,0,0,5000,2000,0,0,
-    1000,0,0,0,1000,1000,0,0,1000,1000,0,1000,0,0,1000,1000,0,0,0,0,1000,1000,0,0,
+    5000,0,0,0,5000,5000,0,0,5000,100,0,500,0,0,5000,0,0,0,0,0,5000,2000,0,0,
+    1000,0,0,0,1000,1000,0,0,1000,0,0,1000,0,0,1000,1000,0,0,0,0,1000,1000,0,0,
     0,0,0,5000,0,0,0,0,2500,0,0,0,0,0,0,0,0,0,0,0,0,0,10000,0,
     0,500,0,5000,0,0,0,0,0,0,0,5000,0,0,0,0,0,0,0,0,0,0,10000,0,
     0,5000,0,0,0,0,5000,5000,0,0,5000,0,5000,5000,2500,0,2500,5000,0,0,0,0,0,0,
@@ -203,7 +204,7 @@ var
     ''~,
     'Graphics'~,
     'Bronek'~,
-    'XXXXXXXX'~,
+    'Kaz'~,
     ''~,
     'Music'~, // 20
     'Caruso'~,
@@ -224,38 +225,22 @@ var
 );
 
 // var logodata: array [0..MAXLOGOCHARS] of byte = (
-//     $00, $01, $02, $03, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $05, $06, $07, $04, $04, $04, $04,
-//     $08, $09, $0a, $0b, $0c, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $0d, $0e, $0f, $10, $11, $12, $13, $04, $04,
-//     $14, $15, $16, $17, $18, $19, $04, $04, $04, $04, $04, $04, $04, $04, $1a, $1b, $1b, $1c, $1d, $1e, $1e, $1f, $20, $1b, $1b, $21, $22, $23, $23, $24, $25, $26, $27, $28, $29, $2a, $2b, $2c, $2d, $04,
-//     $2e, $2f, $30, $31, $32, $33, $04, $04, $04, $04, $04, $04, $04, $04, $34, $35, $36, $37, $38, $39, $3a, $3b, $3c, $3d, $3e, $3f, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $4a, $4b, $4c, $4d,
-//     $4e, $4f, $50, $51, $52, $53, $04, $04, $04, $04, $04, $04, $04, $04, $54, $55, $56, $57, $04, $58, $59, $04, $5a, $5b, $5c, $5d, $5e, $5f, $60, $61, $04, $62, $63, $64, $65, $66, $67, $04, $04, $04,
-//     $68, $69, $6a, $6b, $6c, $6d, $6e, $04, $04, $04, $04, $04, $04, $04, $6f, $70, $71, $72, $04, $73, $74, $04, $75, $04, $73, $74, $76, $04, $77, $78, $04, $04, $04, $79, $04, $04, $04, $04, $04, $04,
-//     $00, $01, $02, $03, $04, $05, $06, $07, $08, $09, $09, $0a, $0b, $0c, $0d, $0e, $09, $0c, $0d, $0e, $0f, $0d, $0d, $0e, $09, $10, $11, $12, $0f, $13, $09, $14, $15, $16, $17, $18, $09, $09, $09, $09,
-//     $19, $1a, $1b, $1c, $1d, $1e, $1f, $09, $20, $21, $22, $23, $24, $25, $26, $27, $28, $25, $26, $29, $2a, $2b, $26, $27, $2c, $2b, $26, $2d, $2e, $2f, $30, $31, $32, $33, $2b, $34, $09, $09, $09, $09,
-//     $35, $36, $37, $38, $39, $3a, $3b, $09, $3c, $3d, $3e, $3f, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $42, $4a, $4b, $49, $42, $4c, $4d, $4e, $4f, $50, $51, $52, $53, $09, $09, $09, $09, $09,
-//     $54, $55, $56, $57, $58, $59, $09, $09, $09, $5a, $5b, $09, $5c, $5d, $5e, $5f, $60, $61, $62, $63, $64, $65, $66, $67, $68, $69, $5e, $6a, $6b, $6c, $6d, $6e, $09, $6b, $6c, $09, $09, $09, $09, $09,
-//     $09, $6f, $70, $71, $72, $73, $09, $09, $09, $74, $75, $09, $76, $77, $09, $78, $51, $79, $7a, $77, $7b, $75, $09, $7c, $7d, $75, $09, $7e, $7b, $75, $09, $7c, $09, $7b, $75, $09, $09, $09, $09, $09,
-//     $04, $7a, $7b, $7c, $7d, $7e, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04,
-//     $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04, $04
+//     $00, $01, $02, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $04, $03, $03, $03, $03, $03,
+//     $05, $06, $07, $08, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $09, $0a, $0b, $03, $03, $03, $03,
+//     $0c, $0d, $0e, $0f, $10, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $11, $12, $13, $14, $15, $16, $17, $03, $03,
+//     $18, $19, $1a, $1b, $1c, $1d, $03, $03, $03, $03, $03, $03, $03, $03, $1e, $1f, $1f, $20, $21, $1f, $1f, $22, $23, $1f, $1f, $24, $25, $1f, $1f, $26, $27, $28, $29, $2a, $2b, $2c, $2d, $2e, $2f, $03,
+//     $30, $31, $32, $33, $34, $35, $03, $03, $03, $03, $03, $03, $03, $03, $36, $37, $38, $39, $3a, $3b, $3c, $3d, $3e, $3f, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $4a, $4b, $4c, $4d, $4e, $4f,
+//     $50, $51, $52, $53, $54, $55, $03, $03, $03, $03, $03, $03, $03, $03, $56, $57, $58, $59, $03, $5a, $5b, $03, $5c, $5d, $5e, $5b, $5c, $5f, $60, $61, $03, $62, $63, $64, $65, $66, $67, $03, $03, $03,
+//     $68, $69, $6a, $6b, $6c, $6d, $6e, $03, $03, $03, $03, $03, $03, $03, $6f, $70, $71, $72, $03, $73, $74, $03, $75, $03, $73, $74, $76, $03, $77, $78, $03, $03, $03, $79, $03, $03, $03, $03, $03, $03,
+//     $00, $01, $02, $03, $04, $05, $06, $07, $08, $09, $09, $0a, $0b, $0c, $0d, $0e, $09, $0c, $0d, $0e, $0f, $0d, $0d, $0e, $09, $0c, $0d, $0e, $0f, $10, $09, $11, $12, $0d, $0d, $13, $09, $09, $09, $09,
+//     $14, $15, $16, $17, $18, $19, $06, $09, $1a, $1b, $1c, $1d, $1e, $1f, $20, $21, $22, $1f, $20, $23, $24, $25, $20, $26, $27, $25, $20, $28, $24, $29, $2a, $2b, $2c, $2d, $25, $2e, $09, $09, $09, $09,
+//     $2f, $30, $31, $32, $33, $34, $35, $09, $36, $37, $38, $39, $3a, $3b, $3c, $3d, $3a, $3e, $3f, $40, $41, $42, $3c, $43, $41, $44, $3c, $45, $41, $46, $47, $48, $09, $41, $49, $09, $09, $09, $09, $09,
+//     $4a, $4b, $4c, $4d, $4e, $4f, $50, $09, $09, $51, $52, $09, $53, $54, $55, $56, $57, $58, $59, $5a, $5b, $5c, $5d, $5e, $5b, $5f, $55, $60, $5b, $61, $62, $63, $09, $5b, $61, $09, $09, $09, $09, $09,
+//     $64, $65, $66, $67, $68, $69, $09, $09, $09, $6a, $6b, $09, $6c, $6d, $09, $6e, $09, $6f, $70, $71, $6c, $6b, $09, $72, $6c, $6b, $09, $6e, $6c, $6b, $09, $72, $09, $6c, $6b, $09, $09, $09, $09, $09,
+//     $7a, $7b, $7c, $7d, $7e, $7f, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03,
+//     $73, $74, $75, $76, $77, $78, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09,
+//     $09, $79, $7a, $7b, $7c, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09
 // );
-
-var logodata: array [0..MAXLOGOCHARS] of byte = (
-    $00, $01, $02, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $04, $03, $03, $03, $03, $03,
-    $05, $06, $07, $08, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $09, $0a, $0b, $03, $03, $03, $03,
-    $0c, $0d, $0e, $0f, $10, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $11, $12, $13, $14, $15, $16, $17, $03, $03,
-    $18, $19, $1a, $1b, $1c, $1d, $03, $03, $03, $03, $03, $03, $03, $03, $1e, $1f, $1f, $20, $21, $1f, $1f, $22, $23, $1f, $1f, $24, $25, $1f, $1f, $26, $27, $28, $29, $2a, $2b, $2c, $2d, $2e, $2f, $03,
-    $30, $31, $32, $33, $34, $35, $03, $03, $03, $03, $03, $03, $03, $03, $36, $37, $38, $39, $3a, $3b, $3c, $3d, $3e, $3f, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $4a, $4b, $4c, $4d, $4e, $4f,
-    $50, $51, $52, $53, $54, $55, $03, $03, $03, $03, $03, $03, $03, $03, $56, $57, $58, $59, $03, $5a, $5b, $03, $5c, $5d, $5e, $5b, $5c, $5f, $60, $61, $03, $62, $63, $64, $65, $66, $67, $03, $03, $03,
-    $68, $69, $6a, $6b, $6c, $6d, $6e, $03, $03, $03, $03, $03, $03, $03, $6f, $70, $71, $72, $03, $73, $74, $03, $75, $03, $73, $74, $76, $03, $77, $78, $03, $03, $03, $79, $03, $03, $03, $03, $03, $03,
-    $00, $01, $02, $03, $04, $05, $06, $07, $08, $09, $09, $0a, $0b, $0c, $0d, $0e, $09, $0c, $0d, $0e, $0f, $0d, $0d, $0e, $09, $0c, $0d, $0e, $0f, $10, $09, $11, $12, $0d, $0d, $13, $09, $09, $09, $09,
-    $14, $15, $16, $17, $18, $19, $06, $09, $1a, $1b, $1c, $1d, $1e, $1f, $20, $21, $22, $1f, $20, $23, $24, $25, $20, $26, $27, $25, $20, $28, $24, $29, $2a, $2b, $2c, $2d, $25, $2e, $09, $09, $09, $09,
-    $2f, $30, $31, $32, $33, $34, $35, $09, $36, $37, $38, $39, $3a, $3b, $3c, $3d, $3a, $3e, $3f, $40, $41, $42, $3c, $43, $41, $44, $3c, $45, $41, $46, $47, $48, $09, $41, $49, $09, $09, $09, $09, $09,
-    $4a, $4b, $4c, $4d, $4e, $4f, $50, $09, $09, $51, $52, $09, $53, $54, $55, $56, $57, $58, $59, $5a, $5b, $5c, $5d, $5e, $5b, $5f, $55, $60, $5b, $61, $62, $63, $09, $5b, $61, $09, $09, $09, $09, $09,
-    $64, $65, $66, $67, $68, $69, $09, $09, $09, $6a, $6b, $09, $6c, $6d, $09, $6e, $09, $6f, $70, $71, $6c, $6b, $09, $72, $6c, $6b, $09, $6e, $6c, $6b, $09, $72, $09, $6c, $6b, $09, $09, $09, $09, $09,
-    $7a, $7b, $7c, $7d, $7e, $7f, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03,
-    $73, $74, $75, $76, $77, $78, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09,
-    $09, $79, $7a, $7b, $7c, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09
-);
 
   availableitems: array [0..(MAXAVAILABLEITEMS-1)] of Word; // only 12 avaiable items
   availabledestinations: array [0..(MAXAVAILABLEDESTINATIONS-1)] of Word; // only 6 available destinations
@@ -388,6 +373,11 @@ begin
   CRT_GotoXY(9,2);
   //CRT_Write(strings[22]);
   CRT_Write(mydistance); CRT_Write(Atascii2Antic(DISTANCEUNIT));
+  CRT_GotoXY(6,3);
+  WriteSpaces(5);
+  CRT_GotoXY(6,3);
+  CRT_Write(Trunc((ship.qf / ship.qf_max) * 100)); CRT_Write(' %'~);
+  // CRT_Write(ship.qf);
 end;
 
 function getcargotypenum : Byte;
@@ -408,7 +398,7 @@ procedure encounterMessage;
 begin
   sfx_play(voice4,230,202); //vol 10
 
-  CRT_ClearRows(0,6);
+  CRT_ClearRows(0,7);
 
   CRT_GotoXY(0,0);
   for y:=1 to Length(txt) do
@@ -598,8 +588,9 @@ begin
   pic_load(LOC,player.loc);
   
 
-  tshp:=shipmatrix[0];
+  tshp:= shipmatrix[0];
   ship:= tshp^;
+  ship.qf:= ship.qf_max; // starting fuel
 
   eraseArray(0,MAXCARGOSLOTS-1, @ship.cargoindex);
   eraseArray(0,MAXCARGOSLOTS-1, @ship.cargoquantity);
@@ -861,9 +852,10 @@ var
   //y: byte;
   destinationindex: Word;
   distance: Word;
+  fuel: Boolean;
 
 begin
-  CRT_ClearRows(0,6);
+  CRT_ClearRows(0,7);
 
   CRT_GotoXY(0,0);
   CRT_Write(strings[20]); // Loc:
@@ -877,8 +869,12 @@ begin
   CRT_Write(strings[22]);  // Dis:
   // CRT_GotoXY(12,2);
   // CRT_Write(Atascii2Antic(DISTANCEUNIT));
+  CRT_GotoXY(0,3);
+  CRT_Write(strings[59]); // QFuell:
+  CRT_Write(Trunc((ship.qf / ship.qf_max) * 100)); CRT_Write(' %'~);
+
   // Help Keys
-  CRT_GotoXY(0,6);
+  CRT_GotoXY(0,7);
   CRT_Write(strings[23]); // Navigation options
   WriteSpaces(1);
   CRT_Write(strings[24]);  // FTL Jump
@@ -890,10 +886,8 @@ begin
   destinationindex:=0;
   keyval:= 0;
   repeat
-
     If (CRT_Keypressed) then
     begin
-
         //keyval := char(CRT_Keycode[kbcode]);
         keyval := kbcode;
         case keyval of
@@ -928,10 +922,22 @@ begin
           KEY_JUMP:     begin
                           if (destinationindex > 0) then
                           begin
-                            sfx_play(voice4,200,202); //vol 10
-                            newLoc:=destinationindex-(player.loc * NUMBEROFLOCATIONS);
-                            navi_ftljump(distance);
-                            current_menu:=MENU_MAIN;
+                            if (ship.qf >= distance) then fuel:= true
+                            else fuel:= false;
+
+                            if fuel then
+                            begin
+                              sfx_play(voice4,200,202); //vol 10
+                              newLoc:=destinationindex-(player.loc * NUMBEROFLOCATIONS);
+                              navi_ftljump(distance);
+                              current_menu:=MENU_MAIN;
+                            end
+                            else
+                            begin
+                              CRT_GotoXY(7,6);
+                              CRT_Write(strings[60]);
+                              destinationindex:=0;
+                            end;
                           end;
                         end;
         end;
@@ -941,10 +947,11 @@ begin
           navi_destinationUpdate(destinationindex);
           navi_distanceUpdate(distance);
         end;
+        If (destinationindex > 0) then CRT_ClearRow(6);  // clear msg row when enough fuel for destination
     end;
     Waitframe;
 
-  until (keyval = KEY_BACK) OR (keyval = KEY_JUMP);
+  until (keyval = KEY_BACK) OR ((keyval = KEY_JUMP) and (fuel = true));
 end;
 
 procedure console_ship;
@@ -956,7 +963,7 @@ var
 
 begin
   sfx_play(voice4,230,202); //vol 10
-  CRT_ClearRows(0,6);
+  CRT_ClearRows(0,7);
 
 
   //CRT_GotoXY(0,0);
@@ -1008,7 +1015,7 @@ begin
   CRT_Write(strings[47]);
 
   // Help Keys
-  CRT_GotoXY(5,6);
+  CRT_GotoXY(5,7);
   txt:=concat(char(30),char(31));
   CRT_Write(Atascii2Antic(txt));
   CRT_Write(strings[44]);  // Choose
@@ -1195,6 +1202,151 @@ begin
   until (keyval = KEY_BACK) or (current_menu = MENU_MAIN);
 end;
 
+procedure console_maint;
+
+var
+  // shipindex: Byte;
+  selectPressed: Boolean = false;
+  fuelprice: Word;
+  fuelquantity: Word;
+  fueltotal: Longword;
+
+begin
+  sfx_play(voice4,230,202); //vol 10
+  CRT_ClearRows(0,7);
+
+
+  //CRT_GotoXY(0,0);
+
+  CRT_WriteRightAligned(0,Atascii2Antic(concat(IntToStr(player.uec), CURRENCY)));
+
+  // shipindex:= 0; // show 1st available;
+
+  // tshp:=shipmatrix[availableships[shipindex]];
+  // offset:=(NUMBEROFSHIPS * player.loc) + availableships[shipindex];
+
+  CRT_GotoXY(0,0);
+  CRT_Write(strings[38]); // Prod:
+  CRT_Write(Atascii2Antic(prodmatrix[ship.mcode]));
+
+  CRT_GotoXY(0,1);
+  CRT_Write(strings[37]); // Name:
+  CRT_Write(Atascii2Antic(ships[ship.sindex * MAXSHIPPARAMETERS]));
+
+  CRT_GotoXY(0,2);
+  CRT_Write(strings[39]); // Cargo:
+  CRT_Write(ship.scu_max);
+  // CRT_GotoXY(10,2);
+  CRT_Write(Atascii2Antic(CARGOUNIT));
+
+  CRT_GotoXY(0,3);
+  CRT_Write(strings[59]); // QFuell:
+  CRT_Write(Trunc((ship.qf / ship.qf_max) * 100)); CRT_Write(' %'~);
+  // CRT_Write(ship.qf);
+
+
+  CRT_GotoXY(23,1);
+  CRT_Write(strings[41]); // Speed:
+  CRT_Write(ship.speed);
+  // CRT_GotoXY(33,1);
+  CRT_Write(strings[45]);
+
+  CRT_GotoXY(23,2);
+  CRT_Write(strings[42]); // Lenght:
+  CRT_Write(ship.lenght);
+  // CRT_GotoXY(33,2);
+  CRT_Write(strings[46]);
+
+  CRT_GotoXY(23,3);
+  CRT_Write(strings[43]); // Mass:
+  CRT_Write(ship.mass);
+  // CRT_GotoXY(33,3);
+  CRT_Write(strings[47]);
+
+  // Help Keys
+  CRT_GotoXY(10,7);
+  CRT_Write('RETURN'*~);
+  CRT_Write(strings[19]);  // Confirm
+  WriteSpaces(1);
+  CRT_Write(strings[7]);   // Back
+
+
+  keyval:= 0;
+  repeat
+
+    If (CRT_Keypressed) then
+    begin
+        CRT_ClearRow(5);
+        keyval := kbcode;
+        case keyval of
+          KEY_BACK:     begin
+                          sfx_play(voice4,255,170); // vol10
+                          current_menu := MENU_MAIN;
+                        end;
+          KEY_SELECT: begin
+                        if (selectPressed = false) then
+                        begin
+                          If (ship.qf < ship.qf_max) then
+                          begin
+                            sfx_play(voice4,230,202); //vol 10
+                            fuelquantity:=ship.qf_max - ship.qf;
+                            fuelprice:= GetItemPrice(12,true);
+                            fueltotal:= fuelquantity * fuelprice;
+
+                            if (player.uec  >= fueltotal) then
+                            begin
+                              player.uec:= player.uec - fueltotal;
+                              ship.qf:= ship.qf_max;
+                              CRT_GotoXY(6,3);
+                              CRT_Write('100 %'~);
+                              CRT_GotoXY(6,6);
+                              CRT_Write(strings[62]);
+
+                          //     // repeat until CRT_Keypressed;
+                          //     // current_menu:=MENU_MAIN;
+                            end
+                            else
+                            begin
+                              //Message not enough UEC
+                              if (player.uec > 0) then
+                              begin
+                                ship.qf:= Trunc(player.uec / fuelprice);
+                                player.uec:=0;
+                                CRT_GotoXY(6,3);
+                                CRT_Write(Trunc((ship.qf / ship.qf_max) * 100)); CRT_Write(' %'~);
+                              end
+                              else
+                              begin
+                                sfx_play(voice4,255,170); // vol10
+                                CRT_GotoXY(6,6);
+                                CRT_Write(strings[48]);CRT_Write(Atascii2Antic(CURRENCY));CRT_Invert(29,5,5)
+                              end;
+                            end;
+                            // update UEC
+                            CRT_WriteRightAligned(0,Atascii2Antic(concat(IntToStr(player.uec), CURRENCY)));
+                          end
+                          else
+                          begin
+                            //Message that ship does not need refuel
+                            sfx_play(voice4,255,170); // vol10
+                            CRT_GotoXY(4,6);
+                            CRT_Write(strings[61]);
+                          end;
+                        end;
+                        selectPressed:=true;
+                      end;
+
+        end;
+    end
+    else
+    begin
+      selectPressed:=false;
+    end;
+
+    Waitframe;
+
+  until (keyval = KEY_BACK) or (current_menu = MENU_MAIN);
+end;
 
 procedure trade_UpdateSelectedItem(selecteditemquantity:Word;selecteditemtotal:Longword);
 
@@ -1871,13 +2023,14 @@ begin
   Waitframe;
   DLISTL:= DISPLAY_LIST_ADDRESS_TITLE;
 
-  CRT_ClearRows(0,CRT_screenHeight);
+  // CRT_ClearRows(0,CRT_screenHeight);
   
-  CRT_GotoXY(0,0);
-  for i:=0 to MAXLOGOCHARS do
-    begin
-      CRT_Write(Chr(logodata[i]));
-    end;
+  // CRT_GotoXY(0,0);
+  // for i:=0 to MAXLOGOCHARS do
+  //   begin
+  //     CRT_Write(Chr(logodata[i]));
+  //   end;
+  move(pointer(LOGODATA_ADDRESS), pointer(TXT_ADDRESS), 600);
 end;
 
 procedure credits;
@@ -1950,23 +2103,24 @@ begin
    // gfxcolors[2]:=piccolors[y+2];
    // gfxcolors[3]:=piccolors[y+3];
 
-  CRT_ClearRows(0,6);
+  CRT_ClearRows(0,7);
 
   CRT_GotoXY(14,0);
   CRT_Write(strings[3]); // Navigation
   CRT_GotoXY(14,1);
   CRT_Write(strings[4]); // Trade
-
+  CRT_GotoXY(14,2);
+  CRT_Write(strings[5]); // Maint
   // load ship to be able to check if they are avaiable
   LoadShips;
   // show ship console only when there are ships avaiable (price > 0 for 1st ship at a location)
   offset:=(NUMBEROFSHIPS * player.loc) + availableships[0];
   if shipprices[offset] > 0 then
   begin
-    CRT_GotoXY(14,2);
+    CRT_GotoXY(14,3);
     CRT_Write(strings[6]); // Ship Hangar
   end;
-  CRT_GotoXY(18,3);
+  CRT_GotoXY(18,4);
   CRT_Write(strings[7]); // Back
 
   // CRT_GotoXY(0,3);
@@ -1984,8 +2138,9 @@ begin
     begin
       keyval := kbcode;
       case keyval of
-        KEY_OPTION1: current_menu := MENU_NAV;
-        KEY_OPTION2: current_menu := MENU_TRADE;
+        KEY_OPTION1: current_menu:= MENU_NAV;
+        KEY_OPTION2: current_menu:= MENU_TRADE;
+        KEY_OPTION3: current_menu:= MENU_MAINT;
         KEY_OPTION4: begin
                       // if there is an ship in available ship enable console_ship
                       if (shipprices[offset] > 0) then current_menu := MENU_SHIP;
@@ -2117,13 +2272,13 @@ begin
       begin
         CRT_GotoXY(5,20); // success
         //CRT_Write('Save Successfull. Press any key'~);
-        CRT_Write(strings[52]);CRT_Write(strings[56]);CRT_Write('.'~);CRT_Write(strings[26]);
+        CRT_Write(strings[52]);CRT_Write(strings[56]);CRT_Write('.'~*);CRT_Write(strings[26]);
       end
       else
       begin
         CRT_GotoXY(7,20); // error
         //CRT_WriteXY(0,5,'Save error. Press any key'~);
-        CRT_Write(strings[52]);CRT_Write(strings[55]);CRT_Write('.'~);CRT_Write(strings[26]);
+        CRT_Write(strings[52]);CRT_Write(strings[55]);CRT_Write('.'~*);CRT_Write(strings[26]);
       end;
       xBiosFlushBuffer;
     end
@@ -2131,7 +2286,7 @@ begin
     begin
       CRT_GotoXY(5,20); // error opening
       //CRT_WriteXY(0,5,'Open file error. Press any key'~*);
-      CRT_Write(strings[57]);CRT_Write(strings[55]);CRT_Write('.'~);CRT_Write(strings[26]);
+      CRT_Write(strings[57]);CRT_Write(strings[55]);CRT_Write('.'~*);CRT_Write(strings[26]);
     end;
     repeat until CRT_Keypressed;
   end;
@@ -2154,19 +2309,19 @@ begin
       if (xBiosIOresult = 0) then
       begin
         CRT_GotoXY(5,20); // success
-        CRT_Write(strings[53]);CRT_Write(strings[56]);CRT_Write('.'~);CRT_Write(strings[26]);
+        CRT_Write(strings[53]);CRT_Write(strings[56]);CRT_Write('.'~*);CRT_Write(strings[26]);
       end
       else
       begin
         CRT_GotoXY(7,20); // error
-        CRT_Write(strings[53]);CRT_Write(strings[55]);CRT_Write('.'~);CRT_Write(strings[26]);
+        CRT_Write(strings[53]);CRT_Write(strings[55]);CRT_Write('.'~*);CRT_Write(strings[26]);
       end;
       xBiosFlushBuffer;
     end
     else
     begin
       CRT_GotoXY(5,20); // error opening
-      CRT_Write(strings[57]);CRT_Write(strings[55]);CRT_Write('.'~);CRT_Write(strings[26]);
+      CRT_Write(strings[57]);CRT_Write(strings[55]);CRT_Write('.'~*);CRT_Write(strings[26]);
     end;
 
     repeat until CRT_Keypressed;
@@ -2309,6 +2464,7 @@ begin
     tshp^.speed:=byte(ships[offset+3]);
     tshp^.lenght:=byte(ships[offset+4]);
     tshp^.mass:=Word(ships[offset+5]);
+    tshp^.qf_max:=Word(ships[offset+6]);
   end;
 
   gamestate:= NEWGAME;
@@ -2320,7 +2476,7 @@ begin
       MENU_MAIN:  menu;
       MENU_NAV:   console_navigation;
       MENU_TRADE: console_trade;
-      //MENU_MAINT: console_maint;
+      MENU_MAINT: console_maint;
       MENU_SHIP:  console_ship;
       MENU_SAVE:  menu_save_load(true);
       MENU_LOAD:  menu_save_load(false);

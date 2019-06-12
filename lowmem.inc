@@ -44,8 +44,11 @@ const
 
 var
   fileoffset: Cardinal;
+  // usedqf: Word;
 
 begin
+  // usedqf:= distance;
+
   CRT_ClearRow(6);
   for y:=0 to MAXAVAILABLEDESTINATIONS-1 do
   begin
@@ -80,6 +83,7 @@ begin
     end;
     count:=(ROUND(15 / (ship.speed / 100))) - (5 - Trunc(ship.lenght / 25));
     Dec(distance);
+    Dec(ship.qf);
     navi_distanceUpdate(distance);
     waitframes(count);
   

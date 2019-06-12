@@ -27,7 +27,7 @@
 
 CHARSET_ADDRESS rcdata 'assets/Nvdi8.fnt'
 LOGO_CHARSET_ADDRESS rcdata 'assets/Logo.fnt'
-
+LOGODATA_ADDRESS rcdata 'assets/Logo.scr'
 
 DISPLAY_LIST_ADDRESS_TITLE rcasm 'dlist_title.asm'
 DISPLAY_LIST_ADDRESS_MENU rcasm 'dlist_menu.asm'
