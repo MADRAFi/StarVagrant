@@ -224,24 +224,6 @@ var
     ''~
 );
 
-// var logodata: array [0..MAXLOGOCHARS] of byte = (
-//     $00, $01, $02, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $04, $03, $03, $03, $03, $03,
-//     $05, $06, $07, $08, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $09, $0a, $0b, $03, $03, $03, $03,
-//     $0c, $0d, $0e, $0f, $10, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $11, $12, $13, $14, $15, $16, $17, $03, $03,
-//     $18, $19, $1a, $1b, $1c, $1d, $03, $03, $03, $03, $03, $03, $03, $03, $1e, $1f, $1f, $20, $21, $1f, $1f, $22, $23, $1f, $1f, $24, $25, $1f, $1f, $26, $27, $28, $29, $2a, $2b, $2c, $2d, $2e, $2f, $03,
-//     $30, $31, $32, $33, $34, $35, $03, $03, $03, $03, $03, $03, $03, $03, $36, $37, $38, $39, $3a, $3b, $3c, $3d, $3e, $3f, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $4a, $4b, $4c, $4d, $4e, $4f,
-//     $50, $51, $52, $53, $54, $55, $03, $03, $03, $03, $03, $03, $03, $03, $56, $57, $58, $59, $03, $5a, $5b, $03, $5c, $5d, $5e, $5b, $5c, $5f, $60, $61, $03, $62, $63, $64, $65, $66, $67, $03, $03, $03,
-//     $68, $69, $6a, $6b, $6c, $6d, $6e, $03, $03, $03, $03, $03, $03, $03, $6f, $70, $71, $72, $03, $73, $74, $03, $75, $03, $73, $74, $76, $03, $77, $78, $03, $03, $03, $79, $03, $03, $03, $03, $03, $03,
-//     $00, $01, $02, $03, $04, $05, $06, $07, $08, $09, $09, $0a, $0b, $0c, $0d, $0e, $09, $0c, $0d, $0e, $0f, $0d, $0d, $0e, $09, $0c, $0d, $0e, $0f, $10, $09, $11, $12, $0d, $0d, $13, $09, $09, $09, $09,
-//     $14, $15, $16, $17, $18, $19, $06, $09, $1a, $1b, $1c, $1d, $1e, $1f, $20, $21, $22, $1f, $20, $23, $24, $25, $20, $26, $27, $25, $20, $28, $24, $29, $2a, $2b, $2c, $2d, $25, $2e, $09, $09, $09, $09,
-//     $2f, $30, $31, $32, $33, $34, $35, $09, $36, $37, $38, $39, $3a, $3b, $3c, $3d, $3a, $3e, $3f, $40, $41, $42, $3c, $43, $41, $44, $3c, $45, $41, $46, $47, $48, $09, $41, $49, $09, $09, $09, $09, $09,
-//     $4a, $4b, $4c, $4d, $4e, $4f, $50, $09, $09, $51, $52, $09, $53, $54, $55, $56, $57, $58, $59, $5a, $5b, $5c, $5d, $5e, $5b, $5f, $55, $60, $5b, $61, $62, $63, $09, $5b, $61, $09, $09, $09, $09, $09,
-//     $64, $65, $66, $67, $68, $69, $09, $09, $09, $6a, $6b, $09, $6c, $6d, $09, $6e, $09, $6f, $70, $71, $6c, $6b, $09, $72, $6c, $6b, $09, $6e, $6c, $6b, $09, $72, $09, $6c, $6b, $09, $09, $09, $09, $09,
-//     $7a, $7b, $7c, $7d, $7e, $7f, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03,
-//     $73, $74, $75, $76, $77, $78, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09,
-//     $09, $79, $7a, $7b, $7c, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09, $09
-// );
-
   availableitems: array [0..(MAXAVAILABLEITEMS-1)] of Word; // only 12 avaiable items
   availabledestinations: array [0..(MAXAVAILABLEDESTINATIONS-1)] of Word; // only 6 available destinations
   availableships: array [0..(NUMBEROFSHIPS-1)] of Word; // only available ships
@@ -405,7 +387,7 @@ begin
   begin
     CRT_Write(txt[y]);
     if (y mod 4) = 0 then sfx_play(voice4,200,202); //vol 10
-    waitframes(2);
+    // waitframes(2);
     waitframe;
   end;
 
@@ -425,7 +407,7 @@ var
   modify: Real;
 
 begin
-  y:=Random(28);
+  y:=Random(30);
 
   txt:='#';
   case y of
@@ -1209,21 +1191,60 @@ var
   selectPressed: Boolean = false;
   fuelprice: Word;
   fuelquantity: Word;
+  reqfuel: Word;
   fueltotal: Longword;
+  reqtotal: LongWord;
+  // newuec: Longword;
 
 begin
   sfx_play(voice4,230,202); //vol 10
   CRT_ClearRows(0,7);
+  // newuec:= 0;
+  fuelquantity:= 0;
+  fuelprice:= 28; //GetItemPrice(12,true);
+  reqfuel:= 0;
+  reqtotal:= 0;
+
+  If (ship.qf < ship.qf_max) then
+  begin
+    reqfuel:=ship.qf_max - ship.qf;
+    reqtotal:= reqfuel * fuelprice;
+    if (player.uec  >= reqtotal) then
+    begin
+     fuelquantity:=ship.qf_max - ship.qf;
+
+    //  CRT_GotoXY(0,6);
+    //  CRT_Write('reqt:'~);CRT_Write(reqtotal);Writespaces(1);CRT_Write('fuel_quant:'~);CRT_Write(fuelquantity)
+    end
+    else 
+    begin
+      if (player.uec > 0) then
+      begin
+        fuelquantity:= Trunc(player.uec / fuelprice);
+        CRT_GotoXY(3,6);
+        CRT_Write(strings[63]);
+      end
+      else 
+      begin
+        fuelquantity:= 0;
+        CRT_GotoXY(6,6);
+        CRT_Write(strings[48]);CRT_Write(Atascii2Antic(CURRENCY));CRT_Invert(29,5,5)
+      end;
+    end;
+  end;
+  // else 
+  // begin
+  //   fuelquantity:=0;
+  // end;
+
+
+  // recalculate fuel total
+  fueltotal:= fuelquantity * fuelprice;
 
 
   //CRT_GotoXY(0,0);
 
   CRT_WriteRightAligned(0,Atascii2Antic(concat(IntToStr(player.uec), CURRENCY)));
-
-  // shipindex:= 0; // show 1st available;
-
-  // tshp:=shipmatrix[availableships[shipindex]];
-  // offset:=(NUMBEROFSHIPS * player.loc) + availableships[shipindex];
 
   CRT_GotoXY(0,0);
   CRT_Write(strings[38]); // Prod:
@@ -1246,22 +1267,19 @@ begin
 
 
   CRT_GotoXY(23,1);
-  CRT_Write(strings[41]); // Speed:
-  CRT_Write(ship.speed);
-  // CRT_GotoXY(33,1);
-  CRT_Write(strings[45]);
+  CRT_Write(strings[40]); // Price:
+  CRT_Write(fuelprice);
+  CRT_Write(Atascii2Antic(CURRENCY));
 
   CRT_GotoXY(23,2);
-  CRT_Write(strings[42]); // Lenght:
-  CRT_Write(ship.lenght);
-  // CRT_GotoXY(33,2);
-  CRT_Write(strings[46]);
+  CRT_Write(strings[64]); // Refuel:
+  CRT_Write(fuelquantity);
+
 
   CRT_GotoXY(23,3);
-  CRT_Write(strings[43]); // Mass:
-  CRT_Write(ship.mass);
-  // CRT_GotoXY(33,3);
-  CRT_Write(strings[47]);
+  CRT_Write(strings[65]); // Total:
+  CRT_Write(fueltotal);
+  CRT_Write(Atascii2Antic(CURRENCY));
 
   // Help Keys
   CRT_GotoXY(10,7);
@@ -1289,16 +1307,14 @@ begin
                           If (ship.qf < ship.qf_max) then
                           begin
                             sfx_play(voice4,230,202); //vol 10
-                            fuelquantity:=ship.qf_max - ship.qf;
-                            fuelprice:= GetItemPrice(12,true);
-                            fueltotal:= fuelquantity * fuelprice;
-
-                            if (player.uec  >= fueltotal) then
+                            if (player.uec  >= reqtotal) then
                             begin
-                              player.uec:= player.uec - fueltotal;
+                              player.uec:=player.uec - fueltotal;
+                              // player.uec:= newuec;
                               ship.qf:= ship.qf_max;
                               CRT_GotoXY(6,3);
                               CRT_Write('100 %'~);
+                              CRT_ClearRow(6);
                               CRT_GotoXY(6,6);
                               CRT_Write(strings[62]);
 
@@ -1307,13 +1323,20 @@ begin
                             end
                             else
                             begin
-                              //Message not enough UEC
+                              //not enough UEC, refuel for all credits
+
                               if (player.uec > 0) then
                               begin
-                                ship.qf:= Trunc(player.uec / fuelprice);
-                                player.uec:=0;
+                                ship.qf:= ship.qf + fuelquantity;
+                                player.uec:=player.uec - fueltotal;
+                                // player.uec:= newuec;
+ 
                                 CRT_GotoXY(6,3);
                                 CRT_Write(Trunc((ship.qf / ship.qf_max) * 100)); CRT_Write(' %'~);
+
+                                CRT_ClearRow(6);
+                                CRT_GotoXY(6,6);
+                                CRT_Write(strings[62]);
                               end
                               else
                               begin
@@ -1322,7 +1345,13 @@ begin
                                 CRT_Write(strings[48]);CRT_Write(Atascii2Antic(CURRENCY));CRT_Invert(29,5,5)
                               end;
                             end;
+                            // if (newuec > 0) then
+                            // begin
+                            //   CRT_GotoXY(6,6);
+                            //   CRT_Write(strings[62]);
+                            // end;
                             // update UEC
+                            CRT_WriteRightAligned(0,'                    '~);
                             CRT_WriteRightAligned(0,Atascii2Antic(concat(IntToStr(player.uec), CURRENCY)));
                           end
                           else
@@ -2023,13 +2052,7 @@ begin
   Waitframe;
   DLISTL:= DISPLAY_LIST_ADDRESS_TITLE;
 
-  // CRT_ClearRows(0,CRT_screenHeight);
-  
-  // CRT_GotoXY(0,0);
-  // for i:=0 to MAXLOGOCHARS do
-  //   begin
-  //     CRT_Write(Chr(logodata[i]));
-  //   end;
+  CRT_ClearRows(0,CRT_screenHeight);
   move(pointer(LOGODATA_ADDRESS), pointer(TXT_ADDRESS), 600);
 end;
 
@@ -2173,18 +2196,24 @@ begin
   Inc(y);
   if gamestate = GAMEINPROGRESS then
   begin
-      CRT_GotoXY(16,y);
-      CRT_Write(strings[51]); // Continue game;
-      Inc(y);
-      CRT_GotoXY(17,y);
-      CRT_Write('1'*~); WriteSpaces(1); CRT_Write(strings[52]); // Save
-      Inc(y);
-      CRT_GotoXY(17,y);
-      CRT_Write('2'*~); WriteSpaces(1); CRT_Write(strings[53]); // Load
-      Inc(y);
+    CRT_GotoXY(16,y);
+    CRT_Write(strings[51]); // Continue game;
+    Inc(y);
+    CRT_GotoXY(17,y);
+    CRT_Write('1'*~); WriteSpaces(1); CRT_Write(strings[53]); // Load
+    Inc(y);
+    CRT_GotoXY(17,y);
+    CRT_Write('2'*~); WriteSpaces(1); CRT_Write(strings[52]); // Save
+    Inc(y);
+  end
+  else
+  begin
+    CRT_GotoXY(17,y);
+    CRT_Write('1'*~); WriteSpaces(1); CRT_Write(strings[53]); // Load
+    Inc(y);
   end;
   CRT_GotoXY(16,y);
-  CRT_Write(strings[58]);
+  CRT_Write(strings[58]);  // Credits
   CRT_Invert(17,y,1);
   Inc(y);
   CRT_GotoXY(18,y);
@@ -2194,7 +2223,7 @@ begin
   CRT_Write(strings[0]); // copyright
 
   DMACTL:=$22; //%00100010;
-  Waitframe;
+  // Waitframe;
   gfx_fadein;
 
 
@@ -2208,23 +2237,26 @@ begin
       case keyval of
           KEY_NEW:      start;
           KEY_CANCEL:   begin // continue game
-                            if gamestate = GAMEINPROGRESS then
-                            begin
-                              sfx_play(voice4,255,170); // vol10
-                              current_menu:=MENU_MAIN;
-                              gfx_fadeout(true);
-                              // pic_load(LOC,player.loc);
-                             end; 
+                          if gamestate = GAMEINPROGRESS then
+                          begin
+                            sfx_play(voice4,255,170); // vol10
+                            current_menu:=MENU_MAIN;
+                            gfx_fadeout(true);
+                            // pic_load(LOC,player.loc);
+                          end;
                         end;
           KEY_OPTION1:  begin
                           sfx_play(voice4,230,202); //vol 10
                           gfx_fadeout(true);
-                          current_menu:=MENU_SAVE;
+                          current_menu:=MENU_LOAD;
                         end;
           KEY_OPTION2:  begin
-                          sfx_play(voice4,230,202); //vol 10
-                          gfx_fadeout(true);
-                          current_menu:=MENU_LOAD;
+                          if gamestate = GAMEINPROGRESS then
+                          begin
+                            sfx_play(voice4,230,202); //vol 10
+                            gfx_fadeout(true);
+                            current_menu:=MENU_SAVE;
+                          end;  
                         end;
           KEY_CREDITS:  begin
                           sfx_play(voice4,230,202); //vol 10
@@ -2251,7 +2283,7 @@ begin
 
     Waitframe;
 
-  until (keyval = KEY_QUIT) or (keyval = KEY_NEW) or (startPressed = true) or (keyval = KEY_CANCEL) or (keyval = KEY_OPTION1) or (keyval = KEY_OPTION2) or (keyval = KEY_CREDITS);
+  until (keyval = KEY_QUIT) or (keyval = KEY_NEW) or (startPressed = true) or (keyval = KEY_CANCEL) or ((keyval = KEY_OPTION2) and (gamestate = GAMEINPROGRESS)) or (keyval = KEY_OPTION1) or (keyval = KEY_CREDITS);
 end;
 
 procedure disk_save(num: Byte);
@@ -2412,12 +2444,12 @@ begin
                             if mode then disk_save(slot)
                             else disk_load(slot);
                             current_menu:=MENU_TITLE;
-                            // CRT_WriteXY(0,5,'SELECT PRESSED'~*)
                           end;
                           selectPressed:= true;
                         end;
 
         end;
+        
         if (slot > 0) then
         begin
           If (oldslot > 0) then CRT_Invert(14,oldslot + LOGOSIZE,count+8);

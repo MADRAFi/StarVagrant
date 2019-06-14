@@ -1,4 +1,4 @@
-strings: array [0..62] of String = (
+strings: array [0..65] of String = (
     'v.0.15 (c) 2019 MADsoft'~, // 0
     'N'*'ew Game'~,
     'Q'*'uit'~,
@@ -61,5 +61,9 @@ strings: array [0..62] of String = (
     'QFuel:'~,
     ' Not enough Quantum Fuel. '*~,  //60
     ' Your ship does not need refuel. '*~,
-    ' Your ship has been refueled. '*~
+    ' Your ship has been refueled. '*~,
+    ' Not enough credits to 100% refuel '*~,
+    'Refuel:'~,   
+    'Total:'~  //65
+
 );
