@@ -25,23 +25,12 @@
 ;
 ; remove # to uncomment and use examples below:
 
-CHARSET_ADDRESS rcdata 'assets/Nvdi8.fnt'
-CHAR_ADDRESS_PIC1_F1 rcdata 'assets/intro1.fnt'
-CHAR_ADDRESS_PIC2_F1 rcdata 'assets/intro2.fnt'
-; CHAR_ADDRESS_PIC3_F1 rcdata 'assets/intro3.fnt'
-;CHAR_ADDRESS_PIC4_F1 rcdata 'assets/intro4.fnt'
-
-SCREEN_ADDRESS_PIC1 rcdata 'assets/intro1.scr'
-SCREEN_ADDRESS_PIC2 rcdata 'assets/intro2.scr'
-; SCREEN_ADDRESS_PIC3 rcdata 'assets/intro3.scr'
-;SCREEN_ADDRESS_PIC4 rcdata 'assets/intro4.scr'
+CHARSET_ADDRESS rcdata '../assets/Nvdi8.fnt'
 
 DISPLAY_LIST_ADDRESS_TITLE rcasm 'dlist_title.asm'
-DISPLAY_LIST_ADDRESS_PIC1 rcasm 'dlist_pic1.asm'
-DISPLAY_LIST_ADDRESS_PIC2 rcasm 'dlist_pic2.asm'
-DISPLAY_LIST_ADDRESS_PIC3 rcasm 'dlist_pic3.asm'
-;DISPLAY_LIST_ADDRESS_PIC4 rcasm 'dlist_pic4.asm'
 
+
+;STRINGS_ADDRESS rcasm 'strings.asm'
 
 ; rmt module
 ;PLAYER_ADDRESS	RMTPLAY	'assets/title.feat' 0
@@ -50,3 +39,7 @@ DISPLAY_LIST_ADDRESS_PIC3 rcasm 'dlist_pic3.asm'
 PLAYER_ADDRESS  CMCPLAY
 MODULE_ADDRESS  CMC 'assets/echo.cmc'
 
+; graphics
+PIC1_ADDRESS RCDATA 'assets/pic1.dat'
+PIC2_ADDRESS RCDATA 'assets/pic2.dat'
+PIC3_ADDRESS RCDATA 'assets/pic3.dat'

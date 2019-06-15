@@ -35,8 +35,12 @@ DL_JVB = %01000001; // Jump to begining
 ; and declare display list itself
 
 dl_start
-    dta DL_DLI + DL_BLANK8                                        
-    dta DL_MODE_40x24T2 + DL_LMS, a(TXT_ADDRESS)
-    :28 dta DL_MODE_40x24T2
-    dta DL_BLANK8 
-    dta DL_JVB, a(dl_start)
+;    dta DL_DLI + DL_BLANK8                                       ; // 8 blank line
+    dta DL_DLI + DL_MODE_160x192G4 + DL_LMS, a(GFX_ADDRESS)       ; // gfx line + graphics memory start
+    :101 dta DL_MODE_160x192G4                                    ; // x graphics line
+    dta DL_MODE_160x192G4 + DL_LMS, a(GFX_ADDRESS + 4080)         ; // gfx line + graphics memory
+    :89 dta DL_MODE_160x192G4                                     ; // x graphics line
+;    dta DL_DLI + DL_BLANK8                                        ; // 8 blank line
+;    dta DL_MODE_40x24T2 + DL_LMS, a(TXT_ADDRESS)                  ; //  mode 0 line
+;    :2 dta DL_MODE_40x24T2
+    dta DL_JVB, a(dl_start)                                       ; // jump to beginning

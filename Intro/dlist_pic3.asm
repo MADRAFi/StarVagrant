@@ -36,23 +36,20 @@ DL_JVB = %01000001; // Jump to begining
 
 dl_start
     dta DL_DLI + DL_BLANK8                                        
-    dta DL_MODE_40x24T5 + DL_LMS, a(TXT_ADDRESS)
-    :1 dta DL_MODE_40x24T5
-    dta DL_DLI + DL_MODE_40x24T5
-    :2 dta DL_MODE_40x24T5
-    dta DL_DLI + DL_MODE_40x24T5
-    :2 dta DL_MODE_40x24T5
-    dta DL_DLI + DL_MODE_40x24T5
-    :2 dta DL_MODE_40x24T5
-    dta DL_DLI + DL_MODE_40x24T5
-    :2 dta DL_MODE_40x24T5
-    dta DL_DLI + DL_MODE_40x24T5
-    :2 dta DL_MODE_40x24T5
-    dta DL_DLI + DL_MODE_40x24T5
-    :2 dta DL_MODE_40x24T5
-    dta DL_DLI + DL_MODE_40x24T5
-    :2 dta DL_MODE_40x24T5
-    dta DL_DLI + DL_MODE_40x24T5
+    dta DL_MODE_40x24T5 + DL_LMS, a(TXT_ADDRESS)                ; raw 0
+    :7 dta DL_MODE_40x24T5                                      ; raw 0
+    dta DL_DLI + DL_MODE_40x24T5                                ; raw 0
+    :3 dta DL_MODE_40x24T5                                      ; raw 1
+    dta DL_DLI + DL_MODE_40x24T5                                ; raw 1
+    :3 dta DL_MODE_40x24T5                                      ; raw 2
+    dta DL_DLI + DL_MODE_40x24T5                                ; raw 2
+    :2 dta DL_MODE_40x24T5                                      ; raw 3
+    dta DL_DLI + DL_MODE_40x24T5                                ; raw 3
+    ;:2 dta DL_MODE_40x24T5                                      ; raw 
+    dta DL_DLI + DL_MODE_40x24T5                                ; raw 1
+    dta DL_DLI + DL_MODE_40x24T5                                ; raw 3
+    dta DL_DLI + DL_MODE_40x24T5                                ; raw 4
+    dta DL_DLI + DL_MODE_40x24T5                                ; raw 3
     :3 dta DL_MODE_40x24T2
     dta DL_BLANK8 
     dta DL_JVB, a(dl_start)                                       ; // jump to beginning
