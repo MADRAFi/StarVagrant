@@ -88,7 +88,7 @@ begin
     waitframes(count);
   
 
-  until ((distance = 0) and (xBiosIOresult <> 0)) or ((distance = 0) and (xBiosCheck = 0));
+  until ((distance = 0)); // and (xBiosIOresult <> 0)) or ((distance = 0) and (xBiosCheck = 0));
 
   // If (xBiosCheck <> 0) then
   // begin

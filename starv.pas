@@ -37,9 +37,9 @@ type
 var
   //commission: shortreal = 0.05;
   keyval : Byte = 0;
-  player: TPlayer; // player
-  ship: TShip; // player's ship
-  currentship:TShip; // temp ship for operations
+  player: TPlayer absolute $ED5B; // player
+  ship: TShip absolute $ED81; // player's ship
+  currentship:TShip absolute $EDA7; // temp ship for operations
   newLoc: Byte; // new Location (destination)
   tstr : TString; // string used in various routines.
   strnum: TString; // string used in various routines to display numbers
@@ -138,8 +138,8 @@ var
   );  // price matrix for items
 
   itemquantity: array [0..(NUMBEROFLOCATIONS * NUMBEROFITEMS)-1] of Word = (
-    0,0,0,0,5000,5000,0,5000,0,0,0,0,0,0,0,5000,0,0,0,5000,2000,0,10000,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,5000,5000,0,5000,0,0,0,0,65000,0,0,5000,0,0,0,5000,2000,0,10000,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,65000,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,5000,0,0,0,5000,0,2500,2500,0,0,0,0,0,0,0,0,10000,0,
     0,2500,1000,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10000,1000,
     5000,0,0,0,0,2500,0,0,0,0,0,5000,0,0,0,0,0,2500,0,0,0,5000,10000,0,
@@ -148,9 +148,9 @@ var
     0,1000,0,0,0,0,0,0,0,0,0,0,0,0,0,2500,0,0,5000,0,0,0,10000,0,
     0,0,0,0,0,0,0,0,0,2500,500,0,2500,2500,0,0,5000,0,0,2500,0,0,10000,0,
     5000,0,0,0,0,0,0,1500,0,0,0,0,0,1000,0,0,0,0,5000,0,0,0,10000,0,
-    0,2500,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2500,0,0,0,10000,0,
-    5000,0,0,0,5000,5000,0,0,5000,100,0,500,0,0,5000,0,0,0,0,0,5000,2000,0,0,
-    1000,0,0,0,1000,1000,0,0,1000,0,0,1000,0,0,1000,1000,0,0,0,0,1000,1000,0,0,
+    0,2500,0,0,0,0,0,0,0,0,0,0,65000,0,0,0,0,0,2500,0,0,0,10000,0,
+    5000,0,0,0,5000,5000,0,0,5000,100,0,500,65000,0,5000,0,0,0,0,0,5000,2000,0,0,
+    1000,0,0,0,1000,1000,0,0,1000,0,0,1000,65000,0,1000,1000,0,0,0,0,1000,1000,0,0,
     0,0,0,5000,0,0,0,0,2500,0,0,0,0,0,0,0,0,0,0,0,0,0,10000,0,
     0,500,0,5000,0,0,0,0,0,0,0,5000,0,0,0,0,0,0,0,0,0,0,10000,0,
     0,5000,0,0,0,0,5000,5000,0,0,5000,0,5000,5000,2500,0,2500,5000,0,0,0,0,0,0,
@@ -203,7 +203,7 @@ var
     'MADRAFi'~,
     ''~,
     'Graphics'~,
-    'Bronek'~,
+    'Broniu'~,
     'Kaz'~,
     ''~,
     'Music'~, // 20
@@ -880,7 +880,7 @@ begin
           KEY_OPTION1:  begin
                           sfx_play(voice4,230,202); //vol 10
                           destinationindex:=availabledestinations[0];
-                         end;
+                        end;
           KEY_OPTION2:  begin
                           sfx_play(voice4,230,202); //vol 10
                           destinationindex:=availabledestinations[1];
@@ -1195,16 +1195,27 @@ var
   fueltotal: Longword;
   reqtotal: LongWord;
   // newuec: Longword;
+  itemoffset: Word;
 
 begin
   sfx_play(voice4,230,202); //vol 10
   CRT_ClearRows(0,7);
+
+  itemoffset:=(NUMBEROFLOCATIONS * player.loc) + 12; // check hydrogen
   // newuec:= 0;
   fuelquantity:= 0;
-  fuelprice:= 28; //GetItemPrice(12,true);
+  if (itemquantity[itemoffset] > 0) then
+    fuelprice:= itemprice[itemoffset]
+  else
+  begin    
+    // There is no Hydrogen to refuel
+    fuelprice:= 0;
+    CRT_WriteCentered(6,strings[60]);
+  end;
   reqfuel:= 0;
   reqtotal:= 0;
 
+  
   If (ship.qf < ship.qf_max) then
   begin
     reqfuel:=ship.qf_max - ship.qf;
@@ -1228,7 +1239,7 @@ begin
       begin
         fuelquantity:= 0;
         CRT_GotoXY(6,6);
-        CRT_Write(strings[48]);CRT_Write(Atascii2Antic(CURRENCY));CRT_Invert(29,5,5)
+        CRT_Write(strings[48]);CRT_Write(Atascii2Antic(CURRENCY));CRT_Invert(29,5,5);
       end;
     end;
   end;
@@ -1253,6 +1264,10 @@ begin
   CRT_GotoXY(0,1);
   CRT_Write(strings[37]); // Name:
   CRT_Write(Atascii2Antic(ships[ship.sindex * MAXSHIPPARAMETERS]));
+
+  //temp debug
+  CRT_GotoXY(0,5);
+  CRT_Write('sindex='~);CRT_Write(ship.sindex);
 
   CRT_GotoXY(0,2);
   CRT_Write(strings[39]); // Cargo:
@@ -1302,8 +1317,10 @@ begin
                           current_menu := MENU_MAIN;
                         end;
           KEY_SELECT: begin
-                        if (selectPressed = false) then
+                        if (selectPressed = false) and (fuelprice > 0) then
                         begin
+                          CRT_ClearRow(6);
+                          // CRT_GotoXY(6,6);
                           If (ship.qf < ship.qf_max) then
                           begin
                             sfx_play(voice4,230,202); //vol 10
@@ -1312,38 +1329,36 @@ begin
                               player.uec:=player.uec - fueltotal;
                               // player.uec:= newuec;
                               ship.qf:= ship.qf_max;
+                              // CRT_GotoXY(6,6);
+                              CRT_WriteCentered(6,strings[62]);
+
                               CRT_GotoXY(6,3);
                               CRT_Write('100 %'~);
-                              CRT_ClearRow(6);
-                              CRT_GotoXY(6,6);
-                              CRT_Write(strings[62]);
-
                           //     // repeat until CRT_Keypressed;
                           //     // current_menu:=MENU_MAIN;
                             end
                             else
                             begin
                               //not enough UEC, refuel for all credits
-
                               if (player.uec > 0) then
                               begin
                                 ship.qf:= ship.qf + fuelquantity;
                                 player.uec:=player.uec - fueltotal;
                                 // player.uec:= newuec;
- 
+
+                                // CRT_GotoXY(6,6);
+                                CRT_WriteCentered(6,strings[62]);  
+
                                 CRT_GotoXY(6,3);
                                 CRT_Write(Trunc((ship.qf / ship.qf_max) * 100)); CRT_Write(' %'~);
-
-                                CRT_ClearRow(6);
-                                CRT_GotoXY(6,6);
-                                CRT_Write(strings[62]);
+                            
                               end
                               else
                               begin
                                 sfx_play(voice4,255,170); // vol10
                                 CRT_GotoXY(6,6);
                                 CRT_Write(strings[48]);CRT_Write(Atascii2Antic(CURRENCY));CRT_Invert(29,5,5)
-                              end;
+                              end; 
                             end;
                             // if (newuec > 0) then
                             // begin
@@ -1358,8 +1373,8 @@ begin
                           begin
                             //Message that ship does not need refuel
                             sfx_play(voice4,255,170); // vol10
-                            CRT_GotoXY(4,6);
-                            CRT_Write(strings[61]);
+                            // CRT_GotoXY(4,6);
+                            CRT_WriteCentered(6,strings[61]);
                           end;
                         end;
                         selectPressed:=true;
@@ -2110,6 +2125,8 @@ end;
 
 
 procedure menu;
+// var 
+//   shipoffset: Word;
 
 begin
   EnableVBLI(@vbl);
@@ -2136,8 +2153,11 @@ begin
   CRT_Write(strings[5]); // Maint
   // load ship to be able to check if they are avaiable
   LoadShips;
+
   // show ship console only when there are ships avaiable (price > 0 for 1st ship at a location)
   offset:=(NUMBEROFSHIPS * player.loc) + availableships[0];
+  // offset:=(NUMBEROFLOCATIONS * player.loc) + 12; // check hydrogen
+
   if shipprices[offset] > 0 then
   begin
     CRT_GotoXY(14,3);
@@ -2164,6 +2184,15 @@ begin
         KEY_OPTION1: current_menu:= MENU_NAV;
         KEY_OPTION2: current_menu:= MENU_TRADE;
         KEY_OPTION3: current_menu:= MENU_MAINT;
+        // KEY_OPTION3: begin
+        //                offset:=(NUMBEROFLOCATIONS * player.loc) + 12; // check hydrogen
+        //                if (itemquantity[offset] > 0) then current_menu:= MENU_MAINT
+        //                else 
+        //                begin
+        //                  CRT_GotoXY(0,6);
+        //                  CRT_Write(strings[60]);
+        //                end;
+        //             end;
         KEY_OPTION4: begin
                       // if there is an ship in available ship enable console_ship
                       if (shipprices[offset] > 0) then current_menu := MENU_SHIP;
