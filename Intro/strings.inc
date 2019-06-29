@@ -3,8 +3,8 @@ strings: array [0..11] of String = (
     'United Earth Empire is still fighting.'~,          // screen 2
     'After 8 years in military, you have'~,             // screen 3
     'finally fulfilled your contract.'~,                // screen 3
-    'For a long time you have dreamed about'~,          // screen 4
-    'own venture and to be able to do'~,                // screen 4
+    'For a long time you dreamed about your'~,          // screen 4
+    'own ventures and to be able to do'~,                // screen 4
     'whatever you want.'~,                              // screen 4
     'With received pay check'~,                         // screen 5
     'you were able to buy cheapest ship'~,              // screen 5
