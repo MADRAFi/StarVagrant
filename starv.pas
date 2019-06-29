@@ -1194,15 +1194,13 @@ var
   reqfuel: Word;
   fueltotal: Longword;
   reqtotal: LongWord;
-  // newuec: Longword;
   itemoffset: Word;
 
 begin
   sfx_play(voice4,230,202); //vol 10
   CRT_ClearRows(0,7);
 
-  itemoffset:=(NUMBEROFLOCATIONS * player.loc) + 12; // check hydrogen
-  // newuec:= 0;
+  itemoffset:=(NUMBEROFITEMS * player.loc) + 12; // check hydrogen
   fuelquantity:= 0;
   if (itemquantity[itemoffset] > 0) then
     fuelprice:= itemprice[itemoffset]
@@ -1253,7 +1251,13 @@ begin
   fueltotal:= fuelquantity * fuelprice;
 
 
-  //CRT_GotoXY(0,0);
+  
+
+  // CRT_GotoXY(0,5);
+  // CRT_Write('offset='~);CRT_Write(itemoffset);
+  // CRT_GotoXY(0,6);
+  // CRT_Write('items='~);CRT_Write(itemquantity[itemoffset]);
+  
 
   CRT_WriteRightAligned(0,Atascii2Antic(concat(IntToStr(player.uec), CURRENCY)));
 
@@ -1264,10 +1268,6 @@ begin
   CRT_GotoXY(0,1);
   CRT_Write(strings[37]); // Name:
   CRT_Write(Atascii2Antic(ships[ship.sindex * MAXSHIPPARAMETERS]));
-
-  //temp debug
-  CRT_GotoXY(0,5);
-  CRT_Write('sindex='~);CRT_Write(ship.sindex);
 
   CRT_GotoXY(0,2);
   CRT_Write(strings[39]); // Cargo:
