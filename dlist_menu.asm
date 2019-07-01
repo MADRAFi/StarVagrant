@@ -40,6 +40,6 @@ dl_start
     :99 dta DL_MODE_160x192G4                                     ; // x graphics line
     dta DL_DLI + DL_BLANK8                                        ; // 8 blank lines
     dta DL_MODE_40x24T2 + DL_LMS, a(TXT_ADDRESS)            ; // mode 0 line + text memory start
-    :6 dta DL_MODE_40x24T2                                        ; // 5x mode 0 line
+    :7 dta DL_MODE_40x24T2                                        ; // 5x mode 0 line
     dta DL_BLANK8                                        ; // 8 blank line
     dta DL_JVB, a(dl_start)                                       ; // jump to beginning

@@ -40,12 +40,15 @@ end;
 
 procedure navi_ftljump(distance: Word);
 const
-    CHUNKSIZE = 800;
+    CHUNKSIZE = 600;
 
 var
   fileoffset: Cardinal;
+  // usedqf: Word;
 
 begin
+  // usedqf:= distance;
+
   CRT_ClearRow(6);
   for y:=0 to MAXAVAILABLEDESTINATIONS-1 do
   begin
@@ -73,26 +76,29 @@ begin
     end;
     If (xBiosIOresult <> 0) and (music = false) then
     begin
+      xBiosFlushBuffer; // close file
       // msx.continue_play;
       // music:= true;
+      sfx_init; // reinitialize pokey
     end;
     count:=(ROUND(15 / (ship.speed / 100))) - (5 - Trunc(ship.lenght / 25));
     Dec(distance);
+    Dec(ship.qf);
     navi_distanceUpdate(distance);
     waitframes(count);
   
 
-  until ((distance = 0) and (xBiosIOresult <> 0)) or ((distance = 0) and (xBiosCheck = 0));
+  until ((distance = 0)); // and (xBiosIOresult <> 0)) or ((distance = 0) and (xBiosCheck = 0));
 
-  If (xBiosCheck <> 0) then
-  begin
-    // msx.interrupt_play;
-    xBiosFlushBuffer; // close file
-    // sfx_init; // reinitialize pokey
-    // msx.continue_play;
-    waitframe;
-    // music:= true;
-  end; 
+  // If (xBiosCheck <> 0) then
+  // begin
+  //   // msx.interrupt_play;
+  //       xBiosFlushBuffer; // close file
+  //   // msx.continue_play;
+  //   waitframe;
+  //   // music:= true;
+    
+  // end; 
   
   randomEncounter;
   calculateprices;

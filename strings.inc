@@ -1,6 +1,5 @@
-strings: array [0..58] of String = (
-    // 'v.0.10 (c) 2019 Code: MADRAFi, Gfx: XxX, Msx: XxX. Special thanks to Bocianu for the support. '~,
-    'v.0.12 (c) 2019 MADsoft'~, // 0
+strings: array [0..65] of String = (
+    'v.0.15 (c) 2019 MADsoft'~, // 0
     'N'*'ew Game'~,
     'Q'*'uit'~,
     '1'*' Navigation'~,
@@ -26,7 +25,7 @@ strings: array [0..58] of String = (
     '1-5'*'-Navigation'~,
     'J'*'-FTL Jump'~,
     'No xBios found. Cannot load Pics'*~, // 25
-    ' Press any key '~,
+    ' Press any key '*~,
     'You`ve bought that ship. Press any key.'*~,
     'You have lost: '~,
     '  You have been boarded by pirates. You were brave and fought till you could.   They spared your life in exchange for all your cargo.'~,
@@ -58,5 +57,13 @@ strings: array [0..58] of String = (
     ' error'~, // 55
     ' successfull'~,
     'Open file '~,
-    'Credits'~
+    'Credits'~,
+    'QFuel:'~,
+    ' Not enough Quantum Fuel. '*~,  //60
+    ' Your ship does not need refuel. '*~,
+    ' Your ship has been refueled. '*~,
+    ' Not enough credits to 100% refuel '*~,
+    'Refuel:'~,   
+    'Total:'~  //65
+
 );
