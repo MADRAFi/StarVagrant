@@ -37,9 +37,9 @@ type
 var
   //commission: shortreal = 0.05;
   keyval : Byte = 0;
-  player: TPlayer absolute $ED5B; // player
-  ship: TShip absolute $ED81; // player's ship
-  currentship:TShip absolute $EDA7; // temp ship for operations
+  player: TPlayer absolute $ED58; // player
+  ship: TShip absolute $ED5B; // player's ship
+  currentship:TShip; // absolute $ED91; // temp ship for operations
   newLoc: Byte; // new Location (destination)
   tstr : TString; // string used in various routines.
   strnum: TString; // string used in various routines to display numbers
@@ -120,18 +120,18 @@ var
     0,0,0,0,83,43,0,25,69,0,0,61,16,0,281,170,0,0,0,34,83,39,1,0,
     256,0,116,0,83,43,0,0,69,30,0,61,20,0,0,180,0,0,10,0,0,39,0,150,
     0,0,118,0,0,0,15,0,0,30,16,0,13,15,0,178,14,0,0,34,0,0,0,160,
-    0,12,97,0,0,0,17,0,0,30,0,0,11,0,0,180,14,0,0,34,0,0,1,146,
-    245,0,118,0,0,42,0,0,0,30,0,57,25,0,0,178,14,13,0,34,0,37,1,0,
-    243,0,118,0,0,31,0,24,0,30,0,0,25,0,0,178,14,12,0,34,0,35,0,240,
+    0,12,97,0,0,0,17,0,0,30,0,0,0,0,0,180,14,0,0,34,0,0,1,146,
+    245,0,118,0,0,42,0,0,0,30,0,57,0,0,0,178,14,13,0,34,0,37,1,0,
+    243,0,118,0,0,31,0,24,0,30,0,0,0,0,0,178,14,12,0,34,0,35,0,240,
     0,35,0,0,0,0,17,0,0,20,0,0,15,0,0,0,10,0,0,22,0,0,3,0,
-    0,31,0,22,0,42,0,0,0,0,0,68,15,0,0,176,0,0,8,0,0,0,0,0,
+    0,31,0,22,0,42,0,0,0,0,0,68,0,0,0,176,0,0,8,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,34,15,0,8,13,0,0,10,0,0,24,0,0,3,0,
-    225,0,0,0,0,0,0,22,39,0,0,0,18,16,0,0,14,21,18,0,0,0,2,0,
+    225,0,0,0,0,0,0,22,39,0,0,0,0,16,0,0,14,21,18,0,0,0,2,0,
     225,26,0,0,0,0,0,27,0,27,18,0,14,10,0,0,0,21,20,0,0,0,1,249,
     205,0,125,0,78,49,0,0,46,38,0,61,10,0,291,0,0,0,0,0,78,47,0,280,
     0,0,0,22,73,38,0,0,44,0,0,61,15,0,291,181,0,0,20,0,89,47,0,249,
-    0,0,118,12,0,42,10,0,39,37,0,0,18,0,0,181,14,0,0,0,0,0,1,249,
-    0,26,118,12,0,0,0,0,0,37,0,56,18,0,0,181,14,0,0,0,0,0,1,249,
+    0,0,118,12,0,42,10,0,39,37,0,0,0,0,0,181,14,0,0,0,0,0,1,249,
+    0,26,118,12,0,0,0,0,0,37,0,56,0,0,0,181,14,0,0,0,0,0,1,249,
     0,26,0,0,0,0,10,23,0,0,22,61,11,10,271,0,14,33,0,0,89,0,0,240,
     0,0,0,22,0,0,11,25,0,40,24,0,12,16,281,185,16,0,0,36,99,0,0,0
 
@@ -154,7 +154,7 @@ var
     0,0,0,5000,0,0,0,0,2500,0,0,0,0,0,0,0,0,0,0,0,0,0,10000,0,
     0,500,0,5000,0,0,0,0,0,0,0,5000,0,0,0,0,0,0,0,0,0,0,10000,0,
     0,5000,0,0,0,0,5000,5000,0,0,5000,0,5000,5000,2500,0,2500,5000,0,0,0,0,0,0,
-    0,0,0,500,0,0,500,500,0,500,500,0,500,500,500,500,500,0,0,500,500,0,0,0
+    0,0,0,500,0,0,500,500,0,500,500,0,5000,500,500,500,500,0,0,500,500,0,0,0
 
   ); // quantities of items
 
@@ -176,6 +176,7 @@ var
     0,0,0,0,0,0,0,0,0,0,0,0,70,0,0,0,0,
     50,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     50,0,0,0,20,30,0,0,0,0,0,0,0,0,0,0,0
+
   ); // distance between locations
 
   shipprices: array [0..(NUMBEROFLOCATIONS * NUMBEROFSHIPS)-1] of longword = (
@@ -196,6 +197,7 @@ var
     0,0,0,0,0,0,75000,0,0,0,0,0,
     0,0,0,0,31500,0,75000,62000,124900,0,300000,0,
     0,8000,11999,22700,32000,0,0,0,124900,166000,330000,0
+    
   ); // ship prices
 
   creditstxt: array [0..9] of String = (
@@ -1246,18 +1248,8 @@ begin
   //   fuelquantity:=0;
   // end;
 
-
   // recalculate fuel total
   fueltotal:= fuelquantity * fuelprice;
-
-
-  
-
-  // CRT_GotoXY(0,5);
-  // CRT_Write('offset='~);CRT_Write(itemoffset);
-  // CRT_GotoXY(0,6);
-  // CRT_Write('items='~);CRT_Write(itemquantity[itemoffset]);
-  
 
   CRT_WriteRightAligned(0,Atascii2Antic(concat(IntToStr(player.uec), CURRENCY)));
 
@@ -1846,10 +1838,21 @@ begin
                         begin
                           if (selecteditemquantity > 0) then
                           begin
+
+
+                            // CRT_GotoXY(21,10);
+                            // CRT_Write('                  '~);
+                            // for y:=0 to MAXCARGOSLOTS-1 do
+                            // begin
+                            //   CRT_GotoXY(21,11+y);
+                            //   CRT_Write('cargoindex='~);CRT_Write(currentship.cargoindex[y]);CRT_Write('        '~);
+                            // end;
+
+
                             sfx_play(voice4,200,202); //vol 10
                             for y:=0 to MAXCARGOSLOTS-1 do
                             begin
-                              if currentShip.cargoindex[y] = 0 then
+                              if (currentShip.cargoindex[y] = 0) then
                               begin
                                 currentShip.cargoindex[y]:=currentitemindex;
                                 currentShip.cargoquantity[y]:=selecteditemquantity;
@@ -1857,8 +1860,9 @@ begin
                                 // CRT_Write('cur_itemprice='~);CRT_Write(currentitemprice);CRT_Write('           '~);
                                 // CRT_GotoXY(0,20);
                                 // CRT_Write('itemindex='~);CRT_Write(itemindex);CRT_Write('           '~);
-                                // CRT_GotoXY(0,21);
-                                // CRT_Write('cur_itemindex='~);CRT_Write(currentitemindex);CRT_Write('           '~);
+
+                                // CRT_GotoXY(0,18);
+                                // CRT_Write('y='~);CRT_Write(y);CRT_Write('           '~);
 
                                 break;
                               end
@@ -1889,6 +1893,18 @@ begin
                             selecteditemquantity:= 0;
                             selecteditemtotal:= 0;
                       //              itemindex:=0;
+
+
+
+                            // repeat until CRT_KeyPressed;
+                            // CRT_GotoXY(21,10);
+                            // CRT_Write('                  '~);
+                            // for y:=0 to MAXCARGOSLOTS-1 do
+                            // begin
+                            //   CRT_GotoXY(21,11+y);
+                            //   CRT_Write('cargoindex='~);CRT_Write(currentship.cargoindex[y]);CRT_Write('        '~);
+                            // end;
+
 
                           end;
                         end
