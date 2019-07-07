@@ -1,6 +1,7 @@
 {$librarypath '../../MADS/lib/'}
 {$librarypath '../../MADS/base/'}
 {$librarypath '../../MADS/blibs/'}
+
 uses atari, b_utils, b_system, b_crt, sysutils, cmc;
 
 const
@@ -32,6 +33,7 @@ var
   skip: Boolean;
   music: Boolean;
   count: Word;
+  firstDLI: pointer;
 
 
 {$i strings.inc}
@@ -77,6 +79,24 @@ begin
 
 end;
 
+// procedure back_to_loader;assembler;
+//   asm {
+//         clc
+//         rts
+//       };
+// end;
+
+// procedure SystemOn;assembler;
+//   asm {
+//         lda:rne vcount
+//         mva #$ff portb
+//         dec nmien
+//         cli
+
+//         rts
+//     };
+// end;
+
 begin
   //fadeoff;
   SystemOff;
@@ -92,9 +112,10 @@ begin
   skip:= false;
   music:= true;
 
-  EnableVBLI(@vbl_title);
-  EnableDLI(@dli_title);
   Waitframe;
+  firstDLI:=@dli_title;
+  EnableVBLI(@vbl);
+  EnableDLI(@dli_title);
   DLISTL:= DISPLAY_LIST_ADDRESS_TITLE;
   DMACTL:=$22; //%00100010;
   
@@ -142,11 +163,9 @@ begin
     picnumber:=0;
 
 
-    EnableVBLI(@vbl_pic1);
-    EnableDLI(@dli_pic1_f1);
     Waitframe;
+    firstDLI:=@dli_pic1_f1;
     DLISTL:= DISPLAY_LIST_ADDRESS_PIC1;
-    DMACTL:=$22; //%00100010;
 
     // fillbyte(pointer(TXT_ADDRESS), 1380, 0);
     move(pointer(SCREEN_ADDRESS_PIC1), pointer(TXT_ADDRESS), 1200);
@@ -170,9 +189,8 @@ begin
     gfx_fadeout;
     picnumber:=1;
 
-    EnableVBLI(@vbl_pic2);
-    EnableDLI(@dli_pic2_f1);
     Waitframe;
+    firstDLI:=@dli_pic2_f1;
     DLISTL:= DISPLAY_LIST_ADDRESS_PIC2;
 
     move(pointer(SCREEN_ADDRESS_PIC2), pointer(TXT_ADDRESS), 1200);
@@ -197,9 +215,8 @@ begin
     gfx_fadeout;
     picnumber:=2;
     
-    EnableVBLI(@vbl_pic3);
-    EnableDLI(@dli_pic3_f1);
     Waitframe;
+    firstDLI:=@dli_pic3_f1;
     DLISTL:= DISPLAY_LIST_ADDRESS_PIC3;
 
     move(pointer(SCREEN_ADDRESS_PIC3), pointer(TXT_ADDRESS), 1200);
@@ -223,14 +240,13 @@ begin
   if skip = false then begin
     gfx_fadeout;
 
-    EnableVBLI(@vbl_title);
-    EnableDLI(@dli_title);
     Waitframe;
+    firstDLI:=@dli_title;
     DLISTL:= DISPLAY_LIST_ADDRESS_TITLE;
-    // DMACTL:=$22; //%00100010;
 
     // clear screen memory
     fillbyte(pointer(TXT_ADDRESS), 1320, 0);
+    SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
 
     CRT_GotoXY(0,24);
     CRT_Write(strings[10]);
@@ -248,12 +264,9 @@ begin
     gfx_fadeout;
     picnumber:=3;
 
-    EnableVBLI(@vbl_pic4);
-    EnableDLI(@dli_pic4_f1);
     Waitframe;
-    DLISTL:= DISPLAY_LIST_ADDRESS_PIC4;
-
-    // DMACTL:=$22; //%00100010;
+    DLISTL:=DISPLAY_LIST_ADDRESS_PIC4;
+    firstDLI:=@dli_pic4_f1;
 
 
     move(pointer(SCREEN_ADDRESS_PIC4), pointer(TXT_ADDRESS), 1200);
@@ -288,9 +301,18 @@ begin
   DisableVBLI;
   nmien:=0;
   Dmactl:= 0;
+
   asm {
-      clc
-      rts
-  };
+        clc
+        rts
+      };
+
+  // {$DEFINE intro}
+  // {$IFDEF intro}
+  // // SystemReset;
+  // SystemOn;
+  // {$ELSE}
+  // back_to_loader;
+  // {$ENDIF}
 
 end.

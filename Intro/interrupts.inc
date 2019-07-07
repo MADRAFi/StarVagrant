@@ -101,9 +101,10 @@ procedure dli_pic1_f8;assembler;interrupt;
         };
 end;
 
-procedure dli_pic1_f9;assembler;interrupt;
+procedure dli_pic1_f9;interrupt;
+begin
     asm {
-        pha ; store registers
+        phr ; store registers
         ;sta ATARI.WSYNC
         mva adr.txtcolors ATARI.colpf0
         mva #00 ATARI.colpf2
@@ -115,8 +116,10 @@ procedure dli_pic1_f9;assembler;interrupt;
 ;        sta ATARI.WSYNC
         
         ;mwa #dli_pic1_f1 __dlivec
-
-        pla ; restore registers
+    };
+    msx.play;
+    asm {
+        plr ; restore registers
         };
 end;
 
@@ -211,9 +214,10 @@ procedure dli_pic2_f7;assembler;interrupt;
         };
 end;
 
-procedure dli_pic2_f8;assembler;interrupt;
+procedure dli_pic2_f8;interrupt;
+begin
     asm {
-        pha ; store registers
+        phr ; store registers
         ;sta ATARI.WSYNC
         mva adr.txtcolors ATARI.colpf0
         mva #00 ATARI.colpf2
@@ -224,9 +228,11 @@ procedure dli_pic2_f8;assembler;interrupt;
         mva #.hi(CHARSET_ADDRESS) ATARI.chbase
 ;        sta ATARI.WSYNC
         
+    };
+    msx.play;
+    asm {
 
-
-        pla ; restore registers
+        plr ; restore registers
         };
 end;
 
@@ -330,9 +336,10 @@ procedure dli_pic3_f8;assembler;interrupt;
 end;
 
 
-procedure dli_pic3_f9;assembler;interrupt;
+procedure dli_pic3_f9;interrupt;
+begin
     asm {
-        pha ; store registers
+        phr ; store registers
 
         mva adr.txtcolors ATARI.colpf0
         mva #00 ATARI.colpf2
@@ -341,8 +348,12 @@ procedure dli_pic3_f9;assembler;interrupt;
         
         mva #.hi(CHARSET_ADDRESS) ATARI.chbase
 
-        pla ; restore registers
-        };
+    };
+    msx.play;
+    asm {
+
+        plr ; restore registers
+     };
 end;
 
 
@@ -400,9 +411,10 @@ procedure dli_pic4_f4;assembler;interrupt;
         };
 end;
 
-procedure dli_pic4_f5;assembler;interrupt;
+procedure dli_pic4_f5;interrupt;
+begin
     asm {
-        pha ; store registers
+        phr ; store registers
 
         mva adr.txtcolors ATARI.colpf0
         mva #00 ATARI.colpf2
@@ -411,89 +423,45 @@ procedure dli_pic4_f5;assembler;interrupt;
         
         mva #.hi(CHARSET_ADDRESS) ATARI.chbase
 
-        pla ; restore registers
+    };
+    msx.play;
+    asm {
+
+        plr ; restore registers
         };
 end;
 
 
-procedure vbl_pic1;interrupt;
-begin
-  asm {
-        phr ; store registers
-  };
-  if music then msx.play;
-
-  asm {
-      mwa #dli_pic1_f1 __dlivec
-      plr ; restore registers
-  };
-end;
-
-procedure vbl_pic2;interrupt;
-begin
-  asm {
-        phr ; store registers
-  };
-  if music then msx.play;
-
-  asm {
-      mwa #dli_pic2_f1 __dlivec
-      plr ; restore registers
-  };
-end;
-
-procedure vbl_pic3;interrupt;
-begin
-  asm {
-        phr ; store registers
-  };
-  if music then msx.play;
-
-  asm {
-      mwa #dli_pic3_f1 __dlivec
-      plr ; restore registers
-  };
-end;
-
-procedure vbl_pic4;interrupt;
+procedure vbl:interrupt;
 begin
   asm {
       phr ; store registers
   };
-  if music then msx.play;
+
   asm {
-      mwa #dli_pic4_f1 __dlivec
+      mwa firstDLI __dlivec
       plr ; restore registers
   };
 end;
 
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // TITLE DLI
 
-procedure dli_title;assembler;interrupt;
+procedure dli_title;interrupt;
+begin
     asm {
-        pha ; store registers
+        phr ; store registers
         sta ATARI.WSYNC
         mva adr.txtcolors ATARI.colpf0
         mva #00 ATARI.colpf2
         mva #00 ATARI.colbk
         mva adr.txtcolors+1 ATARI.colpf1
-        
-        mwa #dli_title __dlivec
-
-        pla ; restore registers
+    };
+    msx.play;
+  asm {
+        plr ; restore registers
         };
 end;
 
-procedure vbl_title;interrupt;
-begin
-  asm {
-        phr ; store registers
-  };
-  if music then msx.play;
-
-  asm {
-      mwa #dli_title __dlivec
-      plr ; restore registers
-  };
-end;
