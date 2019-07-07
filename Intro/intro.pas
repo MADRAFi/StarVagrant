@@ -79,6 +79,24 @@ begin
 
 end;
 
+// procedure back_to_loader;assembler;
+//   asm {
+//         clc
+//         rts
+//       };
+// end;
+
+// procedure SystemOn;assembler;
+//   asm {
+//         lda:rne vcount
+//         mva #$ff portb
+//         dec nmien
+//         cli
+
+//         rts
+//     };
+// end;
+
 begin
   //fadeoff;
   SystemOff;
@@ -283,9 +301,18 @@ begin
   DisableVBLI;
   nmien:=0;
   Dmactl:= 0;
+
   asm {
-      clc
-      rts
-  };
+        clc
+        rts
+      };
+
+  // {$DEFINE intro}
+  // {$IFDEF intro}
+  // // SystemReset;
+  // SystemOn;
+  // {$ELSE}
+  // back_to_loader;
+  // {$ENDIF}
 
 end.
