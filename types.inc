@@ -15,6 +15,7 @@ TGameState = (NEWGAME=0, GAMEINPROGRESS=1);
   TShip = record
     mcode: Byte; // manufacture ship code
     sindex: Byte; // ship index
+    swait: Byte; // ship wait time
     scu_max: Word;
     scu: Word;
     speed: Byte;
