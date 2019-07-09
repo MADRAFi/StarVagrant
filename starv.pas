@@ -27,7 +27,7 @@ const
   CURRENCY = ' UEC';
   CARGOUNIT = ' SCU';
   DISTANCEUNIT = ' DU';
-  COMMISSION = 0.03;
+  COMMISSION = 3;
 
 type
 {$i 'types.inc'}
@@ -35,10 +35,9 @@ type
 {$r 'resources.rc'}
 
 var
-  //commission: shortreal = 0.05;
   keyval : Byte = 0;
-  player: TPlayer absolute $ED58; // player
-  ship: TShip absolute $ED5B; // player's ship
+  player: TPlayer; // absolute $ED58; // player
+  ship: TShip; // absolute $ED5B; // player's ship
   currentship:TShip; // absolute $ED91; // temp ship for operations
   newLoc: Byte; // new Location (destination)
   tstr : TString; // string used in various routines.
@@ -88,7 +87,7 @@ var
     $04,$08,$0c,$00,    // 0
     // $f4,$f0,$fc,$00,    // 1
     // $04,$08,$0c,$00,    // 1
-    $1a,$14,$10,$00,    // 1
+    $f0,$f4,$fc,$00,    // 1
     $10,$14,$1c,$00,    // 2
     $70,$74,$7c,$00,    // 3
     $02,$08,$0c,$00,    // 4
@@ -325,21 +324,21 @@ begin
     Waitframes(2);
     if (current_menu = MENU_TITLE) or (current_menu = MENU_SAVE) or (current_menu = MENU_LOAD) or (current_menu = MENU_CREDITS) then
     begin
-      If (gfxcolors[0] and %00001111 < titlecolors[0] and %00001111 ) then Inc(gfxcolors[0]) else gfxcolors[0]:=titlecolors[0];
-      If (gfxcolors[1] and %00001111 < titlecolors[1] and %00001111) then Inc(gfxcolors[1]) else gfxcolors[1]:=titlecolors[1];
-      If (gfxcolors[2] and %00001111 < titlecolors[2] and %00001111) then Inc(gfxcolors[2]) else gfxcolors[2]:=titlecolors[2];
-      If (gfxcolors[3] and %00001111 < titlecolors[3] and %00001111) then Inc(gfxcolors[3]) else gfxcolors[3]:=titlecolors[3];
+      If ((gfxcolors[0] and %00001111) < (titlecolors[0] and %00001111)) then Inc(gfxcolors[0]) else gfxcolors[0]:=titlecolors[0];
+      If ((gfxcolors[1] and %00001111) < (titlecolors[1] and %00001111)) then Inc(gfxcolors[1]) else gfxcolors[1]:=titlecolors[1];
+      If ((gfxcolors[2] and %00001111) < (titlecolors[2] and %00001111)) then Inc(gfxcolors[2]) else gfxcolors[2]:=titlecolors[2];
+      If ((gfxcolors[3] and %00001111) < (titlecolors[3] and %00001111)) then Inc(gfxcolors[3]) else gfxcolors[3]:=titlecolors[3];
     end
     else
     begin
-      If (gfxcolors[0] and %00001111 < piccolors[y] and %00001111 ) then Inc(gfxcolors[0]) else gfxcolors[0]:=piccolors[y];
-      If (gfxcolors[1] and %00001111 < piccolors[y+1] and %00001111) then Inc(gfxcolors[1]) else gfxcolors[1]:=piccolors[y+1];
-      If (gfxcolors[2] and %00001111 < piccolors[y+2] and %00001111) then Inc(gfxcolors[2]) else gfxcolors[2]:=piccolors[y+2];
-      If (gfxcolors[3] and %00001111 < piccolors[y+3] and %00001111) then Inc(gfxcolors[3]) else gfxcolors[3]:=piccolors[y+3];
+      If ((gfxcolors[0] and %00001111) < (piccolors[y] and %00001111 )) then Inc(gfxcolors[0]) else gfxcolors[0]:=piccolors[y];
+      If ((gfxcolors[1] and %00001111) < (piccolors[y+1] and %00001111)) then Inc(gfxcolors[1]) else gfxcolors[1]:=piccolors[y+1];
+      If ((gfxcolors[2] and %00001111) < (piccolors[y+2] and %00001111)) then Inc(gfxcolors[2]) else gfxcolors[2]:=piccolors[y+2];
+      If ((gfxcolors[3] and %00001111) < (piccolors[y+3] and %00001111)) then Inc(gfxcolors[3]) else gfxcolors[3]:=piccolors[y+3];
     end;
 
-    If (txtcolors[0] and %00001111 < txtback and %00001111) then inc(txtcolors[0]) else txtcolors[0]:=txtback;
-    If (txtcolors[1] and %00001111 < txtcolor and %00001111) then inc(txtcolors[1]) else txtcolors[1]:=txtcolor;
+    If ((txtcolors[0] and %00001111) < (txtback and %00001111)) then inc(txtcolors[0]) else txtcolors[0]:=txtback;
+    If ((txtcolors[1] and %00001111) < (txtcolor and %00001111)) then inc(txtcolors[1]) else txtcolors[1]:=txtcolor;
 
   until ((gfxcolors[0]=piccolors[y]) or (gfxcolors[0]=titlecolors[0])) and ((gfxcolors[1]=piccolors[y+1]) or (gfxcolors[1]=titlecolors[1])) and ((gfxcolors[2]=piccolors[y+2]) or (gfxcolors[2]=titlecolors[2])) and ((gfxcolors[3]=piccolors[y+3]) or (gfxcolors[3]=titlecolors[3]));
 end;
@@ -365,8 +364,10 @@ begin
   CRT_GotoXY(6,3);
   WriteSpaces(5);
   CRT_GotoXY(6,3);
-  CRT_Write(Trunc((ship.qf / ship.qf_max) * 100)); CRT_Write(' %'~);
-  // CRT_Write(ship.qf);
+  // CRT_Write(Trunc((ship.qf / ship.qf_max) * 100)); CRT_Write(' %'~);
+  CRT_Write(ship.qf * 100 div ship.qf_max); CRT_Write(' %'~);
+  // CRT_GotoXY(0,5);
+  // CRT_Write(ship.swait);
 end;
 
 function getcargotypenum : Byte;
@@ -410,8 +411,8 @@ end;
 
 procedure randomEncounter;
 
-var
-  modify: Real;
+// var
+//   modify: Real;
 
 begin
   y:=Random(30);
@@ -428,8 +429,10 @@ begin
           end;
     3:    begin
               txt:=strings[35];
-              offset:=Round(Random * 50000);
-              player.uec:=player.uec + offset;
+
+              // offset:=Round(Random * 50000);
+              // player.uec:=player.uec + offset;
+              player.uec:=player.uec + (Random(100) * 50000 div 100);
           end;
     5:    begin
             if ship.cargoquantity[0] > 0 then
@@ -439,15 +442,19 @@ begin
               if ship.cargoindex[y] > 0 then
               begin
                 txt:=strings[33];
-                modify:=(1 - Random(100)/100);
-                ship.cargoquantity[y]:=Round(ship.cargoquantity[y] * modify);
+                // modify:=(1 - Random(100)/100);
+                // ship.cargoquantity[y]:=Round(ship.cargoquantity[y] * modify);
+                ship.cargoquantity[y]:=ship.cargoquantity[y] - (ship.cargoquantity[y] * Random(100) div 100);
               end;
             end;
           end;
     10:   begin
             txt:=strings[32];
-            offset:= Round(Random * 10000);
-            player.uec:=player.uec + offset;
+
+            // offset:= Round(Random * 10000);
+            // player.uec:=player.uec + offset;
+            player.uec:=player.uec + (Random(100) * 10000 div 100);
+
           end;
     20:   begin
             if player.uec > 0 then
@@ -479,12 +486,13 @@ end;
 
 
 procedure calculateprices;
-var
-  percent: Shortreal;
-  modify: Real;
+// var
+  // percent: Shortreal;
+  // modify: Real;
+  // percent: Real;
 
 begin
-  percent:=Random(100)/100;
+  count:=Random(100);
   for y:=0 to NUMBEROFITEMS-1 do begin
     offset:= (NUMBEROFITEMS * player.loc)+y;
 
@@ -499,50 +507,64 @@ begin
     end;
 
     // Increase price if less then 1000
-    if (itemquantity[offset] > 0) and (itemquantity[offset] < 1000) and (itemprice[offset] > 0) and (percent < 30 ) then
+    if (itemquantity[offset] > 0) and (itemquantity[offset] < 1000) and (itemprice[offset] > 0) and (count < 30 ) then
     begin
-      modify:=(1 + percent);
-      itemprice[offset]:=Round(itemprice[offset] * modify);
+      // modify:=(1 + percent);
+      // itemprice[offset]:=Round(itemprice[offset] * modify);
+      // itemprice[offset]:=Round(itemprice[offset] * (1 + percent));
+      itemprice[offset]:=itemprice[offset] + (itemprice[offset] * count div 100);
     end;
 
     // Decrease price if more then 5000
-    if (itemquantity[offset] > 5000) and (itemquantity[offset] < 10000) and (itemprice[offset] > 0) and (percent < 30) then
+    if (itemquantity[offset] > 5000) and (itemquantity[offset] < 10000) and (itemprice[offset] > 0) and (count <= 30) then
     begin
-      modify:=(1 - percent);
-      itemprice[offset]:=Round(itemprice[offset] * modify);
+      // modify:=(1 - percent);
+      // itemprice[offset]:=Round(itemprice[offset] * modify);
+      // itemprice[offset]:=Round(itemprice[offset] * (1 - percent))
+      itemprice[offset]:= itemprice[offset] - (itemprice[offset] * count div 100)
     end;
 
     // Simulate item sell
-    if (itemquantity[offset] > 10000) and (itemprice[offset] > 0) and (percent < 40) then
+    if (itemquantity[offset] > 10000) and (itemprice[offset] > 0) and (count <= 40) then
     begin
-      modify:=(1 - percent);
-      itemquantity[offset]:=Trunc(itemquantity[offset] * modify);
+      // modify:=(1 - percent);
+      // itemquantity[offset]:=Trunc(itemquantity[offset] * modify);
+      // itemquantity[offset]:=Trunc(itemquantity[offset] * (1 - percent));
+      itemquantity[offset]:=itemquantity[offset] - (itemquantity[offset] * count div 100);
     end;
 
   end;
 
-  if (percent < 40) then // only 40% chance for ship's price change
+  if (count < 40) then // only 40% chance for ship's price change
   begin
     for y:=0 to NUMBEROFSHIPS-1 do begin
       offset:= (NUMBEROFSHIPS * loc)+y;
       if shipprices[offset] > shipprices[0] then // do not change price of starting ship
       begin
-        count:=Random(2);
-        if count = 0 then
+        newLoc:=Random(2); 
+        if newLoc = 0 then
         begin
           // price drop
-          modify:=(1 - percent);
+          // modify:=(1 - percent);
+          // shipprices[offset]:=Round(shipprices[offset] * (1 - percent));
+          shipprices[offset]:=shipprices[offset] - (shipprices[offset] * count div 100);
+
           //newprice:=Round(shipprices[offset] * (1 - percent));
           //shipprices[offset]:=Longword(shipprices[offset] * (1 - percent));
         end
         else
         begin
           // price increase
-          modify:=(1 + percent);
+          // modify:=(1 + percent);
+          // shipprices[offset]:=Round(shipprices[offset] * (1 + percent));
+          shipprices[offset]:=shipprices[offset] + (shipprices[offset] * count div 100);
+
           //newprice:=Round(shipprices[offset] * (1 + percent));
           //shipprices[offset]:=Longword(shipprices[offset] * (1 + percent));
         end;
-        shipprices[offset]:=Round(shipprices[offset] * modify);
+        // shipprices[offset]:=Round(shipprices[offset] * modify);
+
+
         // CRT_GotoXY(0,6);
         // if offset = 22 then begin
         //   CRT_Write(real(percent)); WriteSpaces(1); CRT_Write(modify);WriteSpaces(1);CRT_Write(shipprices[offset]);
@@ -688,7 +710,8 @@ begin
         tstr:= items[availableitems[y]-(player.loc * NUMBEROFITEMS)];
         CRT_Write(Atascii2Antic(tstr));
         //if mode then finalprice:=Trunc(itemprice[offset] * (1-COMMISSION))
-        if mode then finalprice:=Round(itemprice[offset] * (1-COMMISSION))
+        // if mode then finalprice:=Round(itemprice[offset] * (1-COMMISSION))
+        if mode then finalprice:=itemprice[offset] - (itemprice[offset] * COMMISSION div 100)
         else finalprice:=itemprice[offset];
         countstr:=IntToStr(count);
         strnum:=IntToStr(finalprice);
@@ -800,7 +823,8 @@ begin
   if mode then
   begin
     //finalprice:=Trunc(price * (1-commission))
-    Result:=Round(itemprice[offset] * (1-commission))
+    // Result:=Round(itemprice[offset] * (1-commission))
+    Result:=itemprice[offset] - (itemprice[offset] * COMMISSION div 100)
   end
   else
   begin
@@ -816,7 +840,8 @@ function GetCargoPrice(itemindex: Byte): Word;
 begin
   // translate cargo item index into offset to read price in location.
   offset:=(NUMBEROFITEMS * player.loc) + currentship.cargoindex[itemindex];
-  Result:=Round(itemprice[offset] * (1-commission));
+  // Result:=Round(itemprice[offset] * (1-commission));
+  Result:=itemprice[offset] - (itemprice[offset] * COMMISSION div 100);
 end;
 
 function CheckCargoPresence(itemindex: Byte): Boolean;
@@ -860,7 +885,8 @@ begin
   // CRT_Write(Atascii2Antic(DISTANCEUNIT));
   CRT_GotoXY(0,3);
   CRT_Write(strings[59]); // QFuell:
-  CRT_Write(Trunc((ship.qf / ship.qf_max) * 100)); CRT_Write(' %'~);
+  // CRT_Write(Trunc((ship.qf / ship.qf_max) * 100)); CRT_Write(' %'~);
+  CRT_Write(ship.qf * 100 div ship.qf_max); CRT_Write(' %'~);
 
   // Help Keys
   CRT_GotoXY(0,7);
@@ -1102,7 +1128,8 @@ begin
                               offset:=availableships[shipindex];
                               tshp:=shipmatrix[offset];
                               ship:= tshp^;
-                              CRT_GotoXY(6,5);
+                              ship.qf:= ship.qf_max;
+                              CRT_GotoXY(0,5);
                               CRT_Write(strings[27]);
                               repeat until CRT_Keypressed;
                               current_menu:=MENU_MAIN;
@@ -1119,7 +1146,7 @@ begin
                           begin
                             //Message that ship is already owned
                             sfx_play(voice4,255,170); // vol10
-                            CRT_GotoXY(6,5);
+                            CRT_GotoXY(0,5);
                             CRT_Write(strings[49]);
                           end;
                         end;
@@ -1236,7 +1263,8 @@ begin
     begin
       if (player.uec > 0) then
       begin
-        fuelquantity:= Trunc(player.uec / fuelprice);
+        // fuelquantity:= Trunc(player.uec / fuelprice);
+        fuelquantity:= player.uec div fuelprice;
         CRT_GotoXY(3,6);
         CRT_Write(strings[63]);
       end
@@ -1274,7 +1302,8 @@ begin
 
   CRT_GotoXY(0,3);
   CRT_Write(strings[59]); // QFuell:
-  CRT_Write(Trunc((ship.qf / ship.qf_max) * 100)); CRT_Write(' %'~);
+  // CRT_Write(Trunc((ship.qf / ship.qf_max) * 100)); CRT_Write(' %'~);
+  CRT_Write(ship.qf * 100 div ship.qf_max); CRT_Write(' %'~);
   // CRT_Write(ship.qf);
 
 
@@ -1347,7 +1376,8 @@ begin
                                 CRT_WriteCentered(6,strings[62]);  
 
                                 CRT_GotoXY(6,3);
-                                CRT_Write(Trunc((ship.qf / ship.qf_max) * 100)); CRT_Write(' %'~);
+                                // CRT_Write(Trunc((ship.qf / ship.qf_max) * 100)); CRT_Write(' %'~);
+                                CRT_Write(ship.qf * 100 div ship.qf_max); CRT_Write(' %'~);
                             
                               end
                               else
@@ -1787,7 +1817,8 @@ begin
                         end
                         else
                         begin
-                          selecteditemquantity:=trunc(currentuec / currentitemprice);
+                          // selecteditemquantity:=trunc(currentuec / currentitemprice);
+                          selecteditemquantity:=currentuec div currentitemprice;
                           if selecteditemquantity > currentShip.scu_max-currentShip.scu then selecteditemquantity:=currentShip.scu_max-currentShip.scu;
 //                          selecteditemtotal:=selecteditemquantity * currentitemprice;
                         end;
@@ -1816,7 +1847,8 @@ begin
                       begin
                         if selectitem and (selecteditemquantity < currentShip.scu_max-currentShip.scu) then
                         begin
-                          selecteditemquantity:=trunc(currentuec / currentitemprice);
+                          // selecteditemquantity:=trunc(currentuec / currentitemprice);
+                          selecteditemquantity:=currentuec div currentitemprice;
                           if selecteditemquantity > currentShip.scu_max-currentShip.scu then
                             selecteditemquantity:=currentShip.scu_max-currentShip.scu;
 //                          selecteditemtotal:=selecteditemquantity * currentitemprice;
@@ -2547,6 +2579,10 @@ begin
     tshp^.lenght:=byte(ships[offset+4]);
     tshp^.mass:=Word(ships[offset+5]);
     tshp^.qf_max:=Word(ships[offset+6]);
+    tshp^.swait:=byte(ships[offset+7]);
+    // tshp^.swait:=(ROUND(15 / (tshp^.speed / 100))) - (5 - Trunc(tshp^.lenght / 25));
+    // tshp^.swait:=((15 div (tshp^.speed div 100))) - (5 - (tshp^.lenght div 25));
+    // tshp^.swait:=100 div (tshp^.speed - (tshp^.speed * 80 div 100)) + (tshp^.lenght div 10) - 3;
   end;
 
   gamestate:= NEWGAME;

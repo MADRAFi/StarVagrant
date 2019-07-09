@@ -21,13 +21,13 @@ LOGODATA_ADDRESS = DISPLAY_LIST_ADDRESS_CONSOLE + $100;
 NUMBEROFLOCATIONS = 17; // number of locations defined in locations.asm. Needs to match.
 NUMBEROFITEMS = 24; // number of items defined in items.asm. Needs to match.
 NUMBEROFSHIPS = 12; // number of ships defined in ships array.
-MAXSHIPPARAMETERS = 7; // number of ship parameters in ship array
+MAXSHIPPARAMETERS = 8; // number of ship parameters in ship array
 MAXAVAILABLEITEMS = 12; // numer of concurrent items displayed
 MAXCARGOSLOTS = 10;  // number of cargo slots
 MAXAVAILABLEDESTINATIONS = 6;  // number of destinations fron location.
 MAXLOGOCHARS = 599;
 
-STARTUEC = 10000;
+STARTUEC = 1000000;
 STARTLOCATION = 0;
 
 // ***************************************************************************//
