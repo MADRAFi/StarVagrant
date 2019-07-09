@@ -68,7 +68,7 @@ begin
   If (xBiosCheck <> 0) then xBiosSetLength(CHUNKSIZE); //size of chunk to read
 
   // count:=(ROUND(15 / (ship.speed / 100))) - (5 - Trunc(ship.lenght / 25));
-  count:= ship.swait;
+  // count:= ship.swait;
 
   // simulate travel
   repeat
@@ -88,7 +88,8 @@ begin
     Dec(distance);
     Dec(ship.qf);
     navi_distanceUpdate(distance);
-    waitframes(count);
+    // waitframes(count);
+    waitframes(ship.swait);
   
 
   until ((distance = 0)); // and (xBiosIOresult <> 0)) or ((distance = 0) and (xBiosCheck = 0));

@@ -27,7 +27,6 @@ const
   CURRENCY = ' UEC';
   CARGOUNIT = ' SCU';
   DISTANCEUNIT = ' DU';
-  // COMMISSION = 0.03;
   COMMISSION = 3;
 
 type
@@ -37,8 +36,8 @@ type
 
 var
   keyval : Byte = 0;
-  player: TPlayer absolute $ED58; // player
-  ship: TShip absolute $ED5B; // player's ship
+  player: TPlayer; // absolute $ED58; // player
+  ship: TShip; // absolute $ED5B; // player's ship
   currentship:TShip; // absolute $ED91; // temp ship for operations
   newLoc: Byte; // new Location (destination)
   tstr : TString; // string used in various routines.
@@ -367,7 +366,8 @@ begin
   CRT_GotoXY(6,3);
   // CRT_Write(Trunc((ship.qf / ship.qf_max) * 100)); CRT_Write(' %'~);
   CRT_Write(ship.qf * 100 div ship.qf_max); CRT_Write(' %'~);
-  // CRT_Write(ship.qf);
+  // CRT_GotoXY(0,5);
+  // CRT_Write(ship.swait);
 end;
 
 function getcargotypenum : Byte;
@@ -1128,7 +1128,8 @@ begin
                               offset:=availableships[shipindex];
                               tshp:=shipmatrix[offset];
                               ship:= tshp^;
-                              CRT_GotoXY(6,5);
+                              ship.qf:= ship.qf_max;
+                              CRT_GotoXY(0,5);
                               CRT_Write(strings[27]);
                               repeat until CRT_Keypressed;
                               current_menu:=MENU_MAIN;
@@ -1145,7 +1146,7 @@ begin
                           begin
                             //Message that ship is already owned
                             sfx_play(voice4,255,170); // vol10
-                            CRT_GotoXY(6,5);
+                            CRT_GotoXY(0,5);
                             CRT_Write(strings[49]);
                           end;
                         end;
@@ -2578,7 +2579,10 @@ begin
     tshp^.lenght:=byte(ships[offset+4]);
     tshp^.mass:=Word(ships[offset+5]);
     tshp^.qf_max:=Word(ships[offset+6]);
-    tshp^.swait:=(ROUND(15 / (tshp^.speed / 100))) - (5 - Trunc(tshp^.lenght / 25));
+    tshp^.swait:=byte(ships[offset+7]);
+    // tshp^.swait:=(ROUND(15 / (tshp^.speed / 100))) - (5 - Trunc(tshp^.lenght / 25));
+    // tshp^.swait:=((15 div (tshp^.speed div 100))) - (5 - (tshp^.lenght div 25));
+    // tshp^.swait:=100 div (tshp^.speed - (tshp^.speed * 80 div 100)) + (tshp^.lenght div 10) - 3;
   end;
 
   gamestate:= NEWGAME;
