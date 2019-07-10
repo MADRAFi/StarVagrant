@@ -1522,7 +1522,7 @@ end;
 procedure trade_UpdateSelectedItem(selecteditemquantity:Word;selecteditemtotal:Longword);
 
 begin
-  txt:=IntToStr(selecteditemquantity);
+  txt:=Atascii2Antic(IntToStr(selecteditemquantity));
   txt:= concat(txt,CARGOUNIT);
   txt:= concat(txt,strings[18]);
   txt:= concat(txt,Atascii2Antic(IntToStr(selecteditemtotal)));
