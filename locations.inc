@@ -16,6 +16,10 @@ locations: array [0..NUMBEROFLOCATIONS-1] of TString = (
 'LKRM-Westforge',
 'LKRM-Sandy',
 'Cloud City',
-'Area 64'
+'Area 64',
+'Cargo Depot',
+'CyberTech',
+'Fobos',
+'Deep Space 41'
 
 );
