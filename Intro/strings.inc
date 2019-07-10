@@ -20,8 +20,9 @@ strings: array [0..11] of String = (
     'Graphics'~,
     'Broniu'~,
     'Kaz'~,
+    'MADRAFi'~,
     ''~,
-    'Music'~, // 20
-    'Caruso'~,
-    ''~
+    'Music'~,
+    'Caruso'~
+    
 );
