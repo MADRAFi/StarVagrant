@@ -20,6 +20,10 @@ locations: array [0..NUMBEROFLOCATIONS-1] of TString = (
 'Cargo Depot'~,
 'CyberTech'~,
 'Fobos'~,
-'Deep Space 41'~
+'Deep Space 41'~,
+'Sakigake'~,
+'Shinen'~,
+'Nozomi'~,
+'Akatsuki'~
 
 );
