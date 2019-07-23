@@ -2565,8 +2565,9 @@ procedure writeStatus(x,snum1,snum2,snum3:byte);
 begin
     //CRT_GotoXY(x,20);
     //CRT_Write(strings[snum1]);
-    putStringAt(snum1,x,20);
-    CRT_Write(strings[snum2]);CRT_Write('.'~*);CRT_Write(strings[snum3]);
+    putStringAt(snum1,x,21);
+    CRT_Write(strings[snum2]);CRT_Invert(x-1,21,CRT_WhereX-x+1);
+    CRT_Write('.'~*);CRT_Write(strings[snum3]);
 end;
 
 procedure disk_save(num: Byte);
@@ -2580,7 +2581,7 @@ begin
 
     if (xBiosIOresult = 0) then
     begin
-      xBiosSetLength(55); // 5+10+20+20
+      xBiosSetLength(60); // 5+15+20+20
       xBiosWriteData(@player);
       xBiosWriteData(@ship);
       if (xBiosIOresult = 0) then
@@ -2621,7 +2622,7 @@ begin
 
     if (xBiosIOresult = 0) then
     begin
-      xBiosSetLength(55); // 5+10+20+20
+      xBiosSetLength(60); // 5+15+20+20
       xBiosLoadData(@player);
       xBiosLoadData(@ship);
       if (xBiosIOresult = 0) then
