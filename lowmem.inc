@@ -77,13 +77,7 @@ begin
       xBiosLoadData(Pointer(GFX_ADDRESS+fileoffset));
       fileoffset:=fileoffset+CHUNKSIZE;
     end;
-    If (xBiosIOresult <> 0) and (music = false) then
-    begin
-      xBiosFlushBuffer; // close file
-      // msx.continue_play;
-      // music:= true;
-      sfx_init; // reinitialize pokey
-    end;
+
 
     Dec(distance);
     Dec(ship.qf);
@@ -93,7 +87,14 @@ begin
   
 
   until ((distance = 0)); // and (xBiosIOresult <> 0)) or ((distance = 0) and (xBiosCheck = 0));
-
+    
+    If (xBiosIOresult <> 0) and (music = false) then
+    begin
+      xBiosFlushBuffer; // close file
+      // msx.continue_play;
+      // music:= true;
+      sfx_init; // reinitialize pokey
+    end;
   // If (xBiosCheck <> 0) then
   // begin
   //   // msx.interrupt_play;

@@ -1,5 +1,5 @@
 strings: array [0..65] of String = (
-    'v.0.21 (c) 2019 MADsoft'~, // 0
+    'v.0.23 (c) 2019 MADsoft'~, // 0
     'N'*'ew Game'~,
     'Q'*'uit'~,
     '1'*' Navigation'~,
@@ -28,7 +28,7 @@ strings: array [0..65] of String = (
     ' Press any key '*~,
     'You`ve bought that ship. Press any key.'*~,
     'You have lost: '~,
-    '  You have been boarded by pirates. You were brave and fought till you could.   They spared your life in exchange for all your cargo.'~,
+    '  You have been boarded by pirates. You were brave and fought till you could.   They spared your life in exchange for   all of your cargo.'~,
     'There have been a system Multifunction. Explosion has damaged part of your      cargo.'~, // 30
     'You have been robed by some thugs.      You have lost all your money.'~,
     '   You have taken a Passenger with you. He payed you some extra cash for a ride.'~,

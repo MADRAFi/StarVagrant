@@ -79,23 +79,34 @@ begin
 
 end;
 
-procedure back_to_loader;assembler;
-  asm {
-        clc
-        rts
-      };
+// procedure back_to_loader;assembler;
+//   asm {
+//         clc
+//         rts
+//       };
+// end;
+
+// procedure SystemOn;assembler;
+//   asm {
+//         lda:rne vcount
+//         mva #$ff portb
+//         dec nmien
+//         cli
+
+//         rts
+//     };
+// end;
+
+procedure wait(time:Word);
+begin
+  count:= 0;
+  repeat 
+    inc(count);
+    waitframe;
+    if CRT_Keypressed then skip:= true;
+  until skip or (count > time);
 end;
 
-procedure SystemOn;assembler;
-  asm {
-        lda:rne vcount
-        mva #$ff portb
-        dec nmien
-        cli
-
-        rts
-    };
-end;
 
 begin
   //fadeoff;
@@ -122,12 +133,13 @@ begin
   // clear screen memory
   fillbyte(pointer(TXT_ADDRESS), 1320, 0);
 
-  count:= 0;
-  repeat 
-    inc(count);
-    waitframe;
-    if CRT_Keypressed then skip:= true;
-  until skip or (count > 300);
+  // count:= 0;
+  // repeat 
+  //   inc(count);
+  //   waitframe;
+  //   if CRT_Keypressed then skip:= true;
+  // until skip or (count > 300);
+  wait(300);
 
   if skip = false then begin
     gfx_fadeout;
@@ -136,13 +148,13 @@ begin
     gfx_fadein;
   end;
 
-  count:= 0;
-  repeat 
-    inc(count);
-    waitframe;
-    if CRT_Keypressed then skip:= true;
-  until skip or (count > 450);
-
+  // count:= 0;
+  // repeat 
+  //   inc(count);
+  //   waitframe;
+  //   if CRT_Keypressed then skip:= true;
+  // until skip or (count > 450);
+  wait(450);
 
   if skip = false then begin
     gfx_fadeout;
@@ -151,12 +163,13 @@ begin
     gfx_fadein;
   end;
 
-  count:= 0;
-  repeat 
-    inc(count);
-    waitframe;
-    if CRT_Keypressed then skip:= true;
-  until skip or (count > 450);
+  // count:= 0;
+  // repeat 
+  //   inc(count);
+  //   waitframe;
+  //   if CRT_Keypressed then skip:= true;
+  // until skip or (count > 450);
+  wait(450);
 
   if skip = false then begin
     gfx_fadeout;
@@ -178,12 +191,13 @@ begin
     gfx_fadein;
   end;
 
-  count:= 0;
-  repeat 
-    inc(count);
-    waitframe;
-    if CRT_Keypressed then skip:= true;
-  until skip or (count > 450);
+  // count:= 0;
+  // repeat 
+  //   inc(count);
+  //   waitframe;
+  //   if CRT_Keypressed then skip:= true;
+  // until skip or (count > 450);
+  wait(450);
 
   if skip = false then begin
     gfx_fadeout;
@@ -204,12 +218,13 @@ begin
     gfx_fadein;
   end;
 
-  count:= 0;
-  repeat 
-    inc(count);
-    waitframe;
-    if CRT_Keypressed then skip:= true;
-  until (skip = true) or (count > 450);
+  // count:= 0;
+  // repeat 
+  //   inc(count);
+  //   waitframe;
+  //   if CRT_Keypressed then skip:= true;
+  // until (skip = true) or (count > 450);
+  wait(450);
 
   if skip = false then begin
     gfx_fadeout;
@@ -230,12 +245,13 @@ begin
     gfx_fadein;
   end;
 
-  count:= 0;
-  repeat 
-    inc(count);
-    waitframe;
-    if CRT_Keypressed then skip:= true;
-  until skip or (count > 450);
+  // count:= 0;
+  // repeat 
+  //   inc(count);
+  //   waitframe;
+  //   if CRT_Keypressed then skip:= true;
+  // until skip or (count > 450);
+  wait(450);
 
   if skip = false then begin
     gfx_fadeout;
@@ -253,13 +269,14 @@ begin
     gfx_fadein;
   end;
 
-  count:= 0;
-  repeat 
-    inc(count);
-    waitframe;
-    if CRT_Keypressed then skip:= true;
-  until skip or (count > 450);
+  // count:= 0;
+  // repeat 
+  //   inc(count);
+  //   waitframe;
+  //   if CRT_Keypressed then skip:= true;
+  // until skip or (count > 450);
 
+  wait(450);
   if skip = false then begin
     gfx_fadeout;
     picnumber:=3;
@@ -302,17 +319,17 @@ begin
   nmien:=0;
   Dmactl:= 0;
 
-  // asm {
-  //       clc
-  //       rts
-  //     };
+  asm {
+        clc
+        rts
+      };
 
-  {$DEFINE intro}
-  {$IFDEF intro}
-  // SystemReset;
-  SystemOn;
-  {$ELSE}
-  back_to_loader;
-  {$ENDIF}
+  // {$DEFINE intro}
+  // {$IFDEF intro}
+  // // SystemReset;
+  // SystemOn;
+  // {$ELSE}
+  // back_to_loader;
+  // {$ENDIF}
 
 end.
