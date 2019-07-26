@@ -142,7 +142,7 @@ var
     562.5,0,0,0,0,0,0,47,39,0,0,0,0,15,0,0,14,21,16,0,0,0,2,0,
     562.5,22,0,0,0,0,0,36,0,92,75,0,14,45,0,0,0,24,20,0,0,0,1,398,
     512.5,0,175,0,178,107,0,0,176,98,0,198,10,0,560,0,0,0,0,0,43,333,0,448,
-    0,0,0,110,173,46,0,0,46,0,0,198,16,0,292,201,0,0,20,0,203,276,0,398,
+    0,0,0,110,173,38,0,0,46,0,0,198,16,0,292,201,0,0,20,0,203,276,0,398,
     0,0,280,60,0,50,15,0,39,47,0,0,0,0,0,201,14,0,0,0,0,0,1,398,
     0,24,280,60,0,0,0,0,0,47,0,168,0,0,0,201,14,0,0,0,0,0,1,398,
     0,55,0,0,0,0,15,25,0,0,35,168,11,40,377,0,14,33,0,0,89,0,0,384,
@@ -153,6 +153,7 @@ var
     500,0,0,125,0,44,0,33,0,16,0,0,0,0,0,150,0,0,0,0,389,0,0,0,
     0,40,0,0,0,0,32,42,0,0,31,0,32,25,0,0,10,0,0,0,0,0,1,0,
     0,0,630,125,0,0,0,0,176,98,0,258,40,0,0,195,20,0,0,88,389,0,1,768
+
 
 
   );  // price matrix for items
@@ -428,7 +429,7 @@ end;
 function getcargotypenum : Byte;
 begin
   Result:=0;
-  for y:=0 to MAXCARGOSLOTS do
+  for y:=0 to MAXCARGOSLOTS-1 do
   begin
     If ship.cargoindex[y] > 0 then Inc(Result)
     else break;
@@ -1609,7 +1610,7 @@ begin
 end;
 
 procedure trade_UpdateCargo;
-
+// updates Cargo Total in console_trade
 const
   LISTSTART = 21;
 
@@ -1844,18 +1845,68 @@ begin
                       trade_UpdateCargo;
                       beep255; // vol10
                     end;
-        // KEY_OK:     begin
-        //               player.uec:= currentuec;
-        //               ship:= currentShip;
-        //               itemquantity[currentitemindex]:=itemquantity[currentitemindex]-selecteditemquantity;
-        //               current_menu:= MENU_MAIN;
-        //               // sfx_play(voice4,52,200); // vol8
-        //             end;
         KEY_BACK:   begin
                       beep255; // vol10
+                      if currentship <> ship then 
+                      begin
+                        for y:=0 to MAXCARGOSLOTS-1 do
+                        begin
+                          if currentship.cargoindex[y] > 0 then //if there is a cargo in ship
+                          begin
+                            offset:= (NUMBEROFITEMS * player.loc) + currentship.cargoindex[y];
+                            if currentship.cargoindex[y] = ship.cargoindex[y] then 
+                            begin 
+                              count:=ship.cargoquantity[y] - currentship.cargoquantity[y];
+                              if count > 0 then Inc(itemquantity[offset],count)
+                              else Dec(itemquantity[offset],count)
+                              // Dec(itemquantity[offset],ship.cargoquantity[y] - currentship.cargoquantity[y]);
+                            end
+                            else
+                            begin
+                              // bougt item
+                              if ship.cargoindex[y] = 0 then
+                              begin
+                                Dec(itemquantity[offset],currentship.cargoquantity[y]);
+                              end
+                              else 
+                              begin
+                              // sold item
+                                offset:= (NUMBEROFITEMS * player.loc) + ship.cargoindex[y];
+                                Inc(itemquantity[offset],ship.cargoquantity[y]);
+
+                                // CRT_ClearRow(21);
+                                // CRT_GotoXY(1,21);
+                                // CRT_Write('y='~);CRT_Write(y);WriteSpace;CRT_Write('crgidx='~);CRT_Write(itemquantity[offset]);WriteSpace;CRT_Write('iq='~);CRT_Write(itemquantity[offset]);
+                                // repeat until CRT_KeyPressed;
+                              end;
+                              
+                              // sold item
+                              // if currentship.cargoindex[y] = 0 then
+                              // begin
+                              //   Inc(itemquantity[offset],ship.cargoquantity[y]);
+                              // end;
+                            end;
+                          end
+                          else
+                          break;
+                        end;
+
+
+                        // for y:=0 to MAXCARGOSLOTS-1 do
+                        // begin
+                        //   if ship.cargoindex[y] > 0 then //if there is a cargo in ship
+                        //   begin
+                        //     offset:= (NUMBEROFITEMS * player.loc) + ship.cargoindex[y];
+
+                        //     Inc(itemquantity[offset],currentship.cargoquantity[y] - ship.cargoquantity[y]);
+                        //   end
+                        //   else
+                        //   break;
+                        // end;
+
+                        ship:= currentShip;
+                      end;
                       player.uec:= currentuec;
-                      ship:= currentShip;
-                      itemquantity[currentitemindex]:=itemquantity[currentitemindex]-selecteditemquantity;
                       current_menu := MENU_MAIN;
                       //gfx_fadeout(true);
                     end;
@@ -2245,6 +2296,14 @@ begin
                         end;
                         optionPressed:=true;
                       end;
+                    end;
+      KEY_OPTION6:
+                    begin
+                      // putSpacesAt(40,0,21);
+                      CRT_ClearRow(21);
+                      CRT_GotoXY(1,21);
+                      offset:= (NUMBEROFITEMS * player.loc) + currentitemindex;
+                      CRT_Write('ciqty='~);CRT_Write(currentitemquantity);WriteSpace;CRT_Write('iq='~);CRT_Write(itemquantity[offset]);WriteSpace;CRT_Write('ciidx='~);CRT_Write(currentitemindex);
                     end;            
 
       end;
@@ -2375,7 +2434,7 @@ begin
   //CRT_GotoXY(14,2);
   //CRT_Write(strings[5]); // Maint
   putStringAt(5,14,2);
-  // load ship to be able to check if they are avaiable
+  // load ship to be able to check if they are available
   LoadShips;
 
   // show ship console only when there are ships avaiable (price > 0 for 1st ship at a location)
