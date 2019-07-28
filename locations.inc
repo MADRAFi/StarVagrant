@@ -4,7 +4,7 @@ locations: array [0..NUMBEROFLOCATIONS-1] of TString = (
 'Glum Hex'~,
 'Gas Mine 158'~,
 'Ambiguous  Lab'~,
-'Kudrow Ore'~,
+'Kudrov Ore'~,
 'Mining Area 147'~,
 'Hydro Harvest'~,
 'Hikers Research'~,

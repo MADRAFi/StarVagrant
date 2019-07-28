@@ -590,7 +590,7 @@ begin
     end;
 
     // Increase price if less then 5000
-    if (itemquantity[offset] > 0) and (itemquantity[offset] < 5000) and (itemprice[offset] > 0) and (count < 30 ) then
+    if (itemquantity[offset] > 0) and (itemquantity[offset] < 5000) and (itemprice[offset] > 0) and (count < 70 ) then
     begin
       // modify:=(1 + percent);
       // itemprice[offset]:=Round(itemprice[offset] * modify);
@@ -608,7 +608,7 @@ begin
     end;
 
     // Simulate item sell
-    if (itemquantity[offset] > 20000) and (itemprice[offset] > 0) and (count <= 40) then
+    if (itemquantity[offset] > 20000) and (itemprice[offset] > 0) and (count <= 80) then
     begin
       // modify:=(1 - percent);
       // itemquantity[offset]:=Trunc(itemquantity[offset] * modify);
@@ -1374,7 +1374,7 @@ begin
   itemoffset:=(NUMBEROFITEMS * player.loc) + 12; // check hydrogen
   fuelquantity:= 0;
   if (itemquantity[itemoffset] > 0) then
-    fuelprice:= itemprice[itemoffset] div 2     // Fuel price is 1/2 of Hydrogen
+    fuelprice:= itemprice[itemoffset] div 4     // Fuel price is 1/4 of Hydrogen
   else
   begin    
     // There is no Hydrogen to refuel
@@ -1864,8 +1864,16 @@ begin
                             else
                             begin
                               // bougt item
-                              if ship.cargoindex[y] = 0 then
+                              if (ship.cargoindex[y] = 0) or (ship.cargoindex[y] <> currentship.cargoindex[y]) then
                               begin
+
+                                // CRT_ClearRow(21);
+                                // CRT_GotoXY(1,21);
+                                // CRT_Write('y='~);CRT_Write(y);WriteSpace;CRT_Write('crgidx='~);CRT_Write(currentship.cargoindex[y]);
+                                // WriteSpace;CRT_Write('iq='~);CRT_Write(itemquantity[offset]);
+                                // WriteSpace;CRT_Write('off='~);CRT_Write(offset);
+                                // repeat until CRT_KeyPressed;
+
                                 Dec(itemquantity[offset],currentship.cargoquantity[y]);
                               end
                               else 
@@ -2301,9 +2309,9 @@ begin
                     begin
                       // putSpacesAt(40,0,21);
                       CRT_ClearRow(21);
-                      CRT_GotoXY(1,21);
+                      CRT_GotoXY(0,21);
                       offset:= (NUMBEROFITEMS * player.loc) + currentitemindex;
-                      CRT_Write('ciqty='~);CRT_Write(currentitemquantity);WriteSpace;CRT_Write('iq='~);CRT_Write(itemquantity[offset]);WriteSpace;CRT_Write('ciidx='~);CRT_Write(currentitemindex);
+                      CRT_Write('ci_qty='~);CRT_Write(currentitemquantity);WriteSpace;CRT_Write('iq='~);CRT_Write(itemquantity[offset]);WriteSpace;CRT_Write('ci_idx='~);CRT_Write(currentitemindex);
                     end;            
 
       end;
