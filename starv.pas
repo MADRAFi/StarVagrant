@@ -60,7 +60,7 @@ var
 
 
 //number of ship variables equals NUMBEROFSHIPS
-  // tshp : ^TShip;
+  tshp : ^TShip;
 
   // ship0: TShip;
   // ship1: TShip;
@@ -686,7 +686,8 @@ begin
 
   // tshp:= shipmatrix[0];
   // ship:= tshp^;
-  ship:= shipmatrix[0];
+  // ship:= shipmatrix[0];
+  move(shipmatrix[0], ship, sizeof(TShip));
   ship.qf:= ship.qf_max; // starting fuel
 
   eraseArray(0,MAXCARGOSLOTS-1, @ship.cargoindex);
