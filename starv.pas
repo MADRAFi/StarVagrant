@@ -2883,14 +2883,22 @@ begin
   for y:=0 to NUMBEROFSHIPS-1 do
   begin    
     offset:=(y * MAXSHIPPARAMETERS);
-    shipmatrix[y].mcode:=byte(ships[offset+1]);
+    // shipmatrix[y].mcode:=byte(ships[offset+1]);
+    // shipmatrix[y].sindex:=y;
+    // shipmatrix[y].scu_max:=Word(ships[offset+2]);
+    // shipmatrix[y].speed:=byte(ships[offset+3]);
+    // shipmatrix[y].lenght:=byte(ships[offset+4]);
+    // shipmatrix[y].mass:=Word(ships[offset+5]);
+    // shipmatrix[y].qf_max:=Word(ships[offset+6]);
+    // shipmatrix[y].swait:=byte(ships[offset+7]);
+    shipmatrix[y].mcode:=StrToInt(ships[offset+1]);
     shipmatrix[y].sindex:=y;
-    shipmatrix[y].scu_max:=Word(ships[offset+2]);
-    shipmatrix[y].speed:=byte(ships[offset+3]);
-    shipmatrix[y].lenght:=byte(ships[offset+4]);
-    shipmatrix[y].mass:=Word(ships[offset+5]);
-    shipmatrix[y].qf_max:=Word(ships[offset+6]);
-    shipmatrix[y].swait:=byte(ships[offset+7]);
+    shipmatrix[y].scu_max:=StrToInt(ships[offset+2]);
+    shipmatrix[y].speed:=StrToInt(ships[offset+3]);
+    shipmatrix[y].lenght:=StrToInt(ships[offset+4]);
+    shipmatrix[y].mass:=StrToInt(ships[offset+5]);
+    shipmatrix[y].qf_max:=StrToInt(ships[offset+6]);
+    shipmatrix[y].swait:=StrToInt(ships[offset+7]);
   end;
 
   gamestate:= NEWGAME;
