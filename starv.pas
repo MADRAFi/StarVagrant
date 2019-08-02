@@ -39,7 +39,7 @@ var
   keyval : Byte = 0;
   player: TPlayer; // absolute $ED58; // player
   ship: TShip; // absolute $ED5B; // player's ship
-  currentship:TShip; // absolute $ED91; // temp ship for operations
+  currentship: TShip; // absolute $ED91; // temp ship for operations
   newLoc: Byte; // new Location (destination)
   tstr : TString; // string used in various routines.
   strnum: TString; // string used in various routines to display numbers
@@ -60,22 +60,22 @@ var
 
 
 //number of ship variables equals NUMBEROFSHIPS
-  tshp : ^TShip;
+  // tshp : ^TShip;
 
-  ship0: TShip;
-  ship1: TShip;
-  ship2: TShip;
-  ship3: TShip;
-  ship4: TShip;
-  ship5: TShip;
-  ship6: TShip;
-  ship7: TShip;
-  ship8: TShip;
-  ship9: TShip;
-  ship10: TShip;
-  ship11: TShip;
-  shipmatrix: array [0..NUMBEROFSHIPS-1] of pointer = (@ship0, @ship1, @ship2, @ship3, @ship4, @ship5, @ship6, @ship7, @ship8, @ship9, @ship10, @ship11);
-
+  // ship0: TShip;
+  // ship1: TShip;
+  // ship2: TShip;
+  // ship3: TShip;
+  // ship4: TShip;
+  // ship5: TShip;
+  // ship6: TShip;
+  // ship7: TShip;
+  // ship8: TShip;
+  // ship9: TShip;
+  // ship10: TShip;
+  // ship11: TShip;
+  // shipmatrix: array [0..NUMBEROFSHIPS-1] of pointer = (@ship0, @ship1, @ship2, @ship3, @ship4, @ship5, @ship6, @ship7, @ship8, @ship9, @ship10, @ship11);
+  shipmatrix: array [0..NUMBEROFSHIPS-1] of ^TShip;
 
 
   (*
@@ -139,9 +139,9 @@ var
     0,45,0,0,0,0,26,0,0,16,0,0,15,0,0,0,10,0,0,23,0,0,20,0,
     0,65,0,110,0,74,0,0,0,0,0,258,0,0,0,276,0,0,8,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,52,12,0,8,23,0,0,10,0,0,88,0,0,18,0,
-    562.5,0,0,0,0,0,0,47,39,0,0,0,0,15,0,0,14,21,16,0,0,0,2,0,
-    562.5,22,0,0,0,0,0,36,0,92,75,0,14,45,0,0,0,24,20,0,0,0,1,398,
-    512.5,0,175,0,178,107,0,0,176,98,0,198,10,0,560,0,0,0,0,0,43,333,0,448,
+    563,0,0,0,0,0,0,47,39,0,0,0,0,15,0,0,14,21,16,0,0,0,2,0,
+    563,22,0,0,0,0,0,36,0,92,75,0,14,45,0,0,0,24,20,0,0,0,1,398,
+    513,0,175,0,178,107,0,0,176,98,0,198,10,0,560,0,0,0,0,0,43,333,0,448,
     0,0,0,110,173,38,0,0,46,0,0,198,16,0,292,201,0,0,20,0,203,276,0,398,
     0,0,280,60,0,50,15,0,39,47,0,0,0,0,0,201,14,0,0,0,0,0,1,398,
     0,24,280,60,0,0,0,0,0,47,0,168,0,0,0,201,14,0,0,0,0,0,1,398,
@@ -153,7 +153,6 @@ var
     500,0,0,125,0,44,0,33,0,16,0,0,0,0,0,150,0,0,0,0,389,0,0,0,
     0,40,0,0,0,0,32,42,0,0,31,0,32,25,0,0,10,0,0,0,0,0,1,0,
     0,0,630,125,0,0,0,0,176,98,0,258,40,0,0,195,20,0,0,88,389,0,1,768
-
 
 
   );  // price matrix for items
@@ -248,12 +247,13 @@ var
     'MADRAFi'~,
     ''~,
     'Graphics'~,
-    'Broniu'~,
-    'Kaz'~,
+    'Broniu  Kaz    '~,
+    'MADRAFi Bocianu'~,
     ''~,
-    'Music'~, // 20
+    'Music'~,
     'Caruso'~,
     ''~
+    
 );
 
   thankstxt: array [0..9] of String = (
@@ -671,6 +671,7 @@ begin
   gfx_fadeout(true);
   current_menu := MENU_MAIN;
   sfx_play(voice4,88,202); // vol10
+  
 
   gamestate:=GAMEINPROGRESS;
   player.uec:= STARTUEC;
@@ -683,8 +684,9 @@ begin
   pic_load(LOC,player.loc);
   
 
-  tshp:= shipmatrix[0];
-  ship:= tshp^;
+  // tshp:= shipmatrix[0];
+  // ship:= tshp^;
+  ship:= shipmatrix[0];
   ship.qf:= ship.qf_max; // starting fuel
 
   eraseArray(0,MAXCARGOSLOTS-1, @ship.cargoindex);
@@ -2153,11 +2155,13 @@ begin
 
                             // remove selection
                             currentitemprice:=GetCargoPrice(itemindex);
-                            currentitemindex:=currentShip.cargoindex[itemindex];
+                            // currentitemindex:=currentShip.cargoindex[itemindex];
+                            currentitemindex:=availableitems[itemindex];
+                            currentitemquantity:=itemquantity[availableitems[itemindex]];
+
                             selecteditemquantity:= 0;
                             selecteditemtotal:= 0;
                       //              itemindex:=0;
-
 
 
                             // repeat until CRT_KeyPressed;
@@ -2858,23 +2862,34 @@ begin
   // msx.modul:=pointer(MODULE_ADDRESS);
   // msx.init;
 
-  sfx_init;
+  // sfx_init;
+
   // load ships data into an array of records.
+  // for y:=0 to NUMBEROFSHIPS-1 do
+  // begin
+  //   tshp:=shipmatrix[y];
+  //   offset:=(y * MAXSHIPPARAMETERS);
+  //   tshp^.mcode:=byte(ships[offset+1]);
+  //   tshp^.sindex:=y;
+  //   tshp^.scu_max:=Word(ships[offset+2]);
+  //   tshp^.speed:=byte(ships[offset+3]);
+  //   tshp^.lenght:=byte(ships[offset+4]);
+  //   tshp^.mass:=Word(ships[offset+5]);
+  //   tshp^.qf_max:=Word(ships[offset+6]);
+  //   tshp^.swait:=byte(ships[offset+7]);
+  // end;
+
   for y:=0 to NUMBEROFSHIPS-1 do
-  begin
-    tshp:=shipmatrix[y];
+  begin    
     offset:=(y * MAXSHIPPARAMETERS);
-    tshp^.mcode:=byte(ships[offset+1]);
-    tshp^.sindex:=y;
-    tshp^.scu_max:=Word(ships[offset+2]);
-    tshp^.speed:=byte(ships[offset+3]);
-    tshp^.lenght:=byte(ships[offset+4]);
-    tshp^.mass:=Word(ships[offset+5]);
-    tshp^.qf_max:=Word(ships[offset+6]);
-    tshp^.swait:=byte(ships[offset+7]);
-    // tshp^.swait:=(ROUND(15 / (tshp^.speed / 100))) - (5 - Trunc(tshp^.lenght / 25));
-    // tshp^.swait:=((15 div (tshp^.speed div 100))) - (5 - (tshp^.lenght div 25));
-    // tshp^.swait:=100 div (tshp^.speed - (tshp^.speed * 80 div 100)) + (tshp^.lenght div 10) - 3;
+    shipmatrix[y].mcode:=byte(ships[offset+1]);
+    shipmatrix[y].sindex:=y;
+    shipmatrix[y].scu_max:=Word(ships[offset+2]);
+    shipmatrix[y].speed:=byte(ships[offset+3]);
+    shipmatrix[y].lenght:=byte(ships[offset+4]);
+    shipmatrix[y].mass:=Word(ships[offset+5]);
+    shipmatrix[y].qf_max:=Word(ships[offset+6]);
+    shipmatrix[y].swait:=byte(ships[offset+7]);
   end;
 
   gamestate:= NEWGAME;

@@ -107,27 +107,6 @@ begin
   until skip or (count > time);
 end;
 
-// procedure NoSound; assembler;
-// (*
-// @description: Reset POKEY
-// *)
-// asm
-// {	lda #0
-// 	sta $d208
-// 	sta $d218
-
-// 	ldy #3
-// 	sty $d20f
-// 	sty $d21f
-
-// 	ldy #8
-// lp	sta $d200,y
-// 	sta $d210,y
-// 	dey
-// 	bpl lp
-// };
-// end;
-
 begin
   //fadeoff;
   SystemOff;
@@ -334,7 +313,6 @@ begin
   music:= false;
   msx.stop;
   waitframe;
-  // NoSound;
   DisableDLI;
   DisableVBLI;
   nmien:=0;

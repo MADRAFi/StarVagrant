@@ -78,13 +78,11 @@ begin
       fileoffset:=fileoffset+CHUNKSIZE;
     end;
 
-
     Dec(distance);
     Dec(ship.qf);
     navi_distanceUpdate(distance);
     // waitframes(count);
     waitframes(ship.swait);
-  
 
   until ((distance = 0)); // and (xBiosIOresult <> 0)) or ((distance = 0) and (xBiosCheck = 0));
     
