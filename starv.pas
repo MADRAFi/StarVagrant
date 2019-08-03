@@ -37,9 +37,9 @@ type
 
 var
   keyval : Byte = 0;
-  player: TPlayer; // absolute $ED58; // player
-  ship: TShip; // absolute $ED5B; // player's ship
-  currentship: TShip; // absolute $ED91; // temp ship for operations
+  player: TPlayer; // player
+  ship: TShip; // player's ship
+  currentship: TShip; // temp ship for operations
   newLoc: Byte; // new Location (destination)
   tstr : TString; // string used in various routines.
   strnum: TString; // string used in various routines to display numbers
@@ -62,18 +62,18 @@ var
 //number of ship variables equals NUMBEROFSHIPS
   tshp : ^TShip;
 
-  // ship0: TShip;
-  // ship1: TShip;
-  // ship2: TShip;
-  // ship3: TShip;
-  // ship4: TShip;
-  // ship5: TShip;
-  // ship6: TShip;
-  // ship7: TShip;
-  // ship8: TShip;
-  // ship9: TShip;
-  // ship10: TShip;
-  // ship11: TShip;
+  ship0: TShip;
+  ship1: TShip;
+  ship2: TShip;
+  ship3: TShip;
+  ship4: TShip;
+  ship5: TShip;
+  ship6: TShip;
+  ship7: TShip;
+  ship8: TShip;
+  ship9: TShip;
+  ship10: TShip;
+  ship11: TShip;
   // shipmatrix: array [0..NUMBEROFSHIPS-1] of pointer = (@ship0, @ship1, @ship2, @ship3, @ship4, @ship5, @ship6, @ship7, @ship8, @ship9, @ship10, @ship11);
   shipmatrix: array [0..NUMBEROFSHIPS-1] of ^TShip;
 
@@ -2466,9 +2466,15 @@ begin
   putStringAt(7,18,4);
 
 
+
+  // count:= 1;
+  // CRT_GotoXY(0,1);
+  // CRT_Write('name='~);CRT_Write(ships[shipmatrix[count].sindex*MAXSHIPPARAMETERS]);
+  // CRT_GotoXY(0,2);
+  // CRT_Write('sindex='~);CRT_Write(shipmatrix[count].sindex);
   // CRT_GotoXY(0,3);
-  // CRT_Write('offset='~);CRT_Write(offset);
-  // CRT_GotoXY(0,4);
+  // CRT_Write('scu_max='~);CRT_Write(shipmatrix[count].scu_max);
+
   // CRT_Write('av_ship[0]='~);CRT_Write(availableships[0]);CRT_Write('|'~);
   // CRT_GotoXY(0,5);
   // CRT_Write('price='~);CRT_Write(shipprices[offset]);
@@ -2879,18 +2885,23 @@ begin
   //   tshp^.qf_max:=Word(ships[offset+6]);
   //   tshp^.swait:=byte(ships[offset+7]);
   // end;
+  shipmatrix[0]:=@ship0;
+  shipmatrix[1]:=@ship1;
+  shipmatrix[2]:=@ship2;
+  shipmatrix[3]:=@ship3;
+  shipmatrix[4]:=@ship4;
+  shipmatrix[5]:=@ship5;
+  shipmatrix[6]:=@ship6;
+  shipmatrix[7]:=@ship7;
+  shipmatrix[8]:=@ship8;
+  shipmatrix[9]:=@ship9;
+  shipmatrix[10]:=@ship10;
+  shipmatrix[11]:=@ship11;
+
 
   for y:=0 to NUMBEROFSHIPS-1 do
-  begin    
+  begin
     offset:=(y * MAXSHIPPARAMETERS);
-    // shipmatrix[y].mcode:=byte(ships[offset+1]);
-    // shipmatrix[y].sindex:=y;
-    // shipmatrix[y].scu_max:=Word(ships[offset+2]);
-    // shipmatrix[y].speed:=byte(ships[offset+3]);
-    // shipmatrix[y].lenght:=byte(ships[offset+4]);
-    // shipmatrix[y].mass:=Word(ships[offset+5]);
-    // shipmatrix[y].qf_max:=Word(ships[offset+6]);
-    // shipmatrix[y].swait:=byte(ships[offset+7]);
     shipmatrix[y].mcode:=StrToInt(ships[offset+1]);
     shipmatrix[y].sindex:=y;
     shipmatrix[y].scu_max:=StrToInt(ships[offset+2]);
