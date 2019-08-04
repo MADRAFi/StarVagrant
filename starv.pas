@@ -494,7 +494,7 @@ procedure randomEncounter;
 //   modify: Real;
 
 begin
-  y:=Random(30);
+  y:=Random(34);
   txt:='#';
   case y of
 
