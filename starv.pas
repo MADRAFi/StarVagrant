@@ -958,6 +958,7 @@ var
 procedure setDestIdx(v:word);
 begin
   beep230; //vol 10
+  newLoc:=1; // reused variable
   destinationindex:=v;
 end;
 
@@ -1067,8 +1068,10 @@ begin
                             end;
                           end;
                         end;
+          else 
+             newLoc:=0; // reuse variable
         end;
-        if (current_menu=MENU_NAV) and (destinationindex > 0) then
+        if (current_menu=MENU_NAV) and (destinationindex > 0) and (newLoc > 0) then
         begin
           distance:=locationdistance[destinationindex];
           navi_destinationUpdate(destinationindex);
@@ -1089,6 +1092,7 @@ var
   currentshipprice: Longword;
 
 begin
+  newLoc:=0;
   beep230; //vol 10
   CRT_ClearRows(0,7);
 
@@ -1221,19 +1225,26 @@ begin
                           begin
                             sfx_play(voice4,80,170); // vol10
                             Dec(shipindex);
+                            newLoc:=1; //reused variable
                           end
                           else
+                          begin
                             beep255; // vol10
-
+                            newLoc:=0; //reused variable
+                          end;
                       end;
           KEY_RIGHT:  begin
                         if (shipindex < NUMBEROFSHIPS-1) and (availableships[shipindex+1] > 0) then
                         begin
                           sfx_play(voice4,80,170); // vol10
                           Inc(shipindex);
+                          newLoc:=1; //reused variable
                         end
                         else
+                        begin
                           beep255; // vol10
+                          newLoc:=0; //reused variable
+                        end;
                       end;
           KEY_SELECT: begin
                         if not selectPressed then
@@ -1288,7 +1299,7 @@ begin
 
         end;
    
-        if (current_menu=MENU_SHIP) and (shipindex <= NUMBEROFSHIPS-1) then
+        if (current_menu=MENU_SHIP) and (shipindex <= NUMBEROFSHIPS-1) and (newLoc > 0) then
 
         begin
           tshp:=shipmatrix[availableships[shipindex]];
@@ -2277,7 +2288,7 @@ begin
 
                           ListItems(false);
                           ListCargo(false);
-                          itemindex:=0;
+                          // itemindex:=0;
                         end
                         else begin // selling mode
                           //CRT_GotoXY(LISTSTART-3,0);
@@ -2299,14 +2310,19 @@ begin
 
                           ListItems(true);
                           ListCargo(true);
-                          itemindex:=0;
-                          currentitemquantity:=currentShip.cargoquantity[itemindex];
-                          currentitemprice:=GetCargoPrice(itemindex);
-                          currentitemindex:=currentShip.cargoindex[itemindex];
+                          // itemindex:=0;
+                          // currentitemquantity:=currentShip.cargoquantity[itemindex];
+                          // currentitemprice:=GetCargoPrice(itemindex);
+                          // currentitemindex:=currentShip.cargoindex[itemindex];
                           cargoPresent:=CheckCargoPresence(itemindex);
-                          selecteditemquantity:=0;
+                          // selecteditemquantity:=0;
 
                         end;
+                        itemindex:=0;
+                        currentitemquantity:=currentShip.cargoquantity[itemindex];
+                        currentitemprice:=GetCargoPrice(itemindex);
+                        currentitemindex:=currentShip.cargoindex[itemindex];
+                        selecteditemquantity:=0;
                         optionPressed:=true;
                       end;
                     end;
