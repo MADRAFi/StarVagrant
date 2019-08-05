@@ -706,7 +706,7 @@ begin
 end;
 
 
-procedure ListCargo(mode : Boolean);
+procedure ListCargo(trade_mode : Boolean);
 const
   LISTWIDTH = 20;
   LISTSTART = 0;
@@ -725,7 +725,7 @@ begin
       strnum:=IntToStr(currentship.cargoquantity[y]);
       WriteSpaces(LISTWIDTH-Length(tstr)-Length(strnum));
       CRT_Write(Atascii2Antic(strnum));
-      if (count = 1) and mode then CRT_Invert(LISTSTART,8,LISTWIDTH);
+      if (count = 1) and trade_mode then CRT_Invert(LISTSTART,8,LISTWIDTH);
       Inc(count);
     end;
   end;
@@ -739,7 +739,7 @@ begin
 end;
 
 
-procedure ListItems(mode: boolean);
+procedure ListItems(trade_mode: boolean);
 const
   LISTSTART = 21;
   LISTWIDTH = 19;
@@ -761,7 +761,7 @@ begin
       visible:= false;
       offset:=(NUMBEROFITEMS * player.loc) + y;
 
-      if mode then
+      if trade_mode then
       begin
         if (itemprice[offset] > 0) then // show item even if quantity is 0
           visible:=true;
@@ -799,14 +799,14 @@ begin
         CRT_Write(tstr);
         //if mode then finalprice:=Trunc(itemprice[offset] * (1-COMMISSION))
         // if mode then finalprice:=Round(itemprice[offset] * (1-COMMISSION))
-        if mode then finalprice:=itemprice[offset] - (itemprice[offset] * COMMISSION div 100)
+        if trade_mode then finalprice:=itemprice[offset] - (itemprice[offset] * COMMISSION div 100)
         else finalprice:=itemprice[offset];
         countstr:=IntToStr(count);
         strnum:=IntToStr(finalprice);
         WriteSpaces(LISTWIDTH-(Length(countstr)+1+Length(tstr))-Length(strnum)); // (count, space and string)-price
         CRT_Write(Atascii2Antic(strnum));
         //CRT_WriteRightAligned(Atascii2Antic(IntToStr(finalprice)));
-        if (count = 1) and not mode then CRT_Invert(LISTSTART,5,LISTWIDTH);
+        if (count = 1) and not trade_mode then CRT_Invert(LISTSTART,5,LISTWIDTH);
         inc(count);
       end
       else
@@ -1810,7 +1810,7 @@ begin
   // assign 1st item on the avaiable items
   currentitemquantity:=itemquantity[availableitems[itemindex]];
   currentitemprice:=GetItemPrice(itemindex,mode);
-  currentitemindex:=availableitems[itemindex];
+  currentitemindex:=availableitems[itemindex]-(NUMBEROFITEMS * player.loc);
 
 
   repeat
@@ -2134,12 +2134,13 @@ begin
                               begin
                                 currentShip.cargoindex[y]:=currentitemindex;
                                 currentShip.cargoquantity[y]:=selecteditemquantity;
+                                                                
                                 // CRT_GotoXY(0,19);
-                                // CRT_Write('cur_itemprice='~);CRT_Write(currentitemprice);CRT_Write('           '~);
+                                // CRT_Write('cur_itemidx='~);CRT_Write(currentitemindex);CRT_Write('           '~);
                                 // CRT_GotoXY(0,20);
-                                // CRT_Write('itemindex='~);CRT_Write(itemindex);CRT_Write('           '~);
+                                // CRT_Write('selquant='~);CRT_Write(selecteditemquantity);CRT_Write('           '~);
 
-                                // CRT_GotoXY(0,18);
+                                // CRT_GotoXY(0,21);
                                 // CRT_Write('y='~);CRT_Write(y);CRT_Write('           '~);
 
                                 break;
@@ -2167,6 +2168,7 @@ begin
 
                             // remove selection
                             currentitemprice:=GetCargoPrice(itemindex);
+                            
                             // currentitemindex:=currentShip.cargoindex[itemindex];
                             currentitemindex:=availableitems[itemindex];
                             currentitemquantity:=itemquantity[availableitems[itemindex]];
@@ -2174,7 +2176,6 @@ begin
                             selecteditemquantity:= 0;
                             selecteditemtotal:= 0;
                       //              itemindex:=0;
-
 
                             // repeat until CRT_KeyPressed;
                             // CRT_GotoXY(21,10);
