@@ -1,0 +1,3521 @@
+STACKWIDTH	= 16
+CODEORIGIN	= $0C00
+
+TRUE		= 1
+FALSE		= 0
+
+	org $80
+
+	.print 'ZPFREE: $0000..',*-1
+
+fxptr	.ds 2
+
+eax	.ds 4						;8 bytes (aex + edx) -> divREAL
+edx	.ds 4
+ecx	.ds 4
+bp	.ds 2
+bp2	.ds 2
+
+ztmp
+ztmp8	.ds 1
+ztmp9	.ds 1
+ztmp10	.ds 1
+ztmp11	.ds 1
+
+TMP	.ds 2
+
+STACKORIGIN	.ds STACKWIDTH*4
+
+	.print 'ZPFREE: ',*,'..',$ff
+
+ax	= eax
+al	= eax
+ah	= eax+1
+
+cx	= ecx
+cl	= ecx
+ch	= ecx+1
+
+dx	= edx
+dl	= edx
+dh	= edx+1
+
+	org eax
+
+FP1MAN0	.ds 1
+FP1MAN1	.ds 1
+FP1MAN2	.ds 1
+FP1MAN3	.ds 1
+
+	org ztmp8
+
+FP1SGN	.ds 1
+FP1EXP	.ds 1
+
+	org edx
+
+FP2MAN0	.ds 1
+FP2MAN1	.ds 1
+FP2MAN2	.ds 1
+FP2MAN3	.ds 1
+
+	org ztmp10
+
+FP2SGN	.ds 1
+FP2EXP	.ds 1
+
+	org ecx
+
+FPMAN0	.ds 1
+FPMAN1	.ds 1
+FPMAN2	.ds 1
+FPMAN3	.ds 1
+
+	org bp2
+
+FPSGN	.ds 1
+FPEXP	.ds 1
+
+.local	RESOURCE
+	icl 'res6502.asm'
+
+	RCDATA '../assets/Nvdi8.fnt' CHARSET_ADDRESS 0 0 0 0 0 0 0 0
+	RCASM 'dlist_title.asm' DISPLAY_LIST_ADDRESS_TITLE 0 0 0 0 0 0 0 0
+	CMCPLAY '' PLAYER_ADDRESS 0 0 0 0 0 0 0 0
+	CMC 'assets/echo.cmc' MODULE_ADDRESS 0 0 0 0 0 0 0 0
+	RCDATA 'assets/pic1.dat' PIC1_ADDRESS 0 0 0 0 0 0 0 0
+	RCDATA 'assets/pic2.dat' PIC2_ADDRESS 0 0 0 0 0 0 0 0
+	RCDATA 'assets/pic3.dat' PIC3_ADDRESS 0 0 0 0 0 0 0 0
+.endl
+
+; -----------------------------------------------------------
+
+	org CODEORIGIN
+
+	STATICDATA
+
+START
+	tsx
+	stx MAIN.@halt+1
+
+	.ifdef fmulinit
+	fmulinit
+	eif
+
+	ift DATAORIGIN+VARINITSIZE > $BFFF
+	ert 'Invalid memory address range ',DATAORIGIN+VARINITSIZE
+	els
+	@fill #DATAORIGIN+VARINITSIZE #VARDATASIZE-VARINITSIZE #0
+	eif
+
+	ldx #$0f
+	mva:rpl $340,x MAIN.IOCB@COPY,x-
+
+	inx		; X = 0 !!!
+	stx bp		; lo BP = 0
+
+	UNITINITIALIZATION
+
+.local	MAIN						; PROCEDURE
+
+	ift l_01AE-*>3
+	jmp l_01AE
+	eif
+
+; -----------------------------------------------------------
+
+.local	SYSTEM						; UNIT
+
+.local	PEEK						; FUNCTION | ASSEMBLER | REGISTER
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x A
+	mva :STACKORIGIN+STACKWIDTH,x A+1
+	dex						; sub bx, 1
+
+
+; ---------------------  ASM Block 004  ---------------------
+
+	ldy #0
+	mva (edx),y Result
+
+
+@exit
+
+; -----------------------------------------------------------
+
+; Push BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+
+	inx						; add bx, 1
+	mva RESULT :STACKORIGIN,x
+
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+
+; -----------------------------------------------------------
+
+A	= edx
+RESULT	= DATAORIGIN+$000B
+
+@VarData	= RESULT
+@VarDataSize	= 1
+
+	rts						; ret
+.endl
+
+.local	DPOKE						; PROCEDURE | ASSEMBLER | REGISTER
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x VALUE
+	mva :STACKORIGIN+STACKWIDTH,x VALUE+1
+	dex						; sub bx, 1
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x A
+	mva :STACKORIGIN+STACKWIDTH,x A+1
+	dex						; sub bx, 1
+
+
+; ---------------------  ASM Block 022  ---------------------
+
+	ldy #0
+	mva value (edx),y
+	iny
+	mva value+1 (edx),y
+
+
+; -----------------------------------------------------------
+
+A	= edx
+VALUE	= ecx
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	FILLBYTE_01D6					; PROCEDURE | ASSEMBLER | OVERLOAD | REGISTER
+
+; -----------------------------------------------------------
+
+; Generate Assignment for BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+	mva :STACKORIGIN,x VALUE
+	dex						; sub bx, 1
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x COUNT
+	mva :STACKORIGIN+STACKWIDTH,x COUNT+1
+	dex						; sub bx, 1
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x A
+	mva :STACKORIGIN+STACKWIDTH,x A+1
+	dex						; sub bx, 1
+
+
+; ---------------------  ASM Block 029  ---------------------
+
+	jsr @fill
+
+
+; -----------------------------------------------------------
+
+A	= edx
+COUNT	= ecx
+VALUE	= eax
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	MOVE_01E0					; PROCEDURE | ASSEMBLER | OVERLOAD | REGISTER
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x COUNT
+	mva :STACKORIGIN+STACKWIDTH,x COUNT+1
+	dex						; sub bx, 1
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x DEST
+	mva :STACKORIGIN+STACKWIDTH,x DEST+1
+	dex						; sub bx, 1
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x SOURCE
+	mva :STACKORIGIN+STACKWIDTH,x SOURCE+1
+	dex						; sub bx, 1
+
+
+; ---------------------  ASM Block 031  ---------------------
+
+	jsr @move
+
+
+; -----------------------------------------------------------
+
+SOURCE	= edx
+DEST	= ecx
+COUNT	= eax
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+; -----------------------------------------------------------
+
+M_PI_2	= $0648
+D_PI_2	= $0192
+D_PI_180	= $0004
+MGTIA	= $0000
+MVBXE	= $0080
+WINDOW	= $0010
+NARROW	= $0020
+VBXE_XDLADR	= $0000
+VBXE_BCBADR	= $0100
+VBXE_MAPADR	= $1000
+VBXE_OVRADR	= $5000
+VBXE_WINDOW	= $B000
+IDLI	= $0000
+IVBL	= $0001
+CH_DELCHR	= $00FE
+CH_ENTER	= $009B
+CH_ESC	= $001B
+CH_CURS_UP	= $001C
+CH_CURS_DOWN	= $001D
+CH_CURS_LEFT	= $001E
+CH_CURS_RIGHT	= $001F
+CH_TAB	= $007F
+CH_EOL	= $009B
+CH_CLR	= $007D
+CH_BELL	= $00FD
+CH_DEL	= $007E
+CH_DELLINE	= $009C
+CH_INSLINE	= $009D
+COLOR_BLACK	= $0000
+COLOR_WHITE	= $000E
+COLOR_RED	= $0032
+COLOR_CYAN	= $0096
+COLOR_VIOLET	= $0068
+COLOR_GREEN	= $00C4
+COLOR_BLUE	= $0074
+COLOR_YELLOW	= $00EE
+COLOR_ORANGE	= $004A
+COLOR_BROWN	= $00E4
+COLOR_LIGHTRED	= $003C
+COLOR_GRAY1	= $0004
+COLOR_GRAY2	= $0006
+COLOR_GRAY3	= $000A
+COLOR_LIGHTGREEN	= $00CC
+COLOR_LIGHTBLUE	= $007C
+FMOPENREAD	= $0004
+FMOPENWRITE	= $0008
+FMOPENAPPEND	= $0009
+FMOPENREADWRITE	= $000C
+SCREENWIDTH	= DATAORIGIN+$0000
+SCREENHEIGHT	= DATAORIGIN+$0002
+DATESEPARATOR	= DATAORIGIN+$0004
+FILEMODE	= DATAORIGIN+$0005
+SCREENMODE	= DATAORIGIN+$0006
+IORESULT	= DATAORIGIN+$0007
+EOLN	= DATAORIGIN+$0008
+RNDSEED	= DATAORIGIN+$0009
+
+.endl							; UNIT SYSTEM
+
+; -----------------------------------------------------------
+
+.local	ATARI						; UNIT
+
+; -----------------------------------------------------------
+
+RTCLOK	= $0012
+ATRACT	= $004D
+LMARGIN	= $0052
+RMARGIN	= $0053
+ROWCRS	= $0054
+COLCRS	= $0055
+DINDEX	= $0057
+SAVMSC	= $0058
+VDSLST	= $0200
+SDLSTL	= $0230
+TXTROW	= $0290
+TXTCOL	= $0291
+TINDEX	= $0293
+TXTMSC	= $0294
+SDMCTL	= $022F
+GPRIOR	= $026F
+CRSINH	= $02F0
+CHACT	= $02F3
+CHBAS	= $02F4
+CH	= $02FC
+PCOLR0	= $02C0
+PCOLR1	= $02C1
+PCOLR2	= $02C2
+PCOLR3	= $02C3
+COLOR0	= $02C4
+COLOR1	= $02C5
+COLOR2	= $02C6
+COLOR3	= $02C7
+COLOR4	= $02C8
+COLBAKS	= $02C8
+HPOSP0	= $D000
+HPOSP1	= $D001
+HPOSP2	= $D002
+HPOSP3	= $D003
+HPOSM0	= $D004
+HPOSM1	= $D005
+HPOSM2	= $D006
+HPOSM3	= $D007
+SIZEP0	= $D008
+SIZEP1	= $D009
+SIZEP2	= $D00A
+SIZEP3	= $D00B
+SIZEM	= $D00C
+GRAFP0	= $D00D
+GRAFP1	= $D00E
+GRAFP2	= $D00F
+GRAFP3	= $D010
+GRAFM	= $D011
+P0PF	= $D004
+PAL	= $D014
+COLPM0	= $D012
+COLPM1	= $D013
+COLPM2	= $D014
+COLPM3	= $D015
+COLPF0	= $D016
+COLPF1	= $D017
+COLPF2	= $D018
+COLPF3	= $D019
+COLBK	= $D01A
+PRIOR	= $D01B
+GRACTL	= $D01D
+HITCLR	= $D01E
+AUDF1	= $D200
+AUDC1	= $D201
+AUDF2	= $D202
+AUDC2	= $D203
+AUDF3	= $D204
+AUDC3	= $D205
+AUDF4	= $D206
+AUDC4	= $D207
+AUDCTL	= $D208
+SKSTAT	= $D20F
+PORTB	= $D301
+DMACTL	= $D400
+CHACTL	= $D401
+DLISTL	= $D402
+HSCROL	= $D404
+VSCROL	= $D405
+PMBASE	= $D407
+CHBASE	= $D409
+WSYNC	= $D40A
+VCOUNT	= $D40B
+PENH	= $D40C
+PENV	= $D40D
+NMIEN	= $D40E
+
+.endl							; UNIT ATARI
+
+; -----------------------------------------------------------
+
+.local	B_UTILS						; UNIT
+
+; -----------------------------------------------------------
+
+
+.endl							; UNIT B_UTILS
+
+; -----------------------------------------------------------
+
+.local	B_SYSTEM					; UNIT
+
+.local	SYSTEMOFF_01FA					; PROCEDURE | ASSEMBLER | OVERLOAD
+
+; -----------------------------------------------------------
+
+; Generate Assignment for BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+	mva :STACKORIGIN,x PORT_B
+	dex						; sub bx, 1
+
+
+; ---------------------  ASM Block 047  ---------------------
+
+
+		;lda:cmp:req 20 ;; removed due to problem with nmien = 0 already set
+		sei
+		mva #0 NMIEN
+
+		mva port_b PORTB
+		mwa #__nmi NMIVEC
+
+		lda <__iret
+		sta IRQVEC
+		sta __vblvec
+		sta __dlivec
+
+		lda >__iret
+		sta IRQVEC+1
+		sta __vblvec+1
+		sta __dlivec+1
+
+		mva #$40 NMIEN
+		sta __nmien
+		bne __stop
+__nmi
+		bit NMIST
+		bpl __vbl
+		jmp __dlivec
+.def :__dlivec = *-2
+		rti
+__vbl
+		inc rtclok+2
+		bne __vblvec-1
+		inc rtclok+1
+		bne __vblvec-1
+		inc rtclok
+		jmp __vblvec
+.def :__vblvec = *-2
+.def :__iret
+    	rti
+__stop
+
+
+; -----------------------------------------------------------
+
+PORT_B	= DATAORIGIN+$000D
+
+@VarData	= PORT_B
+@VarDataSize	= 1
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	SYSTEMOFF_01FE					; PROCEDURE | OVERLOAD
+
+	ift l_0201-*>3
+	jmp l_0201
+	eif
+
+; IfThenEpilog
+l_0201
+
+; optimize FAIL ('SYSTEMOFF_01FA', B_SYSTEM), line = 137
+	inx
+	mva #$FE :STACKORIGIN,x
+	jsr SYSTEMOFF_01FA
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	ENABLEVBLI					; PROCEDURE | ASSEMBLER
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x VBLPTR
+	mva :STACKORIGIN+STACKWIDTH,x VBLPTR+1
+	dex						; sub bx, 1
+
+
+; ---------------------  ASM Block 049  ---------------------
+
+
+		lda:cmp:req 20
+		mva #0 NMIEN
+		mwa vblptr __vblvec
+		lda __nmien
+		ora #$40
+		sta NMIEN
+		sta __nmien
+
+
+; -----------------------------------------------------------
+
+VBLPTR	= DATAORIGIN+$000E
+
+@VarData	= VBLPTR
+@VarDataSize	= 2
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	DISABLEVBLI					; PROCEDURE | ASSEMBLER
+
+
+; ---------------------  ASM Block 050  ---------------------
+
+
+		lda:cmp:req 20
+		mva #0 NMIEN
+		mwa #__iret __vblvec
+		lda __nmien
+		ora #$40
+		sta NMIEN
+		sta __nmien
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	ENABLEDLI					; PROCEDURE | ASSEMBLER
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x DLIPTR
+	mva :STACKORIGIN+STACKWIDTH,x DLIPTR+1
+	dex						; sub bx, 1
+
+
+; ---------------------  ASM Block 051  ---------------------
+
+
+		lda:cmp:req 20
+		mva #0 NMIEN
+		mwa dliptr __dlivec
+		mva #$c0 NMIEN
+		sta __nmien
+
+
+; -----------------------------------------------------------
+
+DLIPTR	= DATAORIGIN+$0010
+
+@VarData	= DLIPTR
+@VarDataSize	= 2
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	DISABLEDLI					; PROCEDURE | ASSEMBLER
+
+
+; ---------------------  ASM Block 052  ---------------------
+
+
+		lda:cmp:req 20
+		mva #$40 NMIEN
+		sta __nmien
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	WAITFRAME					; PROCEDURE | ASSEMBLER
+
+
+; ---------------------  ASM Block 053  ---------------------
+
+
+    lda:cmp:req rtclok+2
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	WAITFRAMES					; PROCEDURE
+
+; -----------------------------------------------------------
+
+; Generate Assignment for BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+	mva :STACKORIGIN,x FRAMES
+	dex						; sub bx, 1
+
+	ift l_0215-*>3
+	jmp l_0215
+	eif
+
+; IfThenEpilog
+l_0215
+
+; --- WhileProlog
+l_0216
+
+; optimize OK (B_SYSTEM), line = 210
+
+	lda FRAMES
+	cmp #$00
+	seq
+	bcs @+
+	jmp l_0225
+@
+
+; optimize FAIL ('WAITFRAME', B_SYSTEM), line = 211
+	jsr WAITFRAME
+
+; optimize FAIL (0, B_SYSTEM), line = 212
+	dec FRAMES
+
+; --- WhileDoEpilog
+c_0216
+
+; WhileDoEpilog
+	jmp l_0216
+l_0225
+b_0216
+
+; -----------------------------------------------------------
+
+FRAMES	= DATAORIGIN+$0012
+
+@VarData	= FRAMES
+@VarDataSize	= 1
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	SETCHARSET					; PROCEDURE
+
+; -----------------------------------------------------------
+
+; Generate Assignment for BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+	mva :STACKORIGIN,x MSB
+	dex						; sub bx, 1
+
+	ift l_0232-*>3
+	jmp l_0232
+	eif
+
+; IfThenEpilog
+l_0232
+
+; optimize OK (B_SYSTEM), line = 218
+
+	mva MSB ATARI.CHBASE
+
+; -----------------------------------------------------------
+
+MSB	= DATAORIGIN+$0013
+
+@VarData	= MSB
+@VarDataSize	= 1
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+; -----------------------------------------------------------
+
+__NMIEN	= DATAORIGIN+$000C
+PORTB_SELFTEST_OFF	= $0080
+PORTB_BASIC_OFF	= $0002
+PORTB_SYSTEM_ON	= $0001
+
+.endl							; UNIT B_SYSTEM
+
+; -----------------------------------------------------------
+
+.local	DOS						; UNIT
+
+; -----------------------------------------------------------
+
+PALNTSC	= $D014
+
+.endl							; UNIT DOS
+
+; -----------------------------------------------------------
+
+.local	STRUTILS					; UNIT
+
+; -----------------------------------------------------------
+
+
+.endl							; UNIT STRUTILS
+
+; -----------------------------------------------------------
+
+.local	SYSUTILS					; UNIT
+
+; -----------------------------------------------------------
+
+FAREADONLY	= $0001
+FAHIDDEN	= $0002
+FASYSFILE	= $0004
+FAVOLUMEID	= $0008
+FADIRECTORY	= $0010
+FAARCHIVE	= $0020
+FAANYFILE	= $003F
+
+.endl							; UNIT SYSUTILS
+
+; -----------------------------------------------------------
+
+.local	B_CRT						; UNIT
+
+.local	CRT_KEYPRESSED					; FUNCTION
+
+	ift l_0255-*>3
+	jmp l_0255
+	eif
+
+; IfThenEpilog
+l_0255
+
+; optimize OK (B_CRT), line = 592
+
+	mva #$00 RESULT
+
+; optimize OK (B_CRT), line = 593
+
+	lda ATARI.SKSTAT
+	ldy #1
+	and #$04
+	beq @+
+	dey
+@
+	.ifdef IFTMP_38
+	sty IFTMP_38
+	eif
+	tya
+	bne *+5
+	jmp l_026F
+
+; optimize OK (B_CRT), line = 593
+
+	mva #$01 RESULT
+
+; IfThenEpilog
+l_026F
+
+@exit
+
+; -----------------------------------------------------------
+
+; Push BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+
+	inx						; add bx, 1
+	mva RESULT :STACKORIGIN,x
+
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+
+; -----------------------------------------------------------
+
+RESULT	= DATAORIGIN+$001D
+
+@VarData	= RESULT
+@VarDataSize	= 1
+
+	rts						; ret
+.endl
+
+; -----------------------------------------------------------
+
+DEFAULT_SCREENWIDTH	= $0028
+DEFAULT_SCREENHEIGHT	= $0018
+CHAR_RETURN	= $009B
+CHAR_ESCAPE	= $001B
+CHAR_BACKSPACE	= $007E
+CHAR_TAB	= $007F
+CHAR_INVERSE	= $0081
+CHAR_CAPS	= $0082
+ICHAR_RETURN	= $00DB
+ICHAR_ESCAPE	= $005B
+ICHAR_BACKSPACE	= $007E
+ICHAR_TAB	= $007F
+ICHAR_INVERSE	= $00C1
+ICHAR_CAPS	= $00C2
+adr.CRT_KEYCODE	= CODEORIGIN+$01A7
+.var CRT_KEYCODE	= adr.CRT_KEYCODE .word
+CRT_VRAM	= DATAORIGIN+$0014
+CRT_SIZE	= DATAORIGIN+$0016
+CRT_SCREENWIDTH	= DATAORIGIN+$0018
+CRT_SCREENHEIGHT	= DATAORIGIN+$0019
+CRT_CURSOR	= DATAORIGIN+$001A
+CRT_LEFTMARGIN	= DATAORIGIN+$001C
+KBCODE	= $D209
+CONSOL	= $D01F
+
+.endl							; UNIT B_CRT
+
+; -----------------------------------------------------------
+
+.local	CMC						; UNIT
+
+.local	TCMC.INIT					; PROCEDURE | ASSEMBLER
+	sta TCMC
+	sty TCMC+1
+	sta PLAYER
+	sty PLAYER+1
+	add #2
+	scc
+	iny
+	sta MODUL
+	sty MODUL+1
+
+
+; ---------------------  ASM Block 072  ---------------------
+
+	txa:pha
+
+	mwa TCMC :bp2
+
+	ldy #0
+	lda (:bp2),y
+	add #3		; jsr player+3
+	sta adr
+	iny
+	lda (:bp2),y
+	adc #0
+	sta adr+1
+
+	iny
+	lda (:bp2),y
+	tax		; low byte of RMT module to X reg
+	iny
+	lda (:bp2),y
+	tay		; hi byte of RMT module to Y reg
+
+	lda #$70
+	jsr init
+
+	ldx #0
+	txa
+	jsr init
+
+	jmp stop
+
+init	jmp $ffff
+adr	equ *-2
+
+stop	pla:tax
+
+
+; -----------------------------------------------------------
+
+TCMC	= DATAORIGIN+$001E
+PLAYER	= DATAORIGIN+$0020
+MODUL	= DATAORIGIN+$0022
+
+@VarData	= TCMC
+@VarDataSize	= 6
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	TCMC.PLAY					; PROCEDURE | ASSEMBLER
+	sta TCMC
+	sty TCMC+1
+	sta PLAYER
+	sty PLAYER+1
+	add #2
+	scc
+	iny
+	sta MODUL
+	sty MODUL+1
+
+
+; ---------------------  ASM Block 073  ---------------------
+
+	txa:pha
+
+	mwa TCMC ptr
+
+	ldy #1
+cptr	lda $ff00,y
+ptr	equ *-2
+	sta adr,y
+	dey
+	bpl cptr
+
+	jsr $ffff
+adr	equ *-2
+
+	pla:tax
+
+
+; -----------------------------------------------------------
+
+TCMC	= DATAORIGIN+$0024
+PLAYER	= DATAORIGIN+$0026
+MODUL	= DATAORIGIN+$0028
+
+@VarData	= TCMC
+@VarDataSize	= 6
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	TCMC.STOP					; PROCEDURE | ASSEMBLER
+	sta TCMC
+	sty TCMC+1
+	sta PLAYER
+	sty PLAYER+1
+	add #2
+	scc
+	iny
+	sta MODUL
+	sty MODUL+1
+
+
+; ---------------------  ASM Block 074  ---------------------
+
+	txa:pha
+
+	mwa TCMC :bp2
+
+	ldy #0
+	lda (:bp2),y
+	add #3		; jsr player+3
+	sta adr
+	iny
+	lda (:bp2),y
+	adc #0
+	sta adr+1
+
+	lda #$40
+
+	jsr $ffff
+adr	equ *-2
+
+	pla:tax
+
+
+; -----------------------------------------------------------
+
+TCMC	= DATAORIGIN+$002A
+PLAYER	= DATAORIGIN+$002C
+MODUL	= DATAORIGIN+$002E
+
+@VarData	= TCMC
+@VarDataSize	= 6
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+; -----------------------------------------------------------
+
+
+.endl							; UNIT CMC
+
+.local	DLI_TITLE1					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 078  ---------------------
+
+
+        phr
+        sta ATARI.WSYNC
+
+        mva adr.gfxcolors ATARI.colpf0
+        mva adr.gfxcolors+1 ATARI.colpf1
+        mva adr.gfxcolors+2 ATARI.colpf2
+        mva adr.gfxcolors+3 ATARI.colbk
+
+        plr
+  
+	rti						; ret
+.endl
+
+.local	VBL_TITLE					; PROCEDURE | INTERRUPT
+
+	ift l_028A-*>3
+	jmp l_028A
+	eif
+
+; IfThenEpilog
+l_028A
+
+; ---------------------  ASM Block 079  ---------------------
+
+
+        phr ; store registers
+        ;inc 20
+  
+
+; optimize OK (), line = 26
+
+	.ifdef IFTMP_42
+	lda MUSIC
+	sta IFTMP_42
+	eif
+	lda MUSIC
+	bne *+5
+	jmp l_0296
+
+; optimize FAIL ('CMC.TCMC.PLAY', ), line = 26
+	lda MSX
+	ldy MSX+1
+	jsr CMC.TCMC.PLAY
+
+; IfThenEpilog
+l_0296
+
+; ---------------------  ASM Block 080  ---------------------
+
+
+      ; mwa #DLI_TITLE1 ATARI.VDSLST
+      plr ; restore registers
+  
+	rti						; ret
+.endl
+
+.local	GFX_FADEIN					; PROCEDURE
+
+	ift l_029E-*>3
+	jmp l_029E
+	eif
+
+; IfThenEpilog
+l_029E
+
+; optimize OK (intro.pas), line = 48
+
+	mva #$00 COUNT
+	sta COUNT+1
+
+; --- RepeatUntilProlog
+l_02A3
+
+; optimize FAIL ('B_SYSTEM.WAITFRAMES', intro.pas), line = 50
+	inx
+	mva #$02 :STACKORIGIN,x
+	jsr B_SYSTEM.WAITFRAMES
+
+; optimize OK (intro.pas), line = 51
+
+	lda adr.GFXCOLORS+$00
+	and #$0F
+	sta :STACKORIGIN+9
+	lda adr.PICCOLORS+$00
+	and #$0F
+	sta :STACKORIGIN+10
+	ldy #1
+	lda :STACKORIGIN+9
+	cmp :STACKORIGIN+10
+	bne @+
+	dey
+@
+	.ifdef IFTMP_43
+	sty IFTMP_43
+	eif
+	tya
+	bne *+5
+	jmp l_02C3
+
+; optimize OK (intro.pas), line = 51
+
+	inc adr.GFXCOLORS+$00
+
+; IfThenEpilog
+l_02C3
+
+; Restore conditional expression
+	lda IFTMP_43
+
+; else condition
+	beq *+5						; je
+	jmp l_02CF
+
+; optimize OK (intro.pas), line = 51
+
+	lda adr.PICCOLORS+$00
+	sta adr.GFXCOLORS+$00
+
+; IfThenEpilog
+l_02CF
+
+; optimize OK (intro.pas), line = 52
+
+	ldy #1
+	lda adr.GFXCOLORS,y
+	and #$0F
+	sta :STACKORIGIN+9
+	lda adr.PICCOLORS,y
+	and #$0F
+	sta :STACKORIGIN+10
+	lda :STACKORIGIN+9
+	cmp :STACKORIGIN+10
+	bne @+
+	dey
+@
+	.ifdef IFTMP_44
+	sty IFTMP_44
+	eif
+	tya
+	bne *+5
+	jmp l_02F5
+
+; optimize OK (intro.pas), line = 52
+
+	inc adr.GFXCOLORS+$01
+
+; IfThenEpilog
+l_02F5
+
+; Restore conditional expression
+	lda IFTMP_44
+
+; else condition
+	beq *+5						; je
+	jmp l_0301
+
+; optimize OK (intro.pas), line = 52
+
+	lda adr.PICCOLORS+$01
+	sta adr.GFXCOLORS+$01
+
+; IfThenEpilog
+l_0301
+
+; optimize OK (intro.pas), line = 53
+
+	lda adr.GFXCOLORS+$02
+	and #$0F
+	sta :STACKORIGIN+9
+	lda adr.PICCOLORS+$02
+	and #$0F
+	sta :STACKORIGIN+10
+	ldy #1
+	lda :STACKORIGIN+9
+	cmp :STACKORIGIN+10
+	bne @+
+	dey
+@
+	.ifdef IFTMP_45
+	sty IFTMP_45
+	eif
+	tya
+	bne *+5
+	jmp l_0327
+
+; optimize OK (intro.pas), line = 53
+
+	inc adr.GFXCOLORS+$02
+
+; IfThenEpilog
+l_0327
+
+; Restore conditional expression
+	lda IFTMP_45
+
+; else condition
+	beq *+5						; je
+	jmp l_0333
+
+; optimize OK (intro.pas), line = 53
+
+	lda adr.PICCOLORS+$02
+	sta adr.GFXCOLORS+$02
+
+; IfThenEpilog
+l_0333
+
+; optimize OK (intro.pas), line = 54
+
+	lda adr.GFXCOLORS+$03
+	and #$0F
+	sta :STACKORIGIN+9
+	lda adr.PICCOLORS+$03
+	and #$0F
+	sta :STACKORIGIN+10
+	ldy #1
+	lda :STACKORIGIN+9
+	cmp :STACKORIGIN+10
+	bne @+
+	dey
+@
+	.ifdef IFTMP_46
+	sty IFTMP_46
+	eif
+	tya
+	bne *+5
+	jmp l_0359
+
+; optimize OK (intro.pas), line = 54
+
+	inc adr.GFXCOLORS+$03
+
+; IfThenEpilog
+l_0359
+
+; Restore conditional expression
+	lda IFTMP_46
+
+; else condition
+	beq *+5						; je
+	jmp l_0365
+
+; optimize OK (intro.pas), line = 54
+
+	lda adr.PICCOLORS+$03
+	sta adr.GFXCOLORS+$03
+
+; IfThenEpilog
+l_0365
+
+; optimize OK (intro.pas), line = 55
+
+	ldy #1
+	lda adr.PICCOLORS+$00
+	cmp adr.GFXCOLORS+$00
+	beq @+
+	dey
+@
+	sty :STACKORIGIN+9
+	ldy #1
+	lda adr.GFXCOLORS,y
+	cmp adr.PICCOLORS,y
+	beq @+
+	dey
+@
+	tya
+	and :STACKORIGIN+9
+	sta :STACKORIGIN+9
+	ldy #1
+	lda adr.PICCOLORS+$02
+	cmp adr.GFXCOLORS+$02
+	beq @+
+	dey
+@
+	tya
+	and :STACKORIGIN+9
+	sta :STACKORIGIN+9
+	ldy #1
+	lda adr.PICCOLORS+$03
+	cmp adr.GFXCOLORS+$03
+	beq @+
+	dey
+@
+	tya
+	and :STACKORIGIN+9
+	bne *+5
+c_02A3
+	jmp l_02A3
+b_02A3
+
+; -----------------------------------------------------------
+
+IFTMP_43	= DATAORIGIN+$0070
+IFTMP_44	= DATAORIGIN+$0071
+IFTMP_45	= DATAORIGIN+$0072
+IFTMP_46	= DATAORIGIN+$0073
+
+@VarData	= IFTMP_43
+@VarDataSize	= 4
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	GFX_FADEOUT					; PROCEDURE
+
+	ift l_03B2-*>3
+	jmp l_03B2
+	eif
+
+; IfThenEpilog
+l_03B2
+
+; --- RepeatUntilProlog
+l_03B3
+
+; optimize FAIL ('B_SYSTEM.WAITFRAMES', intro.pas), line = 62
+	inx
+	mva #$02 :STACKORIGIN,x
+	jsr B_SYSTEM.WAITFRAMES
+
+; optimize OK (intro.pas), line = 63
+
+	lda adr.GFXCOLORS+$00
+	ldy #1
+	and #$0F
+	bne @+
+	dey
+@
+	.ifdef IFTMP_47
+	sty IFTMP_47
+	eif
+	tya
+	bne *+5
+	jmp l_03CC
+
+; optimize OK (intro.pas), line = 63
+
+	dec adr.GFXCOLORS+$00
+
+; IfThenEpilog
+l_03CC
+
+; Restore conditional expression
+	lda IFTMP_47
+
+; else condition
+	beq *+5						; je
+	jmp l_03D8
+
+; optimize OK (intro.pas), line = 63
+
+	mva #$00 adr.GFXCOLORS+$00
+
+; IfThenEpilog
+l_03D8
+
+; optimize OK (intro.pas), line = 64
+
+	ldy #1
+	lda adr.GFXCOLORS,y
+	and #$0F
+	cmp #$00
+	bne @+
+	dey
+@
+	.ifdef IFTMP_48
+	sty IFTMP_48
+	eif
+	tya
+	bne *+5
+	jmp l_03F4
+
+; optimize OK (intro.pas), line = 64
+
+	dec adr.GFXCOLORS+$01
+
+; IfThenEpilog
+l_03F4
+
+; Restore conditional expression
+	lda IFTMP_48
+
+; else condition
+	beq *+5						; je
+	jmp l_0400
+
+; optimize OK (intro.pas), line = 64
+
+	mva #$00 adr.GFXCOLORS+$01
+
+; IfThenEpilog
+l_0400
+
+; optimize OK (intro.pas), line = 65
+
+	lda adr.GFXCOLORS+$02
+	ldy #1
+	and #$0F
+	bne @+
+	dey
+@
+	.ifdef IFTMP_49
+	sty IFTMP_49
+	eif
+	tya
+	bne *+5
+	jmp l_041C
+
+; optimize OK (intro.pas), line = 65
+
+	dec adr.GFXCOLORS+$02
+
+; IfThenEpilog
+l_041C
+
+; Restore conditional expression
+	lda IFTMP_49
+
+; else condition
+	beq *+5						; je
+	jmp l_0428
+
+; optimize OK (intro.pas), line = 65
+
+	mva #$00 adr.GFXCOLORS+$02
+
+; IfThenEpilog
+l_0428
+
+; optimize OK (intro.pas), line = 66
+
+	lda adr.GFXCOLORS+$03
+	ldy #1
+	and #$0F
+	bne @+
+	dey
+@
+	.ifdef IFTMP_50
+	sty IFTMP_50
+	eif
+	tya
+	bne *+5
+	jmp l_0444
+
+; optimize OK (intro.pas), line = 66
+
+	dec adr.GFXCOLORS+$03
+
+; IfThenEpilog
+l_0444
+
+; Restore conditional expression
+	lda IFTMP_50
+
+; else condition
+	beq *+5						; je
+	jmp l_0450
+
+; optimize OK (intro.pas), line = 66
+
+	mva #$00 adr.GFXCOLORS+$03
+
+; IfThenEpilog
+l_0450
+
+; optimize OK (intro.pas), line = 73
+
+	lda adr.GFXCOLORS+$00
+	ora adr.GFXCOLORS+$01
+	ora adr.GFXCOLORS+$02
+	sta :STACKORIGIN+9
+	lda adr.GFXCOLORS+$03
+	ldy #1
+	ora :STACKORIGIN+9
+	beq @+
+	dey
+@
+	tya
+	bne *+5
+c_03B3
+	jmp l_03B3
+b_03B3
+
+; -----------------------------------------------------------
+
+IFTMP_47	= DATAORIGIN+$0074
+IFTMP_48	= DATAORIGIN+$0075
+IFTMP_49	= DATAORIGIN+$0076
+IFTMP_50	= DATAORIGIN+$0077
+
+@VarData	= IFTMP_47
+@VarDataSize	= 4
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	EXTENDNIBBLE					; FUNCTION
+
+; -----------------------------------------------------------
+
+; Generate Assignment for BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+	mva :STACKORIGIN,x N
+	dex						; sub bx, 1
+
+	ift l_047F-*>3
+	jmp l_047F
+	eif
+
+; IfThenEpilog
+l_047F
+
+; optimize OK (intro.pas), line = 80
+
+	mva #$03 COLORMASK
+
+; optimize OK (intro.pas), line = 81
+
+	mva #$01 TESTMASK
+
+; optimize OK (intro.pas), line = 82
+
+	mva #$00 RESULT
+; For
+
+; optimize OK (intro.pas), line = 83
+
+	mva #$00 BIT
+
+; optimize OK (intro.pas), line = 83
+
+; To
+l_0494
+
+; ForToDoCondition
+
+; optimize OK (intro.pas), line = 83
+
+	lda BIT
+	cmp #$03
+	bcc *+7
+	beq *+5
+
+; ForToDoProlog
+	jmp l_04A2
+
+; optimize OK (intro.pas), line = 84
+
+	lda N
+	ldy #1
+	and TESTMASK
+	bne @+
+	dey
+@
+	.ifdef IFTMP_51
+	sty IFTMP_51
+	eif
+	tya
+	bne *+5
+	jmp l_04BA
+
+; optimize OK (intro.pas), line = 84
+
+	lda RESULT
+	ora COLORMASK
+	sta RESULT
+
+; IfThenEpilog
+l_04BA
+
+; optimize OK (intro.pas), line = 85
+
+	lda TESTMASK
+	asl @
+	sta TESTMASK
+
+; optimize OK (intro.pas), line = 86
+
+	lda COLORMASK
+	:2 asl @
+	sta COLORMASK
+
+; ForToDoEpilog
+c_0494
+	inc BIT						; inc ptr byte [CounterAddress]
+
+	seq
+
+; WhileDoEpilog
+	jmp l_0494
+l_04A2
+b_0494
+
+@exit
+
+; -----------------------------------------------------------
+
+; Push BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+
+	inx						; add bx, 1
+	mva RESULT :STACKORIGIN,x
+
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+
+; -----------------------------------------------------------
+
+N	= DATAORIGIN+$0078
+RESULT	= DATAORIGIN+$0079
+BIT	= DATAORIGIN+$007A
+COLORMASK	= DATAORIGIN+$007B
+TESTMASK	= DATAORIGIN+$007C
+@FORTMP_1169	= $0003
+
+@VarData	= N
+@VarDataSize	= 5
+
+	rts						; ret
+.endl
+
+.local	PUTCHAR						; PROCEDURE
+
+; -----------------------------------------------------------
+
+; Generate Assignment for BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+	mva :STACKORIGIN,x ONECHAR
+	dex						; sub bx, 1
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x DEST
+	mva :STACKORIGIN+STACKWIDTH,x DEST+1
+	dex						; sub bx, 1
+
+	ift l_04EF-*>3
+	jmp l_04EF
+	eif
+
+; IfThenEpilog
+l_04EF
+
+; optimize OK (intro.pas), line = 98
+
+	lda ONECHAR
+	sta :STACKORIGIN+11
+	lda #$00
+	asl :STACKORIGIN+11
+	rol @
+	asl :STACKORIGIN+11
+	rol @
+	asl :STACKORIGIN+11
+	rol @
+	add #$E4
+	sta SRC+1
+	lda :STACKORIGIN+11
+	sta SRC
+; For
+
+; optimize OK (intro.pas), line = 99
+
+	mva #$00 X
+
+; optimize OK (intro.pas), line = 99
+
+; To
+l_0506
+
+; ForToDoCondition
+
+; optimize OK (intro.pas), line = 99
+
+	lda X
+	cmp #$07
+	bcc *+7
+	beq *+5
+
+; ForToDoProlog
+	jmp l_0514
+
+; optimize OK (intro.pas), line = 100
+
+	lda SRC+1
+	sta :bp+1
+	ldy SRC
+	lda (:bp),y
+	sta BSRC
+
+; optimize FAIL ('EXTENDNIBBLE', intro.pas), line = 101
+	inx
+	mva BSRC :STACKORIGIN,x
+	inx
+	mva #$0F :STACKORIGIN,x
+	jsr andAL_CL
+	dex
+	jsr EXTENDNIBBLE
+	mva :STACKORIGIN,x NIB1
+	dex
+
+; optimize FAIL ('EXTENDNIBBLE', intro.pas), line = 102
+	inx
+	mva BSRC :STACKORIGIN,x
+	inx
+	mva #$04 :STACKORIGIN,x
+	jsr shrAL_CL.BYTE
+	dex
+	jsr EXTENDNIBBLE
+	mva :STACKORIGIN,x NIB2
+	dex
+
+; optimize OK (intro.pas), line = 103
+
+	lda NIB2
+	sta RES
+	lda NIB1
+	sta RES+1
+
+; optimize OK (intro.pas), line = 104
+
+	lda DEST
+	sta :bp2
+	lda DEST+1
+	sta :bp2+1
+	ldy #$00
+	lda RES
+	sta (:bp2),y
+	iny
+	lda RES+1
+	sta (:bp2),y
+
+; optimize FAIL (0, intro.pas), line = 105
+	inw SRC
+
+; optimize OK (intro.pas), line = 106
+
+	lda DEST
+	add #$28
+	sta DEST
+	scc
+	inc DEST+1
+
+; ForToDoEpilog
+c_0506
+	inc X						; inc ptr byte [CounterAddress]
+
+	seq
+
+; WhileDoEpilog
+	jmp l_0506
+l_0514
+b_0506
+
+; -----------------------------------------------------------
+
+DEST	= DATAORIGIN+$007D
+ONECHAR	= DATAORIGIN+$007F
+SRC	= DATAORIGIN+$0080
+NIB1	= DATAORIGIN+$0082
+NIB2	= DATAORIGIN+$0083
+X	= DATAORIGIN+$0084
+BSRC	= DATAORIGIN+$0085
+RES	= DATAORIGIN+$0086
+@FORTMP_1283	= $0007
+
+@VarData	= DEST
+@VarDataSize	= 11
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	PUTSTRING					; PROCEDURE
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x TEXT
+	mva :STACKORIGIN+STACKWIDTH,x TEXT+1
+	dex						; sub bx, 1
+	@move TEXT #adr.TEXT #256
+	mwa #adr.TEXT TEXT
+
+; -----------------------------------------------------------
+
+; Generate Assignment for BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+	mva :STACKORIGIN,x Y
+	dex						; sub bx, 1
+
+; -----------------------------------------------------------
+
+; Generate Assignment for BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+	mva :STACKORIGIN,x X
+	dex						; sub bx, 1
+
+	ift l_055C-*>3
+	jmp l_055C
+	eif
+
+; IfThenEpilog
+l_055C
+
+; optimize OK (intro.pas), line = 119
+
+	lda #$40
+	sta :ecx
+	lda #$01
+	sta :ecx+1
+	lda Y
+	sta :eax
+	lda #$00
+	sta :eax+1
+	.ifdef fmulinit
+	fmulu_16
+	els
+	imulCX
+	eif
+	lda #$10
+	add :eax
+	sta :STACKORIGIN+9
+	lda #$B0
+	adc :eax+1
+	sta :STACKORIGIN+STACKWIDTH+9
+	lda #$00
+	sta :STACKORIGIN+STACKWIDTH+11
+	lda X
+	asl @
+	rol :STACKORIGIN+STACKWIDTH+11
+	add :STACKORIGIN+9
+	sta MEM
+	lda :STACKORIGIN+STACKWIDTH+9
+	adc :STACKORIGIN+STACKWIDTH+11
+	sta MEM+1
+; For
+
+; optimize OK (intro.pas), line = 121
+
+	mva #$01 I
+
+; optimize OK (intro.pas), line = 121
+
+	lda adr.TEXT+$00
+	sta @FORTMP_1405
+; To
+l_0580
+
+; ForToDoCondition
+
+; optimize OK (intro.pas), line = 121
+
+	lda I
+	cmp @FORTMP_1405
+	bcc *+7
+	beq *+5
+
+; ForToDoProlog
+	jmp l_058E
+
+; optimize FAIL ('PUTCHAR', intro.pas), line = 123
+	inx
+	mva MEM :STACKORIGIN,x
+	mva MEM+1 :STACKORIGIN+STACKWIDTH,x
+	inx
+	ldy I 
+	mva adr.TEXT,y :STACKORIGIN,x
+	jsr PUTCHAR
+
+; optimize OK (intro.pas), line = 124
+
+	lda MEM
+	add #$02
+	sta MEM
+	scc
+	inc MEM+1
+
+; ForToDoEpilog
+c_0580
+	inc I						; inc ptr byte [CounterAddress]
+
+	seq
+
+; WhileDoEpilog
+	jmp l_0580
+l_058E
+b_0580
+
+; -----------------------------------------------------------
+
+X	= DATAORIGIN+$0088
+Y	= DATAORIGIN+$0089
+adr.TEXT	= DATAORIGIN+$008A
+.var TEXT	= adr.TEXT .word
+MEM	= DATAORIGIN+$018A
+I	= DATAORIGIN+$018C
+@FORTMP_1405	= DATAORIGIN+$018D
+
+@VarData	= X
+@VarDataSize	= 262
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+; IfThenEpilog
+l_01AE
+
+; optimize FAIL ('B_SYSTEM.SYSTEMOFF_01FE', intro.pas), line = 130
+	jsr B_SYSTEM.SYSTEMOFF_01FE
+
+; optimize OK (intro.pas), line = 136
+
+	mva #$00 MSX.PLAYER
+	mva #$24 MSX.PLAYER+1
+
+; optimize OK (intro.pas), line = 137
+
+	mva #$00 MSX.MODUL
+	mva #$2C MSX.MODUL+1
+
+; optimize FAIL ('CMC.TCMC.INIT', intro.pas), line = 138
+	lda MSX
+	ldy MSX+1
+	jsr CMC.TCMC.INIT
+
+; optimize OK (intro.pas), line = 140
+
+	mva #$00 SKIP
+
+; optimize OK (intro.pas), line = 141
+
+	mva #$01 MUSIC
+
+; optimize OK (intro.pas), line = 144
+
+	lda #$10
+	sta :edx
+	lda #$B0
+	sta :edx+1
+	lda #$04
+	sta :ecx
+	lda #$1E
+	sta :ecx+1
+	lda #$00
+	sta :eax
+	jsr @fill
+
+; optimize FAIL ('B_SYSTEM.SETCHARSET', intro.pas), line = 145
+	inx
+	mva #$E4 :STACKORIGIN,x
+	jsr B_SYSTEM.SETCHARSET
+
+; optimize OK (intro.pas), line = 148
+
+	mva <DLI_TITLE1 ATARI.VDSLST
+	mva >DLI_TITLE1 ATARI.VDSLST+1
+
+; optimize FAIL ('B_SYSTEM.ENABLEVBLI', intro.pas), line = 149
+	inx
+	mva <VBL_TITLE :STACKORIGIN,x
+	mva >VBL_TITLE :STACKORIGIN+STACKWIDTH,x
+	jsr B_SYSTEM.ENABLEVBLI
+
+; optimize FAIL ('B_SYSTEM.ENABLEDLI', intro.pas), line = 150
+	inx
+	mva <DLI_TITLE1 :STACKORIGIN,x
+	mva >DLI_TITLE1 :STACKORIGIN+STACKWIDTH,x
+	jsr B_SYSTEM.ENABLEDLI
+
+; optimize FAIL ('B_SYSTEM.WAITFRAME', intro.pas), line = 151
+	jsr B_SYSTEM.WAITFRAME
+
+; optimize OK (intro.pas), line = 152
+
+	mva #$00 ATARI.DLISTL
+	mva #$20 ATARI.DLISTL+1
+
+; optimize OK (intro.pas), line = 153
+
+	mva #$22 ATARI.DMACTL
+
+; optimize OK (intro.pas), line = 156
+
+	mva #$00 COUNT
+	sta COUNT+1
+
+; --- RepeatUntilProlog
+l_05C9
+
+; optimize FAIL (0, intro.pas), line = 158
+	inw COUNT
+
+; optimize FAIL ('B_SYSTEM.WAITFRAME', intro.pas), line = 159
+	jsr B_SYSTEM.WAITFRAME
+
+; optimize FAIL ('B_CRT.CRT_KEYPRESSED', intro.pas), line = 160
+	jsr B_CRT.CRT_KEYPRESSED
+	.ifdef IFTMP_52
+	lda :STACKORIGIN,x
+	sta IFTMP_52
+	eif
+	dex
+	lda :STACKORIGIN+1,x
+	bne *+5
+	jmp l_05D8
+
+; optimize OK (intro.pas), line = 160
+
+	mva #$01 SKIP
+
+; IfThenEpilog
+l_05D8
+
+; optimize OK (intro.pas), line = 161
+
+	ldy #1
+	lda COUNT+1
+	cmp #$01
+	bne @+
+	lda COUNT
+	cmp #$2C
+@
+	seq
+	bcs @+
+	dey
+@
+	sty :STACKORIGIN+10
+	lda SKIP
+	ora :STACKORIGIN+10
+	bne *+5
+c_05C9
+	jmp l_05C9
+b_05C9
+
+; optimize OK (intro.pas), line = 163
+
+	ldy #1
+	lda SKIP
+	beq @+
+	dey
+@
+	.ifdef IFTMP_53
+	sty IFTMP_53
+	eif
+	tya
+	bne *+5
+	jmp l_0603
+
+; optimize FAIL ('GFX_FADEOUT', intro.pas), line = 164
+	jsr GFX_FADEOUT
+
+; optimize FAIL ('PUTSTRING', intro.pas), line = 165
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$14 :STACKORIGIN,x
+	inx
+	ldy #$00 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr PUTSTRING
+
+; optimize FAIL ('GFX_FADEIN', intro.pas), line = 166
+	jsr GFX_FADEIN
+
+; IfThenEpilog
+l_0603
+
+; optimize OK (intro.pas), line = 169
+
+	mva #$00 COUNT
+	sta COUNT+1
+
+; --- RepeatUntilProlog
+l_0613
+
+; optimize FAIL (0, intro.pas), line = 171
+	inw COUNT
+
+; optimize FAIL ('B_SYSTEM.WAITFRAME', intro.pas), line = 172
+	jsr B_SYSTEM.WAITFRAME
+
+; optimize FAIL ('B_CRT.CRT_KEYPRESSED', intro.pas), line = 173
+	jsr B_CRT.CRT_KEYPRESSED
+	.ifdef IFTMP_54
+	lda :STACKORIGIN,x
+	sta IFTMP_54
+	eif
+	dex
+	lda :STACKORIGIN+1,x
+	bne *+5
+	jmp l_0622
+
+; optimize OK (intro.pas), line = 173
+
+	mva #$01 SKIP
+
+; IfThenEpilog
+l_0622
+
+; optimize OK (intro.pas), line = 174
+
+	ldy #1
+	lda COUNT+1
+	cmp #$01
+	bne @+
+	lda COUNT
+	cmp #$C2
+@
+	seq
+	bcs @+
+	dey
+@
+	sty :STACKORIGIN+10
+	lda SKIP
+	ora :STACKORIGIN+10
+	bne *+5
+c_0613
+	jmp l_0613
+b_0613
+
+; optimize OK (intro.pas), line = 177
+
+	ldy #1
+	lda SKIP
+	beq @+
+	dey
+@
+	.ifdef IFTMP_55
+	sty IFTMP_55
+	eif
+	tya
+	bne *+5
+	jmp l_064D
+
+; optimize FAIL ('GFX_FADEOUT', intro.pas), line = 178
+	jsr GFX_FADEOUT
+
+; optimize FAIL ('PUTSTRING', intro.pas), line = 181
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$14 :STACKORIGIN,x
+	inx
+	ldy #$02 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr PUTSTRING
+
+; optimize FAIL ('PUTSTRING', intro.pas), line = 182
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$15 :STACKORIGIN,x
+	inx
+	ldy #$04 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr PUTSTRING
+
+; optimize FAIL ('GFX_FADEIN', intro.pas), line = 183
+	jsr GFX_FADEIN
+
+; IfThenEpilog
+l_064D
+
+; optimize OK (intro.pas), line = 186
+
+	mva #$00 COUNT
+	sta COUNT+1
+
+; --- RepeatUntilProlog
+l_0663
+
+; optimize FAIL (0, intro.pas), line = 188
+	inw COUNT
+
+; optimize FAIL ('B_SYSTEM.WAITFRAME', intro.pas), line = 189
+	jsr B_SYSTEM.WAITFRAME
+
+; optimize FAIL ('B_CRT.CRT_KEYPRESSED', intro.pas), line = 190
+	jsr B_CRT.CRT_KEYPRESSED
+	.ifdef IFTMP_56
+	lda :STACKORIGIN,x
+	sta IFTMP_56
+	eif
+	dex
+	lda :STACKORIGIN+1,x
+	bne *+5
+	jmp l_0672
+
+; optimize OK (intro.pas), line = 190
+
+	mva #$01 SKIP
+
+; IfThenEpilog
+l_0672
+
+; optimize OK (intro.pas), line = 191
+
+	ldy #1
+	lda COUNT+1
+	cmp #$01
+	bne @+
+	lda COUNT
+	cmp #$C2
+@
+	seq
+	bcs @+
+	dey
+@
+	sty :STACKORIGIN+10
+	lda SKIP
+	ora :STACKORIGIN+10
+	bne *+5
+c_0663
+	jmp l_0663
+b_0663
+
+; optimize OK (intro.pas), line = 193
+
+	ldy #1
+	lda SKIP
+	beq @+
+	dey
+@
+	.ifdef IFTMP_57
+	sty IFTMP_57
+	eif
+	tya
+	bne *+5
+	jmp l_069D
+
+; optimize FAIL ('GFX_FADEOUT', intro.pas), line = 194
+	jsr GFX_FADEOUT
+
+; optimize OK (intro.pas), line = 195
+
+	lda #$AC
+	sta :edx
+	lda #$36
+	sta :edx+1
+	lda #$10
+	sta :ecx
+	lda #$B0
+	sta :ecx+1
+	lda #$04
+	sta :eax
+	lda #$1E
+	sta :eax+1
+	jsr @move
+
+; optimize OK (intro.pas), line = 200
+
+	mva #$C0 LINE
+	mva #$C8 LINE+1
+
+; optimize OK (intro.pas), line = 201
+
+	lda LINE
+	sta :edx
+	lda LINE+1
+	sta :edx+1
+	lda #$50
+	sta :ecx
+	lda #$00
+	sta :ecx+1
+	sta :eax
+	jsr @fill
+
+; optimize FAIL ('PUTSTRING', intro.pas), line = 202
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$14 :STACKORIGIN,x
+	inx
+	ldy #$06 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr PUTSTRING
+
+; optimize FAIL ('PUTSTRING', intro.pas), line = 203
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$15 :STACKORIGIN,x
+	inx
+	ldy #$08 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr PUTSTRING
+
+; optimize OK (intro.pas), line = 204
+
+	mva #$90 LINE
+	mva #$CB LINE+1
+
+; optimize OK (intro.pas), line = 205
+
+	lda LINE
+	sta :edx
+	lda LINE+1
+	sta :edx+1
+	lda #$50
+	sta :ecx
+	lda #$00
+	sta :ecx+1
+	sta :eax
+	jsr @fill
+
+; optimize FAIL ('GFX_FADEIN', intro.pas), line = 206
+	jsr GFX_FADEIN
+
+; IfThenEpilog
+l_069D
+
+; optimize OK (intro.pas), line = 209
+
+	mva #$00 COUNT
+	sta COUNT+1
+
+; --- RepeatUntilProlog
+l_06C9
+
+; optimize FAIL (0, intro.pas), line = 211
+	inw COUNT
+
+; optimize FAIL ('B_SYSTEM.WAITFRAME', intro.pas), line = 212
+	jsr B_SYSTEM.WAITFRAME
+
+; optimize FAIL ('B_CRT.CRT_KEYPRESSED', intro.pas), line = 213
+	jsr B_CRT.CRT_KEYPRESSED
+	.ifdef IFTMP_58
+	lda :STACKORIGIN,x
+	sta IFTMP_58
+	eif
+	dex
+	lda :STACKORIGIN+1,x
+	bne *+5
+	jmp l_06D8
+
+; optimize OK (intro.pas), line = 213
+
+	mva #$01 SKIP
+
+; IfThenEpilog
+l_06D8
+
+; optimize OK (intro.pas), line = 214
+
+	ldy #1
+	lda COUNT+1
+	cmp #$01
+	bne @+
+	lda COUNT
+	cmp #$C2
+@
+	seq
+	bcs @+
+	dey
+@
+	sty :STACKORIGIN+10
+	lda SKIP
+	ora :STACKORIGIN+10
+	bne *+5
+c_06C9
+	jmp l_06C9
+b_06C9
+
+; optimize OK (intro.pas), line = 216
+
+	ldy #1
+	lda SKIP
+	beq @+
+	dey
+@
+	.ifdef IFTMP_59
+	sty IFTMP_59
+	eif
+	tya
+	bne *+5
+	jmp l_0703
+
+; optimize OK (intro.pas), line = 219
+
+	mva #$C0 LINE
+	mva #$C8 LINE+1
+
+; optimize OK (intro.pas), line = 220
+
+	lda LINE
+	sta :edx
+	lda LINE+1
+	sta :edx+1
+	lda #$50
+	sta :ecx
+	lda #$00
+	sta :ecx+1
+	sta :eax
+	jsr @fill
+
+; optimize FAIL ('PUTSTRING', intro.pas), line = 221
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$14 :STACKORIGIN,x
+	inx
+	ldy #$0A 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr PUTSTRING
+
+; optimize FAIL ('PUTSTRING', intro.pas), line = 222
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$15 :STACKORIGIN,x
+	inx
+	ldy #$0C 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr PUTSTRING
+
+; optimize OK (intro.pas), line = 223
+
+	mva #$90 LINE
+	mva #$CB LINE+1
+
+; optimize OK (intro.pas), line = 224
+
+	lda LINE
+	sta :edx
+	lda LINE+1
+	sta :edx+1
+	lda #$50
+	sta :ecx
+	lda #$00
+	sta :ecx+1
+	sta :eax
+	jsr @fill
+
+; IfThenEpilog
+l_0703
+
+; optimize OK (intro.pas), line = 227
+
+	mva #$00 COUNT
+	sta COUNT+1
+
+; --- RepeatUntilProlog
+l_0729
+
+; optimize FAIL (0, intro.pas), line = 229
+	inw COUNT
+
+; optimize FAIL ('B_SYSTEM.WAITFRAME', intro.pas), line = 230
+	jsr B_SYSTEM.WAITFRAME
+
+; optimize FAIL ('B_CRT.CRT_KEYPRESSED', intro.pas), line = 231
+	jsr B_CRT.CRT_KEYPRESSED
+	.ifdef IFTMP_60
+	lda :STACKORIGIN,x
+	sta IFTMP_60
+	eif
+	dex
+	lda :STACKORIGIN+1,x
+	bne *+5
+	jmp l_0738
+
+; optimize OK (intro.pas), line = 231
+
+	mva #$01 SKIP
+
+; IfThenEpilog
+l_0738
+
+; optimize OK (intro.pas), line = 232
+
+	ldy #1
+	lda COUNT+1
+	cmp #$01
+	bne @+
+	lda COUNT
+	cmp #$C2
+@
+	seq
+	bcs @+
+	dey
+@
+	sty :STACKORIGIN+10
+	lda SKIP
+	ora :STACKORIGIN+10
+	bne *+5
+c_0729
+	jmp l_0729
+b_0729
+
+; optimize OK (intro.pas), line = 234
+
+	ldy #1
+	lda SKIP
+	beq @+
+	dey
+@
+	.ifdef IFTMP_61
+	sty IFTMP_61
+	eif
+	tya
+	bne *+5
+	jmp l_0763
+
+; optimize FAIL ('GFX_FADEOUT', intro.pas), line = 235
+	jsr GFX_FADEOUT
+
+; optimize OK (intro.pas), line = 236
+
+	lda #$B0
+	sta :edx
+	lda #$54
+	sta :edx+1
+	lda #$10
+	sta :ecx
+	lda #$B0
+	sta :ecx+1
+	lda #$04
+	sta :eax
+	lda #$1E
+	sta :eax+1
+	jsr @move
+
+; optimize OK (intro.pas), line = 239
+
+	mva #$C0 LINE
+	mva #$C8 LINE+1
+
+; optimize OK (intro.pas), line = 240
+
+	lda LINE
+	sta :edx
+	lda LINE+1
+	sta :edx+1
+	lda #$50
+	sta :ecx
+	lda #$00
+	sta :ecx+1
+	sta :eax
+	jsr @fill
+
+; optimize FAIL ('PUTSTRING', intro.pas), line = 241
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$14 :STACKORIGIN,x
+	inx
+	ldy #$0E 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr PUTSTRING
+
+; optimize FAIL ('PUTSTRING', intro.pas), line = 242
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$15 :STACKORIGIN,x
+	inx
+	ldy #$10 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr PUTSTRING
+
+; optimize OK (intro.pas), line = 243
+
+	mva #$90 LINE
+	mva #$CB LINE+1
+
+; optimize OK (intro.pas), line = 244
+
+	lda LINE
+	sta :edx
+	lda LINE+1
+	sta :edx+1
+	lda #$50
+	sta :ecx
+	lda #$00
+	sta :ecx+1
+	sta :eax
+	jsr @fill
+
+; optimize FAIL ('GFX_FADEIN', intro.pas), line = 245
+	jsr GFX_FADEIN
+
+; IfThenEpilog
+l_0763
+
+; optimize OK (intro.pas), line = 247
+
+	mva #$00 COUNT
+	sta COUNT+1
+
+; --- RepeatUntilProlog
+l_078F
+
+; optimize FAIL (0, intro.pas), line = 249
+	inw COUNT
+
+; optimize FAIL ('B_SYSTEM.WAITFRAME', intro.pas), line = 250
+	jsr B_SYSTEM.WAITFRAME
+
+; optimize FAIL ('B_CRT.CRT_KEYPRESSED', intro.pas), line = 251
+	jsr B_CRT.CRT_KEYPRESSED
+	.ifdef IFTMP_62
+	lda :STACKORIGIN,x
+	sta IFTMP_62
+	eif
+	dex
+	lda :STACKORIGIN+1,x
+	bne *+5
+	jmp l_079E
+
+; optimize OK (intro.pas), line = 251
+
+	mva #$01 SKIP
+
+; IfThenEpilog
+l_079E
+
+; optimize OK (intro.pas), line = 252
+
+	ldy #1
+	lda SKIP
+	cmp #$01
+	beq @+
+	dey
+@
+	sty :STACKORIGIN+9
+	ldy #1
+	lda COUNT+1
+	cmp #$01
+	bne @+
+	lda COUNT
+	cmp #$C2
+@
+	seq
+	bcs @+
+	dey
+@
+	tya
+	ora :STACKORIGIN+9
+	bne *+5
+c_078F
+	jmp l_078F
+b_078F
+
+; optimize OK (intro.pas), line = 254
+
+	ldy #1
+	lda SKIP
+	beq @+
+	dey
+@
+	.ifdef IFTMP_63
+	sty IFTMP_63
+	eif
+	tya
+	bne *+5
+	jmp l_07CF
+
+; optimize OK (intro.pas), line = 257
+
+	mva #$C0 LINE
+	mva #$C8 LINE+1
+
+; optimize OK (intro.pas), line = 258
+
+	lda LINE
+	sta :edx
+	lda LINE+1
+	sta :edx+1
+	lda #$50
+	sta :ecx
+	lda #$00
+	sta :ecx+1
+	sta :eax
+	jsr @fill
+
+; optimize FAIL ('PUTSTRING', intro.pas), line = 259
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$14 :STACKORIGIN,x
+	inx
+	ldy #$12 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr PUTSTRING
+
+; optimize FAIL ('PUTSTRING', intro.pas), line = 260
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$15 :STACKORIGIN,x
+	inx
+	ldy #$14 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr PUTSTRING
+
+; optimize FAIL ('PUTSTRING', intro.pas), line = 261
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$16 :STACKORIGIN,x
+	inx
+	ldy #$16 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr PUTSTRING
+
+; optimize OK (intro.pas), line = 262
+
+	mva #$D0 LINE
+	mva #$CC LINE+1
+
+; optimize OK (intro.pas), line = 263
+
+	lda LINE
+	sta :edx
+	lda LINE+1
+	sta :edx+1
+	lda #$50
+	sta :ecx
+	lda #$00
+	sta :ecx+1
+	sta :eax
+	jsr @fill
+
+; IfThenEpilog
+l_07CF
+
+; optimize OK (intro.pas), line = 266
+
+	mva #$00 COUNT
+	sta COUNT+1
+
+; --- RepeatUntilProlog
+l_07FB
+
+; optimize FAIL (0, intro.pas), line = 268
+	inw COUNT
+
+; optimize FAIL ('B_SYSTEM.WAITFRAME', intro.pas), line = 269
+	jsr B_SYSTEM.WAITFRAME
+
+; optimize FAIL ('B_CRT.CRT_KEYPRESSED', intro.pas), line = 270
+	jsr B_CRT.CRT_KEYPRESSED
+	.ifdef IFTMP_64
+	lda :STACKORIGIN,x
+	sta IFTMP_64
+	eif
+	dex
+	lda :STACKORIGIN+1,x
+	bne *+5
+	jmp l_080A
+
+; optimize OK (intro.pas), line = 270
+
+	mva #$01 SKIP
+
+; IfThenEpilog
+l_080A
+
+; optimize OK (intro.pas), line = 271
+
+	ldy #1
+	lda COUNT+1
+	cmp #$01
+	bne @+
+	lda COUNT
+	cmp #$C2
+@
+	seq
+	bcs @+
+	dey
+@
+	sty :STACKORIGIN+10
+	lda SKIP
+	ora :STACKORIGIN+10
+	bne *+5
+c_07FB
+	jmp l_07FB
+b_07FB
+
+; optimize OK (intro.pas), line = 273
+
+	ldy #1
+	lda SKIP
+	beq @+
+	dey
+@
+	.ifdef IFTMP_65
+	sty IFTMP_65
+	eif
+	tya
+	bne *+5
+	jmp l_0835
+
+; optimize FAIL ('GFX_FADEOUT', intro.pas), line = 274
+	jsr GFX_FADEOUT
+
+; optimize OK (intro.pas), line = 275
+
+	lda #$B4
+	sta :edx
+	lda #$72
+	sta :edx+1
+	lda #$10
+	sta :ecx
+	lda #$B0
+	sta :ecx+1
+	lda #$04
+	sta :eax
+	lda #$1E
+	sta :eax+1
+	jsr @move
+
+; optimize OK (intro.pas), line = 278
+
+	mva #$C0 LINE
+	mva #$C8 LINE+1
+
+; optimize OK (intro.pas), line = 279
+
+	lda LINE
+	sta :edx
+	lda LINE+1
+	sta :edx+1
+	lda #$50
+	sta :ecx
+	lda #$00
+	sta :ecx+1
+	sta :eax
+	jsr @fill
+
+; optimize FAIL ('PUTSTRING', intro.pas), line = 280
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$14 :STACKORIGIN,x
+	inx
+	ldy #$18 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr PUTSTRING
+
+; optimize FAIL ('PUTSTRING', intro.pas), line = 281
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$15 :STACKORIGIN,x
+	inx
+	ldy #$1A 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr PUTSTRING
+
+; optimize OK (intro.pas), line = 282
+
+	mva #$90 LINE
+	mva #$CB LINE+1
+
+; optimize OK (intro.pas), line = 283
+
+	lda LINE
+	sta :edx
+	lda LINE+1
+	sta :edx+1
+	lda #$50
+	sta :ecx
+	lda #$00
+	sta :ecx+1
+	sta :eax
+	jsr @fill
+
+; optimize FAIL ('GFX_FADEIN', intro.pas), line = 284
+	jsr GFX_FADEIN
+
+; IfThenEpilog
+l_0835
+
+; optimize OK (intro.pas), line = 287
+
+	mva #$00 COUNT
+	sta COUNT+1
+
+; --- RepeatUntilProlog
+l_0861
+
+; optimize FAIL (0, intro.pas), line = 289
+	inw COUNT
+
+; optimize FAIL ('B_SYSTEM.WAITFRAME', intro.pas), line = 290
+	jsr B_SYSTEM.WAITFRAME
+
+; optimize FAIL ('B_CRT.CRT_KEYPRESSED', intro.pas), line = 291
+	jsr B_CRT.CRT_KEYPRESSED
+	.ifdef IFTMP_66
+	lda :STACKORIGIN,x
+	sta IFTMP_66
+	eif
+	dex
+	lda :STACKORIGIN+1,x
+	bne *+5
+	jmp l_0870
+
+; optimize OK (intro.pas), line = 291
+
+	mva #$01 SKIP
+
+; IfThenEpilog
+l_0870
+
+; optimize OK (intro.pas), line = 292
+
+	ldy #1
+	lda COUNT+1
+	cmp #$01
+	bne @+
+	lda COUNT
+	cmp #$C2
+@
+	seq
+	bcs @+
+	dey
+@
+	sty :STACKORIGIN+10
+	lda SKIP
+	ora :STACKORIGIN+10
+	bne *+5
+c_0861
+	jmp l_0861
+b_0861
+
+; optimize OK (intro.pas), line = 294
+
+	ldy #1
+	lda SKIP
+	beq @+
+	dey
+@
+	.ifdef IFTMP_67
+	sty IFTMP_67
+	eif
+	tya
+	bne *+5
+	jmp l_089B
+
+; optimize OK (intro.pas), line = 297
+
+	mva #$C0 LINE
+	mva #$C8 LINE+1
+
+; optimize OK (intro.pas), line = 298
+
+	lda LINE
+	sta :edx
+	lda LINE+1
+	sta :edx+1
+	lda #$50
+	sta :ecx
+	lda #$00
+	sta :ecx+1
+	sta :eax
+	jsr @fill
+
+; optimize FAIL ('PUTSTRING', intro.pas), line = 299
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$14 :STACKORIGIN,x
+	inx
+	ldy #$1C 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr PUTSTRING
+
+; optimize FAIL ('PUTSTRING', intro.pas), line = 300
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$15 :STACKORIGIN,x
+	inx
+	ldy #$1E 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr PUTSTRING
+
+; optimize FAIL ('PUTSTRING', intro.pas), line = 301
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$16 :STACKORIGIN,x
+	inx
+	ldy #$20 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr PUTSTRING
+
+; optimize OK (intro.pas), line = 302
+
+	mva #$D0 LINE
+	mva #$CC LINE+1
+
+; optimize OK (intro.pas), line = 303
+
+	lda LINE
+	sta :edx
+	lda LINE+1
+	sta :edx+1
+	lda #$50
+	sta :ecx
+	lda #$00
+	sta :ecx+1
+	sta :eax
+	jsr @fill
+
+; IfThenEpilog
+l_089B
+
+; optimize OK (intro.pas), line = 306
+
+	mva #$00 COUNT
+	sta COUNT+1
+
+; --- RepeatUntilProlog
+l_08C7
+
+; optimize FAIL (0, intro.pas), line = 308
+	inw COUNT
+
+; optimize FAIL ('B_SYSTEM.WAITFRAME', intro.pas), line = 309
+	jsr B_SYSTEM.WAITFRAME
+
+; optimize FAIL ('B_CRT.CRT_KEYPRESSED', intro.pas), line = 310
+	jsr B_CRT.CRT_KEYPRESSED
+	.ifdef IFTMP_68
+	lda :STACKORIGIN,x
+	sta IFTMP_68
+	eif
+	dex
+	lda :STACKORIGIN+1,x
+	bne *+5
+	jmp l_08D6
+
+; optimize OK (intro.pas), line = 310
+
+	mva #$01 SKIP
+
+; IfThenEpilog
+l_08D6
+
+; optimize OK (intro.pas), line = 311
+
+	ldy #1
+	lda COUNT+1
+	cmp #$01
+	bne @+
+	lda COUNT
+	cmp #$C2
+@
+	seq
+	bcs @+
+	dey
+@
+	sty :STACKORIGIN+10
+	lda SKIP
+	ora :STACKORIGIN+10
+	bne *+5
+c_08C7
+	jmp l_08C7
+b_08C7
+
+; optimize OK (intro.pas), line = 313
+
+	ldy #1
+	lda SKIP
+	beq @+
+	dey
+@
+	.ifdef IFTMP_69
+	sty IFTMP_69
+	eif
+	tya
+	bne *+5
+	jmp l_0901
+
+; optimize FAIL ('GFX_FADEOUT', intro.pas), line = 314
+	jsr GFX_FADEOUT
+
+; optimize OK (intro.pas), line = 316
+
+	lda #$10
+	sta :edx
+	lda #$B0
+	sta :edx+1
+	lda #$04
+	sta :ecx
+	lda #$1E
+	sta :ecx+1
+	lda #$00
+	sta :eax
+	jsr @fill
+
+; optimize FAIL ('PUTSTRING', intro.pas), line = 319
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$14 :STACKORIGIN,x
+	inx
+	ldy #$22 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr PUTSTRING
+
+; optimize FAIL ('PUTSTRING', intro.pas), line = 320
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$15 :STACKORIGIN,x
+	inx
+	ldy #$24 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr PUTSTRING
+
+; optimize FAIL ('GFX_FADEIN', intro.pas), line = 321
+	jsr GFX_FADEIN
+
+; IfThenEpilog
+l_0901
+
+; optimize OK (intro.pas), line = 324
+
+	mva #$00 COUNT
+	sta COUNT+1
+
+; --- RepeatUntilProlog
+l_091B
+
+; optimize FAIL (0, intro.pas), line = 326
+	inw COUNT
+
+; optimize FAIL ('B_SYSTEM.WAITFRAME', intro.pas), line = 327
+	jsr B_SYSTEM.WAITFRAME
+
+; optimize FAIL ('B_CRT.CRT_KEYPRESSED', intro.pas), line = 328
+	jsr B_CRT.CRT_KEYPRESSED
+	.ifdef IFTMP_70
+	lda :STACKORIGIN,x
+	sta IFTMP_70
+	eif
+	dex
+	lda :STACKORIGIN+1,x
+	bne *+5
+	jmp l_092A
+
+; optimize OK (intro.pas), line = 328
+
+	mva #$01 SKIP
+
+; IfThenEpilog
+l_092A
+
+; optimize OK (intro.pas), line = 329
+
+	ldy #1
+	lda COUNT+1
+	cmp #$01
+	bne @+
+	lda COUNT
+	cmp #$C2
+@
+	seq
+	bcs @+
+	dey
+@
+	sty :STACKORIGIN+10
+	lda SKIP
+	ora :STACKORIGIN+10
+	bne *+5
+c_091B
+	jmp l_091B
+b_091B
+
+; optimize FAIL ('GFX_FADEOUT', intro.pas), line = 331
+	jsr GFX_FADEOUT
+
+; optimize OK (intro.pas), line = 332
+
+	mva #$00 MUSIC
+
+; optimize FAIL ('B_SYSTEM.WAITFRAME', intro.pas), line = 333
+	jsr B_SYSTEM.WAITFRAME
+
+; optimize FAIL ('CMC.TCMC.STOP', intro.pas), line = 334
+	lda MSX
+	ldy MSX+1
+	jsr CMC.TCMC.STOP
+
+; optimize FAIL ('B_SYSTEM.DISABLEDLI', intro.pas), line = 335
+	jsr B_SYSTEM.DISABLEDLI
+
+; optimize FAIL ('B_SYSTEM.DISABLEVBLI', intro.pas), line = 336
+	jsr B_SYSTEM.DISABLEVBLI
+
+; optimize OK (intro.pas), line = 337
+
+	mva #$00 ATARI.NMIEN
+
+; optimize OK (intro.pas), line = 338
+
+	sta ATARI.DMACTL
+
+; ---------------------  ASM Block 081  ---------------------
+
+
+      clc
+      rts
+  
+
+; -----------------------------------------------------------
+
+FREE_TOP	= $2000
+DISPLAY_LIST_ADDRESS_TITLE	= $2000
+PLAYER_ADDRESS	= $2400
+MODULE_ADDRESS	= $2C00
+PIC1_ADDRESS	= $36AC
+PIC2_ADDRESS	= $54B0
+PIC3_ADDRESS	= $72B4
+GFX_ADDRESS	= $B010
+CHARSET_ADDRESS	= $E400
+adr.GFXCOLORS	= DATAORIGIN+$0038
+.var GFXCOLORS	= adr.GFXCOLORS .word
+adr.PICCOLORS	= DATAORIGIN+$003C
+.var PICCOLORS	= adr.PICCOLORS .word
+adr.MSX	= DATAORIGIN+$0040
+.var MSX	= adr.MSX .word
+MSX.PLAYER	= DATAORIGIN+$0040
+MSX.MODUL	= DATAORIGIN+$0042
+LINE	= DATAORIGIN+$0044
+SKIP	= DATAORIGIN+$0046
+MUSIC	= DATAORIGIN+$0047
+COUNT	= DATAORIGIN+$0048
+adr.STRINGS	= DATAORIGIN+$004A
+.var STRINGS	= adr.STRINGS .word
+
+@exit
+
+@halt	ldx #0
+	txs
+
+	rts
+
+IOCB@COPY	:16 brk
+
+.local	@DEFINES
+ATARI
+.endl
+
+.endl
+
+; -----------------------------------------------------------
+
+	icl 'cpu6502.asm'
+
+; -----------------------------------------------------------
+
+.macro UNITINITIALIZATION
+
+	.ifdef MAIN.SYSTEM.@UnitInit
+	jsr MAIN.SYSTEM.@UnitInit
+	eif
+
+	.ifdef MAIN.ATARI.@UnitInit
+	jsr MAIN.ATARI.@UnitInit
+	eif
+
+	.ifdef MAIN.B_UTILS.@UnitInit
+	jsr MAIN.B_UTILS.@UnitInit
+	eif
+
+	.ifdef MAIN.B_SYSTEM.@UnitInit
+	jsr MAIN.B_SYSTEM.@UnitInit
+	eif
+
+	.ifdef MAIN.DOS.@UnitInit
+	jsr MAIN.DOS.@UnitInit
+	eif
+
+	.ifdef MAIN.STRUTILS.@UnitInit
+	jsr MAIN.STRUTILS.@UnitInit
+	eif
+
+	.ifdef MAIN.SYSUTILS.@UnitInit
+	jsr MAIN.SYSUTILS.@UnitInit
+	eif
+
+	.ifdef MAIN.B_CRT.@UnitInit
+	jsr MAIN.B_CRT.@UnitInit
+	eif
+
+	.ifdef MAIN.CMC.@UnitInit
+	jsr MAIN.CMC.@UnitInit
+	eif
+.endm
+
+	ift .SIZEOF(MAIN.SYSTEM) > 0
+	.print 'SYSTEM: ',MAIN.SYSTEM,'..',MAIN.SYSTEM+.SIZEOF(MAIN.SYSTEM)-1
+	eif
+
+	ift .SIZEOF(MAIN.ATARI) > 0
+	.print 'ATARI: ',MAIN.ATARI,'..',MAIN.ATARI+.SIZEOF(MAIN.ATARI)-1
+	eif
+
+	ift .SIZEOF(MAIN.B_UTILS) > 0
+	.print 'B_UTILS: ',MAIN.B_UTILS,'..',MAIN.B_UTILS+.SIZEOF(MAIN.B_UTILS)-1
+	eif
+
+	ift .SIZEOF(MAIN.B_SYSTEM) > 0
+	.print 'B_SYSTEM: ',MAIN.B_SYSTEM,'..',MAIN.B_SYSTEM+.SIZEOF(MAIN.B_SYSTEM)-1
+	eif
+
+	ift .SIZEOF(MAIN.DOS) > 0
+	.print 'DOS: ',MAIN.DOS,'..',MAIN.DOS+.SIZEOF(MAIN.DOS)-1
+	eif
+
+	ift .SIZEOF(MAIN.STRUTILS) > 0
+	.print 'STRUTILS: ',MAIN.STRUTILS,'..',MAIN.STRUTILS+.SIZEOF(MAIN.STRUTILS)-1
+	eif
+
+	ift .SIZEOF(MAIN.SYSUTILS) > 0
+	.print 'SYSUTILS: ',MAIN.SYSUTILS,'..',MAIN.SYSUTILS+.SIZEOF(MAIN.SYSUTILS)-1
+	eif
+
+	ift .SIZEOF(MAIN.B_CRT) > 0
+	.print 'B_CRT: ',MAIN.B_CRT,'..',MAIN.B_CRT+.SIZEOF(MAIN.B_CRT)-1
+	eif
+
+	ift .SIZEOF(MAIN.CMC) > 0
+	.print 'CMC: ',MAIN.CMC,'..',MAIN.CMC+.SIZEOF(MAIN.CMC)-1
+	eif
+
+	.print 'CODE: ',CODEORIGIN,'..',*-1
+
+DATAORIGIN
+
+.by  $28 $00 $18 $00 $2D $0C $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $04 $0A $0E $00 $04 $0A $0E $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $0F $0C $1B $0C $31 $0C  $47 $0C $5D $0C $73 $0C $89 $0C  $9F $0C $B5 $0C $CB $0C $E1 $0C
+.by  $F7 $0C $0D $0D $23 $0D $39 $0D  $4F $0D $65 $0D $7B $0D $91 $0D
+
+VARINITSIZE	= *-DATAORIGIN
+VARDATASIZE	= 398
+
+PROGRAMSTACK	= DATAORIGIN+VARDATASIZE
+
+	.print 'DATA: ',DATAORIGIN,'..',PROGRAMSTACK
+
+	run START
+
+; -----------------------------------------------------------
+
+.macro	STATICDATA
+.by  $04 $54 $52 $55 $45 $00 $05 $46  $41 $4C $53 $45 $00 $00 $00 $0A  $39 $65 $61 $72 $00 $12 $14 $11
+.by  $19 $0C $00 $14 $35 $6E $69 $74  $65 $64 $00 $25 $61 $72 $74 $68  $00 $25 $6D $70 $69 $72 $65 $00
+.by  $00 $14 $69 $73 $00 $73 $74 $69  $6C $6C $00 $66 $69 $67 $68 $74  $69 $6E $67 $0E $00 $00 $00 $14
+.by  $21 $66 $74 $65 $72 $00 $18 $00  $79 $65 $61 $72 $73 $00 $69 $6E  $00 $00 $00 $00 $00 $14 $6D $69
+.by  $6C $69 $74 $61 $72 $79 $0C $00  $79 $6F $75 $00 $68 $61 $76 $65  $00 $00 $00 $14 $66 $69 $6E $61
+.by  $6C $6C $79 $00 $66 $75 $6C $66  $69 $6C $6C $65 $64 $00 $00 $00  $00 $14 $79 $6F $75 $72 $00 $63
+.by  $6F $6E $74 $72 $61 $63 $74 $0E  $00 $00 $00 $00 $00 $00 $00 $14  $26 $6F $72 $00 $61 $00 $6C $6F
+.by  $6E $67 $00 $74 $69 $6D $65 $00  $79 $6F $75 $00 $00 $14 $68 $61  $76 $65 $00 $64 $72 $65 $61 $6D
+.by  $65 $64 $00 $61 $62 $6F $75 $74  $00 $00 $00 $14 $6F $77 $6E $00  $76 $65 $6E $74 $75 $72 $65 $00
+.by  $61 $6E $64 $00 $74 $6F $00 $00  $00 $14 $62 $65 $00 $61 $62 $6C  $65 $00 $74 $6F $00 $64 $6F $00
+.by  $00 $00 $00 $00 $00 $00 $00 $14  $77 $68 $61 $74 $65 $76 $65 $72  $00 $79 $6F $75 $00 $77 $61 $6E
+.by  $74 $0E $00 $00 $00 $14 $37 $69  $74 $68 $00 $72 $65 $63 $65 $69  $76 $65 $64 $00 $70 $61 $79 $00
+.by  $00 $00 $00 $14 $63 $68 $65 $63  $6B $00 $79 $6F $75 $00 $77 $65  $72 $65 $00 $61 $62 $6C $65 $00
+.by  $00 $14 $74 $6F $00 $62 $75 $79  $00 $63 $68 $65 $61 $70 $65 $73  $74 $00 $73 $68 $69 $70 $00 $14
+.by  $61 $6E $64 $00 $73 $74 $69 $6C  $6C $00 $68 $61 $76 $65 $00 $73  $6F $6D $65 $00 $00 $14 $63 $68
+.by  $61 $6E $67 $65 $00 $6C $65 $66  $74 $0E $00 $00 $00 $00 $00 $00  $00 $00 $00 $14 $29 $74 $00 $69
+.by  $73 $00 $75 $70 $00 $74 $6F $00  $79 $6F $75 $0C $00 $00 $00 $00  $00 $14 $77 $68 $65 $72 $65 $00
+.by  $74 $6F $00 $67 $6F $00 $6E $6F  $77 $0E $0E $0E $00 $00 $00 $6C  $6A $3B $FF $FF $6B $2B $2A $6F
+.by  $FF $70 $75 $9B $69 $2D $3D $76  $FF $63 $FF $FF $62 $78 $7A $34  $FF $33 $36 $1B $35 $32 $31 $2C
+.by  $20 $2E $6E $FF $6D $2F $81 $72  $FF $65 $79 $7F $74 $77 $71 $39  $FF $30 $37 $7E $38 $3E $FF $66
+.by  $68 $64 $FF $82 $67 $73 $61 $4C  $4A $3A $FF $FF $4B $5C $5E $4F  $FF $50 $55 $FF $49 $5F $7C $56
+.by  $FF $43 $FF $FF $42 $58 $5A $24  $FF $23 $26 $FF $25 $22 $21 $5B  $3B $5D $4E $FF $4D $3F $FF $52
+.by  $FF $45 $59 $FF $54 $57 $51 $28  $FF $29 $27 $FF $40 $FF $FF $46  $48 $44 $FF $FF $47 $53 $41 $FF
+.by  $FF $FF $FF $FF $FF $FF $FF $FF  $FF $FF $FF $FF $FF $FF $FF $FF  $FF $FF $FF $FF $FF $FF $FF $FF
+.by  $FF $FF $FF $FF $FF $FF $FF $FF  $FF $FF $FF $FF $FF $FF $FF $FF  $FF $FF $FF $FF $FF $FF $FF $FF
+.by  $FF $FF $FF $FF $FF $FF $FF $FF  $FF $FF $FF $FF $FF $FF $FF $FF  $FF $FF $FF $FF $FF $FF $FF $FF
+.by  $FF $FF $FF $FF $FF $FF $FF $FF  $FF $FF $FF $FF $FF $FF $FF $FF  $FF $FF $FF $FF $FF $FF $FF $FF
+.by  $FF $FF $FF $FF $FF $FF $FF $FF  $FF $FF $FF $FF $FF $FF $FF $FF  $FF $FF $FF $FF $FF $FF $FF $FF
+.by  $FF $FF $FF $FF $FF $FF $FF
+.endm
+
+	end

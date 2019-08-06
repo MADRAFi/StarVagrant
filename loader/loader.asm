@@ -93,7 +93,7 @@ ANTIC_MODE_WIDE equ %00100011;
 
 CHARSET_ADDRESS equ $E400; // same as in intro and game
           org CHARSET_ADDRESS
-          ins '../assets/Nvdi8.fnt'
+          ins '../StarV/assets/Nvdi8.fnt'
           org $0580
 
 introfile .byte c'INTRO   XEX' ; 11 characters ATASCII (8.3 without the dot, space padded)

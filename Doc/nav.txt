@@ -1,8 +1,0 @@
-Loc: Port Olisar    Navigation:
-Dest:               1 Grim Hex
-Distance:           2 Terra Hydrofarm
-                    3 Area18
-                    4 Levski
-                    5 Lorville
-
-              [L]aunch [B]ack

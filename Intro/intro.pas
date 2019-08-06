@@ -1,6 +1,6 @@
-{$librarypath '../../MADS/lib/'}
-{$librarypath '../../MADS/base/'}
-{$librarypath '../../MADS/blibs/'}
+{$librarypath '../../../MADS/lib/'}
+{$librarypath '../../../MADS/base/'}
+{$librarypath '../../../MADS/blibs/'}
 
 uses atari, b_utils, b_system, b_crt, sysutils, rmt; //cmc;
 

@@ -1,0 +1,9 @@
+*.a65
+*.obx
+*.xex
+*.lst
+.~*
+Release
+*.atr
+.vscode
+.DS_Store

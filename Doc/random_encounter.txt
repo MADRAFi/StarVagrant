@@ -1,6 +1,0 @@
-1 Pirates - All cargo lost, ship damaged
-2 Ship Multifuncion - Partial cargo lost (random amount of all items), ship damaged
-3 Military Escort - Money fee - Y/N ?
-4 Thugs - All money lost
-5 Encounter 1 - Pasanger gives Money, random based on distance
-6 Encounter 2 - Help, You give 50% of 1 of items in cargo.

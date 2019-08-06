@@ -1,0 +1,3997 @@
+; -----------------------------------------------------------
+; Mad Pascal Compiler version 1.6.1 [2019/08/04] for 6502
+; -----------------------------------------------------------
+
+STACKWIDTH	= 16
+CODEORIGIN	= $0C00
+
+TRUE		= 1
+FALSE		= 0
+
+; -----------------------------------------------------------
+
+	org $80
+
+fxptr	.ds 2
+
+eax	.ds 4						;8 bytes (aex + edx) -> divREAL
+edx	.ds 4
+ecx	.ds 4
+bp	.ds 2
+bp2	.ds 2
+
+ztmp
+ztmp8	.ds 1
+ztmp9	.ds 1
+ztmp10	.ds 1
+ztmp11	.ds 1
+
+TMP	.ds 2
+
+STACKORIGIN	.ds STACKWIDTH*4
+
+.print 'ZPFREE: $0000..',fxptr-1,' ; ',*,'..',$ff
+
+; -----------------------------------------------------------
+
+ax	= eax
+al	= eax
+ah	= eax+1
+
+cx	= ecx
+cl	= ecx
+ch	= ecx+1
+
+dx	= edx
+dl	= edx
+dh	= edx+1
+
+	org eax
+
+FP1MAN0	.ds 1
+FP1MAN1	.ds 1
+FP1MAN2	.ds 1
+FP1MAN3	.ds 1
+
+	org ztmp8
+
+FP1SGN	.ds 1
+FP1EXP	.ds 1
+
+	org edx
+
+FP2MAN0	.ds 1
+FP2MAN1	.ds 1
+FP2MAN2	.ds 1
+FP2MAN3	.ds 1
+
+	org ztmp10
+
+FP2SGN	.ds 1
+FP2EXP	.ds 1
+
+	org ecx
+
+FPMAN0	.ds 1
+FPMAN1	.ds 1
+FPMAN2	.ds 1
+FPMAN3	.ds 1
+
+	org bp2
+
+FPSGN	.ds 1
+FPEXP	.ds 1
+
+.local	RESOURCE
+	icl 'res6502.asm'
+
+	RCDATA 'assets/Nvdi8.fnt' CHARSET_ADDRESS 0 0 0 0 0 0 0 0
+	RCDATA 'assets/intro1.fnt' CHAR_ADDRESS_PIC1_F1 0 0 0 0 0 0 0 0
+	RCDATA 'assets/intro2.fnt' CHAR_ADDRESS_PIC2_F1 0 0 0 0 0 0 0 0
+	RCDATA 'assets/intro3.fnt' CHAR_ADDRESS_PIC3_F1 0 0 0 0 0 0 0 0
+	RCDATA 'assets/intro4.fnt' CHAR_ADDRESS_PIC4_F1 0 0 0 0 0 0 0 0
+	RCDATA 'assets/intro1.scr' SCREEN_ADDRESS_PIC1 0 0 0 0 0 0 0 0
+	RCDATA 'assets/intro2.scr' SCREEN_ADDRESS_PIC2 0 0 0 0 0 0 0 0
+	RCDATA 'assets/intro3.scr' SCREEN_ADDRESS_PIC3 0 0 0 0 0 0 0 0
+	RCDATA 'assets/intro4.scr' SCREEN_ADDRESS_PIC4 0 0 0 0 0 0 0 0
+	RCASM 'dlist_title.asm' DISPLAY_LIST_ADDRESS_TITLE 0 0 0 0 0 0 0 0
+	RCASM 'dlist_pic1.asm' DISPLAY_LIST_ADDRESS_PIC1 0 0 0 0 0 0 0 0
+	RCASM 'dlist_pic2.asm' DISPLAY_LIST_ADDRESS_PIC2 0 0 0 0 0 0 0 0
+	RCASM 'dlist_pic3.asm' DISPLAY_LIST_ADDRESS_PIC3 0 0 0 0 0 0 0 0
+	RCASM 'dlist_pic4.asm' DISPLAY_LIST_ADDRESS_PIC4 0 0 0 0 0 0 0 0
+	RMTPLAY 'assets/intro.feat' PLAYER_ADDRESS 0 0 0 0 0 0 0 0
+	RMT 'assets/intro.rmt' MODULE_ADDRESS 0 0 0 0 0 0 0 0
+.endl
+
+; -----------------------------------------------------------
+
+	org CODEORIGIN
+
+	STATICDATA
+
+START
+	tsx
+	stx MAIN.@halt+1
+
+	.ifdef fmulinit
+	fmulinit
+	eif
+
+	ift DATAORIGIN+VARINITSIZE > $BFFF
+	ert 'Invalid memory address range ',DATAORIGIN+VARINITSIZE
+	els
+	@fill #DATAORIGIN+VARINITSIZE #VARDATASIZE-VARINITSIZE #0
+	eif
+
+	ldx #$0f
+	mva:rpl $340,x MAIN.IOCB@COPY,x-
+
+	inx		; X = 0 !!!
+	stx bp		; lo BP = 0
+
+	UNITINITIALIZATION
+
+.local	MAIN						; PROCEDURE
+
+	jmp l_01CF
+
+; -----------------------------------------------------------
+
+.local	SYSTEM						; UNIT
+
+.local	PEEK						; FUNCTION | ASSEMBLER | REGISTER
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x A
+	mva :STACKORIGIN+STACKWIDTH,x A+1
+	dex						; sub bx, 1
+
+
+; ---------------------  ASM Block 004  ---------------------
+
+	ldy #0
+	mva (edx),y Result
+
+
+@exit
+
+; -----------------------------------------------------------
+
+; Push BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+
+	inx						; add bx, 1
+	mva RESULT :STACKORIGIN,x
+
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+
+; -----------------------------------------------------------
+
+A	= edx
+RESULT	= DATAORIGIN+$000B
+
+@VarData	= RESULT
+@VarDataSize	= 1
+
+	rts						; ret
+.endl
+
+.local	POKE						; PROCEDURE | ASSEMBLER | REGISTER
+
+; -----------------------------------------------------------
+
+; Generate Assignment for BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+	mva :STACKORIGIN,x VALUE
+	dex						; sub bx, 1
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x A
+	mva :STACKORIGIN+STACKWIDTH,x A+1
+	dex						; sub bx, 1
+
+
+; ---------------------  ASM Block 021  ---------------------
+
+	ldy #0
+	mva value (edx),y
+
+
+; -----------------------------------------------------------
+
+A	= edx
+VALUE	= ecx
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	FILLBYTE_01F7					; PROCEDURE | ASSEMBLER | OVERLOAD | REGISTER
+
+; -----------------------------------------------------------
+
+; Generate Assignment for BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+	mva :STACKORIGIN,x VALUE
+	dex						; sub bx, 1
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x COUNT
+	mva :STACKORIGIN+STACKWIDTH,x COUNT+1
+	dex						; sub bx, 1
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x A
+	mva :STACKORIGIN+STACKWIDTH,x A+1
+	dex						; sub bx, 1
+
+
+; ---------------------  ASM Block 029  ---------------------
+
+	jsr @fill
+
+
+; -----------------------------------------------------------
+
+A	= edx
+COUNT	= ecx
+VALUE	= eax
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	MOVE_0201					; PROCEDURE | ASSEMBLER | OVERLOAD | REGISTER
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x COUNT
+	mva :STACKORIGIN+STACKWIDTH,x COUNT+1
+	dex						; sub bx, 1
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x DEST
+	mva :STACKORIGIN+STACKWIDTH,x DEST+1
+	dex						; sub bx, 1
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x SOURCE
+	mva :STACKORIGIN+STACKWIDTH,x SOURCE+1
+	dex						; sub bx, 1
+
+
+; ---------------------  ASM Block 031  ---------------------
+
+	jsr @move
+
+
+; -----------------------------------------------------------
+
+SOURCE	= edx
+DEST	= ecx
+COUNT	= eax
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	MOVE_020B					; PROCEDURE | ASSEMBLER | OVERLOAD | REGISTER
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x COUNT
+	mva :STACKORIGIN+STACKWIDTH,x COUNT+1
+	dex						; sub bx, 1
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x DEST
+	mva :STACKORIGIN+STACKWIDTH,x DEST+1
+	dex						; sub bx, 1
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x SOURCE
+	mva :STACKORIGIN+STACKWIDTH,x SOURCE+1
+	dex						; sub bx, 1
+
+
+; ---------------------  ASM Block 033  ---------------------
+
+	jsr @move
+
+
+; -----------------------------------------------------------
+
+SOURCE	= edx
+DEST	= ecx
+COUNT	= eax
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+; -----------------------------------------------------------
+
+M_PI_2	= $0648
+D_PI_2	= $0192
+D_PI_180	= $0004
+MGTIA	= $0000
+MVBXE	= $0080
+VBXE_XDLADR	= $0000
+VBXE_BCBADR	= $0100
+VBXE_MAPADR	= $1000
+VBXE_OVRADR	= $5000
+VBXE_WINDOW	= $B000
+IDLI	= $0000
+IVBL	= $0001
+CH_DELCHR	= $00FE
+CH_ENTER	= $009B
+CH_ESC	= $001B
+CH_CURS_UP	= $001C
+CH_CURS_DOWN	= $001D
+CH_CURS_LEFT	= $001E
+CH_CURS_RIGHT	= $001F
+CH_TAB	= $007F
+CH_EOL	= $009B
+CH_CLR	= $007D
+CH_BELL	= $00FD
+CH_DEL	= $007E
+CH_DELLINE	= $009C
+CH_INSLINE	= $009D
+COLOR_BLACK	= $0000
+COLOR_WHITE	= $000E
+COLOR_RED	= $0032
+COLOR_CYAN	= $0096
+COLOR_VIOLET	= $0068
+COLOR_GREEN	= $00C4
+COLOR_BLUE	= $0074
+COLOR_YELLOW	= $00EE
+COLOR_ORANGE	= $004A
+COLOR_BROWN	= $00E4
+COLOR_LIGHTRED	= $003C
+COLOR_GRAY1	= $0004
+COLOR_GRAY2	= $0006
+COLOR_GRAY3	= $000A
+COLOR_LIGHTGREEN	= $00CC
+COLOR_LIGHTBLUE	= $007C
+FMOPENREAD	= $0004
+FMOPENWRITE	= $0008
+FMOPENAPPEND	= $0009
+FMOPENREADWRITE	= $000C
+SCREENWIDTH	= DATAORIGIN+$0000
+SCREENHEIGHT	= DATAORIGIN+$0002
+DATESEPARATOR	= DATAORIGIN+$0004
+FILEMODE	= DATAORIGIN+$0005
+SCREENMODE	= DATAORIGIN+$0006
+IORESULT	= DATAORIGIN+$0007
+EOLN	= DATAORIGIN+$0008
+RNDSEED	= DATAORIGIN+$0009
+
+.endl							; UNIT SYSTEM
+
+; -----------------------------------------------------------
+
+.local	ATARI						; UNIT
+
+; -----------------------------------------------------------
+
+RTCLOK	= $0012
+ATRACT	= $004D
+LMARGIN	= $0052
+RMARGIN	= $0053
+ROWCRS	= $0054
+COLCRS	= $0055
+DINDEX	= $0057
+SAVMSC	= $0058
+VDSLST	= $0200
+SDLSTL	= $0230
+TXTROW	= $0290
+TXTCOL	= $0291
+TINDEX	= $0293
+TXTMSC	= $0294
+SDMCTL	= $022F
+GPRIOR	= $026F
+CRSINH	= $02F0
+CHACT	= $02F3
+CHBAS	= $02F4
+CH	= $02FC
+PCOLR0	= $02C0
+PCOLR1	= $02C1
+PCOLR2	= $02C2
+PCOLR3	= $02C3
+COLOR0	= $02C4
+COLOR1	= $02C5
+COLOR2	= $02C6
+COLOR3	= $02C7
+COLOR4	= $02C8
+COLBAKS	= $02C8
+HPOSP0	= $D000
+HPOSP1	= $D001
+HPOSP2	= $D002
+HPOSP3	= $D003
+HPOSM0	= $D004
+HPOSM1	= $D005
+HPOSM2	= $D006
+HPOSM3	= $D007
+SIZEP0	= $D008
+SIZEP1	= $D009
+SIZEP2	= $D00A
+SIZEP3	= $D00B
+SIZEM	= $D00C
+GRAFP0	= $D00D
+GRAFP1	= $D00E
+GRAFP2	= $D00F
+GRAFP3	= $D010
+GRAFM	= $D011
+P0PF	= $D004
+PAL	= $D014
+COLPM0	= $D012
+COLPM1	= $D013
+COLPM2	= $D014
+COLPM3	= $D015
+COLPF0	= $D016
+COLPF1	= $D017
+COLPF2	= $D018
+COLPF3	= $D019
+COLBK	= $D01A
+PRIOR	= $D01B
+GRACTL	= $D01D
+HITCLR	= $D01E
+AUDF1	= $D200
+AUDC1	= $D201
+AUDF2	= $D202
+AUDC2	= $D203
+AUDF3	= $D204
+AUDC3	= $D205
+AUDF4	= $D206
+AUDC4	= $D207
+AUDCTL	= $D208
+SKSTAT	= $D20F
+PORTB	= $D301
+DMACTL	= $D400
+CHACTL	= $D401
+DLISTL	= $D402
+HSCROL	= $D404
+VSCROL	= $D405
+PMBASE	= $D407
+CHBASE	= $D409
+WSYNC	= $D40A
+VCOUNT	= $D40B
+PENH	= $D40C
+PENV	= $D40D
+NMIEN	= $D40E
+
+.endl							; UNIT ATARI
+
+; -----------------------------------------------------------
+
+.local	B_UTILS						; UNIT
+
+; -----------------------------------------------------------
+
+
+.endl							; UNIT B_UTILS
+
+; -----------------------------------------------------------
+
+.local	B_SYSTEM					; UNIT
+
+.local	SYSTEMOFF_0225					; PROCEDURE | ASSEMBLER | OVERLOAD
+
+; -----------------------------------------------------------
+
+; Generate Assignment for BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+	mva :STACKORIGIN,x PORT_B
+	dex						; sub bx, 1
+
+
+; ---------------------  ASM Block 047  ---------------------
+
+
+		;lda:cmp:req 20 ;; removed due to problem with nmien = 0 already set
+		sei
+		mva #0 NMIEN
+
+		mva port_b PORTB
+		mwa #__nmi NMIVEC
+
+		lda <__iret
+		sta IRQVEC
+		sta __vblvec
+		sta __dlivec
+
+		lda >__iret
+		sta IRQVEC+1
+		sta __vblvec+1
+		sta __dlivec+1
+
+		mva #$40 NMIEN
+		sta __nmien
+		bne __stop
+__nmi
+		bit NMIST
+		bpl __vbl
+		jmp __dlivec
+.def :__dlivec = *-2
+		rti
+__vbl
+		inc rtclok+2
+		bne __vblvec-1
+		inc rtclok+1
+		bne __vblvec-1
+		inc rtclok
+		jmp __vblvec
+.def :__vblvec = *-2
+.def :__iret
+    	rti
+__stop
+
+
+; -----------------------------------------------------------
+
+PORT_B	= DATAORIGIN+$000D
+
+@VarData	= PORT_B
+@VarDataSize	= 1
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	SYSTEMOFF_0229					; PROCEDURE | OVERLOAD
+
+
+
+
+; optimize FAIL ('SYSTEMOFF_0225', B_SYSTEM), line = 137
+	inx
+	mva #$FE :STACKORIGIN,x
+	jsr SYSTEMOFF_0225
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	ENABLEVBLI					; PROCEDURE | ASSEMBLER
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x VBLPTR
+	mva :STACKORIGIN+STACKWIDTH,x VBLPTR+1
+	dex						; sub bx, 1
+
+
+; ---------------------  ASM Block 049  ---------------------
+
+
+		lda:cmp:req 20
+		mva #0 NMIEN
+		mwa vblptr __vblvec
+		lda __nmien
+		ora #$40
+		sta NMIEN
+		sta __nmien
+
+
+; -----------------------------------------------------------
+
+VBLPTR	= DATAORIGIN+$000E
+
+@VarData	= VBLPTR
+@VarDataSize	= 2
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	DISABLEVBLI					; PROCEDURE | ASSEMBLER
+
+
+; ---------------------  ASM Block 050  ---------------------
+
+
+		lda:cmp:req 20
+		mva #0 NMIEN
+		mwa #__iret __vblvec
+		lda __nmien
+		ora #$40
+		sta NMIEN
+		sta __nmien
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	ENABLEDLI					; PROCEDURE | ASSEMBLER
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x DLIPTR
+	mva :STACKORIGIN+STACKWIDTH,x DLIPTR+1
+	dex						; sub bx, 1
+
+
+; ---------------------  ASM Block 051  ---------------------
+
+
+		lda:cmp:req 20
+		mva #0 NMIEN
+		mwa dliptr __dlivec
+		mva #$c0 NMIEN
+		sta __nmien
+
+
+; -----------------------------------------------------------
+
+DLIPTR	= DATAORIGIN+$0010
+
+@VarData	= DLIPTR
+@VarDataSize	= 2
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	DISABLEDLI					; PROCEDURE | ASSEMBLER
+
+
+; ---------------------  ASM Block 052  ---------------------
+
+
+		lda:cmp:req 20
+		mva #$40 NMIEN
+		sta __nmien
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	WAITFRAME					; PROCEDURE | ASSEMBLER
+
+
+; ---------------------  ASM Block 053  ---------------------
+
+
+    lda:cmp:req rtclok+2
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	WAITFRAMES					; PROCEDURE
+
+; -----------------------------------------------------------
+
+; Generate Assignment for BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+	mva :STACKORIGIN,x FRAMES
+	dex						; sub bx, 1
+
+
+
+
+; --- WhileProlog
+l_0241
+
+; optimize OK (B_SYSTEM), line = 210
+
+	lda FRAMES
+	cmp #$00
+	seq
+	bcs @+
+	jmp l_0250
+@
+
+; optimize FAIL ('WAITFRAME', B_SYSTEM), line = 211
+	jsr WAITFRAME
+
+; optimize FAIL (0, B_SYSTEM), line = 212
+	dec FRAMES
+
+; --- WhileDoEpilog
+c_0241
+	jmp l_0241
+l_0250
+b_0241
+
+; -----------------------------------------------------------
+
+FRAMES	= DATAORIGIN+$0012
+
+@VarData	= FRAMES
+@VarDataSize	= 1
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	SETCHARSET					; PROCEDURE
+
+; -----------------------------------------------------------
+
+; Generate Assignment for BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+	mva :STACKORIGIN,x MSB
+	dex						; sub bx, 1
+
+
+
+
+; optimize OK (B_SYSTEM), line = 218
+
+	mva MSB ATARI.CHBASE
+
+; -----------------------------------------------------------
+
+MSB	= DATAORIGIN+$0013
+
+@VarData	= MSB
+@VarDataSize	= 1
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+; -----------------------------------------------------------
+
+__NMIEN	= DATAORIGIN+$000C
+PORTB_SELFTEST_OFF	= $0080
+PORTB_BASIC_OFF	= $0002
+PORTB_SYSTEM_ON	= $0001
+
+.endl							; UNIT B_SYSTEM
+
+; -----------------------------------------------------------
+
+.local	DOS						; UNIT
+
+; -----------------------------------------------------------
+
+PALNTSC	= $D014
+
+.endl							; UNIT DOS
+
+; -----------------------------------------------------------
+
+.local	STRUTILS					; UNIT
+
+; -----------------------------------------------------------
+
+
+.endl							; UNIT STRUTILS
+
+; -----------------------------------------------------------
+
+.local	SYSUTILS					; UNIT
+
+; -----------------------------------------------------------
+
+FAREADONLY	= $0001
+FAHIDDEN	= $0002
+FASYSFILE	= $0004
+FAVOLUMEID	= $0008
+FADIRECTORY	= $0010
+FAARCHIVE	= $0020
+FAANYFILE	= $003F
+
+.endl							; UNIT SYSUTILS
+
+; -----------------------------------------------------------
+
+.local	B_CRT						; UNIT
+
+.local	CRT_INIT_027D					; PROCEDURE | OVERLOAD
+
+; -----------------------------------------------------------
+
+; Generate Assignment for BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+	mva :STACKORIGIN,x HEIGHT
+	dex						; sub bx, 1
+
+; -----------------------------------------------------------
+
+; Generate Assignment for BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+	mva :STACKORIGIN,x WIDTH
+	dex						; sub bx, 1
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x VRAM_ADDRESS
+	mva :STACKORIGIN+STACKWIDTH,x VRAM_ADDRESS+1
+	dex						; sub bx, 1
+
+
+
+
+; optimize OK (B_CRT), line = 483
+
+	mva VRAM_ADDRESS CRT_VRAM
+	mva VRAM_ADDRESS+1 CRT_VRAM+1
+
+; optimize OK (B_CRT), line = 484
+
+	mva WIDTH CRT_SCREENWIDTH
+
+; optimize OK (B_CRT), line = 485
+
+	mva HEIGHT CRT_SCREENHEIGHT
+
+; optimize OK (B_CRT), line = 486
+
+	lda HEIGHT
+	sta :ecx
+	lda WIDTH
+	sta :eax
+	.ifdef fmulinit
+	fmulu_8
+	els
+	imulCL
+	eif
+	lda :eax
+	sta CRT_SIZE
+	lda :eax+1
+	sta CRT_SIZE+1
+
+; optimize OK (B_CRT), line = 487
+
+	mva CRT_VRAM CRT_CURSOR
+	mva CRT_VRAM+1 CRT_CURSOR+1
+
+; optimize OK (B_CRT), line = 488
+
+	mva #$00 CRT_LEFTMARGIN
+
+; -----------------------------------------------------------
+
+VRAM_ADDRESS	= DATAORIGIN+$001D
+WIDTH	= DATAORIGIN+$001F
+HEIGHT	= DATAORIGIN+$0020
+
+@VarData	= VRAM_ADDRESS
+@VarDataSize	= 4
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	CRT_INIT_02B0					; PROCEDURE | OVERLOAD
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x VRAM_ADDRESS
+	mva :STACKORIGIN+STACKWIDTH,x VRAM_ADDRESS+1
+	dex						; sub bx, 1
+
+
+
+
+; optimize FAIL ('CRT_INIT_027D', B_CRT), line = 493
+	inx
+	mva VRAM_ADDRESS :STACKORIGIN,x
+	mva VRAM_ADDRESS+1 :STACKORIGIN+STACKWIDTH,x
+	inx
+	mva #$28 :STACKORIGIN,x
+	inx
+	mva #$18 :STACKORIGIN,x
+	jsr CRT_INIT_027D
+
+; -----------------------------------------------------------
+
+VRAM_ADDRESS	= DATAORIGIN+$0021
+
+@VarData	= VRAM_ADDRESS
+@VarDataSize	= 2
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	CRT_GOTOXY					; PROCEDURE
+
+; -----------------------------------------------------------
+
+; Generate Assignment for BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+	mva :STACKORIGIN,x Y
+	dex						; sub bx, 1
+
+; -----------------------------------------------------------
+
+; Generate Assignment for BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+	mva :STACKORIGIN,x X
+	dex						; sub bx, 1
+
+
+
+
+; optimize OK (B_CRT), line = 516
+
+	lda CRT_SCREENWIDTH
+	sta :ecx
+	lda Y
+	sta :eax
+	.ifdef fmulinit
+	fmulu_8
+	els
+	imulCL
+	eif
+	lda :eax
+	add X
+	sta :STACKORIGIN+9
+	lda :eax+1
+	adc #$00
+	sta :STACKORIGIN+STACKWIDTH+9
+	lda :STACKORIGIN+9
+	add CRT_VRAM
+	sta CRT_CURSOR
+	lda :STACKORIGIN+STACKWIDTH+9
+	adc CRT_VRAM+1
+	sta CRT_CURSOR+1
+
+; -----------------------------------------------------------
+
+X	= DATAORIGIN+$0023
+Y	= DATAORIGIN+$0024
+
+@VarData	= X
+@VarDataSize	= 2
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	CRT_WRITE_02DD					; PROCEDURE | OVERLOAD
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x S
+	mva :STACKORIGIN+STACKWIDTH,x S+1
+	dex						; sub bx, 1
+	@move S #adr.S #256
+	mwa #adr.S S
+
+
+
+
+; optimize OK (B_CRT), line = 531
+
+	lda S
+	add #$01
+	sta :edx
+	lda S+1
+	adc #$00
+	sta :edx+1
+	lda adr.S+$00
+	sta :eax
+	lda CRT_CURSOR
+	sta :ecx
+	lda CRT_CURSOR+1
+	sta :ecx+1
+	lda #$00
+	sta :eax+1
+	jsr @move
+
+; optimize OK (B_CRT), line = 532
+
+	lda CRT_CURSOR
+	add adr.S+$00
+	sta CRT_CURSOR
+	lda CRT_CURSOR+1
+	adc #$00
+	sta CRT_CURSOR+1
+
+; -----------------------------------------------------------
+
+adr.S	= DATAORIGIN+$0025
+.var S	= adr.S .word
+
+@VarData	= S
+@VarDataSize	= 256
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	CRT_WRITEXY					; PROCEDURE
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x S
+	mva :STACKORIGIN+STACKWIDTH,x S+1
+	dex						; sub bx, 1
+	@move S #adr.S #256
+	mwa #adr.S S
+
+; -----------------------------------------------------------
+
+; Generate Assignment for BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+	mva :STACKORIGIN,x Y
+	dex						; sub bx, 1
+
+; -----------------------------------------------------------
+
+; Generate Assignment for BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+	mva :STACKORIGIN,x X
+	dex						; sub bx, 1
+
+
+
+
+; optimize FAIL ('CRT_GOTOXY', B_CRT), line = 568
+	inx
+	mva X :STACKORIGIN,x
+	inx
+	mva Y :STACKORIGIN,x
+	jsr CRT_GOTOXY
+
+; optimize FAIL ('CRT_WRITE_02DD', B_CRT), line = 569
+	inx
+	mva S :STACKORIGIN,x
+	mva S+1 :STACKORIGIN+STACKWIDTH,x
+	jsr CRT_WRITE_02DD
+
+; -----------------------------------------------------------
+
+X	= DATAORIGIN+$0125
+Y	= DATAORIGIN+$0126
+adr.S	= DATAORIGIN+$0127
+.var S	= adr.S .word
+
+@VarData	= X
+@VarDataSize	= 258
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	CRT_KEYPRESSED					; FUNCTION
+
+
+
+
+; optimize OK (B_CRT), line = 592
+
+	mva #$00 RESULT
+
+; optimize OK (B_CRT), line = 593
+
+	lda ATARI.SKSTAT
+	ldy #1
+	and #$04
+	beq @+
+	dey
+@
+	.ifdef IFTMP_38
+	sty IFTMP_38
+	eif
+	tya
+	jeq l_0324
+
+; optimize OK (B_CRT), line = 593
+
+	mva #$01 RESULT
+l_0324
+
+@exit
+
+; -----------------------------------------------------------
+
+; Push BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+
+	inx						; add bx, 1
+	mva RESULT :STACKORIGIN,x
+
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+
+; -----------------------------------------------------------
+
+RESULT	= DATAORIGIN+$0227
+
+@VarData	= RESULT
+@VarDataSize	= 1
+
+	rts						; ret
+.endl
+
+.local	CRT_WRITECENTERED_0337				; PROCEDURE | OVERLOAD
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x S
+	mva :STACKORIGIN+STACKWIDTH,x S+1
+	dex						; sub bx, 1
+	@move S #adr.S #256
+	mwa #adr.S S
+
+; -----------------------------------------------------------
+
+; Generate Assignment for BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+	mva :STACKORIGIN,x ROW
+	dex						; sub bx, 1
+
+
+
+
+; optimize OK (B_CRT), line = 690
+
+	lda CRT_SCREENWIDTH
+	lsr @
+	sta :STACKORIGIN+9
+	mwa S :bp2
+	ldy #0
+	lda (:bp2),y
+	lsr @
+	sta :STACKORIGIN+10
+	lda :STACKORIGIN+9
+	sub :STACKORIGIN+10
+	sub #$01
+	sta OFF
+
+; optimize OK (B_CRT), line = 691
+
+	lda CRT_CURSOR
+	add OFF
+	sta CRT_CURSOR
+	lda CRT_CURSOR+1
+	adc #$00
+	sta CRT_CURSOR+1
+
+; optimize FAIL ('CRT_GOTOXY', B_CRT), line = 692
+	inx
+	mva OFF :STACKORIGIN,x
+	inx
+	mva ROW :STACKORIGIN,x
+	jsr CRT_GOTOXY
+
+; optimize FAIL ('CRT_WRITE_02DD', B_CRT), line = 693
+	inx
+	mva S :STACKORIGIN,x
+	mva S+1 :STACKORIGIN+STACKWIDTH,x
+	jsr CRT_WRITE_02DD
+
+; -----------------------------------------------------------
+
+ROW	= DATAORIGIN+$0228
+adr.S	= DATAORIGIN+$0229
+.var S	= adr.S .word
+OFF	= DATAORIGIN+$0329
+
+@VarData	= ROW
+@VarDataSize	= 258
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	CRT_CLEARROW_0363				; PROCEDURE | OVERLOAD
+
+; -----------------------------------------------------------
+
+; Generate Assignment for BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+	mva :STACKORIGIN,x ROW
+	dex						; sub bx, 1
+
+
+
+
+; optimize FAIL ('CRT_GOTOXY', B_CRT), line = 717
+	inx
+	mva CRT_LEFTMARGIN :STACKORIGIN,x
+	inx
+	mva ROW :STACKORIGIN,x
+	jsr CRT_GOTOXY
+
+; optimize OK (B_CRT), line = 718
+
+	lda CRT_SCREENWIDTH
+	sta :ecx
+	lda ROW
+	sta :eax
+	.ifdef fmulinit
+	fmulu_8
+	els
+	imulCL
+	eif
+	lda CRT_VRAM
+	add :eax
+	sta :edx
+	lda CRT_VRAM+1
+	adc :eax+1
+	sta :edx+1
+	lda CRT_SCREENWIDTH
+	sta :ecx
+	lda #$00
+	sta :ecx+1
+	sta :eax
+	jsr @fill
+
+; -----------------------------------------------------------
+
+ROW	= DATAORIGIN+$032A
+
+@VarData	= ROW
+@VarDataSize	= 1
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	CRT_INVERT					; PROCEDURE
+
+; -----------------------------------------------------------
+
+; Generate Assignment for BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+	mva :STACKORIGIN,x WIDTH
+	dex						; sub bx, 1
+
+; -----------------------------------------------------------
+
+; Generate Assignment for BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+	mva :STACKORIGIN,x Y
+	dex						; sub bx, 1
+
+; -----------------------------------------------------------
+
+; Generate Assignment for BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+	mva :STACKORIGIN,x X
+	dex						; sub bx, 1
+
+
+
+
+; optimize OK (B_CRT), line = 734
+
+	lda CRT_SCREENWIDTH
+	sta :ecx
+	lda Y
+	sta :eax
+	.ifdef fmulinit
+	fmulu_8
+	els
+	imulCL
+	eif
+	lda CRT_VRAM
+	add :eax
+	sta :STACKORIGIN+9
+	lda CRT_VRAM+1
+	adc :eax+1
+	sta :STACKORIGIN+STACKWIDTH+9
+	lda :STACKORIGIN+9
+	add X
+	sta CURSOR
+	lda :STACKORIGIN+STACKWIDTH+9
+	adc #$00
+	sta CURSOR+1
+
+; --- WhileProlog
+l_03A8
+
+; optimize OK (B_CRT), line = 735
+
+	lda WIDTH
+	cmp #$00
+	seq
+	bcs @+
+	jmp l_03B7
+@
+
+; optimize OK (B_CRT), line = 736
+
+	lda CURSOR+1
+	sta :bp+1
+	ldy CURSOR
+	lda (:bp),y
+	eor #$80
+	sta :STACKORIGIN+10
+	lda CURSOR+1
+	sta :bp+1
+	lda :STACKORIGIN+10
+	sta (:bp),y
+
+; optimize FAIL (0, B_CRT), line = 737
+	dec WIDTH
+
+; optimize FAIL (0, B_CRT), line = 738
+	inw CURSOR
+
+; --- WhileDoEpilog
+c_03A8
+	jmp l_03A8
+l_03B7
+b_03A8
+
+; -----------------------------------------------------------
+
+X	= DATAORIGIN+$032B
+Y	= DATAORIGIN+$032C
+WIDTH	= DATAORIGIN+$032D
+CURSOR	= DATAORIGIN+$032E
+
+@VarData	= X
+@VarDataSize	= 5
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+; -----------------------------------------------------------
+
+DEFAULT_SCREENWIDTH	= $0028
+DEFAULT_SCREENHEIGHT	= $0018
+CHAR_RETURN	= $009B
+CHAR_ESCAPE	= $001B
+CHAR_BACKSPACE	= $007E
+CHAR_TAB	= $007F
+CHAR_INVERSE	= $0081
+CHAR_CAPS	= $0082
+ICHAR_RETURN	= $00DB
+ICHAR_ESCAPE	= $005B
+ICHAR_BACKSPACE	= $007E
+ICHAR_TAB	= $007F
+ICHAR_INVERSE	= $00C1
+ICHAR_CAPS	= $00C2
+adr.CRT_KEYCODE	= CODEORIGIN+$01C8
+.var CRT_KEYCODE	= adr.CRT_KEYCODE .word
+CRT_VRAM	= DATAORIGIN+$0014
+CRT_SIZE	= DATAORIGIN+$0016
+CRT_SCREENWIDTH	= DATAORIGIN+$0018
+CRT_SCREENHEIGHT	= DATAORIGIN+$0019
+CRT_CURSOR	= DATAORIGIN+$001A
+CRT_LEFTMARGIN	= DATAORIGIN+$001C
+KBCODE	= $D209
+CONSOL	= $D01F
+
+.endl							; UNIT B_CRT
+
+; -----------------------------------------------------------
+
+.local	RMT						; UNIT
+
+.local	TRMT.INIT					; PROCEDURE | ASSEMBLER
+	sta TRMT
+	sty TRMT+1
+	sta PLAYER
+	sty PLAYER+1
+	add #2
+	scc
+	iny
+	sta MODUL
+	sty MODUL+1
+
+; -----------------------------------------------------------
+
+; Generate Assignment for BYTE / CHAR / SHORTINT / BOOLEAN
+; as Pointer
+	mva :STACKORIGIN,x A
+	dex						; sub bx, 1
+
+
+; ---------------------  ASM Block 072  ---------------------
+
+	txa:pha
+
+	mwa TRMT :bp2
+
+	ldy #0
+	lda (:bp2),y
+	add #3		; jsr player+3
+	sta adr
+	iny
+	lda (:bp2),y
+	adc #0
+	sta adr+1
+
+	iny
+	lda (:bp2),y
+	tax		; low byte of RMT module to X reg
+	iny
+	lda (:bp2),y
+	tay		; hi byte of RMT module to Y reg
+
+	lda a		; starting song line 0-255 to A reg
+	jsr $ffff
+adr	equ *-2
+
+	pla:tax
+
+
+; -----------------------------------------------------------
+
+TRMT	= DATAORIGIN+$0330
+A	= DATAORIGIN+$0332
+PLAYER	= DATAORIGIN+$0333
+MODUL	= DATAORIGIN+$0335
+
+@VarData	= TRMT
+@VarDataSize	= 7
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	TRMT.PLAY					; PROCEDURE | ASSEMBLER
+	sta TRMT
+	sty TRMT+1
+	sta PLAYER
+	sty PLAYER+1
+	add #2
+	scc
+	iny
+	sta MODUL
+	sty MODUL+1
+
+
+; ---------------------  ASM Block 074  ---------------------
+
+	txa:pha
+
+	mwa TRMT ptr
+
+	ldy #1
+cptr	lda $ffff,y
+ptr	equ *-2
+	sta adr,y
+	dey
+	bpl cptr
+
+	jsr $ffff
+adr	equ *-2
+
+	pla:tax
+
+
+; -----------------------------------------------------------
+
+TRMT	= DATAORIGIN+$033B
+PLAYER	= DATAORIGIN+$033D
+MODUL	= DATAORIGIN+$033F
+
+@VarData	= TRMT
+@VarDataSize	= 6
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	TRMT.STOP					; PROCEDURE | ASSEMBLER
+	sta TRMT
+	sty TRMT+1
+	sta PLAYER
+	sty PLAYER+1
+	add #2
+	scc
+	iny
+	sta MODUL
+	sty MODUL+1
+
+
+; ---------------------  ASM Block 075  ---------------------
+
+	txa:pha
+
+	mwa TRMT :bp2
+
+	ldy #0
+	lda (:bp2),y
+	add #9		; jsr player+9
+	sta adr
+	iny
+	lda (:bp2),y
+	adc #0
+	sta adr+1
+
+	jsr $ffff
+adr	equ *-2
+
+	pla:tax
+
+
+; -----------------------------------------------------------
+
+TRMT	= DATAORIGIN+$0341
+PLAYER	= DATAORIGIN+$0343
+MODUL	= DATAORIGIN+$0345
+
+@VarData	= TRMT
+@VarDataSize	= 6
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+; -----------------------------------------------------------
+
+
+.endl							; UNIT RMT
+
+.local	DLI_PIC1_F1					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 076  ---------------------
+
+
+        pha ; store registers
+        ;sta ATARI.WSYNC
+        mva adr.gfxcolors ATARI.colpf0
+        mva adr.gfxcolors+1 ATARI.colpf1
+        mva adr.gfxcolors+2 ATARI.colpf2
+        mva adr.gfxcolors+3 ATARI.colbk
+        
+        ;sta ATARI.WSYNC
+        mva #.hi(CHAR_ADDRESS_PIC1_F1) ATARI.chbase
+
+        mwa #dli_pic1_f2 __dlivec
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC1_F2					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 077  ---------------------
+
+
+        pha ; store registers
+        sta ATARI.WSYNC
+        mva #.hi(CHAR_ADDRESS_PIC1_F2) ATARI.chbase
+
+        mwa #dli_pic1_f3 __dlivec
+
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC1_F3					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 078  ---------------------
+
+
+        pha ; store registers
+        sta ATARI.WSYNC
+        mva #.hi(CHAR_ADDRESS_PIC1_F3) ATARI.chbase
+
+        mwa #dli_pic1_f4 __dlivec
+
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC1_F4					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 079  ---------------------
+
+
+        pha ; store registers
+        sta ATARI.WSYNC
+        mva #.hi(CHAR_ADDRESS_PIC1_F4) ATARI.chbase
+
+        mwa #dli_pic1_f5 __dlivec
+
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC1_F5					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 080  ---------------------
+
+
+        pha ; store registers
+        sta ATARI.WSYNC
+        mva #.hi(CHAR_ADDRESS_PIC1_F5) ATARI.chbase
+
+        mwa #dli_pic1_f6 __dlivec
+
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC1_F6					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 081  ---------------------
+
+
+        pha ; store registers
+        sta ATARI.WSYNC
+        mva #.hi(CHAR_ADDRESS_PIC1_F6) ATARI.chbase
+
+        mwa #dli_pic1_f7 __dlivec
+
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC1_F7					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 082  ---------------------
+
+
+        pha ; store registers
+        sta ATARI.WSYNC
+        mva #.hi(CHAR_ADDRESS_PIC1_F7) ATARI.chbase
+
+        mwa #dli_pic1_f8 __dlivec
+
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC1_F8					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 083  ---------------------
+
+
+        pha ; store registers
+        sta ATARI.WSYNC
+        mva #.hi(CHAR_ADDRESS_PIC1_F8) ATARI.chbase
+
+        mwa #dli_pic1_f9 __dlivec
+
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC1_F9					; PROCEDURE | INTERRUPT
+
+
+
+
+; ---------------------  ASM Block 084  ---------------------
+
+
+        phr ; store registers
+        ;sta ATARI.WSYNC
+        mva adr.txtcolors ATARI.colpf0
+        mva #00 ATARI.colpf2
+        mva #00 ATARI.colbk
+        mva adr.txtcolors+1 ATARI.colpf1
+        
+        ;sta ATARI.WSYNC
+        mva #.hi(CHARSET_ADDRESS) ATARI.chbase
+;        sta ATARI.WSYNC
+        
+        ;mwa #dli_pic1_f1 __dlivec
+    
+
+; ---------------------  ASM Block 085  ---------------------
+
+
+        plr ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC2_F1					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 086  ---------------------
+
+
+        pha ; store registers
+        ;sta ATARI.WSYNC
+        mva adr.gfxcolors ATARI.colpf0
+        mva adr.gfxcolors+1 ATARI.colpf1
+        mva adr.gfxcolors+2 ATARI.colpf2
+        mva adr.gfxcolors+3 ATARI.colbk
+        
+        ;sta ATARI.WSYNC
+        mva #.hi(CHAR_ADDRESS_PIC2_F1) ATARI.chbase
+
+        mwa #dli_pic2_f2 __dlivec
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC2_F2					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 087  ---------------------
+
+
+        pha ; store registers
+        sta ATARI.WSYNC
+        mva #.hi(CHAR_ADDRESS_PIC2_F2) ATARI.chbase
+
+        mwa #dli_pic2_f3 __dlivec
+
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC2_F3					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 088  ---------------------
+
+
+        pha ; store registers
+        sta ATARI.WSYNC
+        mva #.hi(CHAR_ADDRESS_PIC2_F3) ATARI.chbase
+
+        mwa #dli_pic2_f4 __dlivec
+
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC2_F4					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 089  ---------------------
+
+
+        pha ; store registers
+        sta ATARI.WSYNC
+        mva #.hi(CHAR_ADDRESS_PIC2_F4) ATARI.chbase
+
+        mwa #dli_pic2_f5 __dlivec
+
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC2_F5					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 090  ---------------------
+
+
+        pha ; store registers
+        sta ATARI.WSYNC
+        mva #.hi(CHAR_ADDRESS_PIC2_F5) ATARI.chbase
+
+        mwa #dli_pic2_f6 __dlivec
+
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC2_F6					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 091  ---------------------
+
+
+        pha ; store registers
+        sta ATARI.WSYNC
+        mva #.hi(CHAR_ADDRESS_PIC2_F6) ATARI.chbase
+
+        mwa #dli_pic2_f7 __dlivec
+
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC2_F7					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 092  ---------------------
+
+
+        pha ; store registers
+        sta ATARI.WSYNC
+        mva #.hi(CHAR_ADDRESS_PIC2_F7) ATARI.chbase
+
+        mwa #dli_pic2_f8 __dlivec
+
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC2_F8					; PROCEDURE | INTERRUPT
+
+
+
+
+; ---------------------  ASM Block 093  ---------------------
+
+
+        phr ; store registers
+        ;sta ATARI.WSYNC
+        mva adr.txtcolors ATARI.colpf0
+        mva #00 ATARI.colpf2
+        mva #00 ATARI.colbk
+        mva adr.txtcolors+1 ATARI.colpf1
+        
+        ;sta ATARI.WSYNC
+        mva #.hi(CHARSET_ADDRESS) ATARI.chbase
+;        sta ATARI.WSYNC
+        
+    
+
+; ---------------------  ASM Block 094  ---------------------
+
+
+
+        plr ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC3_F1					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 095  ---------------------
+
+
+        pha ; store registers
+
+        mva adr.gfxcolors ATARI.colpf0
+        mva adr.gfxcolors+1 ATARI.colpf1
+        mva adr.gfxcolors+2 ATARI.colpf2
+        mva adr.gfxcolors+3 ATARI.colbk
+        
+        mva #.hi(CHAR_ADDRESS_PIC3_F1) ATARI.chbase
+
+        mwa #DLI_PIC3_F2 __dlivec
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC3_F2					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 096  ---------------------
+
+
+        pha ; store registers
+        sta ATARI.WSYNC
+        mva #.hi(CHAR_ADDRESS_PIC3_F2) ATARI.chbase
+
+        mwa #DLI_PIC3_F3 __dlivec
+
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC3_F3					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 097  ---------------------
+
+
+        pha ; store registers
+        sta ATARI.WSYNC
+        mva #.hi(CHAR_ADDRESS_PIC3_F3) ATARI.chbase
+
+        mwa #DLI_PIC3_F4 __dlivec
+
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC3_F4					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 098  ---------------------
+
+
+        pha ; store registers
+        sta ATARI.WSYNC
+        mva #.hi(CHAR_ADDRESS_PIC3_F4) ATARI.chbase
+
+        mwa #DLI_PIC3_F5 __dlivec
+
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC3_F5					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 099  ---------------------
+
+
+        pha ; store registers
+        sta ATARI.WSYNC
+        mva #.hi(CHAR_ADDRESS_PIC3_F2) ATARI.chbase
+
+        mwa #DLI_PIC3_F6 __dlivec
+
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC3_F6					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 100  ---------------------
+
+
+        pha ; store registers
+        sta ATARI.WSYNC
+        mva #.hi(CHAR_ADDRESS_PIC3_F4) ATARI.chbase
+
+        mwa #DLI_PIC3_F7 __dlivec
+
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC3_F7					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 101  ---------------------
+
+
+        pha ; store registers
+        sta ATARI.WSYNC
+        mva #.hi(CHAR_ADDRESS_PIC3_F5) ATARI.chbase
+
+        mwa #DLI_PIC3_F8 __dlivec
+
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC3_F8					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 102  ---------------------
+
+
+        pha ; store registers
+        sta ATARI.WSYNC
+        mva #.hi(CHAR_ADDRESS_PIC3_F4) ATARI.chbase
+
+        mwa #DLI_PIC3_F9 __dlivec
+
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC3_F9					; PROCEDURE | INTERRUPT
+
+
+
+
+; ---------------------  ASM Block 103  ---------------------
+
+
+        phr ; store registers
+
+        mva adr.txtcolors ATARI.colpf0
+        mva #00 ATARI.colpf2
+        mva #00 ATARI.colbk
+        mva adr.txtcolors+1 ATARI.colpf1
+        
+        mva #.hi(CHARSET_ADDRESS) ATARI.chbase
+
+    
+
+; ---------------------  ASM Block 104  ---------------------
+
+
+
+        plr ; restore registers
+     
+	rti						; ret
+.endl
+
+.local	DLI_PIC4_F1					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 105  ---------------------
+
+
+        pha ; store registers
+
+        mva adr.gfxcolors ATARI.colpf0
+        mva adr.gfxcolors+1 ATARI.colpf1
+        mva adr.gfxcolors+2 ATARI.colpf2
+        mva adr.gfxcolors+3 ATARI.colbk
+        
+        mva #.hi(CHAR_ADDRESS_PIC4_F1) ATARI.chbase
+
+        mwa #DLI_PIC4_F2 __dlivec
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC4_F2					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 106  ---------------------
+
+
+        pha ; store registers
+        sta ATARI.WSYNC
+        mva #.hi(CHAR_ADDRESS_PIC4_F2) ATARI.chbase
+
+        mwa #DLI_PIC4_F3 __dlivec
+
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC4_F3					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 107  ---------------------
+
+
+        pha ; store registers
+        sta ATARI.WSYNC
+        mva #.hi(CHAR_ADDRESS_PIC4_F1) ATARI.chbase
+
+        mwa #DLI_PIC4_F4 __dlivec
+
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC4_F4					; PROCEDURE | ASSEMBLER | INTERRUPT
+
+
+; ---------------------  ASM Block 108  ---------------------
+
+
+        pha ; store registers
+        sta ATARI.WSYNC
+        mva #.hi(CHAR_ADDRESS_PIC4_F2) ATARI.chbase
+
+        mwa #DLI_PIC4_F5 __dlivec
+
+        pla ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	DLI_PIC4_F5					; PROCEDURE | INTERRUPT
+
+
+
+
+; ---------------------  ASM Block 109  ---------------------
+
+
+        phr ; store registers
+
+        mva adr.txtcolors ATARI.colpf0
+        mva #00 ATARI.colpf2
+        mva #00 ATARI.colbk
+        mva adr.txtcolors+1 ATARI.colpf1
+        
+        mva #.hi(CHARSET_ADDRESS) ATARI.chbase
+
+    
+
+; ---------------------  ASM Block 110  ---------------------
+
+
+
+        plr ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	VBL						; PROCEDURE | INTERRUPT
+
+
+
+
+; ---------------------  ASM Block 111  ---------------------
+
+
+      phr ; store registers
+  
+
+; optimize OK (), line = 440
+
+	.ifdef IFTMP_42
+	lda MUSIC
+	sta IFTMP_42
+	eif
+	lda MUSIC
+	jeq l_040B
+
+; optimize FAIL ('RMT.TRMT.PLAY', ), line = 440
+	lda MSX
+	ldy MSX+1
+	jsr RMT.TRMT.PLAY
+l_040B
+
+; ---------------------  ASM Block 112  ---------------------
+
+
+      mwa firstDLI __dlivec
+      plr ; restore registers
+  
+	rti						; ret
+.endl
+
+.local	DLI_TITLE					; PROCEDURE | INTERRUPT
+
+
+
+
+; ---------------------  ASM Block 113  ---------------------
+
+
+        phr ; store registers
+        sta ATARI.WSYNC
+        mva adr.txtcolors ATARI.colpf0
+        mva #00 ATARI.colpf2
+        mva #00 ATARI.colbk
+        mva adr.txtcolors+1 ATARI.colpf1
+    
+
+; ---------------------  ASM Block 114  ---------------------
+
+
+        plr ; restore registers
+        
+	rti						; ret
+.endl
+
+.local	GFX_FADEIN					; PROCEDURE
+
+
+
+
+; optimize OK (intro.pas), line = 49
+
+	lda PICNUMBER
+	:2 asl @
+	sta Y
+
+; --- RepeatUntilProlog
+l_0422
+
+; optimize FAIL ('B_SYSTEM.WAITFRAMES', intro.pas), line = 51
+	inx
+	mva #$02 :STACKORIGIN,x
+	jsr B_SYSTEM.WAITFRAMES
+
+; optimize OK (intro.pas), line = 52
+
+	lda adr.GFXCOLORS+$00
+	and #$0F
+	sta :STACKORIGIN+9
+	ldy Y
+	lda adr.PICCOLORS,y
+	and #$0F
+	sta :STACKORIGIN+10
+	ldy #1
+	lda :STACKORIGIN+9
+	cmp :STACKORIGIN+10
+	bne @+
+	dey
+@
+	.ifdef IFTMP_43
+	sty IFTMP_43
+	eif
+	tya
+	jeq l_0444
+
+; optimize OK (intro.pas), line = 52
+
+	inc adr.GFXCOLORS+$00
+l_0444
+
+; Restore conditional expression
+	lda IFTMP_43
+
+; else condition
+	jne l_0450
+
+
+; optimize OK (intro.pas), line = 52
+
+	ldy Y
+	lda adr.PICCOLORS,y
+	sta adr.GFXCOLORS+$00
+l_0450
+
+; optimize OK (intro.pas), line = 53
+
+	lda adr.GFXCOLORS+$01
+	and #$0F
+	sta :STACKORIGIN+9
+	ldy Y
+	iny
+	lda adr.PICCOLORS,y
+	and #$0F
+	sta :STACKORIGIN+10
+	ldy #1
+	lda :STACKORIGIN+9
+	cmp :STACKORIGIN+10
+	bne @+
+	dey
+@
+	.ifdef IFTMP_44
+	sty IFTMP_44
+	eif
+	tya
+	jeq l_047E
+
+; optimize OK (intro.pas), line = 53
+
+	inc adr.GFXCOLORS+$01
+l_047E
+
+; Restore conditional expression
+	lda IFTMP_44
+
+; else condition
+	jne l_048A
+
+
+; optimize OK (intro.pas), line = 53
+
+	ldy Y
+	iny
+	lda adr.PICCOLORS,y
+	sta adr.GFXCOLORS+$01
+l_048A
+
+; optimize OK (intro.pas), line = 54
+
+	lda adr.GFXCOLORS+$02
+	and #$0F
+	sta :STACKORIGIN+9
+	lda Y
+	add #$02
+	tay
+	lda adr.PICCOLORS,y
+	and #$0F
+	sta :STACKORIGIN+10
+	ldy #1
+	lda :STACKORIGIN+9
+	cmp :STACKORIGIN+10
+	bne @+
+	dey
+@
+	.ifdef IFTMP_45
+	sty IFTMP_45
+	eif
+	tya
+	jeq l_04BC
+
+; optimize OK (intro.pas), line = 54
+
+	inc adr.GFXCOLORS+$02
+l_04BC
+
+; Restore conditional expression
+	lda IFTMP_45
+
+; else condition
+	jne l_04C8
+
+
+; optimize OK (intro.pas), line = 54
+
+	lda Y
+	add #$02
+	tay
+	lda adr.PICCOLORS,y
+	sta adr.GFXCOLORS+$02
+l_04C8
+
+; optimize OK (intro.pas), line = 55
+
+	lda adr.GFXCOLORS+$03
+	and #$0F
+	sta :STACKORIGIN+9
+	lda Y
+	add #$03
+	tay
+	lda adr.PICCOLORS,y
+	and #$0F
+	sta :STACKORIGIN+10
+	ldy #1
+	lda :STACKORIGIN+9
+	cmp :STACKORIGIN+10
+	bne @+
+	dey
+@
+	.ifdef IFTMP_46
+	sty IFTMP_46
+	eif
+	tya
+	jeq l_04FA
+
+; optimize OK (intro.pas), line = 55
+
+	inc adr.GFXCOLORS+$03
+l_04FA
+
+; Restore conditional expression
+	lda IFTMP_46
+
+; else condition
+	jne l_0506
+
+
+; optimize OK (intro.pas), line = 55
+
+	lda Y
+	add #$03
+	tay
+	lda adr.PICCOLORS,y
+	sta adr.GFXCOLORS+$03
+l_0506
+
+; optimize OK (intro.pas), line = 57
+
+	lda adr.TXTCOLORS+$00
+	ldy #1
+	and #$0F
+	bne @+
+	dey
+@
+	.ifdef IFTMP_47
+	sty IFTMP_47
+	eif
+	tya
+	jeq l_052B
+
+; optimize OK (intro.pas), line = 57
+
+	inc adr.TXTCOLORS+$00
+l_052B
+
+; Restore conditional expression
+	lda IFTMP_47
+
+; else condition
+	jne l_0537
+
+
+; optimize OK (intro.pas), line = 57
+
+	mva #$00 adr.TXTCOLORS+$00
+l_0537
+
+; optimize OK (intro.pas), line = 58
+
+	ldy #1
+	lda adr.TXTCOLORS,y
+	and #$0F
+	cmp #$0C
+	bne @+
+	dey
+@
+	.ifdef IFTMP_48
+	sty IFTMP_48
+	eif
+	tya
+	jeq l_0553
+
+; optimize OK (intro.pas), line = 58
+
+	inc adr.TXTCOLORS+$01
+l_0553
+
+; Restore conditional expression
+	lda IFTMP_48
+
+; else condition
+	jne l_055F
+
+
+; optimize OK (intro.pas), line = 58
+
+	mva #$1C adr.TXTCOLORS+$01
+l_055F
+
+; optimize OK (intro.pas), line = 60
+
+	lda adr.GFXCOLORS+$00
+	sta :STACKORIGIN+9
+	ldy Y
+	lda adr.PICCOLORS,y
+	ldy #1
+	cmp :STACKORIGIN+9
+	beq @+
+	dey
+@
+	sty :STACKORIGIN+9
+	lda adr.GFXCOLORS+$01
+	sta :STACKORIGIN+10
+	ldy Y
+	iny
+	lda adr.PICCOLORS,y
+	ldy #1
+	cmp :STACKORIGIN+10
+	beq @+
+	dey
+@
+	tya
+	and :STACKORIGIN+9
+	sta :STACKORIGIN+9
+	lda adr.GFXCOLORS+$02
+	sta :STACKORIGIN+10
+	lda Y
+	add #$02
+	tay
+	lda adr.PICCOLORS,y
+	ldy #1
+	cmp :STACKORIGIN+10
+	beq @+
+	dey
+@
+	tya
+	and :STACKORIGIN+9
+	sta :STACKORIGIN+9
+	lda adr.GFXCOLORS+$03
+	sta :STACKORIGIN+10
+	lda Y
+	add #$03
+	tay
+	lda adr.PICCOLORS,y
+	ldy #1
+	cmp :STACKORIGIN+10
+	beq @+
+	dey
+@
+	tya
+	and :STACKORIGIN+9
+	sta :STACKORIGIN+9
+	ldy #1
+	lda adr.TXTCOLORS+$00
+	beq @+
+	dey
+@
+	tya
+	and :STACKORIGIN+9
+	sta :STACKORIGIN+9
+	ldy #1
+	lda adr.TXTCOLORS,y
+	cmp #$1C
+	beq @+
+	dey
+@
+	tya
+	and :STACKORIGIN+9
+	bne *+5
+c_0422
+	jmp l_0422
+b_0422
+
+; -----------------------------------------------------------
+
+TEXTCOLOR1	= $0000
+TEXTCOLOR2	= $001C
+IFTMP_43	= DATAORIGIN+$0395
+IFTMP_44	= DATAORIGIN+$0396
+IFTMP_45	= DATAORIGIN+$0397
+IFTMP_46	= DATAORIGIN+$0398
+IFTMP_47	= DATAORIGIN+$0399
+IFTMP_48	= DATAORIGIN+$039A
+
+@VarData	= IFTMP_43
+@VarDataSize	= 6
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	GFX_FADEOUT					; PROCEDURE
+
+
+
+
+; --- RepeatUntilProlog
+l_05D8
+
+; optimize FAIL ('B_SYSTEM.WAITFRAMES', intro.pas), line = 67
+	inx
+	mva #$02 :STACKORIGIN,x
+	jsr B_SYSTEM.WAITFRAMES
+
+; optimize OK (intro.pas), line = 68
+
+	lda adr.GFXCOLORS+$00
+	ldy #1
+	and #$0F
+	bne @+
+	dey
+@
+	.ifdef IFTMP_49
+	sty IFTMP_49
+	eif
+	tya
+	jeq l_05F1
+
+; optimize OK (intro.pas), line = 68
+
+	dec adr.GFXCOLORS+$00
+l_05F1
+
+; Restore conditional expression
+	lda IFTMP_49
+
+; else condition
+	jne l_05FD
+
+
+; optimize OK (intro.pas), line = 68
+
+	mva #$00 adr.GFXCOLORS+$00
+l_05FD
+
+; optimize OK (intro.pas), line = 69
+
+	ldy #1
+	lda adr.GFXCOLORS,y
+	and #$0F
+	cmp #$00
+	bne @+
+	dey
+@
+	.ifdef IFTMP_50
+	sty IFTMP_50
+	eif
+	tya
+	jeq l_0619
+
+; optimize OK (intro.pas), line = 69
+
+	dec adr.GFXCOLORS+$01
+l_0619
+
+; Restore conditional expression
+	lda IFTMP_50
+
+; else condition
+	jne l_0625
+
+
+; optimize OK (intro.pas), line = 69
+
+	mva #$00 adr.GFXCOLORS+$01
+l_0625
+
+; optimize OK (intro.pas), line = 70
+
+	lda adr.GFXCOLORS+$02
+	ldy #1
+	and #$0F
+	bne @+
+	dey
+@
+	.ifdef IFTMP_51
+	sty IFTMP_51
+	eif
+	tya
+	jeq l_0641
+
+; optimize OK (intro.pas), line = 70
+
+	dec adr.GFXCOLORS+$02
+l_0641
+
+; Restore conditional expression
+	lda IFTMP_51
+
+; else condition
+	jne l_064D
+
+
+; optimize OK (intro.pas), line = 70
+
+	mva #$00 adr.GFXCOLORS+$02
+l_064D
+
+; optimize OK (intro.pas), line = 71
+
+	lda adr.GFXCOLORS+$03
+	ldy #1
+	and #$0F
+	bne @+
+	dey
+@
+	.ifdef IFTMP_52
+	sty IFTMP_52
+	eif
+	tya
+	jeq l_0669
+
+; optimize OK (intro.pas), line = 71
+
+	dec adr.GFXCOLORS+$03
+l_0669
+
+; Restore conditional expression
+	lda IFTMP_52
+
+; else condition
+	jne l_0675
+
+
+; optimize OK (intro.pas), line = 71
+
+	mva #$00 adr.GFXCOLORS+$03
+l_0675
+
+; optimize OK (intro.pas), line = 74
+
+	lda adr.TXTCOLORS+$00
+	ldy #1
+	and #$0F
+	bne @+
+	dey
+@
+	.ifdef IFTMP_53
+	sty IFTMP_53
+	eif
+	tya
+	jeq l_0691
+
+; optimize OK (intro.pas), line = 74
+
+	dec adr.TXTCOLORS+$00
+l_0691
+
+; Restore conditional expression
+	lda IFTMP_53
+
+; else condition
+	jne l_069D
+
+
+; optimize OK (intro.pas), line = 74
+
+	mva #$00 adr.TXTCOLORS+$00
+l_069D
+
+; optimize OK (intro.pas), line = 75
+
+	ldy #1
+	lda adr.TXTCOLORS,y
+	and #$0F
+	cmp #$00
+	bne @+
+	dey
+@
+	.ifdef IFTMP_54
+	sty IFTMP_54
+	eif
+	tya
+	jeq l_06B9
+
+; optimize OK (intro.pas), line = 75
+
+	dec adr.TXTCOLORS+$01
+l_06B9
+
+; Restore conditional expression
+	lda IFTMP_54
+
+; else condition
+	jne l_06C5
+
+
+; optimize OK (intro.pas), line = 75
+
+	mva #$00 adr.TXTCOLORS+$01
+l_06C5
+
+; optimize OK (intro.pas), line = 77
+
+	lda adr.GFXCOLORS+$00
+	ora adr.GFXCOLORS+$01
+	ora adr.GFXCOLORS+$02
+	ora adr.GFXCOLORS+$03
+	ora adr.TXTCOLORS+$00
+	sta :STACKORIGIN+9
+	ldy #1
+	lda adr.TXTCOLORS,y
+	ora :STACKORIGIN+9
+	cmp #$00
+	beq @+
+	dey
+@
+	tya
+	bne *+5
+c_05D8
+	jmp l_05D8
+b_05D8
+
+; -----------------------------------------------------------
+
+IFTMP_49	= DATAORIGIN+$039B
+IFTMP_50	= DATAORIGIN+$039C
+IFTMP_51	= DATAORIGIN+$039D
+IFTMP_52	= DATAORIGIN+$039E
+IFTMP_53	= DATAORIGIN+$039F
+IFTMP_54	= DATAORIGIN+$03A0
+
+@VarData	= IFTMP_49
+@VarDataSize	= 6
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+
+.local	WAIT						; PROCEDURE
+
+; -----------------------------------------------------------
+
+; Generate Assignment for WORD / SMALLINT / SHORTREAL / POINTER
+; as Pointer
+	mva :STACKORIGIN,x TIME
+	mva :STACKORIGIN+STACKWIDTH,x TIME+1
+	dex						; sub bx, 1
+
+
+
+
+; optimize OK (intro.pas), line = 102
+
+	mva #$00 COUNT
+	sta COUNT+1
+
+; --- RepeatUntilProlog
+l_0707
+
+; optimize FAIL (0, intro.pas), line = 104
+	inw COUNT
+
+; optimize FAIL ('B_SYSTEM.WAITFRAME', intro.pas), line = 105
+	jsr B_SYSTEM.WAITFRAME
+
+; optimize FAIL ('B_CRT.CRT_KEYPRESSED', intro.pas), line = 106
+	jsr B_CRT.CRT_KEYPRESSED
+	.ifdef IFTMP_55
+	lda :STACKORIGIN,x
+	sta IFTMP_55
+	eif
+	dex
+	lda :STACKORIGIN+1,x
+	jeq l_0716
+
+; optimize OK (intro.pas), line = 106
+
+	mva #$01 SKIP
+l_0716
+
+; optimize OK (intro.pas), line = 107
+
+	ldy #1
+	lda COUNT+1
+	cmp TIME+1
+	bne @+
+	lda COUNT
+	cmp TIME
+@
+	seq
+	bcs @+
+	dey
+@
+	sty :STACKORIGIN+10
+	lda SKIP
+	ora :STACKORIGIN+10
+	bne *+5
+c_0707
+	jmp l_0707
+b_0707
+
+; -----------------------------------------------------------
+
+TIME	= DATAORIGIN+$03A1
+
+@VarData	= TIME
+@VarDataSize	= 2
+
+
+@exit
+	.ifdef @new
+	@FreeMem #@VarData #@VarDataSize
+	eif
+	rts						; ret
+.endl
+l_01CF
+
+; optimize FAIL ('B_SYSTEM.SYSTEMOFF_0229', intro.pas), line = 112
+	jsr B_SYSTEM.SYSTEMOFF_0229
+
+; optimize FAIL ('B_SYSTEM.SETCHARSET', intro.pas), line = 113
+	inx
+	mva #$E4 :STACKORIGIN,x
+	jsr B_SYSTEM.SETCHARSET
+
+; optimize FAIL ('B_CRT.CRT_INIT_02B0', intro.pas), line = 114
+	inx
+	mva #$00 :STACKORIGIN,x
+	mva #$E8 :STACKORIGIN+STACKWIDTH,x
+	jsr B_CRT.CRT_INIT_02B0
+
+; optimize OK (intro.pas), line = 117
+
+	mva #$00 MSX.PLAYER
+	mva #$39 MSX.PLAYER+1
+
+; optimize OK (intro.pas), line = 118
+
+	mva #$00 MSX.MODUL
+	mva #$41 MSX.MODUL+1
+
+; optimize FAIL ('RMT.TRMT.INIT', intro.pas), line = 120
+	inx
+	mva #$00 :STACKORIGIN,x
+	lda MSX
+	ldy MSX+1
+	jsr RMT.TRMT.INIT
+
+; optimize OK (intro.pas), line = 122
+
+	mva #$00 SKIP
+
+; optimize OK (intro.pas), line = 123
+
+	mva #$01 MUSIC
+
+; optimize FAIL ('B_SYSTEM.WAITFRAME', intro.pas), line = 125
+	jsr B_SYSTEM.WAITFRAME
+
+; optimize OK (intro.pas), line = 126
+
+	mva <DLI_TITLE FIRSTDLI
+	mva >DLI_TITLE FIRSTDLI+1
+
+; optimize FAIL ('B_SYSTEM.ENABLEVBLI', intro.pas), line = 127
+	inx
+	mva <VBL :STACKORIGIN,x
+	mva >VBL :STACKORIGIN+STACKWIDTH,x
+	jsr B_SYSTEM.ENABLEVBLI
+
+; optimize FAIL ('B_SYSTEM.ENABLEDLI', intro.pas), line = 128
+	inx
+	mva <DLI_TITLE :STACKORIGIN,x
+	mva >DLI_TITLE :STACKORIGIN+STACKWIDTH,x
+	jsr B_SYSTEM.ENABLEDLI
+
+; optimize OK (intro.pas), line = 129
+
+	mva #$00 ATARI.DLISTL
+	mva #$30 ATARI.DLISTL+1
+
+; optimize OK (intro.pas), line = 130
+
+	mva #$22 ATARI.DMACTL
+
+; optimize OK (intro.pas), line = 133
+
+	lda #$00
+	sta :edx
+	lda #$E8
+	sta :edx+1
+	lda #$28
+	sta :ecx
+	lda #$05
+	sta :ecx+1
+	lda #$00
+	sta :eax
+	jsr @fill
+
+; optimize FAIL ('WAIT', intro.pas), line = 141
+	inx
+	mva #$4B :STACKORIGIN,x
+	mva #$00 :STACKORIGIN+STACKWIDTH,x
+	jsr WAIT
+
+; optimize OK (intro.pas), line = 143
+
+	ldy #1
+	lda SKIP
+	beq @+
+	dey
+@
+	.ifdef IFTMP_56
+	sty IFTMP_56
+	eif
+	tya
+	jeq l_076E
+
+; optimize FAIL ('GFX_FADEOUT', intro.pas), line = 144
+	jsr GFX_FADEOUT
+
+; optimize FAIL ('B_CRT.CRT_GOTOXY', intro.pas), line = 145
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$18 :STACKORIGIN,x
+	jsr B_CRT.CRT_GOTOXY
+
+; optimize FAIL ('B_CRT.CRT_WRITE_02DD', intro.pas), line = 146
+	inx
+	ldy #$00 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr B_CRT.CRT_WRITE_02DD
+
+; optimize FAIL ('GFX_FADEIN', intro.pas), line = 147
+	jsr GFX_FADEIN
+l_076E
+
+; optimize FAIL ('WAIT', intro.pas), line = 156
+	inx
+	mva #$C2 :STACKORIGIN,x
+	mva #$01 :STACKORIGIN+STACKWIDTH,x
+	jsr WAIT
+
+; optimize OK (intro.pas), line = 158
+
+	ldy #1
+	lda SKIP
+	beq @+
+	dey
+@
+	.ifdef IFTMP_57
+	sty IFTMP_57
+	eif
+	tya
+	jeq l_078E
+
+; optimize FAIL ('GFX_FADEOUT', intro.pas), line = 159
+	jsr GFX_FADEOUT
+
+; optimize FAIL ('B_CRT.CRT_CLEARROW_0363', intro.pas), line = 160
+	inx
+	mva #$18 :STACKORIGIN,x
+	jsr B_CRT.CRT_CLEARROW_0363
+
+; optimize FAIL ('B_CRT.CRT_WRITEXY', intro.pas), line = 161
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$18 :STACKORIGIN,x
+	inx
+	ldy #$02 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr B_CRT.CRT_WRITEXY
+
+; optimize FAIL ('GFX_FADEIN', intro.pas), line = 162
+	jsr GFX_FADEIN
+l_078E
+
+; optimize FAIL ('WAIT', intro.pas), line = 171
+	inx
+	mva #$C2 :STACKORIGIN,x
+	mva #$01 :STACKORIGIN+STACKWIDTH,x
+	jsr WAIT
+
+; optimize OK (intro.pas), line = 173
+
+	ldy #1
+	lda SKIP
+	beq @+
+	dey
+@
+	.ifdef IFTMP_58
+	sty IFTMP_58
+	eif
+	tya
+	jeq l_07AF
+
+; optimize FAIL ('GFX_FADEOUT', intro.pas), line = 174
+	jsr GFX_FADEOUT
+
+; optimize OK (intro.pas), line = 175
+
+	mva #$00 PICNUMBER
+
+; optimize FAIL ('B_SYSTEM.WAITFRAME', intro.pas), line = 178
+	jsr B_SYSTEM.WAITFRAME
+
+; optimize OK (intro.pas), line = 179
+
+	mva <DLI_PIC1_F1 FIRSTDLI
+	mva >DLI_PIC1_F1 FIRSTDLI+1
+
+; optimize OK (intro.pas), line = 180
+
+	mva #$00 ATARI.DLISTL
+	mva #$31 ATARI.DLISTL+1
+
+; optimize OK (intro.pas), line = 183
+
+	lda #$00
+	sta :edx
+	lda #$B8
+	sta :edx+1
+	lda #$00
+	sta :ecx
+	lda #$E8
+	sta :ecx+1
+	lda #$B0
+	sta :eax
+	lda #$04
+	sta :eax+1
+	jsr @move
+
+; optimize FAIL ('B_CRT.CRT_CLEARROW_0363', intro.pas), line = 185
+	inx
+	mva #$18 :STACKORIGIN,x
+	jsr B_CRT.CRT_CLEARROW_0363
+
+; optimize FAIL ('B_CRT.CRT_CLEARROW_0363', intro.pas), line = 186
+	inx
+	mva #$19 :STACKORIGIN,x
+	jsr B_CRT.CRT_CLEARROW_0363
+
+; optimize FAIL ('B_CRT.CRT_CLEARROW_0363', intro.pas), line = 187
+	inx
+	mva #$1A :STACKORIGIN,x
+	jsr B_CRT.CRT_CLEARROW_0363
+
+; optimize FAIL ('B_CRT.CRT_WRITEXY', intro.pas), line = 188
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$18 :STACKORIGIN,x
+	inx
+	ldy #$04 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr B_CRT.CRT_WRITEXY
+
+; optimize FAIL ('B_CRT.CRT_WRITEXY', intro.pas), line = 189
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$19 :STACKORIGIN,x
+	inx
+	ldy #$06 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr B_CRT.CRT_WRITEXY
+
+; optimize FAIL ('GFX_FADEIN', intro.pas), line = 190
+	jsr GFX_FADEIN
+l_07AF
+
+; optimize FAIL ('WAIT', intro.pas), line = 199
+	inx
+	mva #$C2 :STACKORIGIN,x
+	mva #$01 :STACKORIGIN+STACKWIDTH,x
+	jsr WAIT
+
+; optimize OK (intro.pas), line = 201
+
+	ldy #1
+	lda SKIP
+	beq @+
+	dey
+@
+	.ifdef IFTMP_59
+	sty IFTMP_59
+	eif
+	tya
+	jeq l_07EA
+
+; optimize FAIL ('GFX_FADEOUT', intro.pas), line = 202
+	jsr GFX_FADEOUT
+
+; optimize OK (intro.pas), line = 203
+
+	mva #$01 PICNUMBER
+
+; optimize FAIL ('B_SYSTEM.WAITFRAME', intro.pas), line = 205
+	jsr B_SYSTEM.WAITFRAME
+
+; optimize OK (intro.pas), line = 206
+
+	mva <DLI_PIC2_F1 FIRSTDLI
+	mva >DLI_PIC2_F1 FIRSTDLI+1
+
+; optimize OK (intro.pas), line = 207
+
+	mva #$00 ATARI.DLISTL
+	mva #$32 ATARI.DLISTL+1
+
+; optimize OK (intro.pas), line = 209
+
+	lda #$B0
+	sta :edx
+	lda #$BC
+	sta :edx+1
+	lda #$00
+	sta :ecx
+	lda #$E8
+	sta :ecx+1
+	lda #$B0
+	sta :eax
+	lda #$04
+	sta :eax+1
+	jsr @move
+
+; optimize FAIL ('B_CRT.CRT_CLEARROW_0363', intro.pas), line = 211
+	inx
+	mva #$18 :STACKORIGIN,x
+	jsr B_CRT.CRT_CLEARROW_0363
+
+; optimize FAIL ('B_CRT.CRT_CLEARROW_0363', intro.pas), line = 212
+	inx
+	mva #$19 :STACKORIGIN,x
+	jsr B_CRT.CRT_CLEARROW_0363
+
+; optimize FAIL ('B_CRT.CRT_CLEARROW_0363', intro.pas), line = 213
+	inx
+	mva #$1A :STACKORIGIN,x
+	jsr B_CRT.CRT_CLEARROW_0363
+
+; optimize FAIL ('B_CRT.CRT_WRITEXY', intro.pas), line = 214
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$18 :STACKORIGIN,x
+	inx
+	ldy #$08 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr B_CRT.CRT_WRITEXY
+
+; optimize FAIL ('B_CRT.CRT_WRITEXY', intro.pas), line = 215
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$19 :STACKORIGIN,x
+	inx
+	ldy #$0A 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr B_CRT.CRT_WRITEXY
+
+; optimize FAIL ('B_CRT.CRT_WRITEXY', intro.pas), line = 216
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$1A :STACKORIGIN,x
+	inx
+	ldy #$0C 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr B_CRT.CRT_WRITEXY
+
+; optimize FAIL ('GFX_FADEIN', intro.pas), line = 217
+	jsr GFX_FADEIN
+l_07EA
+
+; optimize FAIL ('WAIT', intro.pas), line = 226
+	inx
+	mva #$C2 :STACKORIGIN,x
+	mva #$01 :STACKORIGIN+STACKWIDTH,x
+	jsr WAIT
+
+; optimize OK (intro.pas), line = 228
+
+	ldy #1
+	lda SKIP
+	beq @+
+	dey
+@
+	.ifdef IFTMP_60
+	sty IFTMP_60
+	eif
+	tya
+	jeq l_082B
+
+; optimize FAIL ('GFX_FADEOUT', intro.pas), line = 229
+	jsr GFX_FADEOUT
+
+; optimize OK (intro.pas), line = 230
+
+	mva #$02 PICNUMBER
+
+; optimize FAIL ('B_SYSTEM.WAITFRAME', intro.pas), line = 232
+	jsr B_SYSTEM.WAITFRAME
+
+; optimize OK (intro.pas), line = 233
+
+	mva <DLI_PIC3_F1 FIRSTDLI
+	mva >DLI_PIC3_F1 FIRSTDLI+1
+
+; optimize OK (intro.pas), line = 234
+
+	mva #$00 ATARI.DLISTL
+	mva #$33 ATARI.DLISTL+1
+
+; optimize OK (intro.pas), line = 236
+
+	lda #$60
+	sta :edx
+	lda #$C1
+	sta :edx+1
+	lda #$00
+	sta :ecx
+	lda #$E8
+	sta :ecx+1
+	lda #$B0
+	sta :eax
+	lda #$04
+	sta :eax+1
+	jsr @move
+
+; optimize FAIL ('B_CRT.CRT_CLEARROW_0363', intro.pas), line = 238
+	inx
+	mva #$18 :STACKORIGIN,x
+	jsr B_CRT.CRT_CLEARROW_0363
+
+; optimize FAIL ('B_CRT.CRT_CLEARROW_0363', intro.pas), line = 239
+	inx
+	mva #$19 :STACKORIGIN,x
+	jsr B_CRT.CRT_CLEARROW_0363
+
+; optimize FAIL ('B_CRT.CRT_CLEARROW_0363', intro.pas), line = 240
+	inx
+	mva #$1A :STACKORIGIN,x
+	jsr B_CRT.CRT_CLEARROW_0363
+
+; optimize FAIL ('B_CRT.CRT_WRITEXY', intro.pas), line = 241
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$18 :STACKORIGIN,x
+	inx
+	ldy #$0E 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr B_CRT.CRT_WRITEXY
+
+; optimize FAIL ('B_CRT.CRT_WRITEXY', intro.pas), line = 242
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$19 :STACKORIGIN,x
+	inx
+	ldy #$10 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr B_CRT.CRT_WRITEXY
+
+; optimize FAIL ('B_CRT.CRT_WRITEXY', intro.pas), line = 243
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$1A :STACKORIGIN,x
+	inx
+	ldy #$12 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr B_CRT.CRT_WRITEXY
+
+; optimize FAIL ('GFX_FADEIN', intro.pas), line = 244
+	jsr GFX_FADEIN
+l_082B
+
+; optimize FAIL ('WAIT', intro.pas), line = 253
+	inx
+	mva #$C2 :STACKORIGIN,x
+	mva #$01 :STACKORIGIN+STACKWIDTH,x
+	jsr WAIT
+
+; optimize OK (intro.pas), line = 255
+
+	ldy #1
+	lda SKIP
+	beq @+
+	dey
+@
+	.ifdef IFTMP_61
+	sty IFTMP_61
+	eif
+	tya
+	jeq l_086C
+
+; optimize FAIL ('GFX_FADEOUT', intro.pas), line = 256
+	jsr GFX_FADEOUT
+
+; optimize FAIL ('B_SYSTEM.WAITFRAME', intro.pas), line = 258
+	jsr B_SYSTEM.WAITFRAME
+
+; optimize OK (intro.pas), line = 259
+
+	mva <DLI_TITLE FIRSTDLI
+	mva >DLI_TITLE FIRSTDLI+1
+
+; optimize OK (intro.pas), line = 260
+
+	mva #$00 ATARI.DLISTL
+	mva #$30 ATARI.DLISTL+1
+
+; optimize OK (intro.pas), line = 263
+
+	lda #$00
+	sta :edx
+	lda #$E8
+	sta :edx+1
+	lda #$28
+	sta :ecx
+	lda #$05
+	sta :ecx+1
+	lda #$00
+	sta :eax
+	jsr @fill
+
+; optimize FAIL ('B_SYSTEM.SETCHARSET', intro.pas), line = 264
+	inx
+	mva #$E4 :STACKORIGIN,x
+	jsr B_SYSTEM.SETCHARSET
+
+; optimize FAIL ('B_CRT.CRT_GOTOXY', intro.pas), line = 266
+	inx
+	mva #$00 :STACKORIGIN,x
+	inx
+	mva #$18 :STACKORIGIN,x
+	jsr B_CRT.CRT_GOTOXY
+
+; optimize FAIL ('B_CRT.CRT_WRITE_02DD', intro.pas), line = 267
+	inx
+	ldy #$14 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr B_CRT.CRT_WRITE_02DD
+
+; optimize FAIL ('GFX_FADEIN', intro.pas), line = 268
+	jsr GFX_FADEIN
+l_086C
+
+; optimize FAIL ('WAIT', intro.pas), line = 278
+	inx
+	mva #$C2 :STACKORIGIN,x
+	mva #$01 :STACKORIGIN+STACKWIDTH,x
+	jsr WAIT
+
+; optimize OK (intro.pas), line = 279
+
+	ldy #1
+	lda SKIP
+	beq @+
+	dey
+@
+	.ifdef IFTMP_62
+	sty IFTMP_62
+	eif
+	tya
+	jeq l_089A
+
+; optimize FAIL ('GFX_FADEOUT', intro.pas), line = 280
+	jsr GFX_FADEOUT
+
+; optimize OK (intro.pas), line = 281
+
+	mva #$03 PICNUMBER
+
+; optimize FAIL ('B_SYSTEM.WAITFRAME', intro.pas), line = 283
+	jsr B_SYSTEM.WAITFRAME
+
+; optimize OK (intro.pas), line = 284
+
+	mva #$00 ATARI.DLISTL
+	mva #$34 ATARI.DLISTL+1
+
+; optimize OK (intro.pas), line = 285
+
+	mva <DLI_PIC4_F1 FIRSTDLI
+	mva >DLI_PIC4_F1 FIRSTDLI+1
+
+; optimize OK (intro.pas), line = 288
+
+	lda #$10
+	sta :edx
+	lda #$C6
+	sta :edx+1
+	lda #$00
+	sta :ecx
+	lda #$E8
+	sta :ecx+1
+	lda #$B0
+	sta :eax
+	lda #$04
+	sta :eax+1
+	jsr @move
+; For
+
+; optimize OK (intro.pas), line = 290
+
+	mva #$00 Y
+
+; optimize OK (intro.pas), line = 290
+
+; To
+l_08B5
+
+; ForToDoCondition
+
+; optimize OK (intro.pas), line = 290
+
+	lda Y
+	cmp #$09
+	bcc *+7
+	beq *+5
+	jmp l_08C3
+
+; optimize FAIL ('B_CRT.CRT_CLEARROW_0363', intro.pas), line = 292
+	inx
+	mva Y :STACKORIGIN,x
+	inx
+	mva #$0F :STACKORIGIN,x
+	jsr addAL_CL
+	dex
+	jsr B_CRT.CRT_CLEARROW_0363
+
+; optimize FAIL ('B_CRT.CRT_WRITECENTERED_0337', intro.pas), line = 293
+	inx
+	mva Y :STACKORIGIN,x
+	inx
+	mva #$0F :STACKORIGIN,x
+	jsr addAL_CL
+	mva Y :STACKORIGIN,x
+	mva #$00 :STACKORIGIN+STACKWIDTH,x
+	m@index2 0
+	ldy :STACKORIGIN,x
+	mva adr.CREDITSTXT,y :STACKORIGIN,x
+	mva adr.CREDITSTXT+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr B_CRT.CRT_WRITECENTERED_0337
+
+; ForToDoEpilog
+c_08B5
+	inc Y						; inc ptr byte [CounterAddress]
+
+	jne l_08B5
+
+l_08C3
+b_08B5
+
+; optimize FAIL ('B_CRT.CRT_CLEARROW_0363', intro.pas), line = 295
+	inx
+	mva #$19 :STACKORIGIN,x
+	jsr B_CRT.CRT_CLEARROW_0363
+
+; optimize FAIL ('B_CRT.CRT_WRITECENTERED_0337', intro.pas), line = 296
+	inx
+	mva #$19 :STACKORIGIN,x
+	inx
+	ldy #$16 
+	mva adr.STRINGS,y :STACKORIGIN,x
+	mva adr.STRINGS+1,y :STACKORIGIN+STACKWIDTH,x
+	jsr B_CRT.CRT_WRITECENTERED_0337
+
+; optimize FAIL ('GFX_FADEIN', intro.pas), line = 297
+	jsr GFX_FADEIN
+l_089A
+
+; optimize OK (intro.pas), line = 300
+
+	mva #$00 COUNT
+	sta COUNT+1
+
+; --- RepeatUntilProlog
+l_08EC
+
+; optimize FAIL (0, intro.pas), line = 302
+	inw COUNT
+
+; optimize FAIL ('B_SYSTEM.WAITFRAME', intro.pas), line = 303
+	jsr B_SYSTEM.WAITFRAME
+
+; optimize OK (intro.pas), line = 304
+
+	ldy #1
+	lda COUNT+1
+	cmp #$00
+	bne @+
+	lda COUNT
+	cmp #$32
+@
+	beq @+
+	dey
+@
+	.ifdef IFTMP_63
+	sty IFTMP_63
+	eif
+	tya
+	jeq l_0902
+
+; optimize FAIL ('B_CRT.CRT_INVERT', intro.pas), line = 306
+	inx
+	mva #$05 :STACKORIGIN,x
+	inx
+	mva #$19 :STACKORIGIN,x
+	inx
+	mva #$1D :STACKORIGIN,x
+	jsr B_CRT.CRT_INVERT
+
+; optimize OK (intro.pas), line = 307
+
+	mva #$00 COUNT
+	sta COUNT+1
+l_0902
+
+; optimize FAIL ('B_CRT.CRT_KEYPRESSED', intro.pas), line = 309
+	jsr B_CRT.CRT_KEYPRESSED
+	.ifdef IFTMP_64
+	lda :STACKORIGIN,x
+	sta IFTMP_64
+	eif
+	dex
+	lda :STACKORIGIN+1,x
+	jeq l_0917
+
+; optimize OK (intro.pas), line = 309
+
+	mva #$01 SKIP
+l_0917
+
+; optimize OK (intro.pas), line = 310
+
+	lda SKIP
+	bne *+5
+c_08EC
+	jmp l_08EC
+b_08EC
+
+; optimize FAIL ('GFX_FADEOUT', intro.pas), line = 312
+	jsr GFX_FADEOUT
+
+; optimize OK (intro.pas), line = 313
+
+	mva #$00 MUSIC
+
+; optimize FAIL ('RMT.TRMT.STOP', intro.pas), line = 314
+	lda MSX
+	ldy MSX+1
+	jsr RMT.TRMT.STOP
+
+; optimize FAIL ('B_SYSTEM.WAITFRAME', intro.pas), line = 315
+	jsr B_SYSTEM.WAITFRAME
+
+; optimize FAIL ('B_SYSTEM.DISABLEDLI', intro.pas), line = 316
+	jsr B_SYSTEM.DISABLEDLI
+
+; optimize FAIL ('B_SYSTEM.DISABLEVBLI', intro.pas), line = 317
+	jsr B_SYSTEM.DISABLEVBLI
+
+; optimize OK (intro.pas), line = 318
+
+	mva #$00 ATARI.NMIEN
+
+; optimize OK (intro.pas), line = 319
+
+	sta ATARI.DMACTL
+
+; ---------------------  ASM Block 115  ---------------------
+
+
+        clc
+        rts
+      
+
+; -----------------------------------------------------------
+
+FREE_TOP	= $3000
+DISPLAY_LIST_ADDRESS_TITLE	= $3000
+DISPLAY_LIST_ADDRESS_PIC1	= $3100
+DISPLAY_LIST_ADDRESS_PIC2	= $3200
+DISPLAY_LIST_ADDRESS_PIC3	= $3300
+DISPLAY_LIST_ADDRESS_PIC4	= $3400
+PLAYER_ADDRESS	= $3900
+MODULE_ADDRESS	= $4100
+CHAR_ADDRESS_PIC1_F1	= $4800
+CHAR_ADDRESS_PIC1_F2	= $4C00
+CHAR_ADDRESS_PIC1_F3	= $5000
+CHAR_ADDRESS_PIC1_F4	= $5400
+CHAR_ADDRESS_PIC1_F5	= $5800
+CHAR_ADDRESS_PIC1_F6	= $5C00
+CHAR_ADDRESS_PIC1_F7	= $6000
+CHAR_ADDRESS_PIC1_F8	= $6400
+CHAR_ADDRESS_PIC2_F1	= $6800
+CHAR_ADDRESS_PIC2_F2	= $6C00
+CHAR_ADDRESS_PIC2_F3	= $7000
+CHAR_ADDRESS_PIC2_F4	= $7400
+CHAR_ADDRESS_PIC2_F5	= $7800
+CHAR_ADDRESS_PIC2_F6	= $7C00
+CHAR_ADDRESS_PIC2_F7	= $8000
+CHAR_ADDRESS_PIC3_F1	= $8400
+CHAR_ADDRESS_PIC3_F2	= $8800
+CHAR_ADDRESS_PIC3_F3	= $8C00
+CHAR_ADDRESS_PIC3_F4	= $9000
+CHAR_ADDRESS_PIC3_F5	= $9400
+CHAR_ADDRESS_PIC4_F1	= $9800
+CHAR_ADDRESS_PIC4_F2	= $9C00
+SCREEN_ADDRESS_PIC1	= $B800
+SCREEN_ADDRESS_PIC2	= $BCB0
+SCREEN_ADDRESS_PIC3	= $C160
+SCREEN_ADDRESS_PIC4	= $C610
+CHARSET_ADDRESS	= $E400
+TXT_ADDRESS	= $E800
+NUMBEROFPICS	= $0004
+adr.GFXCOLORS	= DATAORIGIN+$0347
+.var GFXCOLORS	= adr.GFXCOLORS .word
+adr.PICCOLORS	= DATAORIGIN+$034B
+.var PICCOLORS	= adr.PICCOLORS .word
+adr.TXTCOLORS	= DATAORIGIN+$035B
+.var TXTCOLORS	= adr.TXTCOLORS .word
+adr.MSX	= DATAORIGIN+$035D
+.var MSX	= adr.MSX .word
+MSX.PLAYER	= DATAORIGIN+$035D
+MSX.MODUL	= DATAORIGIN+$035F
+PICNUMBER	= DATAORIGIN+$0361
+Y	= DATAORIGIN+$0362
+SKIP	= DATAORIGIN+$0363
+MUSIC	= DATAORIGIN+$0364
+COUNT	= DATAORIGIN+$0365
+FIRSTDLI	= DATAORIGIN+$0367
+adr.STRINGS	= DATAORIGIN+$0369
+.var STRINGS	= adr.STRINGS .word
+adr.CREDITSTXT	= DATAORIGIN+$0381
+.var CREDITSTXT	= adr.CREDITSTXT .word
+@FORTMP_2226	= $0009
+
+@exit
+
+@halt	ldx #0
+	txs
+
+	rts
+
+IOCB@COPY	:16 brk
+
+.local	@DEFINES
+ATARI
+.endl
+
+.endl
+
+; -----------------------------------------------------------
+
+	icl 'cpu6502.asm'
+
+; -----------------------------------------------------------
+
+.macro UNITINITIALIZATION
+
+	.ifdef MAIN.SYSTEM.@UnitInit
+	jsr MAIN.SYSTEM.@UnitInit
+	eif
+
+	.ifdef MAIN.ATARI.@UnitInit
+	jsr MAIN.ATARI.@UnitInit
+	eif
+
+	.ifdef MAIN.B_UTILS.@UnitInit
+	jsr MAIN.B_UTILS.@UnitInit
+	eif
+
+	.ifdef MAIN.B_SYSTEM.@UnitInit
+	jsr MAIN.B_SYSTEM.@UnitInit
+	eif
+
+	.ifdef MAIN.DOS.@UnitInit
+	jsr MAIN.DOS.@UnitInit
+	eif
+
+	.ifdef MAIN.STRUTILS.@UnitInit
+	jsr MAIN.STRUTILS.@UnitInit
+	eif
+
+	.ifdef MAIN.SYSUTILS.@UnitInit
+	jsr MAIN.SYSUTILS.@UnitInit
+	eif
+
+	.ifdef MAIN.B_CRT.@UnitInit
+	jsr MAIN.B_CRT.@UnitInit
+	eif
+
+	.ifdef MAIN.RMT.@UnitInit
+	jsr MAIN.RMT.@UnitInit
+	eif
+.endm
+
+	ift .SIZEOF(MAIN.SYSTEM) > 0
+	.print 'SYSTEM: ',MAIN.SYSTEM,'..',MAIN.SYSTEM+.SIZEOF(MAIN.SYSTEM)-1
+	eif
+
+	ift .SIZEOF(MAIN.ATARI) > 0
+	.print 'ATARI: ',MAIN.ATARI,'..',MAIN.ATARI+.SIZEOF(MAIN.ATARI)-1
+	eif
+
+	ift .SIZEOF(MAIN.B_UTILS) > 0
+	.print 'B_UTILS: ',MAIN.B_UTILS,'..',MAIN.B_UTILS+.SIZEOF(MAIN.B_UTILS)-1
+	eif
+
+	ift .SIZEOF(MAIN.B_SYSTEM) > 0
+	.print 'B_SYSTEM: ',MAIN.B_SYSTEM,'..',MAIN.B_SYSTEM+.SIZEOF(MAIN.B_SYSTEM)-1
+	eif
+
+	ift .SIZEOF(MAIN.DOS) > 0
+	.print 'DOS: ',MAIN.DOS,'..',MAIN.DOS+.SIZEOF(MAIN.DOS)-1
+	eif
+
+	ift .SIZEOF(MAIN.STRUTILS) > 0
+	.print 'STRUTILS: ',MAIN.STRUTILS,'..',MAIN.STRUTILS+.SIZEOF(MAIN.STRUTILS)-1
+	eif
+
+	ift .SIZEOF(MAIN.SYSUTILS) > 0
+	.print 'SYSUTILS: ',MAIN.SYSUTILS,'..',MAIN.SYSUTILS+.SIZEOF(MAIN.SYSUTILS)-1
+	eif
+
+	ift .SIZEOF(MAIN.B_CRT) > 0
+	.print 'B_CRT: ',MAIN.B_CRT,'..',MAIN.B_CRT+.SIZEOF(MAIN.B_CRT)-1
+	eif
+
+	ift .SIZEOF(MAIN.RMT) > 0
+	.print 'RMT: ',MAIN.RMT,'..',MAIN.RMT+.SIZEOF(MAIN.RMT)-1
+	eif
+
+	.print 'CODE: ',CODEORIGIN,'..',*-1
+
+DATAORIGIN
+.by  $28 $00 $18 $00 $2D $0C $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $00  $00 $00 $00 $00 $00 $00 $00 $04
+.by  $0A $0E $00 $74 $36 $FC $00 $84  $88 $0E $00 $24 $1A $0E $00 $10  $14 $1A $00 $00 $00 $00 $00 $00
+.by  $00 $00 $00 $00 $00 $00 $00 $00  $00 $0F $0C $1B $0C $43 $0C $68  $0C $8A $0C $B2 $0C $D5 $0C $E9
+.by  $0C $02 $0D $26 $0D $48 $0D $6D  $0D $8C $0D $99 $0D $0C $0C $A2  $0D $AC $0D $B4 $0D $99 $0D $0C
+.by  $0C $B9 $0D $C0 $0D
+
+VARINITSIZE	= *-DATAORIGIN
+VARDATASIZE	= 931
+
+PROGRAMSTACK	= DATAORIGIN+VARDATASIZE
+
+	.print 'DATA: ',DATAORIGIN,'..',PROGRAMSTACK
+
+	run START
+
+; -----------------------------------------------------------
+
+.macro	STATICDATA
+.by  $04 $54 $52 $55 $45 $00 $05 $46  $41 $4C $53 $45 $00 $00 $00 $0A  $39 $65 $61 $72 $00 $12 $14 $11
+.by  $19 $0C $00 $26 $35 $6E $69 $74  $65 $64 $00 $25 $61 $72 $74 $68  $00 $25 $6D $70 $69 $72 $65 $00
+.by  $69 $73 $00 $73 $74 $69 $6C $6C  $00 $66 $69 $67 $68 $74 $69 $6E  $67 $0E $00 $23 $21 $66 $74 $65
+.by  $72 $00 $18 $00 $79 $65 $61 $72  $73 $00 $69 $6E $00 $6D $69 $6C  $69 $74 $61 $72 $79 $0C $00 $79
+.by  $6F $75 $00 $68 $61 $76 $65 $00  $20 $66 $69 $6E $61 $6C $6C $79  $00 $66 $75 $6C $66 $69 $6C $6C
+.by  $65 $64 $00 $79 $6F $75 $72 $00  $63 $6F $6E $74 $72 $61 $63 $74  $0E $00 $26 $26 $6F $72 $00 $61
+.by  $00 $6C $6F $6E $67 $00 $74 $69  $6D $65 $00 $79 $6F $75 $00 $64  $72 $65 $61 $6D $65 $64 $00 $61
+.by  $62 $6F $75 $74 $00 $79 $6F $75  $72 $00 $21 $6F $77 $6E $00 $76  $65 $6E $74 $75 $72 $65 $73 $00
+.by  $61 $6E $64 $00 $74 $6F $00 $62  $65 $00 $61 $62 $6C $65 $00 $74  $6F $00 $64 $6F $00 $12 $77 $68
+.by  $61 $74 $65 $76 $65 $72 $00 $79  $6F $75 $00 $77 $61 $6E $74 $0E  $00 $17 $37 $69 $74 $68 $00 $72
+.by  $65 $63 $65 $69 $76 $65 $64 $00  $70 $61 $79 $00 $63 $68 $65 $63  $6B $00 $22 $79 $6F $75 $00 $77
+.by  $65 $72 $65 $00 $61 $62 $6C $65  $00 $74 $6F $00 $62 $75 $79 $00  $63 $68 $65 $61 $70 $65 $73 $74
+.by  $00 $73 $68 $69 $70 $00 $20 $61  $6E $64 $00 $73 $74 $69 $6C $6C  $00 $68 $61 $76 $65 $00 $73 $6F
+.by  $6D $65 $00 $63 $68 $61 $6E $67  $65 $00 $6C $65 $66 $74 $0E $00  $23 $29 $74 $00 $69 $73 $00 $75
+.by  $70 $00 $74 $6F $00 $79 $6F $75  $0C $00 $77 $68 $65 $72 $65 $00  $74 $6F $00 $67 $6F $00 $6E $6F
+.by  $77 $0E $0E $0E $00 $1D $80 $B0  $F2 $E5 $F3 $F3 $80 $F3 $F0 $E1  $E3 $E5 $80 $E2 $E1 $F2 $80 $F4
+.by  $EF $80 $E3 $EF $EE $F4 $E9 $EE  $F5 $E5 $80 $00 $0B $30 $72 $6F  $67 $72 $61 $6D $6D $69 $6E $67
+.by  $00 $07 $2D $21 $24 $32 $21 $26  $69 $00 $08 $27 $72 $61 $70 $68  $69 $63 $73 $00 $06 $22 $72 $6F
+.by  $6E $69 $75 $00 $03 $2B $61 $7A  $00 $05 $2D $75 $73 $69 $63 $00  $06 $23 $61 $72 $75 $73 $6F $00
+.by  $6C $6A $3B $FF $FF $6B $2B $2A  $6F $FF $70 $75 $9B $69 $2D $3D  $76 $FF $63 $FF $FF $62 $78 $7A
+.by  $34 $FF $33 $36 $1B $35 $32 $31  $2C $20 $2E $6E $FF $6D $2F $81  $72 $FF $65 $79 $7F $74 $77 $71
+.by  $39 $FF $30 $37 $7E $38 $3E $FF  $66 $68 $64 $FF $82 $67 $73 $61  $4C $4A $3A $FF $FF $4B $5C $5E
+.by  $4F $FF $50 $55 $FF $49 $5F $7C  $56 $FF $43 $FF $FF $42 $58 $5A  $24 $FF $23 $26 $FF $25 $22 $21
+.by  $5B $3B $5D $4E $FF $4D $3F $FF  $52 $FF $45 $59 $FF $54 $57 $51  $28 $FF $29 $27 $FF $40 $FF $FF
+.by  $46 $48 $44 $FF $FF $47 $53 $41  $FF $FF $FF $FF $FF $FF $FF $FF  $FF $FF $FF $FF $FF $FF $FF $FF
+.by  $FF $FF $FF $FF $FF $FF $FF $FF  $FF $FF $FF $FF $FF $FF $FF $FF  $FF $FF $FF $FF $FF $FF $FF $FF
+.by  $FF $FF $FF $FF $FF $FF $FF $FF  $FF $FF $FF $FF $FF $FF $FF $FF  $FF $FF $FF $FF $FF $FF $FF $FF
+.by  $FF $FF $FF $FF $FF $FF $FF $FF  $FF $FF $FF $FF $FF $FF $FF $FF  $FF $FF $FF $FF $FF $FF $FF $FF
+.by  $FF $FF $FF $FF $FF $FF $FF $FF  $FF $FF $FF $FF $FF $FF $FF $FF  $FF $FF $FF $FF $FF $FF $FF $FF
+.by  $FF $FF $FF $FF $FF $FF $FF $FF  $FF $FF $FF $FF $FF $FF $FF $FF
+.endm
+
+	end
