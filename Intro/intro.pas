@@ -1,8 +1,8 @@
-{$librarypath '../../MADS/lib/'}
-{$librarypath '../../MADS/base/'}
-{$librarypath '../../MADS/blibs/'}
+{$librarypath '../../../MADS/lib/'}
+{$librarypath '../../../MADS/base/'}
+{$librarypath '../../../MADS/blibs/'}
 
-uses atari, b_utils, b_system, b_crt, sysutils, cmc;
+uses atari, b_utils, b_system, b_crt, sysutils, rmt; //cmc;
 
 const
 {$i const.inc}
@@ -25,8 +25,8 @@ var
   txtcolors : array [0..1] of Byte = (
     $00,$00
   );
-  // strings: array [0..0] of Word absolute STRINGS_ADDRESS;
-  msx: TCMC;
+  // msx: TCMC;
+  msx: TRMT;
   // txt: String;
   picnumber: Byte; //count from 0
   y: Byte;
@@ -107,7 +107,6 @@ begin
   until skip or (count > time);
 end;
 
-
 begin
   //fadeoff;
   SystemOff;
@@ -117,8 +116,8 @@ begin
   // Initialize player
   msx.player:=pointer(PLAYER_ADDRESS);
   msx.modul:=pointer(MODULE_ADDRESS);
-  msx.init;
-  // msx.init(0);
+  // msx.init;
+  msx.init(0);
 
   skip:= false;
   music:= true;
@@ -139,7 +138,7 @@ begin
   //   waitframe;
   //   if CRT_Keypressed then skip:= true;
   // until skip or (count > 300);
-  wait(300);
+  wait(75);
 
   if skip = false then begin
     gfx_fadeout;
@@ -312,8 +311,8 @@ begin
 
   gfx_fadeout;  
   music:= false;
-  waitframe;
   msx.stop;
+  waitframe;
   DisableDLI;
   DisableVBLI;
   nmien:=0;

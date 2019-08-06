@@ -117,7 +117,7 @@ begin
         
         ;mwa #dli_pic1_f1 __dlivec
     };
-    msx.play;
+    // msx.play;
     asm {
         plr ; restore registers
         };
@@ -229,7 +229,7 @@ begin
 ;        sta ATARI.WSYNC
         
     };
-    msx.play;
+    // msx.play;
     asm {
 
         plr ; restore registers
@@ -349,7 +349,7 @@ begin
         mva #.hi(CHARSET_ADDRESS) ATARI.chbase
 
     };
-    msx.play;
+    // msx.play;
     asm {
 
         plr ; restore registers
@@ -424,7 +424,7 @@ begin
         mva #.hi(CHARSET_ADDRESS) ATARI.chbase
 
     };
-    msx.play;
+    // msx.play;
     asm {
 
         plr ; restore registers
@@ -437,7 +437,7 @@ begin
   asm {
       phr ; store registers
   };
-
+  if music then msx.play;
   asm {
       mwa firstDLI __dlivec
       plr ; restore registers
@@ -459,7 +459,7 @@ begin
         mva #00 ATARI.colbk
         mva adr.txtcolors+1 ATARI.colpf1
     };
-    msx.play;
+    // msx.play;
   asm {
         plr ; restore registers
         };

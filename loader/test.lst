@@ -1,0 +1,69 @@
+mads 2.0.9
+   290 					opt l+
+    90
+    91 = E400			CHARSET_ADDRESS equ $E400; // same as in intro and game
+    92 				          org CHARSET_ADDRESS
+    93 FFFF> E400-E7FF> 00 00 +           ins '../assets/Nvdi8.fnt'
+    94 E800			          org $3000
+    95
+    96
+    97 				; .proc	systemoff
+    98
+    99 				; 	lda:rne vcount
+   100
+   101 				; 	sei
+   102 				; 	inc nmien
+   103 				; 	mva #$fe portb
+   104
+   105 				; 	rts
+   106 				; .endp
+   107
+   108 				; .proc	systemon
+   109
+   110 				; 	lda:rne vcount
+   111
+   112 				; 	mva #$ff portb
+   113 				; 	dec nmien
+   114 				; 	cli
+   115
+   116 				; 	rts
+   117 				; .endp
+   118
+   119 				;-------------------------------------------------------------------------------
+   120 3000			dlist
+   121 3000-306D> 70 70 70	          .byte DL_BLANK8, DL_BLANK8, DL_BLANK8
+   122 3003 42 09 30		          .byte DL_MODE_40x24T2 + DL_LMS, a(vmem)
+   123 3006 41 00 30		          .byte DL_JVB, a(dlist)
+   124
+   125 3009			vmem
+   126 3009 00 00 00 00 2C 2F + 	        .byte "    LOADING... Star Vagrant.            "
+   127
+   128 3031 18			initialize  clc
+   129 3032 D8			           cld
+   130 3033 AD 01 D3		           lda PORTB
+   131 3036 09 02		           ora #$02
+   132 3038 8D 01 D3		           sta PORTB
+   133 303B 60			           rts
+   134
+   135 303C			main
+   136
+   137 				          ;jsr systemoff
+   138
+   139
+   140 303C AD 0B D4		sync     lda VCOUNT
+   141 303F D0 FB		         bne sync
+   142
+   143 3041 A9 E4 8D 09 D4	         mva #.hi(CHARSET_ADDRESS) chbase
+   144 3046 A9 1C 8D 17 D0	         mva #28 colpf1
+   145 304B A9 00 8D 16 D0	         mva #0 colpf0
+   146 3050 A9 00 8D 18 D0	         mva #0 colpf2
+   147 3055 A9 00 8D 19 D0	         mva #0 colpf3
+   148 305A A9 00 8D 1A D0	         mva #0 colbak
+   149 305F A9 00 8D 02 D4 A9 +          mwa #dlist dlistl
+   150 3069 A9 21 8D 00 D4	         mva #ANTIC_MODE_NARROW DMACTL
+   151
+   152 				          ;jmp systemon
+   153
+   154 02E2-02E3> 31 30		         ini initialize
+   155 02E0-02E1> 3C 30		          run main
+   156

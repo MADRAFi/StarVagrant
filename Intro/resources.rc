@@ -44,9 +44,9 @@ DISPLAY_LIST_ADDRESS_PIC4 rcasm 'dlist_pic4.asm'
 
 
 ; rmt module
-;PLAYER_ADDRESS	RMTPLAY	'assets/title.feat' 0
-;MODULE_ADDRESS	RMT	'assets/title.rmt'
+PLAYER_ADDRESS	RMTPLAY	'assets/intro.feat' 0
+MODULE_ADDRESS	RMT	'assets/intro.rmt'
 
-PLAYER_ADDRESS  CMCPLAY
-MODULE_ADDRESS  CMC 'assets/echo.cmc'
+;PLAYER_ADDRESS  CMCPLAY
+;MODULE_ADDRESS  CMC 'assets/echo.cmc'
 
