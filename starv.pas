@@ -2327,14 +2327,14 @@ begin
                         optionPressed:=true;
                       end;
                     end;
-      KEY_OPTION6:
-                    begin
-                      // putSpacesAt(40,0,21);
-                      CRT_ClearRow(21);
-                      CRT_GotoXY(0,21);
-                      offset:= (NUMBEROFITEMS * player.loc) + currentitemindex;
-                      CRT_Write('ci_qty='~);CRT_Write(currentitemquantity);WriteSpace;CRT_Write('iq='~);CRT_Write(itemquantity[offset]);WriteSpace;CRT_Write('ci_idx='~);CRT_Write(currentitemindex);
-                    end;            
+      // KEY_OPTION6:
+      //               begin
+      //                 // putSpacesAt(40,0,21);
+      //                 CRT_ClearRow(21);
+      //                 CRT_GotoXY(0,21);
+      //                 offset:= (NUMBEROFITEMS * player.loc) + currentitemindex;
+      //                 CRT_Write('ci_qty='~);CRT_Write(currentitemquantity);WriteSpace;CRT_Write('iq='~);CRT_Write(itemquantity[offset]);WriteSpace;CRT_Write('ci_idx='~);CRT_Write(currentitemindex);
+      //               end;            
 
       end;
       If (keyval = KEY_LEFT) or (keyval = KEY_RIGHT) or (keyval = KEY_CTRLLEFT) or (keyval = KEY_CTRLRIGHT) or
