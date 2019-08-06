@@ -30,7 +30,7 @@ begin
   //if (xBiosCheck = 1) and (xBiosIOresult = 0) then
   if (xBiosCheck <> 0) and (xBiosIOresult = 0) then
   begin
-    xBiosLoadData(Pointer(GFX_ADDRESS));
+    xBiosLoadLz4Data(Pointer(GFX_ADDRESS));
     xBiosFlushBuffer;
   end;
   // msx.continue_play;
@@ -44,11 +44,8 @@ const
 
 var
   fileoffset: Cardinal;
-  // usedqf: Word;
 
 begin
-  // usedqf:= distance;
-
   CRT_ClearRow(6);
   for y:=0 to MAXAVAILABLEDESTINATIONS-1 do
   begin
@@ -67,41 +64,24 @@ begin
   fileoffset:=0;
   If (xBiosCheck <> 0) then xBiosSetLength(CHUNKSIZE); //size of chunk to read
 
-  // count:=(ROUND(15 / (ship.speed / 100))) - (5 - Trunc(ship.lenght / 25));
-  // count:= ship.swait;
+    If (xBiosCheck <> 0) then
+    begin
+      xBiosLoadLz4Data(Pointer(GFX_ADDRESS+fileoffset));
+      fileoffset:=fileoffset+CHUNKSIZE;
+      // msx.continue_play;
+      // music:= true;
+      sfx_init;
+    end;
 
   // simulate travel
   repeat
-    If (xBiosCheck <> 0) then
-    begin
-      xBiosLoadData(Pointer(GFX_ADDRESS+fileoffset));
-      fileoffset:=fileoffset+CHUNKSIZE;
-    end;
 
     Dec(distance);
     Dec(ship.qf);
     navi_distanceUpdate(distance);
-    // waitframes(count);
     waitframes(ship.swait);
 
-  until ((distance = 0)); // and (xBiosIOresult <> 0)) or ((distance = 0) and (xBiosCheck = 0));
-    
-    If (xBiosIOresult <> 0) and (music = false) then
-    begin
-      xBiosFlushBuffer; // close file
-      // msx.continue_play;
-      // music:= true;
-      sfx_init; // reinitialize pokey
-    end;
-  // If (xBiosCheck <> 0) then
-  // begin
-  //   // msx.interrupt_play;
-  //       xBiosFlushBuffer; // close file
-  //   // msx.continue_play;
-  //   waitframe;
-  //   // music:= true;
-    
-  // end; 
+  until (distance = 0);
   
   randomEncounter;
   calculateprices;
