@@ -74,8 +74,8 @@ var
   ship9: TShip;
   ship10: TShip;
   ship11: TShip;
-  // shipmatrix: array [0..NUMBEROFSHIPS-1] of pointer = (@ship0, @ship1, @ship2, @ship3, @ship4, @ship5, @ship6, @ship7, @ship8, @ship9, @ship10, @ship11);
-  shipmatrix: array [0..NUMBEROFSHIPS-1] of ^TShip;
+  shipmatrix: array [0..NUMBEROFSHIPS-1] of pointer = (@ship0, @ship1, @ship2, @ship3, @ship4, @ship5, @ship6, @ship7, @ship8, @ship9, @ship10, @ship11);
+  // shipmatrix: array [0..NUMBEROFSHIPS-1] of ^TShip;
 
 
   (*
@@ -2902,31 +2902,32 @@ begin
   //   tshp^.qf_max:=Word(ships[offset+6]);
   //   tshp^.swait:=byte(ships[offset+7]);
   // end;
-  shipmatrix[0]:=@ship0;
-  shipmatrix[1]:=@ship1;
-  shipmatrix[2]:=@ship2;
-  shipmatrix[3]:=@ship3;
-  shipmatrix[4]:=@ship4;
-  shipmatrix[5]:=@ship5;
-  shipmatrix[6]:=@ship6;
-  shipmatrix[7]:=@ship7;
-  shipmatrix[8]:=@ship8;
-  shipmatrix[9]:=@ship9;
-  shipmatrix[10]:=@ship10;
-  shipmatrix[11]:=@ship11;
+  // shipmatrix[0]:=@ship0;
+  // shipmatrix[1]:=@ship1;
+  // shipmatrix[2]:=@ship2;
+  // shipmatrix[3]:=@ship3;
+  // shipmatrix[4]:=@ship4;
+  // shipmatrix[5]:=@ship5;
+  // shipmatrix[6]:=@ship6;
+  // shipmatrix[7]:=@ship7;
+  // shipmatrix[8]:=@ship8;
+  // shipmatrix[9]:=@ship9;
+  // shipmatrix[10]:=@ship10;
+  // shipmatrix[11]:=@ship11;
 
 
   for y:=0 to NUMBEROFSHIPS-1 do
   begin
     offset:=(y * MAXSHIPPARAMETERS);
-    shipmatrix[y].mcode:=StrToInt(ships[offset+1]);
-    shipmatrix[y].sindex:=y;
-    shipmatrix[y].scu_max:=StrToInt(ships[offset+2]);
-    shipmatrix[y].speed:=StrToInt(ships[offset+3]);
-    shipmatrix[y].lenght:=StrToInt(ships[offset+4]);
-    shipmatrix[y].mass:=StrToInt(ships[offset+5]);
-    shipmatrix[y].qf_max:=StrToInt(ships[offset+6]);
-    shipmatrix[y].swait:=StrToInt(ships[offset+7]);
+    tshp:=shipmatrix[y];
+    tshp^.mcode:=StrToInt(ships[offset+1]);
+    tshp^.sindex:=y;
+    tshp^.scu_max:=StrToInt(ships[offset+2]);
+    tshp^.speed:=StrToInt(ships[offset+3]);
+    tshp^.lenght:=StrToInt(ships[offset+4]);
+    tshp^.mass:=StrToInt(ships[offset+5]);
+    tshp^.qf_max:=StrToInt(ships[offset+6]);
+    tshp^.swait:=StrToInt(ships[offset+7]);
   end;
 
   gamestate:= NEWGAME;

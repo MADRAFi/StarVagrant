@@ -31,7 +31,7 @@ begin
   if (xBiosCheck <> 0) and (xBiosIOresult = 0) then
   begin
     xBiosLoadLz4Data(Pointer(GFX_ADDRESS));
-    xBiosFlushBuffer;
+    // xBiosFlushBuffer;
   end;
   // msx.continue_play;
   // music:= true;
@@ -39,11 +39,6 @@ begin
 end;
 
 procedure navi_ftljump(distance: Word);
-const
-    CHUNKSIZE = 600;
-
-var
-  fileoffset: Cardinal;
 
 begin
   CRT_ClearRow(6);
@@ -56,31 +51,28 @@ begin
   sfx_play(voice4, 236,202); // vol 10
 
   gfx_fadeout(false);
-  music:=false;
   waitframe;
+  pic_load(LOC,newLoc);
+
+  // music:=false;
+  // waitframe;
   // msx.interrupt_play;
 
-  pic_openfile('LOC',newLoc);
-  fileoffset:=0;
-  If (xBiosCheck <> 0) then xBiosSetLength(CHUNKSIZE); //size of chunk to read
-
-    If (xBiosCheck <> 0) then
-    begin
-      xBiosLoadLz4Data(Pointer(GFX_ADDRESS+fileoffset));
-      fileoffset:=fileoffset+CHUNKSIZE;
-      // msx.continue_play;
-      // music:= true;
-      sfx_init;
-    end;
+  // pic_openfile('LOC',newLoc);
+  // If (xBiosCheck <> 0) then
+  // begin
+  //   xBiosLoadLz4Data(Pointer(GFX_ADDRESS);
+  //   // msx.continue_play;
+  //   // music:= true;
+  //   sfx_init;
+  // end;
 
   // simulate travel
   repeat
-
     Dec(distance);
     Dec(ship.qf);
     navi_distanceUpdate(distance);
     waitframes(ship.swait);
-
   until (distance = 0);
   
   randomEncounter;
