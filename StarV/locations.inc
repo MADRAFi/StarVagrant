@@ -9,7 +9,7 @@ locations: array [0..NUMBEROFLOCATIONS-1] of TString = (
 'Hydro Harvest'~,
 'Hikers Research'~,
 'Oasis Depot'~,
-'LKRM-Highdust'~,
+'Highdust'~,
 'Yantar-4K2M'~,
 'Tycho Station'~,
 'Lourvil'~,

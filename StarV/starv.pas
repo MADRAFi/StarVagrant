@@ -1873,61 +1873,38 @@ begin
                               count:=ship.cargoquantity[y] - currentship.cargoquantity[y];
                               if count > 0 then Inc(itemquantity[offset],count)
                               else Dec(itemquantity[offset],count)
-                              // Dec(itemquantity[offset],ship.cargoquantity[y] - currentship.cargoquantity[y]);
                             end
                             else
                             begin
-                              // bougt item
-                              if (ship.cargoindex[y] = 0) or (ship.cargoindex[y] <> currentship.cargoindex[y]) then
+                              if (ship.cargoindex[y] = 0) then
                               begin
-
-                                // CRT_ClearRow(21);
-                                // CRT_GotoXY(1,21);
-                                // CRT_Write('y='~);CRT_Write(y);WriteSpace;CRT_Write('crgidx='~);CRT_Write(currentship.cargoindex[y]);
-                                // WriteSpace;CRT_Write('iq='~);CRT_Write(itemquantity[offset]);
-                                // WriteSpace;CRT_Write('off='~);CRT_Write(offset);
-                                // repeat until CRT_KeyPressed;
-
+                                // Bought item
                                 Dec(itemquantity[offset],currentship.cargoquantity[y]);
                               end
-                              else 
-                              begin
-                              // sold item
-                                offset:= (NUMBEROFITEMS * player.loc) + ship.cargoindex[y];
-                                Inc(itemquantity[offset],ship.cargoquantity[y]);
-
-                                // CRT_ClearRow(21);
-                                // CRT_GotoXY(1,21);
-                                // CRT_Write('y='~);CRT_Write(y);WriteSpace;CRT_Write('crgidx='~);CRT_Write(itemquantity[offset]);WriteSpace;CRT_Write('iq='~);CRT_Write(itemquantity[offset]);
-                                // repeat until CRT_KeyPressed;
-                              end;
-                              
-                              // sold item
-                              // if currentship.cargoindex[y] = 0 then
-                              // begin
-                              //   Inc(itemquantity[offset],ship.cargoquantity[y]);
-                              // end;
-                            end;
+                            end;  
                           end
                           else
                           break;
                         end;
 
-
-                        // for y:=0 to MAXCARGOSLOTS-1 do
-                        // begin
-                        //   if ship.cargoindex[y] > 0 then //if there is a cargo in ship
-                        //   begin
-                        //     offset:= (NUMBEROFITEMS * player.loc) + ship.cargoindex[y];
-
-                        //     Inc(itemquantity[offset],currentship.cargoquantity[y] - ship.cargoquantity[y]);
-                        //   end
-                        //   else
-                        //   break;
-                        // end;
-
+                        for y:=0 to MAXCARGOSLOTS-1 do
+                        begin
+                          if ship.cargoindex[y] > 0 then //if there is a cargo in ship
+                          begin
+                            if (ship.cargoindex[y] <> currentship.cargoindex[y]) then
+                            begin
+                              // Sold item
+                              offset:= (NUMBEROFITEMS * player.loc) + ship.cargoindex[y];
+                              Inc(itemquantity[offset],ship.cargoquantity[y]);
+                            end;  
+                          end
+                          else
+                          break;
+                        end;
                         ship:= currentShip;
                       end;
+
+
                       player.uec:= currentuec;
                       current_menu := MENU_MAIN;
                       //gfx_fadeout(true);
@@ -2193,6 +2170,7 @@ begin
                           if (selecteditemquantity > 0) then
                           begin
                             beep200; //vol 10
+
                             currentShip.cargoquantity[itemindex]:=currentShip.cargoquantity[itemindex]-selecteditemquantity;
                             If currentShip.cargoquantity[itemindex] = 0 then currentShip.cargoindex[itemindex]:= 0; // erasing item form cargoindex
 
