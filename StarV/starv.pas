@@ -291,14 +291,28 @@ begin
   poke($d208,0);
 end;
 
-procedure writeRuler(row:byte);
+procedure writeRuler(row:Byte);
+
+// var
+//   output: String;
+
 begin
     CRT_GotoXY(0,row);
-    CRT_Write('--------------------+-------------------'~);
+    for y:=0 to 19 do
+    begin
+      CRT_Write(Chr(18+64));
+    end;
+
+    CRT_Write(Chr(19+64));
+    for y:=0 to 18 do
+    begin
+      CRT_Write(Chr(18+64));
+    end;
+
     sfx_play(voice4,77,202); // vol10
 end;
 
-procedure WriteSpaces(len:byte);
+procedure WriteSpaces(len:Byte);
 begin
   CRT_Write(Atascii2Antic(Space(len)));
 end;
@@ -1759,7 +1773,13 @@ begin
   trade_UpdateCargo;
 
   CRT_GotoXY(0,7);
-  CRT_Write('--------------------+'~);
+  // CRT_Write('--------------------+'~);
+
+  for y:=0 to 19 do
+    begin
+      CRT_Write(Chr(18+64));
+    end;
+  CRT_Write(Chr(4+64));
   sfx_play(voice4,77,202); // vol10
 
   for y:=8 to 17 do
