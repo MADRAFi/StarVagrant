@@ -22,6 +22,8 @@ locations: array [0..NUMBEROFLOCATIONS-1] of TString = (
 'Fobos'~,
 'Sakigake'~,
 'Nozomi'~,
-'Akatsuki'~
+'Akatsuki'~,
+'Novorossiysk'~,
+'Rostov'~
 
 );

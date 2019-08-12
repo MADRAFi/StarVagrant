@@ -18,7 +18,7 @@ DISPLAY_LIST_ADDRESS_CONSOLE = DISPLAY_LIST_ADDRESS_MENU + $100;
 LOGODATA_ADDRESS = DISPLAY_LIST_ADDRESS_CONSOLE + $100;
 // ***************************************************************************//
 
-NUMBEROFLOCATIONS = 23; // number of locations defined in locations.asm. Needs to match.
+NUMBEROFLOCATIONS = 25; // number of locations defined in locations.asm. Needs to match.
 NUMBEROFITEMS = 24; // number of items defined in items.asm. Needs to match.
 NUMBEROFSHIPS = 12; // number of ships defined in ships array.
 MAXSHIPPARAMETERS = 8; // number of ship parameters in ship array
