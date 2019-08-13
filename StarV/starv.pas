@@ -268,7 +268,7 @@ var
   thankstxt: array [0..9] of String = (
     'Special thanks to:'~,
     ''~,
-    'BOCiANu for all the support'~,
+    'Bocianu for all the support'~,
     ''~,
     'XXL for xBios support'~,
     'Tebe for providing MAD-Pascal help'~,
@@ -1184,8 +1184,9 @@ begin
 
   // Help Keys
   CRT_GotoXY(5,7);
-  txt:=concat(char(30),char(31));
-  CRT_Write(Atascii2Antic(txt));
+  // txt:=concat(char(30),char(31));
+  // CRT_Write(Atascii2Antic(txt));
+  CRT_Write(Chr(30+128+64)); CRT_Write(Chr(31+128+64)); // character code + 128 for inverse + 64 for antic code
   CRT_Write(strings[44]);  // Choose
   WriteSpace;
   CRT_Write('RETURN'*~);
@@ -1807,8 +1808,9 @@ begin
 
   // help
   CRT_GotoXY(1,22);
-  txt:=concat(char(30+128),char(31+128));
-  CRT_Write(Atascii2Antic(txt));
+  // txt:=concat(char(30+128),char(31+128));
+  // CRT_Write(Atascii2Antic(txt));
+  CRT_Write(Chr(30+128+64)); CRT_Write(Chr(31+128+64)); // character code + 128 for inverse + 64 for antic code
   CRT_Write('-x1 +'~);
   CRT_Write('CONTROL'*~);
   CRT_Write('-x100 +'~);
