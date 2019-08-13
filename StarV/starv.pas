@@ -46,6 +46,7 @@ var
   txt: String; // Some strings
   offset: Word; // offset counted to get items from arrays
   y: Byte; // index for loops
+  x: Byte;
   count: Word; // count in item iterations
   msx: TCMC;
   current_menu: Byte;
@@ -387,16 +388,16 @@ begin
     if (current_menu = MENU_TITLE) or (current_menu = MENU_SAVE) or (current_menu = MENU_LOAD) or (current_menu = MENU_CREDITS) then
     begin
       for b:=0 to 3 do 
-        If ((gfxcolors[b] and %00001111) < (titlecolors[b] and %00001111)) then Inc(gfxcolors[b]) else gfxcolors[b]:=titlecolors[b];
+        If ((gfxcolors[b] and %00001111) <= (titlecolors[b] and %00001111)) then Inc(gfxcolors[b]) else gfxcolors[b]:=titlecolors[b];
     end
     else
     begin
       for b:=0 to 3 do 
-        If ((gfxcolors[b] and %00001111) < (piccolors[y+b] and %00001111 )) then Inc(gfxcolors[b]) else gfxcolors[b]:=piccolors[y+b];
+        If ((gfxcolors[b] and %00001111) <= (piccolors[y+b] and %00001111 )) then Inc(gfxcolors[b]) else gfxcolors[b]:=piccolors[y+b];
     end;
 
-    If ((txtcolors[0] and %00001111) < (txtback and %00001111)) then inc(txtcolors[0]) else txtcolors[0]:=txtback;
-    If ((txtcolors[1] and %00001111) < (txtcolor and %00001111)) then inc(txtcolors[1]) else txtcolors[1]:=txtcolor;
+    If ((txtcolors[0] and %00001111) <= (txtback and %00001111)) then inc(txtcolors[0]) else txtcolors[0]:=txtback;
+    If ((txtcolors[1] and %00001111) <= (txtcolor and %00001111)) then inc(txtcolors[1]) else txtcolors[1]:=txtcolor;
 
   until ((gfxcolors[0]=piccolors[y]) or (gfxcolors[0]=titlecolors[0])) and ((gfxcolors[1]=piccolors[y+1]) or (gfxcolors[1]=titlecolors[1])) and ((gfxcolors[2]=piccolors[y+2]) or (gfxcolors[2]=titlecolors[2])) and ((gfxcolors[3]=piccolors[y+3]) or (gfxcolors[3]=titlecolors[3]));
 end;
@@ -647,9 +648,9 @@ begin
       offset:= (NUMBEROFSHIPS * loc)+y;
       if shipprices[offset] > shipprices[0] then // do not change price of starting ship
       begin
-        newLoc:=Random(2); 
+        x:=Random(2); 
         count:=percentc(shipprices[offset]);
-        if newLoc = 0 then
+        if x = 0 then
         begin
           // price drop
           // modify:=(1 - percent);
@@ -981,7 +982,7 @@ var
 procedure setDestIdx(v:word);
 begin
   beep230; //vol 10
-  newLoc:=1; // reused variable
+  x:=1; // reused variable
   destinationindex:=v;
 end;
 
@@ -1092,9 +1093,9 @@ begin
                           end;
                         end;
           else 
-             newLoc:=0; // reuse variable
+             x:=0; // reuse variable
         end;
-        if (current_menu=MENU_NAV) and (destinationindex > 0) and (newLoc > 0) then
+        if (current_menu=MENU_NAV) and (destinationindex > 0) and (x > 0) then
         begin
           distance:=locationdistance[destinationindex];
           navi_destinationUpdate(destinationindex);
@@ -1115,7 +1116,7 @@ var
   currentshipprice: Longword;
 
 begin
-  newLoc:=0;
+  x:=0;
   beep230; //vol 10
   CRT_ClearRows(0,7);
 
@@ -1249,12 +1250,12 @@ begin
                           begin
                             sfx_play(voice4,80,170); // vol10
                             Dec(shipindex);
-                            newLoc:=1; //reused variable
+                            x:=1; //reused variable
                           end
                           else
                           begin
                             beep255; // vol10
-                            newLoc:=0; //reused variable
+                            x:=0; //reused variable
                           end;
                       end;
           KEY_RIGHT:  begin
@@ -1262,12 +1263,12 @@ begin
                         begin
                           sfx_play(voice4,80,170); // vol10
                           Inc(shipindex);
-                          newLoc:=1; //reused variable
+                          x:=1; //reused variable
                         end
                         else
                         begin
                           beep255; // vol10
-                          newLoc:=0; //reused variable
+                          x:=0; //reused variable
                         end;
                       end;
           KEY_SELECT: begin
@@ -1323,7 +1324,7 @@ begin
 
         end;
    
-        if (current_menu=MENU_SHIP) and (shipindex <= NUMBEROFSHIPS-1) and (newLoc > 0) then
+        if (current_menu=MENU_SHIP) and (shipindex <= NUMBEROFSHIPS-1) and (x > 0) then
 
         begin
           tshp:=shipmatrix[availableships[shipindex]];
