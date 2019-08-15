@@ -1411,8 +1411,7 @@ begin
   beep230; //vol 10
   CRT_ClearRows(0,7);
 
-  // itemoffset:=(NUMBEROFITEMS * player.loc) + 12; // check hydrogen
-  itemoffset:=12;
+  itemoffset:=(NUMBEROFITEMS * player.loc) + 12; // check hydrogen
   fuelquantity:= 0;
   if (itemquantity[itemoffset] > 0) then
   begin
