@@ -1405,15 +1405,21 @@ var
   fueltotal: Longword;
   reqtotal: LongWord;
   itemoffset: Word;
+  iprice: Word;
 
 begin
   beep230; //vol 10
   CRT_ClearRows(0,7);
 
-  itemoffset:=(NUMBEROFITEMS * player.loc) + 12; // check hydrogen
+  // itemoffset:=(NUMBEROFITEMS * player.loc) + 12; // check hydrogen
+  itemoffset:=12;
   fuelquantity:= 0;
   if (itemquantity[itemoffset] > 0) then
-    fuelprice:= itemprice[itemoffset] div 4     // Fuel price is 1/4 of Hydrogen
+  begin
+    iprice:= itemprice[itemoffset];
+    fuelprice:=iprice div 4;     // Fuel price is 1/4 of Hydrogen
+  end
+    // fuelprice:= 16 div 4
   else
   begin    
     // There is no Hydrogen to refuel
@@ -1422,7 +1428,8 @@ begin
   end;
   reqfuel:= 0;
   reqtotal:= 0;
-
+  CRT_GotoXY(0,6);
+  CRT_Write('offset:'~);CRT_Write(itemoffset);CRT_Write(' iprice:'~);CRT_Write(iprice);CRT_Write(' fuelprice:'~);CRT_Write(fuelprice);
   
   If (ship.qf < ship.qf_max) then
   begin
@@ -1432,8 +1439,6 @@ begin
     begin
      fuelquantity:=ship.qf_max - ship.qf;
 
-    //  CRT_GotoXY(0,6);
-    //  CRT_Write('reqt:'~);CRT_Write(reqtotal);Writespaces(1);CRT_Write('fuel_quant:'~);CRT_Write(fuelquantity)
     end
     else 
     begin
