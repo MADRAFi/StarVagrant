@@ -38,6 +38,9 @@ dl_start
     dta DL_DLI + DL_BLANK8                                        ; // 8 blank line
     dta DL_MODE_40x24T2 + DL_LMS, a(TXT_ADDRESS)                  ; // mode 0 line + text memory start
     :22 dta DL_MODE_40x24T2                                       ; // x mode 0 line
+    dta DL_BLANK1                                                 ; // space line in help rows
     dta DL_MODE_40x24T2
+    ; dta DL_BLANK8
+
 ;    dta DL_MODE_40x24T2 + DL_HSCROLL + DL_LMS, a(SCROLL_ADDRESS)  ; //  mode 0 line + scroll memory start
     dta DL_JVB, a(dl_start)                                       ; // jump to beginning

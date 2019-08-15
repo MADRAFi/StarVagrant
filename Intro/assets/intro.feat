@@ -1,11 +1,11 @@
 ;* --------BEGIN--------
-;* C:\Users\MADRAFi\Dropbox\Atari\DEV\StarVagrant\Intro\assets\intro.rmt
+;* C:\Users\MADRAFi\Dropbox\Atari\DEV\StarVagrant\Source\Intro\assets\intro.rmt
 FEAT_SFX		equ 0
 FEAT_GLOBALVOLUMEFADE	equ 0		;RMTGLOBALVOLUMEFADE variable
 FEAT_NOSTARTINGSONGLINE	equ 0
 FEAT_INSTRSPEED		equ 1
 FEAT_CONSTANTSPEED		equ 3		;(0 times)
-FEAT_COMMAND1		equ 1		;(23 times)
+FEAT_COMMAND1		equ 1		;(26 times)
 FEAT_COMMAND2		equ 0		;(0 times)
 FEAT_COMMAND3		equ 0		;(0 times)
 FEAT_COMMAND4		equ 1		;(1 times)

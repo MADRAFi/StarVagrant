@@ -46,6 +46,7 @@ var
   txt: String; // Some strings
   offset: Word; // offset counted to get items from arrays
   y: Byte; // index for loops
+  x: Byte;
   count: Word; // count in item iterations
   msx: TCMC;
   current_menu: Byte;
@@ -74,8 +75,8 @@ var
   ship9: TShip;
   ship10: TShip;
   ship11: TShip;
-  // shipmatrix: array [0..NUMBEROFSHIPS-1] of pointer = (@ship0, @ship1, @ship2, @ship3, @ship4, @ship5, @ship6, @ship7, @ship8, @ship9, @ship10, @ship11);
-  shipmatrix: array [0..NUMBEROFSHIPS-1] of ^TShip;
+  shipmatrix: array [0..NUMBEROFSHIPS-1] of pointer = (@ship0, @ship1, @ship2, @ship3, @ship4, @ship5, @ship6, @ship7, @ship8, @ship9, @ship10, @ship11);
+  // shipmatrix: array [0..NUMBEROFSHIPS-1] of ^TShip;
 
 
   (*
@@ -107,14 +108,14 @@ var
     $70,$74,$7c,$00,    // 15
     // $fc,$f4,$f0,$00     // 16
     $10,$14,$1a,$00,     // 16
-    $10,$14,$1a,$00,     // 17
-    $04,$0a,$0e,$00,     // 18
+    $f0,$f4,$fc,$00,     // 17
+    $70,$74,$7c,$00,     // 18
     $30,$34,$3c,$00,     // 19
-    $04,$08,$0c,$00,     // 20
-    // $f0,$f4,$fc,$00,     // 22
-    $04,$0a,$0e,$00,     // 21
-    $70,$74,$7c,$00    // 22
-    // $10,$14,$1c,$00      // 25
+    $f0,$f4,$fc,$00,     // 20
+    $70,$74,$7c,$00,     // 21
+    $10,$14,$1c,$00,     // 22
+    $30,$34,$3c,$00,     // 23
+    $30,$34,$0e,$00      // 24
   );
 
   // current gfx colors
@@ -152,7 +153,10 @@ var
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     500,0,0,125,0,44,0,33,0,16,0,0,0,0,0,150,0,0,0,0,389,0,0,0,
     0,40,0,0,0,0,32,42,0,0,31,0,32,25,0,0,10,0,0,0,0,0,1,0,
-    0,0,630,125,0,0,0,0,176,98,0,258,40,0,0,195,20,0,0,88,389,0,1,768
+    0,0,630,125,0,0,0,0,176,98,0,258,40,0,0,195,20,0,0,88,389,0,1,768,
+    0,6,0,100,0,90,0,40,10,8,0,50,4,0,500,0,0,29,0,100,400,0,0,0,
+    0,6,0,100,0,0,35,0,10,8,70,50,4,40,0,300,30,0,0,0,0,300,0,0
+
 
 
   );  // price matrix for items
@@ -180,35 +184,38 @@ var
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     5000,0,0,5000,0,5000,0,5000,0,5000,0,0,0,0,0,5000,0,0,0,0,5000,0,0,0,
     0,10000,0,0,0,0,10000,10000,0,0,10000,0,65000,10000,0,0,65000,0,0,0,0,0,65000,0,
-    0,0,0,5000,0,0,0,0,5000,5000,0,5000,0,0,0,0,0,0,0,0,10000,0,65000,0
-
+    0,0,0,5000,0,0,0,0,5000,5000,0,5000,0,0,0,0,0,0,0,0,10000,0,65000,0,
+    0,65000,0,0,0,0,0,0,65000,65000,0,65000,65000,0,0,0,0,0,0,0,0,0,0,0,
+    0,65000,0,0,0,0,0,0,65000,65000,0,65000,65000,0,0,0,0,0,0,0,0,0,0,0
 
   ); // quantities of items
 
   locationdistance: array[0..(NUMBEROFLOCATIONS * NUMBEROFLOCATIONS)-1] of Word = (
-    0,50,0,0,0,0,0,0,60,0,0,365,120,0,0,50,50,0,0,0,0,0,0,
-    50,0,20,30,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,30,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,20,0,0,0,0,0,0,0,0,0,20,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,30,0,0,0,0,0,0,
-    0,0,0,0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,30,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    60,0,0,0,0,0,0,30,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,50,0,60,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,50,0,0,0,0,0,0,0,500,0,0,0,0,0,
-    365,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    120,0,0,0,0,0,0,0,0,60,0,0,0,10,70,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,10,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,70,0,0,0,0,0,0,0,0,0,0,
-    50,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    50,0,0,0,20,30,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,500,0,0,0,0,0,0,0,150,0,95,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,150,0,80,180,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,80,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,95,180,0,0,220,300,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,220,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,300,0,0
+    0,50,0,0,0,0,0,0,60,0,0,365,120,0,0,50,50,0,0,0,0,0,0,0,0,
+    80,0,20,30,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,30,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,20,0,0,0,0,0,0,0,0,0,20,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,30,0,0,0,0,0,0,0,0,
+    0,0,0,0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,30,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    60,0,0,0,0,0,0,30,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,50,0,60,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,50,0,0,0,0,0,0,0,500,0,0,0,0,0,600,0,
+    365,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1200,
+    120,0,0,0,0,0,0,0,0,60,0,0,0,10,70,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,10,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,70,0,0,0,0,0,0,0,0,0,0,0,0,
+    50,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    50,0,0,0,20,30,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,500,0,0,0,0,0,0,0,150,0,95,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,150,0,80,180,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,80,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,95,180,0,0,220,300,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,220,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,300,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,600,0,0,0,0,0,0,0,0,0,0,0,0,0,720,
+    0,0,0,0,0,0,0,0,0,0,0,1200,0,0,0,0,0,0,0,0,0,0,0,720,0
 
 
   ); // distance between locations
@@ -236,7 +243,10 @@ var
     0,0,0,0,0,0,0,0,0,0,0,0,
     0,4000,10000,16000,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,
-    0,9000,12990,22700,32000,0,75000,62000,0,0,330000,0
+    0,9000,12990,22700,32000,0,75000,62000,0,0,330000,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0
+
 
 
     
@@ -259,12 +269,12 @@ var
   thankstxt: array [0..9] of String = (
     'Special thanks to:'~,
     ''~,
-    'BOCiANu for all the support'~,
+    'Bocianu for all the support'~,
     ''~,
     'XXL for xBios support'~,
     'Tebe for providing MAD-Pascal help'~,
     'Kaz for testing and advise'~,
-    ''~,
+    'Dely for QA testing'~,
     ''~,
     ''~
 );
@@ -291,14 +301,28 @@ begin
   poke($d208,0);
 end;
 
-procedure writeRuler(row:byte);
+procedure writeRuler(row:Byte);
+
+// var
+//   output: String;
+
 begin
     CRT_GotoXY(0,row);
-    CRT_Write('--------------------+-------------------'~);
+    for y:=0 to 19 do
+    begin
+      CRT_Write(Chr(18+64)); // adding 64 to convert to ANTIC codes.
+    end;
+
+    CRT_Write(Chr(19+64));
+    for y:=0 to 18 do
+    begin
+      CRT_Write(Chr(18+64));
+    end;
+
     sfx_play(voice4,77,202); // vol10
 end;
 
-procedure WriteSpaces(len:byte);
+procedure WriteSpaces(len:Byte);
 begin
   CRT_Write(Atascii2Antic(Space(len)));
 end;
@@ -364,16 +388,16 @@ begin
     if (current_menu = MENU_TITLE) or (current_menu = MENU_SAVE) or (current_menu = MENU_LOAD) or (current_menu = MENU_CREDITS) then
     begin
       for b:=0 to 3 do 
-        If ((gfxcolors[b] and %00001111) < (titlecolors[b] and %00001111)) then Inc(gfxcolors[b]) else gfxcolors[b]:=titlecolors[b];
+        If ((gfxcolors[b] and %00001111) <= (titlecolors[b] and %00001111)) then Inc(gfxcolors[b]) else gfxcolors[b]:=titlecolors[b];
     end
     else
     begin
       for b:=0 to 3 do 
-        If ((gfxcolors[b] and %00001111) < (piccolors[y+b] and %00001111 )) then Inc(gfxcolors[b]) else gfxcolors[b]:=piccolors[y+b];
+        If ((gfxcolors[b] and %00001111) <= (piccolors[y+b] and %00001111 )) then Inc(gfxcolors[b]) else gfxcolors[b]:=piccolors[y+b];
     end;
 
-    If ((txtcolors[0] and %00001111) < (txtback and %00001111)) then inc(txtcolors[0]) else txtcolors[0]:=txtback;
-    If ((txtcolors[1] and %00001111) < (txtcolor and %00001111)) then inc(txtcolors[1]) else txtcolors[1]:=txtcolor;
+    If ((txtcolors[0] and %00001111) <= (txtback and %00001111)) then inc(txtcolors[0]) else txtcolors[0]:=txtback;
+    If ((txtcolors[1] and %00001111) <= (txtcolor and %00001111)) then inc(txtcolors[1]) else txtcolors[1]:=txtcolor;
 
   until ((gfxcolors[0]=piccolors[y]) or (gfxcolors[0]=titlecolors[0])) and ((gfxcolors[1]=piccolors[y+1]) or (gfxcolors[1]=titlecolors[1])) and ((gfxcolors[2]=piccolors[y+2]) or (gfxcolors[2]=titlecolors[2])) and ((gfxcolors[3]=piccolors[y+3]) or (gfxcolors[3]=titlecolors[3]));
 end;
@@ -624,9 +648,9 @@ begin
       offset:= (NUMBEROFSHIPS * loc)+y;
       if shipprices[offset] > shipprices[0] then // do not change price of starting ship
       begin
-        newLoc:=Random(2); 
+        x:=Random(2); 
         count:=percentc(shipprices[offset]);
-        if newLoc = 0 then
+        if x = 0 then
         begin
           // price drop
           // modify:=(1 - percent);
@@ -958,7 +982,7 @@ var
 procedure setDestIdx(v:word);
 begin
   beep230; //vol 10
-  newLoc:=1; // reused variable
+  x:=1; // reused variable
   destinationindex:=v;
 end;
 
@@ -1069,9 +1093,9 @@ begin
                           end;
                         end;
           else 
-             newLoc:=0; // reuse variable
+             x:=0; // reuse variable
         end;
-        if (current_menu=MENU_NAV) and (destinationindex > 0) and (newLoc > 0) then
+        if (current_menu=MENU_NAV) and (destinationindex > 0) and (x > 0) then
         begin
           distance:=locationdistance[destinationindex];
           navi_destinationUpdate(destinationindex);
@@ -1092,7 +1116,7 @@ var
   currentshipprice: Longword;
 
 begin
-  newLoc:=0;
+  x:=0;
   beep230; //vol 10
   CRT_ClearRows(0,7);
 
@@ -1161,8 +1185,9 @@ begin
 
   // Help Keys
   CRT_GotoXY(5,7);
-  txt:=concat(char(30),char(31));
-  CRT_Write(Atascii2Antic(txt));
+  // txt:=concat(char(30),char(31));
+  // CRT_Write(Atascii2Antic(txt));
+  CRT_Write(Chr(30+128+64)); CRT_Write(Chr(31+128+64)); // character code + 128 for inverse + 64 for antic code
   CRT_Write(strings[44]);  // Choose
   WriteSpace;
   CRT_Write('RETURN'*~);
@@ -1225,12 +1250,12 @@ begin
                           begin
                             sfx_play(voice4,80,170); // vol10
                             Dec(shipindex);
-                            newLoc:=1; //reused variable
+                            x:=1; //reused variable
                           end
                           else
                           begin
                             beep255; // vol10
-                            newLoc:=0; //reused variable
+                            x:=0; //reused variable
                           end;
                       end;
           KEY_RIGHT:  begin
@@ -1238,12 +1263,12 @@ begin
                         begin
                           sfx_play(voice4,80,170); // vol10
                           Inc(shipindex);
-                          newLoc:=1; //reused variable
+                          x:=1; //reused variable
                         end
                         else
                         begin
                           beep255; // vol10
-                          newLoc:=0; //reused variable
+                          x:=0; //reused variable
                         end;
                       end;
           KEY_SELECT: begin
@@ -1299,7 +1324,7 @@ begin
 
         end;
    
-        if (current_menu=MENU_SHIP) and (shipindex <= NUMBEROFSHIPS-1) and (newLoc > 0) then
+        if (current_menu=MENU_SHIP) and (shipindex <= NUMBEROFSHIPS-1) and (x > 0) then
 
         begin
           tshp:=shipmatrix[availableships[shipindex]];
@@ -1759,7 +1784,13 @@ begin
   trade_UpdateCargo;
 
   CRT_GotoXY(0,7);
-  CRT_Write('--------------------+'~);
+  // CRT_Write('--------------------+'~);
+
+  for y:=0 to 19 do
+    begin
+      CRT_Write(Chr(18+64));
+    end;
+  CRT_Write(Chr(4+64));
   sfx_play(voice4,77,202); // vol10
 
   for y:=8 to 17 do
@@ -1778,8 +1809,9 @@ begin
 
   // help
   CRT_GotoXY(1,22);
-  txt:=concat(char(30+128),char(31+128));
-  CRT_Write(Atascii2Antic(txt));
+  // txt:=concat(char(30+128),char(31+128));
+  // CRT_Write(Atascii2Antic(txt));
+  CRT_Write(Chr(30+128+64)); CRT_Write(Chr(31+128+64)); // character code + 128 for inverse + 64 for antic code
   CRT_Write('-x1 +'~);
   CRT_Write('CONTROL'*~);
   CRT_Write('-x100 +'~);
@@ -1873,61 +1905,38 @@ begin
                               count:=ship.cargoquantity[y] - currentship.cargoquantity[y];
                               if count > 0 then Inc(itemquantity[offset],count)
                               else Dec(itemquantity[offset],count)
-                              // Dec(itemquantity[offset],ship.cargoquantity[y] - currentship.cargoquantity[y]);
                             end
                             else
                             begin
-                              // bougt item
-                              if (ship.cargoindex[y] = 0) or (ship.cargoindex[y] <> currentship.cargoindex[y]) then
+                              if (ship.cargoindex[y] = 0) then
                               begin
-
-                                // CRT_ClearRow(21);
-                                // CRT_GotoXY(1,21);
-                                // CRT_Write('y='~);CRT_Write(y);WriteSpace;CRT_Write('crgidx='~);CRT_Write(currentship.cargoindex[y]);
-                                // WriteSpace;CRT_Write('iq='~);CRT_Write(itemquantity[offset]);
-                                // WriteSpace;CRT_Write('off='~);CRT_Write(offset);
-                                // repeat until CRT_KeyPressed;
-
+                                // Bought item
                                 Dec(itemquantity[offset],currentship.cargoquantity[y]);
                               end
-                              else 
-                              begin
-                              // sold item
-                                offset:= (NUMBEROFITEMS * player.loc) + ship.cargoindex[y];
-                                Inc(itemquantity[offset],ship.cargoquantity[y]);
-
-                                // CRT_ClearRow(21);
-                                // CRT_GotoXY(1,21);
-                                // CRT_Write('y='~);CRT_Write(y);WriteSpace;CRT_Write('crgidx='~);CRT_Write(itemquantity[offset]);WriteSpace;CRT_Write('iq='~);CRT_Write(itemquantity[offset]);
-                                // repeat until CRT_KeyPressed;
-                              end;
-                              
-                              // sold item
-                              // if currentship.cargoindex[y] = 0 then
-                              // begin
-                              //   Inc(itemquantity[offset],ship.cargoquantity[y]);
-                              // end;
-                            end;
+                            end;  
                           end
                           else
                           break;
                         end;
 
-
-                        // for y:=0 to MAXCARGOSLOTS-1 do
-                        // begin
-                        //   if ship.cargoindex[y] > 0 then //if there is a cargo in ship
-                        //   begin
-                        //     offset:= (NUMBEROFITEMS * player.loc) + ship.cargoindex[y];
-
-                        //     Inc(itemquantity[offset],currentship.cargoquantity[y] - ship.cargoquantity[y]);
-                        //   end
-                        //   else
-                        //   break;
-                        // end;
-
+                        for y:=0 to MAXCARGOSLOTS-1 do
+                        begin
+                          if ship.cargoindex[y] > 0 then //if there is a cargo in ship
+                          begin
+                            if (ship.cargoindex[y] <> currentship.cargoindex[y]) then
+                            begin
+                              // Sold item
+                              offset:= (NUMBEROFITEMS * player.loc) + ship.cargoindex[y];
+                              Inc(itemquantity[offset],ship.cargoquantity[y]);
+                            end;  
+                          end
+                          else
+                          break;
+                        end;
                         ship:= currentShip;
                       end;
+
+
                       player.uec:= currentuec;
                       current_menu := MENU_MAIN;
                       //gfx_fadeout(true);
@@ -2193,6 +2202,7 @@ begin
                           if (selecteditemquantity > 0) then
                           begin
                             beep200; //vol 10
+
                             currentShip.cargoquantity[itemindex]:=currentShip.cargoquantity[itemindex]-selecteditemquantity;
                             If currentShip.cargoquantity[itemindex] = 0 then currentShip.cargoindex[itemindex]:= 0; // erasing item form cargoindex
 
@@ -2902,31 +2912,32 @@ begin
   //   tshp^.qf_max:=Word(ships[offset+6]);
   //   tshp^.swait:=byte(ships[offset+7]);
   // end;
-  shipmatrix[0]:=@ship0;
-  shipmatrix[1]:=@ship1;
-  shipmatrix[2]:=@ship2;
-  shipmatrix[3]:=@ship3;
-  shipmatrix[4]:=@ship4;
-  shipmatrix[5]:=@ship5;
-  shipmatrix[6]:=@ship6;
-  shipmatrix[7]:=@ship7;
-  shipmatrix[8]:=@ship8;
-  shipmatrix[9]:=@ship9;
-  shipmatrix[10]:=@ship10;
-  shipmatrix[11]:=@ship11;
+  // shipmatrix[0]:=@ship0;
+  // shipmatrix[1]:=@ship1;
+  // shipmatrix[2]:=@ship2;
+  // shipmatrix[3]:=@ship3;
+  // shipmatrix[4]:=@ship4;
+  // shipmatrix[5]:=@ship5;
+  // shipmatrix[6]:=@ship6;
+  // shipmatrix[7]:=@ship7;
+  // shipmatrix[8]:=@ship8;
+  // shipmatrix[9]:=@ship9;
+  // shipmatrix[10]:=@ship10;
+  // shipmatrix[11]:=@ship11;
 
 
   for y:=0 to NUMBEROFSHIPS-1 do
   begin
     offset:=(y * MAXSHIPPARAMETERS);
-    shipmatrix[y].mcode:=StrToInt(ships[offset+1]);
-    shipmatrix[y].sindex:=y;
-    shipmatrix[y].scu_max:=StrToInt(ships[offset+2]);
-    shipmatrix[y].speed:=StrToInt(ships[offset+3]);
-    shipmatrix[y].lenght:=StrToInt(ships[offset+4]);
-    shipmatrix[y].mass:=StrToInt(ships[offset+5]);
-    shipmatrix[y].qf_max:=StrToInt(ships[offset+6]);
-    shipmatrix[y].swait:=StrToInt(ships[offset+7]);
+    tshp:=shipmatrix[y];
+    tshp^.mcode:=StrToInt(ships[offset+1]);
+    tshp^.sindex:=y;
+    tshp^.scu_max:=StrToInt(ships[offset+2]);
+    tshp^.speed:=StrToInt(ships[offset+3]);
+    tshp^.lenght:=StrToInt(ships[offset+4]);
+    tshp^.mass:=StrToInt(ships[offset+5]);
+    tshp^.qf_max:=StrToInt(ships[offset+6]);
+    tshp^.swait:=StrToInt(ships[offset+7]);
   end;
 
   gamestate:= NEWGAME;
