@@ -91,11 +91,13 @@ var
     // $04,$08,$0c,$00,    // 1
     $f0,$f4,$fc,$00,    // 1
     $10,$14,$1c,$00,    // 2
-    $70,$74,$7c,$00,    // 3
+    // $70,$74,$7c,$00,    // 3
+    $14,$1a,$ee,$00,    // 3
     $02,$08,$0c,$00,    // 4
     $f0,$f4,$fc,$00,    // 5
     $02,$08,$0c,$00,    // 6
-    $04,$0a,$0e,$00,    // 7
+    // $04,$0a,$0e,$00,    // 7
+    $22,$28,$ee,$00,    // 7
     $d0,$d4,$dc,$00,    // 8
     // $f0,$f4,$fc,$00,    // 9
     $10,$14,$1a,$00,    // 9
@@ -107,7 +109,7 @@ var
     $02,$06,$0c,$00,    // 14
     $70,$74,$7c,$00,    // 15
     // $fc,$f4,$f0,$00     // 16
-    $10,$14,$1a,$00,     // 16
+    $72,$78,$ee,$00,     // 16
     $f0,$f4,$fc,$00,     // 17
     $70,$74,$7c,$00,     // 18
     $30,$34,$3c,$00,     // 19
@@ -1405,7 +1407,7 @@ var
   fueltotal: Longword;
   reqtotal: LongWord;
   itemoffset: Word;
-  iprice: Word;
+  
 
 begin
   beep230; //vol 10
@@ -1415,10 +1417,8 @@ begin
   fuelquantity:= 0;
   if (itemquantity[itemoffset] > 0) then
   begin
-    iprice:= itemprice[itemoffset];
-    fuelprice:=iprice div 4;     // Fuel price is 1/4 of Hydrogen
+    fuelprice:=itemprice[itemoffset] div 4;     // Fuel price is 1/4 of Hydrogen
   end
-    // fuelprice:= 16 div 4
   else
   begin    
     // There is no Hydrogen to refuel
@@ -1427,8 +1427,8 @@ begin
   end;
   reqfuel:= 0;
   reqtotal:= 0;
-  CRT_GotoXY(0,6);
-  CRT_Write('offset:'~);CRT_Write(itemoffset);CRT_Write(' iprice:'~);CRT_Write(iprice);CRT_Write(' fuelprice:'~);CRT_Write(fuelprice);
+  // CRT_GotoXY(0,6);
+  // CRT_Write('offset:'~);CRT_Write(itemoffset);CRT_Write(' iprice:'~);CRT_Write(iprice);CRT_Write(' fuelprice:'~);CRT_Write(fuelprice);
   
   If (ship.qf < ship.qf_max) then
   begin
