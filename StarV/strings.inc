@@ -22,7 +22,7 @@ strings: array [0..65] of String = (
     'Loc:'~, // 20
     'Nav:'~,
     'Distance:'~,
-    '1-6'*'-Navigation'~,
+    '-Navigation'~,
     'J'*'-FTL Jump'~,
     'No xBios found. Cannot load Pics'*~, // 25
     ' Press any key '*~,

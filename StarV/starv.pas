@@ -86,10 +86,10 @@ var
   * 3 - colbk
   *)
   piccolors: array [0..(4*NUMBEROFLOCATIONS)-1] of Byte = (
-    $04,$08,$0c,$00,    // 0
+    $04,$0c,$08,$00,    // 0
     // $f4,$f0,$fc,$00,    // 1
     // $04,$08,$0c,$00,    // 1
-    $f0,$f4,$fc,$00,    // 1
+    $16,$12,$1e,$00,    // 1
     $10,$14,$1c,$00,    // 2
     // $70,$74,$7c,$00,    // 3
     $14,$1a,$ee,$00,    // 3
@@ -102,12 +102,13 @@ var
     // $f0,$f4,$fc,$00,    // 9
     $10,$14,$1a,$00,    // 9
     $10,$14,$1c,$00,    // 10
-    $04,$08,$0c,$00,    // 11
+    $42,$2c,$38,$00,    // 11
     $10,$14,$1c,$00,    // 12
     // $0c,$02,$06,$00,    // 13
     $10,$14,$1c,$00,    // 13
     $02,$06,$0c,$00,    // 14
-    $70,$74,$7c,$00,    // 15
+    // $70,$74,$7c,$00,    // 15
+    $de,$72,$76,$00,    // 15
     // $fc,$f4,$f0,$00     // 16
     $72,$78,$ee,$00,     // 16
     $f0,$f4,$fc,$00,     // 17
@@ -372,10 +373,14 @@ begin
 end;
 
 procedure gfx_fadein;
-var b:byte;
+var
+  b : byte;
+  targetcolors: array [0..3] of Byte;
+
 const
   txtcolor = $1c;
   txtback = 0;
+  // titlecolors : array [0..3] of Byte = ($10,$14,$1a,$00);
   titlecolors : array [0..3] of Byte = ($10,$14,$1a,$00);
 
 
@@ -385,23 +390,32 @@ begin
   // gfxcolors[2]:=0;
   // gfxcolors[3]:=0;
   y:= newLoc shl 2; // x 4 for number of colors
+  if (current_menu = MENU_TITLE) or (current_menu = MENU_SAVE) or (current_menu = MENU_LOAD) or (current_menu = MENU_CREDITS) then
+  begin
+    targetcolors:=titlecolors;
+  end
+  else
+  begin
+    for b:=0 to 3 do 
+      targetcolors[b]:=piccolors[y+b];
+  end;
+
   repeat
     Waitframes(2);
-    if (current_menu = MENU_TITLE) or (current_menu = MENU_SAVE) or (current_menu = MENU_LOAD) or (current_menu = MENU_CREDITS) then
-    begin
-      for b:=0 to 3 do 
-        If ((gfxcolors[b] and %00001111) <= (titlecolors[b] and %00001111)) then Inc(gfxcolors[b]) else gfxcolors[b]:=titlecolors[b];
-    end
-    else
-    begin
-      for b:=0 to 3 do 
-        If ((gfxcolors[b] and %00001111) <= (piccolors[y+b] and %00001111 )) then Inc(gfxcolors[b]) else gfxcolors[b]:=piccolors[y+b];
-    end;
+    for b:=0 to 3 do 
+      If ((gfxcolors[b] and %00001111) <= (targetcolors[b] and %00001111)) then Inc(gfxcolors[b]) else gfxcolors[b]:=targetcolors[b];
 
     If ((txtcolors[0] and %00001111) <= (txtback and %00001111)) then inc(txtcolors[0]) else txtcolors[0]:=txtback;
     If ((txtcolors[1] and %00001111) <= (txtcolor and %00001111)) then inc(txtcolors[1]) else txtcolors[1]:=txtcolor;
 
-  until ((gfxcolors[0]=piccolors[y]) or (gfxcolors[0]=titlecolors[0])) and ((gfxcolors[1]=piccolors[y+1]) or (gfxcolors[1]=titlecolors[1])) and ((gfxcolors[2]=piccolors[y+2]) or (gfxcolors[2]=titlecolors[2])) and ((gfxcolors[3]=piccolors[y+3]) or (gfxcolors[3]=titlecolors[3]));
+  until (gfxcolors[0]=targetcolors[0]) and
+        (gfxcolors[1]=targetcolors[1]) and
+        (gfxcolors[2]=targetcolors[2]) and
+        (gfxcolors[3]=targetcolors[3]);
+
+
+  // CRT_GotoXY(0,23);
+  // CRT_Write('gfxcolors[2]='~);CRT_Write(gfxcolors[2]);CRT_Write(' titlecolors[2]='~);CRT_Write(titlecolors[2]);
 end;
 
 procedure putStringAt(snum,x,y:byte);
@@ -1018,9 +1032,9 @@ begin
   CRT_Write(ship.qf * 100 div ship.qf_max); CRT_Write(' %'~);
 
   // Help Keys
-  //CRT_GotoXY(0,7);
-  //CRT_Write(strings[23]); // Navigation options
-  putStringAt(23,0,7);
+  CRT_GotoXY(0,7);
+  CRT_Write('1-6'*~); // Navigation options
+  putStringAt(23,3,7);
 
   WriteSpace;
   CRT_Write(strings[24]);  // FTL Jump
@@ -2796,9 +2810,9 @@ begin
   end;
 
   // Help Keys
-  //CRT_GotoXY(0,CRT_screenHeight - 2);
-  //CRT_Write(strings[23]); // Navigation options
-  putStringAt(23,0,CRT_screenHeight - 2);
+  CRT_GotoXY(0,CRT_screenHeight - 2);
+  CRT_Write('1-5'*~); // Navigation options
+  putStringAt(23,3,CRT_screenHeight - 2);
   WriteSpace;
   CRT_Write('RETURN'*~);
   CRT_Write(strings[19]);  // Confirm
