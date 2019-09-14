@@ -87,39 +87,31 @@ var
   *)
   piccolors: array [0..(4*NUMBEROFLOCATIONS)-1] of Byte = (
     $04,$0c,$08,$00,    // 0
-    // $f4,$f0,$fc,$00,    // 1
-    // $04,$08,$0c,$00,    // 1
     $16,$12,$1e,$00,    // 1
-    $10,$14,$1c,$00,    // 2
-    // $70,$74,$7c,$00,    // 3
+    $c2,$c8,$ce,$00,    // 2
     $14,$1a,$ee,$00,    // 3
     $a0,$de,$c6,$00,    // 4
     $96,$82,$9c,$00,    // 5
     $02,$08,$0c,$00,    // 6
-    // $04,$0a,$0e,$00,    // 7
     $22,$28,$ee,$00,    // 7
-    $d0,$d4,$dc,$00,    // 8
-    // $f0,$f4,$fc,$00,    // 9
+    $a0,$d2,$e8,$00,    // 8
     $10,$14,$1a,$00,    // 9
-    $10,$14,$1c,$00,    // 10
+    $40,$56,$2c,$00,    // 10
     $42,$2c,$38,$00,    // 11
-    // $10,$14,$1c,$00,    // 12
     $26,$B4,$2e,$00,    // 12
-    // $0c,$02,$06,$00,    // 13
     $10,$14,$1c,$00,    // 13
-    $02,$06,$0c,$00,    // 14
-    // $70,$74,$7c,$00,    // 15
+    $86,$8a,$80,$00,    // 14
     $de,$72,$76,$00,    // 15
-    // $fc,$f4,$f0,$00     // 16
     $72,$78,$ee,$00,     // 16
-    $f0,$f4,$fc,$00,     // 17
+    $94,$90,$fe,$00,     // 17
     $70,$74,$7c,$00,     // 18
     $30,$34,$3c,$00,     // 19
     $82,$66,$6e,$00,     // 20
     $70,$74,$7c,$00,     // 21
     $10,$14,$1c,$00,     // 22
-    $30,$34,$3c,$00,     // 23
-    $30,$34,$0e,$00      // 24
+    // $30,$34,$3c,$00,     // 23
+    $24,$28,$2c,$00,     // 23
+    $24,$20,$76,$00      // 24
   );
 
   // current gfx colors
@@ -262,7 +254,7 @@ var
     ''~,
     'Graphics'~,
     'Broniu  Kaz    '~,
-    'MADRAFi Bocianu'~,
+    'MADRAFi'~,
     ''~,
     'Music'~,
     'Caruso'~,
@@ -369,7 +361,7 @@ begin
       If (txtcolors[1] and %00001111 <> 0) then Dec(txtcolors[1]) else txtcolors[1]:=0;
     end;
   //until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3] or txtcolors[0] or txtcolors[1]) = 0;
-  until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3]) = 0;
+  until ((gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3])=0) and ((hidetext = false) or ((txtcolors[0] or txtcolors[1])=0));
   waitframes(10);
 end;
 
@@ -524,7 +516,9 @@ end;
 
 
 function percentC(v:word):word;
-begin 
+begin
+    // need to set count before calling the procedure
+    // example count:= Random(100);
     result:=v * count div 100;
 end;  
 
@@ -665,14 +659,15 @@ begin
       offset:= (NUMBEROFSHIPS * loc)+y;
       if shipprices[offset] > shipprices[0] then // do not change price of starting ship
       begin
-        x:=Random(2); 
-        count:=percentc(shipprices[offset]);
+        x:=Random(2);
+        count:= Random(30);
+        priceChange:=percentc(shipprices[offset]);
         if x = 0 then
         begin
           // price drop
           // modify:=(1 - percent);
           // shipprices[offset]:=Round(shipprices[offset] * (1 - percent));
-          Dec(shipprices[offset],count);
+          Dec(shipprices[offset],priceChange);
 
           //newprice:=Round(shipprices[offset] * (1 - percent));
           //shipprices[offset]:=Longword(shipprices[offset] * (1 - percent));
@@ -682,7 +677,7 @@ begin
           // price increase
           // modify:=(1 + percent);
           // shipprices[offset]:=Round(shipprices[offset] * (1 + percent));
-          Inc(shipprices[offset],count);
+          Inc(shipprices[offset],priceChange);
 
           //newprice:=Round(shipprices[offset] * (1 + percent));
           //shipprices[offset]:=Longword(shipprices[offset] * (1 + percent));
@@ -706,14 +701,50 @@ end;
   {$i 'lowmem.inc'} // lowmem procs to load pictures from disk 
 {$endif}
 
+procedure initWorld;
+
+var
+  priceChange: word;
+
+begin
+
+  for offset:=0 to (NUMBEROFITEMS-1) * (NUMBEROFLOCATIONS-1) do
+  begin
+    if (itemprice[offset] > 0) then
+      x:=Random(2); 
+      count:=Random(25);
+      priceChange:=percentc(itemprice[offset]);
+      if x = 0 then
+      begin
+        // price drop
+        Dec(itemprice[offset],priceChange);
+      end
+      else
+      begin
+        // price increase
+        Inc(itemprice[offset],priceChange);
+    end;
+  end;
+    
+  // test cargo
+  // ship.cargoindex[0]:=8;
+  // ship.cargoquantity[0]:=10;
+  // ship.cargoindex[1]:=11;
+  // ship.cargoquantity[1]:=20;
+  // ship.scu:= 30;
+
+  
+end;
+
+
 procedure start;
 
 begin
-  gfx_fadeout(true);
-  current_menu := MENU_MAIN;
   sfx_play(voice4,88,202); // vol10
+  gfx_fadeout(true);
+  WaitFrame;
   
-
+  current_menu := MENU_MAIN;
   gamestate:=GAMEINPROGRESS;
   player.uec:= STARTUEC;
   //if player.loc <> 0  then
@@ -724,6 +755,7 @@ begin
   
   pic_load(LOC,player.loc);
   
+  initWorld;
 
   // tshp:= shipmatrix[0];
   // ship:= tshp^;
@@ -734,13 +766,6 @@ begin
   eraseArray(0,MAXCARGOSLOTS-1, @ship.cargoindex);
   eraseArray(0,MAXCARGOSLOTS-1, @ship.cargoquantity);
 
-
-  // test cargo
-  // ship.cargoindex[0]:=8;
-  // ship.cargoquantity[0]:=10;
-  // ship.cargoindex[1]:=11;
-  // ship.cargoquantity[1]:=20;
-  // ship.scu:= 30;
 
   // gfx_fadein;
 
@@ -2746,7 +2771,7 @@ begin
 
     if (xBiosIOresult = 0) then
     begin
-      xBiosSetLength(60); // 5+15+20+20
+      xBiosSetLength(60); // 5+15+20+20 both variable size ( all in records)
       xBiosLoadData(@player);
       xBiosLoadData(@ship);
       if (xBiosIOresult = 0) then
@@ -2874,6 +2899,7 @@ begin
                             beep200; //vol 10
                             if mode then disk_save(slot)
                             else disk_load(slot);
+                            sfx_init;
                             current_menu:=MENU_TITLE;
                           end;
                           selectPressed:= true;

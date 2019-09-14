@@ -53,19 +53,7 @@ begin
   gfx_fadeout(false);
   waitframe;
   pic_load(LOC,newLoc);
-
-  // music:=false;
-  // waitframe;
-  // msx.interrupt_play;
-
-  // pic_openfile('LOC',newLoc);
-  // If (xBiosCheck <> 0) then
-  // begin
-  //   xBiosLoadLz4Data(Pointer(GFX_ADDRESS);
-  //   // msx.continue_play;
-  //   // music:= true;
-  //   sfx_init;
-  // end;
+  
 
   // simulate travel
   repeat

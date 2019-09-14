@@ -1,5 +1,5 @@
 strings: array [0..65] of String = (
-    'v.0.29 (c) 2019 MADsoft'~, // 0
+    'v.0.30 (c) 2019 MADsoft'~, // 0
     'N'*'ew Game'~,
     'Q'*'uit'~,
     '1'*' Navigation'~,
