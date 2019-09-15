@@ -52,6 +52,7 @@ var
   current_menu: Byte;
   gamestate: TGameState;
   music: Boolean;
+  disablemusic: Boolean;
 
   {$i 'strings.inc'}
   {$i 'ships.inc'}
@@ -76,8 +77,6 @@ var
   ship10: TShip;
   ship11: TShip;
   shipmatrix: array [0..NUMBEROFSHIPS-1] of pointer = (@ship0, @ship1, @ship2, @ship3, @ship4, @ship5, @ship6, @ship7, @ship8, @ship9, @ship10, @ship11);
-  // shipmatrix: array [0..NUMBEROFSHIPS-1] of ^TShip;
-
 
   (*
   * 0 - colpf0
@@ -109,7 +108,6 @@ var
     $82,$66,$6e,$00,     // 20
     $70,$74,$7c,$00,     // 21
     $10,$14,$1c,$00,     // 22
-    // $30,$34,$3c,$00,     // 23
     $24,$28,$2c,$00,     // 23
     $24,$20,$76,$00      // 24
   );
@@ -122,9 +120,6 @@ var
   txtcolors : array [0..1] of Byte = (
     $00,$1c
   );
-
-
-  // strings: array [0..0] of Word absolute STRINGS_ADDRESS;
 
   itemprice: array [0..(NUMBEROFLOCATIONS * NUMBEROFITEMS)-1] of Word = (
     0,0,0,0,83,40,0,31,69,0,0,198,16,0,280,170,0,0,0,34,145,199,1,0,
@@ -360,7 +355,6 @@ begin
       If (txtcolors[0] and %00001111 <> 0) then Dec(txtcolors[0]) else txtcolors[0]:=0;
       If (txtcolors[1] and %00001111 <> 0) then Dec(txtcolors[1]) else txtcolors[1]:=0;
     end;
-  //until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3] or txtcolors[0] or txtcolors[1]) = 0;
   until ((gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3])=0) and ((hidetext = false) or ((txtcolors[0] or txtcolors[1])=0));
   waitframes(10);
 end;
@@ -2574,10 +2568,10 @@ begin
                       // if there is an ship in available ship enable console_ship
                       if (shipprices[offset] > 0) then current_menu := MENU_SHIP;
                      end;
-        KEY_BACK: begin
-                    beep255; // vol10
-                    current_menu := MENU_TITLE;
-                  end;
+        KEY_BACK:   begin
+                      beep255; // vol10
+                      current_menu := MENU_TITLE;
+                    end;
       end;
     end;
     Waitframe;
@@ -2687,7 +2681,19 @@ begin
                           beepnfade;
                           current_menu:=MENU_CREDITS;
                         end;
-
+          KEY_JUMP:   begin
+                        if disablemusic then
+                        begin
+                          msx.pause;
+                          // disablemusic:=true;
+                        end 
+                        else
+                        begin
+                          msx.cont;
+                          // disablemusic:=false
+                        end;
+                        disablemusic:= not disablemusic;
+                      end;
 (*
           // KEY_OPTION1: sfx_play(185,16*12+4);
           // KEY_OPTION2: sfx_play(110,16*12+4);
@@ -2937,40 +2943,15 @@ begin
 
   //player.loc:=STARTLOCATION; //start location Port Olisar
 
-  // msx.player:=pointer(PLAYER_ADDRESS);
-  // msx.modul:=pointer(MODULE_ADDRESS);
-  // msx.init;
-
-  // sfx_init;
+  msx.player:=pointer(PLAYER_ADDRESS);
+  msx.modul:=pointer(MODULE_ADDRESS);
+  msx.init;
+  
+  disablemusic:= false;
+  sfx_init;
+  music:= true;
 
   // load ships data into an array of records.
-  // for y:=0 to NUMBEROFSHIPS-1 do
-  // begin
-  //   tshp:=shipmatrix[y];
-  //   offset:=(y * MAXSHIPPARAMETERS);
-  //   tshp^.mcode:=byte(ships[offset+1]);
-  //   tshp^.sindex:=y;
-  //   tshp^.scu_max:=Word(ships[offset+2]);
-  //   tshp^.speed:=byte(ships[offset+3]);
-  //   tshp^.lenght:=byte(ships[offset+4]);
-  //   tshp^.mass:=Word(ships[offset+5]);
-  //   tshp^.qf_max:=Word(ships[offset+6]);
-  //   tshp^.swait:=byte(ships[offset+7]);
-  // end;
-  // shipmatrix[0]:=@ship0;
-  // shipmatrix[1]:=@ship1;
-  // shipmatrix[2]:=@ship2;
-  // shipmatrix[3]:=@ship3;
-  // shipmatrix[4]:=@ship4;
-  // shipmatrix[5]:=@ship5;
-  // shipmatrix[6]:=@ship6;
-  // shipmatrix[7]:=@ship7;
-  // shipmatrix[8]:=@ship8;
-  // shipmatrix[9]:=@ship9;
-  // shipmatrix[10]:=@ship10;
-  // shipmatrix[11]:=@ship11;
-
-
   for y:=0 to NUMBEROFSHIPS-1 do
   begin
     offset:=(y * MAXSHIPPARAMETERS);

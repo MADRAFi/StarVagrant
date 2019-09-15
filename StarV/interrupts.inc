@@ -81,7 +81,7 @@ begin
   asm {
       phr ; store registers
   };
-  if music then msx.play;
+  if music and not disablemusic then msx.play;
   asm {
       mwa #dli_title1 __dlivec
       plr ; restore registers
@@ -171,7 +171,7 @@ begin
         phr ; store registers
   };
 
-  if music then msx.play;
+  if music and not disablemusic then msx.play;
 
   asm {
     ;   *** example test routine
@@ -210,7 +210,7 @@ begin
   asm {
       phr ; store registers
   };
-  if music then msx.play;
+  if music and not disablemusic then msx.play;
   asm {
       mwa #dli_console __dlivec
       plr ; restore registers

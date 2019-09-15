@@ -21,9 +21,12 @@ end;
 
 procedure pic_load(mytype: Byte; num: Byte);
 begin
-  music:= false;
-  waitframe;
-  // msx.interrupt_play;
+  if not disablemusic then
+  begin
+    music:= false;
+    waitframe;
+    msx.pause; // interrupt_play;
+  end;
 
   If mytype = LOC then pic_openfile('LOC',num);
   // else pic_openfile('GFX',num);
@@ -33,8 +36,11 @@ begin
     xBiosLoadLz4Data(Pointer(GFX_ADDRESS));
     // xBiosFlushBuffer;
   end;
-  // msx.continue_play;
-  // music:= true;
+  if not disablemusic then
+  begin  
+    msx.cont; // continue_play;
+    music:= true;
+  end;
   sfx_init;
 end;
 

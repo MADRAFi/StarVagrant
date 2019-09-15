@@ -26,6 +26,8 @@
 ; remove # to uncomment and use examples below:
 
 CHARSET_ADDRESS rcdata 'assets/Nvdi8.fnt'
+
+;CHAR_ADDRESS_PIC1_F1 rcdata 'assets/gfx_cpy.dat'
 CHAR_ADDRESS_PIC1_F1 rcdata 'assets/intro1.fnt'
 CHAR_ADDRESS_PIC2_F1 rcdata 'assets/intro2.fnt'
 CHAR_ADDRESS_PIC3_F1 rcdata 'assets/intro3.fnt'
@@ -46,7 +48,3 @@ DISPLAY_LIST_ADDRESS_PIC4 rcasm 'dlist_pic4.asm'
 ; rmt module
 PLAYER_ADDRESS	RMTPLAY	'assets/intro.feat' 0
 MODULE_ADDRESS	RMT	'assets/intro.rmt'
-
-;PLAYER_ADDRESS  CMCPLAY
-;MODULE_ADDRESS  CMC 'assets/echo.cmc'
-
