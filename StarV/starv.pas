@@ -301,13 +301,13 @@ begin
     CRT_GotoXY(0,row);
     for y:=0 to 19 do
     begin
-      CRT_Write(Chr(18+64)); // adding 64 to convert to ANTIC codes.
+      CRT_Write(Chr(82)); // 18 adding 64 to convert to ANTIC codes.
     end;
 
-    CRT_Write(Chr(19+64));
+    CRT_Write(Chr(83));  // 19 + 64
     for y:=0 to 18 do
     begin
-      CRT_Write(Chr(18+64));
+      CRT_Write(Chr(82));  // 18 + 64
     end;
 
     sfx_play(voice4,77,202); // vol10
@@ -1669,9 +1669,9 @@ end;
 
 procedure trade_UpdateUEC(uec: Longword);
 
-const
-  LISTSTART = 21;
-  LISTWIDTH = 19;
+// const
+//   LISTSTART = 21;
+//   LISTWIDTH = 19;
 
 begin
 //    liststart:=(CRT_screenWidth shr 1)+1;
@@ -1681,7 +1681,10 @@ begin
   strnum:=IntToStr(uec);
   //CRT_GotoXY(LISTSTART+7,0); // +7 for Sell string
   //WriteSpaces(LISTWIDTH-Length(strnum)-Length(CURRENCY)-7);
-  putSpacesAt(LISTWIDTH-Length(strnum)-Length(CURRENCY)-7,LISTSTART+7,0);
+  // putSpacesAt(LISTWIDTH-Length(strnum)-Length(CURRENCY)-7,LISTSTART+7,0);
+  
+  // 19-Length(strnum)-4-7,21+7
+  putSpacesAt(12-Length(strnum),24,0);
   CRT_Write(uec);
   CRT_Write(CURRENCY);
 end;
@@ -1698,8 +1701,11 @@ begin
   //CRT_GotoXY(LISTSTART-(Length(tstr)+5),6); // -4 as 4 spaces will be drawn
   //CRT_GotoXY(LISTSTART-8,6); // -8 to clear all space right after string Total Cargo
   //WriteSpaces(4); // fixed 4 chars for cargo size
-  putSpacesAt(4,LISTSTART-8,6);
-  CRT_GotoXY(LISTSTART-(Length(tstr)+5),6);
+  
+  // putSpacesAt(4,LISTSTART-8,6);
+  // CRT_GotoXY(LISTSTART-(Length(tstr)+5),6);
+  putSpacesAt(4,13,6);
+  CRT_GotoXY(26-Length(tstr),6);
   CRT_Write(Atascii2Antic(tstr)); CRT_Write(CARGOUNIT);CRT_Write('|'~);
 end;
 
@@ -1785,11 +1791,12 @@ begin
 
   //CRT_GotoXY(LISTWIDTH-1,0);
   //WriteSpaces(1);
-  putSpacesAt(1,LISTWIDTH-1,0);
+  // putSpacesAt(1,LISTWIDTH-1,0);
+  putSpacesAt(1,18,0);
   CRT_Write(strings[8]); // Buy
   WriteSpace;
   // invert at start
-  CRT_Invert(LISTWIDTH-1,0,5);
+  CRT_Invert(18,0,5);
 
   CRT_WriteRightAligned(concat(Atascii2Antic(IntToStr(currentuec)), CURRENCY));
   //CRT_GotoXY(0,1);
@@ -1801,7 +1808,8 @@ begin
   CRT_Write(strings[11]); // Available items
   CRT_GotoXY(0,3);
   CRT_Write('[ '~); CRT_Write(ships[currentship.sindex*MAXSHIPPARAMETERS]); CRT_Write(' ]'~);
-  CRT_GotoXY(LISTSTART-2,3);
+  // CRT_GotoXY(LISTSTART-2,3);
+  CRT_GotoXY(19,3);
   CRT_Write(' |'~);
   CRT_Write(strings[12]);CRT_WriteRightAligned(strings[13]); // commodity price
   //CRT_GotoXY(0,4);
@@ -1811,7 +1819,8 @@ begin
   putStringAt(14,0,5);
   
   tstr:=IntToStr(currentship.scu_max);
-  CRT_GotoXY(LISTSTART-(Length(tstr)+5),5);
+  // CRT_GotoXY(LISTSTART-(Length(tstr)+5),5);
+  CRT_GotoXY(26-Length(tstr),5);
   CRT_Write(Atascii2Antic(IntToStr(currentship.scu_max))); CRT_Write(CARGOUNIT);CRT_Write('|'~);
   //CRT_GotoXY(0,6);
   //CRT_Write(strings[15]); 
@@ -1826,14 +1835,15 @@ begin
 
   for y:=0 to 19 do
     begin
-      CRT_Write(Chr(18+64));
+      CRT_Write(Chr(82));  // 18+64 adding 64 for antic mode
     end;
-  CRT_Write(Chr(4+64));
+  CRT_Write(Chr(68));    // 4+64
   sfx_play(voice4,77,202); // vol10
 
   for y:=8 to 17 do
   begin
-      CRT_GotoXY(LISTSTART-1,y);
+      // CRT_GotoXY(LISTSTART-1,y);
+      CRT_GotoXY(20,y);
       CRT_Write('|'~);
   end;
 
@@ -1849,7 +1859,8 @@ begin
   CRT_GotoXY(1,22);
   // txt:=concat(char(30+128),char(31+128));
   // CRT_Write(Atascii2Antic(txt));
-  CRT_Write(Chr(30+128+64)); CRT_Write(Chr(31+128+64)); // character code + 128 for inverse + 64 for antic code
+  // CRT_Write(Chr(30+128+64)); CRT_Write(Chr(31+128+64)); // character code + 128 for inverse + 64 for antic code
+  CRT_Write(Chr(222)); CRT_Write(Chr(223)); // character code + 128 for inverse + 64 for antic code
   CRT_Write('-x1 +'~);
   CRT_Write('CONTROL'*~);
   CRT_Write('-x100 +'~);
@@ -1905,10 +1916,12 @@ begin
 
                       //CRT_GotoXY(LISTSTART-3,0);
                       //WriteSpaces(1);
-                      putSpacesAt(1,LISTSTART-3,0);
+                      // putSpacesAt(1,LISTSTART-3,0);
+                      putSpacesAt(1,18,0);
                       CRT_Write(strings[8]); // Buy
                       WriteSpace;WriteSpace;
-                      CRT_Invert(LISTSTART-3,0,5);
+                      // CRT_Invert(LISTSTART-3,0,5);
+                      CRT_Invert(18,0,5);
 
                       ListItems(false);
                       ListCargo(false);
@@ -2319,10 +2332,12 @@ begin
                         begin
                           //CRT_GotoXY(LISTSTART-3,0);
                           //WriteSpaces(1);
-                          putSpacesAt(1,LISTSTART-3,0);
+                          // putSpacesAt(1,LISTSTART-3,0);
+                          putSpacesAt(1,18,0);
                           CRT_Write(strings[8]); // Buy
                           WriteSpace;WriteSpace;
-                          CRT_Invert(LISTSTART-3,0,5);
+                          // CRT_Invert(LISTSTART-3,0,5);
+                          CRT_Invert(18,0,5);
 
                           // // debug
                           // for y:=0 to MAXAVAILABLEITEMS-1 do
@@ -2342,10 +2357,12 @@ begin
                         else begin // selling mode
                           //CRT_GotoXY(LISTSTART-3,0);
                           //WriteSpaces(1);
-                          putSpacesAt(1,LISTSTART-3,0);
+                          // putSpacesAt(1,LISTSTART-3,0);
+                          putSpacesAt(1,18,0);
                           CRT_Write(strings[9]); // Buy
                           WriteSpace;
-                          CRT_Invert(LISTSTART-3,0,6);
+                          // CRT_Invert(LISTSTART-3,0,6);
+                          CRT_Invert(18,0,6);
 
                           //  // debug
                           //  for y:=0 to MAXAVAILABLEITEMS-1 do
@@ -2642,6 +2659,13 @@ begin
   DMACTL:=$22; //%00100010;
   // Waitframe;
   gfx_fadein;
+
+
+  // x:=-2;
+  // CRT_GotoXY(0,20);
+  // CRT_Write('>'~); putSpacesAt(x,1,20); CRT_Write('<'~);
+
+
 
 
   //keyval:=chr(0);
