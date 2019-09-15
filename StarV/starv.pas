@@ -52,6 +52,7 @@ var
   current_menu: Byte;
   gamestate: TGameState;
   music: Boolean;
+  disablemusic: Boolean;
 
   {$i 'strings.inc'}
   {$i 'ships.inc'}
@@ -76,8 +77,6 @@ var
   ship10: TShip;
   ship11: TShip;
   shipmatrix: array [0..NUMBEROFSHIPS-1] of pointer = (@ship0, @ship1, @ship2, @ship3, @ship4, @ship5, @ship6, @ship7, @ship8, @ship9, @ship10, @ship11);
-  // shipmatrix: array [0..NUMBEROFSHIPS-1] of ^TShip;
-
 
   (*
   * 0 - colpf0
@@ -86,36 +85,31 @@ var
   * 3 - colbk
   *)
   piccolors: array [0..(4*NUMBEROFLOCATIONS)-1] of Byte = (
-    $04,$08,$0c,$00,    // 0
-    // $f4,$f0,$fc,$00,    // 1
-    // $04,$08,$0c,$00,    // 1
-    $f0,$f4,$fc,$00,    // 1
-    $10,$14,$1c,$00,    // 2
-    $70,$74,$7c,$00,    // 3
-    $02,$08,$0c,$00,    // 4
-    $f0,$f4,$fc,$00,    // 5
+    $04,$0c,$08,$00,    // 0
+    $16,$12,$1e,$00,    // 1
+    $c2,$c8,$ce,$00,    // 2
+    $14,$1a,$ee,$00,    // 3
+    $a0,$de,$c6,$00,    // 4
+    $96,$82,$9c,$00,    // 5
     $02,$08,$0c,$00,    // 6
-    $04,$0a,$0e,$00,    // 7
-    $d0,$d4,$dc,$00,    // 8
-    // $f0,$f4,$fc,$00,    // 9
+    $22,$28,$ee,$00,    // 7
+    $a0,$d2,$e8,$00,    // 8
     $10,$14,$1a,$00,    // 9
-    $10,$14,$1c,$00,    // 10
-    $04,$08,$0c,$00,    // 11
-    $10,$14,$1c,$00,    // 12
-    // $0c,$02,$06,$00,    // 13
+    $40,$56,$2c,$00,    // 10
+    $42,$2c,$38,$00,    // 11
+    $26,$B4,$2e,$00,    // 12
     $10,$14,$1c,$00,    // 13
-    $02,$06,$0c,$00,    // 14
-    $70,$74,$7c,$00,    // 15
-    // $fc,$f4,$f0,$00     // 16
-    $10,$14,$1a,$00,     // 16
-    $f0,$f4,$fc,$00,     // 17
+    $86,$8a,$80,$00,    // 14
+    $de,$72,$76,$00,    // 15
+    $72,$78,$ee,$00,     // 16
+    $94,$90,$fe,$00,     // 17
     $70,$74,$7c,$00,     // 18
     $30,$34,$3c,$00,     // 19
-    $f0,$f4,$fc,$00,     // 20
+    $82,$66,$6e,$00,     // 20
     $70,$74,$7c,$00,     // 21
     $10,$14,$1c,$00,     // 22
-    $30,$34,$3c,$00,     // 23
-    $30,$34,$0e,$00      // 24
+    $24,$28,$2c,$00,     // 23
+    $24,$20,$76,$00      // 24
   );
 
   // current gfx colors
@@ -126,9 +120,6 @@ var
   txtcolors : array [0..1] of Byte = (
     $00,$1c
   );
-
-
-  // strings: array [0..0] of Word absolute STRINGS_ADDRESS;
 
   itemprice: array [0..(NUMBEROFLOCATIONS * NUMBEROFITEMS)-1] of Word = (
     0,0,0,0,83,40,0,31,69,0,0,198,16,0,280,170,0,0,0,34,145,199,1,0,
@@ -258,7 +249,7 @@ var
     ''~,
     'Graphics'~,
     'Broniu  Kaz    '~,
-    'MADRAFi Bocianu'~,
+    'MADRAFi'~,
     ''~,
     'Music'~,
     'Caruso'~,
@@ -364,16 +355,19 @@ begin
       If (txtcolors[0] and %00001111 <> 0) then Dec(txtcolors[0]) else txtcolors[0]:=0;
       If (txtcolors[1] and %00001111 <> 0) then Dec(txtcolors[1]) else txtcolors[1]:=0;
     end;
-  //until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3] or txtcolors[0] or txtcolors[1]) = 0;
-  until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3]) = 0;
+  until ((gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3])=0) and ((hidetext = false) or ((txtcolors[0] or txtcolors[1])=0));
   waitframes(10);
 end;
 
 procedure gfx_fadein;
-var b:byte;
+var
+  b : byte;
+  targetcolors: array [0..3] of Byte;
+
 const
   txtcolor = $1c;
   txtback = 0;
+  // titlecolors : array [0..3] of Byte = ($10,$14,$1a,$00);
   titlecolors : array [0..3] of Byte = ($10,$14,$1a,$00);
 
 
@@ -383,23 +377,32 @@ begin
   // gfxcolors[2]:=0;
   // gfxcolors[3]:=0;
   y:= newLoc shl 2; // x 4 for number of colors
+  if (current_menu = MENU_TITLE) or (current_menu = MENU_SAVE) or (current_menu = MENU_LOAD) or (current_menu = MENU_CREDITS) then
+  begin
+    targetcolors:=titlecolors;
+  end
+  else
+  begin
+    for b:=0 to 3 do 
+      targetcolors[b]:=piccolors[y+b];
+  end;
+
   repeat
     Waitframes(2);
-    if (current_menu = MENU_TITLE) or (current_menu = MENU_SAVE) or (current_menu = MENU_LOAD) or (current_menu = MENU_CREDITS) then
-    begin
-      for b:=0 to 3 do 
-        If ((gfxcolors[b] and %00001111) <= (titlecolors[b] and %00001111)) then Inc(gfxcolors[b]) else gfxcolors[b]:=titlecolors[b];
-    end
-    else
-    begin
-      for b:=0 to 3 do 
-        If ((gfxcolors[b] and %00001111) <= (piccolors[y+b] and %00001111 )) then Inc(gfxcolors[b]) else gfxcolors[b]:=piccolors[y+b];
-    end;
+    for b:=0 to 3 do 
+      If ((gfxcolors[b] and %00001111) <= (targetcolors[b] and %00001111)) then Inc(gfxcolors[b]) else gfxcolors[b]:=targetcolors[b];
 
     If ((txtcolors[0] and %00001111) <= (txtback and %00001111)) then inc(txtcolors[0]) else txtcolors[0]:=txtback;
     If ((txtcolors[1] and %00001111) <= (txtcolor and %00001111)) then inc(txtcolors[1]) else txtcolors[1]:=txtcolor;
 
-  until ((gfxcolors[0]=piccolors[y]) or (gfxcolors[0]=titlecolors[0])) and ((gfxcolors[1]=piccolors[y+1]) or (gfxcolors[1]=titlecolors[1])) and ((gfxcolors[2]=piccolors[y+2]) or (gfxcolors[2]=titlecolors[2])) and ((gfxcolors[3]=piccolors[y+3]) or (gfxcolors[3]=titlecolors[3]));
+  until (gfxcolors[0]=targetcolors[0]) and
+        (gfxcolors[1]=targetcolors[1]) and
+        (gfxcolors[2]=targetcolors[2]) and
+        (gfxcolors[3]=targetcolors[3]);
+
+
+  // CRT_GotoXY(0,23);
+  // CRT_Write('gfxcolors[2]='~);CRT_Write(gfxcolors[2]);CRT_Write(' titlecolors[2]='~);CRT_Write(titlecolors[2]);
 end;
 
 procedure putStringAt(snum,x,y:byte);
@@ -507,7 +510,9 @@ end;
 
 
 function percentC(v:word):word;
-begin 
+begin
+    // need to set count before calling the procedure
+    // example count:= Random(100);
     result:=v * count div 100;
 end;  
 
@@ -648,14 +653,15 @@ begin
       offset:= (NUMBEROFSHIPS * loc)+y;
       if shipprices[offset] > shipprices[0] then // do not change price of starting ship
       begin
-        x:=Random(2); 
-        count:=percentc(shipprices[offset]);
+        x:=Random(2);
+        count:= Random(30);
+        priceChange:=percentc(shipprices[offset]);
         if x = 0 then
         begin
           // price drop
           // modify:=(1 - percent);
           // shipprices[offset]:=Round(shipprices[offset] * (1 - percent));
-          Dec(shipprices[offset],count);
+          Dec(shipprices[offset],priceChange);
 
           //newprice:=Round(shipprices[offset] * (1 - percent));
           //shipprices[offset]:=Longword(shipprices[offset] * (1 - percent));
@@ -665,7 +671,7 @@ begin
           // price increase
           // modify:=(1 + percent);
           // shipprices[offset]:=Round(shipprices[offset] * (1 + percent));
-          Inc(shipprices[offset],count);
+          Inc(shipprices[offset],priceChange);
 
           //newprice:=Round(shipprices[offset] * (1 + percent));
           //shipprices[offset]:=Longword(shipprices[offset] * (1 + percent));
@@ -689,14 +695,50 @@ end;
   {$i 'lowmem.inc'} // lowmem procs to load pictures from disk 
 {$endif}
 
+procedure initWorld;
+
+var
+  priceChange: word;
+
+begin
+
+  for offset:=0 to (NUMBEROFITEMS-1) * (NUMBEROFLOCATIONS-1) do
+  begin
+    if (itemprice[offset] > 0) then
+      x:=Random(2); 
+      count:=Random(25);
+      priceChange:=percentc(itemprice[offset]);
+      if x = 0 then
+      begin
+        // price drop
+        Dec(itemprice[offset],priceChange);
+      end
+      else
+      begin
+        // price increase
+        Inc(itemprice[offset],priceChange);
+    end;
+  end;
+    
+  // test cargo
+  // ship.cargoindex[0]:=8;
+  // ship.cargoquantity[0]:=10;
+  // ship.cargoindex[1]:=11;
+  // ship.cargoquantity[1]:=20;
+  // ship.scu:= 30;
+
+  
+end;
+
+
 procedure start;
 
 begin
-  gfx_fadeout(true);
-  current_menu := MENU_MAIN;
   sfx_play(voice4,88,202); // vol10
+  gfx_fadeout(true);
+  WaitFrame;
   
-
+  current_menu := MENU_MAIN;
   gamestate:=GAMEINPROGRESS;
   player.uec:= STARTUEC;
   //if player.loc <> 0  then
@@ -707,6 +749,7 @@ begin
   
   pic_load(LOC,player.loc);
   
+  initWorld;
 
   // tshp:= shipmatrix[0];
   // ship:= tshp^;
@@ -717,13 +760,6 @@ begin
   eraseArray(0,MAXCARGOSLOTS-1, @ship.cargoindex);
   eraseArray(0,MAXCARGOSLOTS-1, @ship.cargoquantity);
 
-
-  // test cargo
-  // ship.cargoindex[0]:=8;
-  // ship.cargoquantity[0]:=10;
-  // ship.cargoindex[1]:=11;
-  // ship.cargoquantity[1]:=20;
-  // ship.scu:= 30;
 
   // gfx_fadein;
 
@@ -1016,9 +1052,9 @@ begin
   CRT_Write(ship.qf * 100 div ship.qf_max); CRT_Write(' %'~);
 
   // Help Keys
-  //CRT_GotoXY(0,7);
-  //CRT_Write(strings[23]); // Navigation options
-  putStringAt(23,0,7);
+  CRT_GotoXY(0,7);
+  CRT_Write('1-6'*~); // Navigation options
+  putStringAt(23,3,7);
 
   WriteSpace;
   CRT_Write(strings[24]);  // FTL Jump
@@ -1405,6 +1441,7 @@ var
   fueltotal: Longword;
   reqtotal: LongWord;
   itemoffset: Word;
+  
 
 begin
   beep230; //vol 10
@@ -1413,7 +1450,9 @@ begin
   itemoffset:=(NUMBEROFITEMS * player.loc) + 12; // check hydrogen
   fuelquantity:= 0;
   if (itemquantity[itemoffset] > 0) then
-    fuelprice:= itemprice[itemoffset] div 4     // Fuel price is 1/4 of Hydrogen
+  begin
+    fuelprice:=itemprice[itemoffset] div 4;     // Fuel price is 1/4 of Hydrogen
+  end
   else
   begin    
     // There is no Hydrogen to refuel
@@ -1422,7 +1461,8 @@ begin
   end;
   reqfuel:= 0;
   reqtotal:= 0;
-
+  // CRT_GotoXY(0,6);
+  // CRT_Write('offset:'~);CRT_Write(itemoffset);CRT_Write(' iprice:'~);CRT_Write(iprice);CRT_Write(' fuelprice:'~);CRT_Write(fuelprice);
   
   If (ship.qf < ship.qf_max) then
   begin
@@ -1432,8 +1472,6 @@ begin
     begin
      fuelquantity:=ship.qf_max - ship.qf;
 
-    //  CRT_GotoXY(0,6);
-    //  CRT_Write('reqt:'~);CRT_Write(reqtotal);Writespaces(1);CRT_Write('fuel_quant:'~);CRT_Write(fuelquantity)
     end
     else 
     begin
@@ -2530,10 +2568,10 @@ begin
                       // if there is an ship in available ship enable console_ship
                       if (shipprices[offset] > 0) then current_menu := MENU_SHIP;
                      end;
-        KEY_BACK: begin
-                    beep255; // vol10
-                    current_menu := MENU_TITLE;
-                  end;
+        KEY_BACK:   begin
+                      beep255; // vol10
+                      current_menu := MENU_TITLE;
+                    end;
       end;
     end;
     Waitframe;
@@ -2551,9 +2589,11 @@ procedure title;
 
 var
   startPressed: Boolean = false;
+  musicPressed: Boolean = false;
 
 begin
   startPressed:=false;
+  musicPressed:=false;
 
   gfx_fadeout(true);
   draw_logo;
@@ -2643,7 +2683,25 @@ begin
                           beepnfade;
                           current_menu:=MENU_CREDITS;
                         end;
-
+          KEY_JUMP:   begin
+                        if not musicPressed then
+                        begin
+                          if disablemusic then
+                          begin
+                            msx.stop;
+                            music:= false;
+                            // disablemusic:=true;
+                          end 
+                          else
+                          begin
+                            msx.init;
+                            music:= true;
+                            // disablemusic:=false
+                          end;
+                          disablemusic:= not disablemusic;
+                          musicPressed:= true;
+                        end; 
+                      end;
 (*
           // KEY_OPTION1: sfx_play(185,16*12+4);
           // KEY_OPTION2: sfx_play(110,16*12+4);
@@ -2654,7 +2712,12 @@ begin
 *)
 
       end;
+    end
+    else
+    begin
+      musicPressed:=false;
     end;
+
     If CRT_StartPressed and not startPressed then
     begin
       startPressed:=true;
@@ -2727,7 +2790,7 @@ begin
 
     if (xBiosIOresult = 0) then
     begin
-      xBiosSetLength(60); // 5+15+20+20
+      xBiosSetLength(60); // 5+15+20+20 both variable size ( all in records)
       xBiosLoadData(@player);
       xBiosLoadData(@ship);
       if (xBiosIOresult = 0) then
@@ -2792,9 +2855,9 @@ begin
   end;
 
   // Help Keys
-  //CRT_GotoXY(0,CRT_screenHeight - 2);
-  //CRT_Write(strings[23]); // Navigation options
-  putStringAt(23,0,CRT_screenHeight - 2);
+  CRT_GotoXY(0,CRT_screenHeight - 2);
+  CRT_Write('1-5'*~); // Navigation options
+  putStringAt(23,3,CRT_screenHeight - 2);
   WriteSpace;
   CRT_Write('RETURN'*~);
   CRT_Write(strings[19]);  // Confirm
@@ -2855,6 +2918,7 @@ begin
                             beep200; //vol 10
                             if mode then disk_save(slot)
                             else disk_load(slot);
+                            sfx_init;
                             current_menu:=MENU_TITLE;
                           end;
                           selectPressed:= true;
@@ -2892,40 +2956,15 @@ begin
 
   //player.loc:=STARTLOCATION; //start location Port Olisar
 
-  // msx.player:=pointer(PLAYER_ADDRESS);
-  // msx.modul:=pointer(MODULE_ADDRESS);
-  // msx.init;
-
-  // sfx_init;
+  msx.player:=pointer(PLAYER_ADDRESS);
+  msx.modul:=pointer(MODULE_ADDRESS);
+  msx.init;
+  
+  disablemusic:= false;
+  sfx_init;
+  music:= true;
 
   // load ships data into an array of records.
-  // for y:=0 to NUMBEROFSHIPS-1 do
-  // begin
-  //   tshp:=shipmatrix[y];
-  //   offset:=(y * MAXSHIPPARAMETERS);
-  //   tshp^.mcode:=byte(ships[offset+1]);
-  //   tshp^.sindex:=y;
-  //   tshp^.scu_max:=Word(ships[offset+2]);
-  //   tshp^.speed:=byte(ships[offset+3]);
-  //   tshp^.lenght:=byte(ships[offset+4]);
-  //   tshp^.mass:=Word(ships[offset+5]);
-  //   tshp^.qf_max:=Word(ships[offset+6]);
-  //   tshp^.swait:=byte(ships[offset+7]);
-  // end;
-  // shipmatrix[0]:=@ship0;
-  // shipmatrix[1]:=@ship1;
-  // shipmatrix[2]:=@ship2;
-  // shipmatrix[3]:=@ship3;
-  // shipmatrix[4]:=@ship4;
-  // shipmatrix[5]:=@ship5;
-  // shipmatrix[6]:=@ship6;
-  // shipmatrix[7]:=@ship7;
-  // shipmatrix[8]:=@ship8;
-  // shipmatrix[9]:=@ship9;
-  // shipmatrix[10]:=@ship10;
-  // shipmatrix[11]:=@ship11;
-
-
   for y:=0 to NUMBEROFSHIPS-1 do
   begin
     offset:=(y * MAXSHIPPARAMETERS);

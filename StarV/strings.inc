@@ -1,5 +1,5 @@
 strings: array [0..65] of String = (
-    'v.0.28 (c) 2019 MADsoft'~, // 0
+    'v.0.30 (c) 2019 MADsoft'~, // 0
     'N'*'ew Game'~,
     'Q'*'uit'~,
     '1'*' Navigation'~,
@@ -22,7 +22,7 @@ strings: array [0..65] of String = (
     'Loc:'~, // 20
     'Nav:'~,
     'Distance:'~,
-    '1-5'*'-Navigation'~,
+    '-Navigation'~,
     'J'*'-FTL Jump'~,
     'No xBios found. Cannot load Pics'*~, // 25
     ' Press any key '*~,

@@ -36,6 +36,6 @@ DISPLAY_LIST_ADDRESS_CONSOLE rcasm 'dlist_console.asm'
 ;STRINGS_ADDRESS rcasm 'strings.asm'
 
 ; music module
-;PLAYER_ADDRESS  CMCPLAY
-;MODULE_ADDRESS  CMC 'assets/lostp.cmc'
+PLAYER_ADDRESS  CMCPLAY
+MODULE_ADDRESS  CMC 'assets/lostp.cmc'
 
