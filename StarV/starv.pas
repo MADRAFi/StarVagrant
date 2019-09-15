@@ -2589,9 +2589,11 @@ procedure title;
 
 var
   startPressed: Boolean = false;
+  musicPressed: Boolean = false;
 
 begin
   startPressed:=false;
+  musicPressed:=false;
 
   gfx_fadeout(true);
   draw_logo;
@@ -2682,17 +2684,23 @@ begin
                           current_menu:=MENU_CREDITS;
                         end;
           KEY_JUMP:   begin
-                        if disablemusic then
+                        if not musicPressed then
                         begin
-                          msx.pause;
-                          // disablemusic:=true;
-                        end 
-                        else
-                        begin
-                          msx.cont;
-                          // disablemusic:=false
-                        end;
-                        disablemusic:= not disablemusic;
+                          if disablemusic then
+                          begin
+                            msx.stop;
+                            music:= false;
+                            // disablemusic:=true;
+                          end 
+                          else
+                          begin
+                            msx.init;
+                            music:= true;
+                            // disablemusic:=false
+                          end;
+                          disablemusic:= not disablemusic;
+                          musicPressed:= true;
+                        end; 
                       end;
 (*
           // KEY_OPTION1: sfx_play(185,16*12+4);
@@ -2704,7 +2712,12 @@ begin
 *)
 
       end;
+    end
+    else
+    begin
+      musicPressed:=false;
     end;
+
     If CRT_StartPressed and not startPressed then
     begin
       startPressed:=true;
