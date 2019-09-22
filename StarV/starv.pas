@@ -368,7 +368,7 @@ const
   txtcolor = $1c;
   txtback = 0;
   // titlecolors : array [0..3] of Byte = ($10,$14,$1a,$00);
-  titlecolors : array [0..3] of Byte = ($10,$14,$1a,$00);
+  titlecolors : array [0..3] of Byte = ($12,$18,$1e,$00);
 
 
 begin
