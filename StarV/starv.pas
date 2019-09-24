@@ -2445,7 +2445,15 @@ begin
 end;
 
 procedure credits;
-var a:array[0..0] of string;
+var
+  a:array[0..0] of string;
+  ee: Boolean = false;
+  tcount: Byte;
+  sign: Byte;
+	tab: array [0..255] of byte absolute $BE00;
+  add: array [0..255] of byte absolute $BF00;
+
+
 const
   SHOWTIME = 400;
 
@@ -2460,7 +2468,7 @@ end;
 
 begin
   keyval:= 0;
-
+  
   draw_logo;
 
   // // help
@@ -2468,19 +2476,85 @@ begin
   gfx_fadein;
 
   count:= 0;
+  tcount:= 0;
+  
+  ee:=true; // temp
+  
+  // randomize;
+  for x:=0 to 255 do begin
+    // tab[x]:=peek($d20a);
+    // add[x]:=peek($d20a) and 3 + 1;
+    tab[x]:=random(255);
+    add[x]:=random(255) and 3 + 1;
+  end;
+
+  // colpm0:=$0e;
+  // pcolr0:=$0e;
+  sizep0:=0;
+  grafp0:=1;
+  
+
   repeat
-    if (count = 0) then
+    // offset:=32;
+    if (count = 0) and (ee = false) then
     begin
         a:=creditstxt;
         showArray;
     end;
 
-    if (count = SHOWTIME) then
+    if (count = SHOWTIME) and (ee = false) then
     begin
         a:=thankstxt;
         showArray;
     end;    
-     
+    
+    if ee then
+    begin
+      // if ((count mod 16)=0) then
+      // begin
+      //   // x:= Random(39);
+      //   // y:= Random(23);
+      //   // sign:=CRT_GetXY(x,y);
+      //   // if (sign <> 20) then
+      //   // begin
+      //   //   Inc(sign);
+      //   //   txt[0]:=char(1);
+      //   //   txt[1]:=char(sign+64); // add 64 to convert for antic
+      //   //   CRT_GotoXY(x,y);
+      //   //   CRT_Write(txt);
+      //   // end;
+        
+        
+      //   // color2:= COLOR_WHITE;
+      //   y:=120; // 3rd row 120/40=3
+      //   repeat
+      //     for x:=32 to 35 do   //32 to 35 character in a row
+      //     begin
+      //       sign:=y+x;
+      //       poke(TXT_ADDRESS + sign, (peek(TXT_ADDRESS + sign)  xor $80) + 0);
+      //     end;
+      //     Inc(y,40);
+      //   until y>160;  //4th row
+      //   // offset:=8;
+      // end;
+    
+      x:=vcount;
+      wsync:=0;
+      hposp0:=tab[x];
+      inc(tab[x], add[x]);
+    end;
+
+    if (count = SHOWTIME * 2) then
+    begin
+       count:= 0;
+       Inc(tcount);
+    end
+    else inc(count);
+    if tcount = 5 then ee:= true;
+
+
+    
+
     If (CRT_Keypressed) then
     begin
       keyval := kbcode;
@@ -2491,9 +2565,8 @@ begin
                       gfx_fadeout(true);
                     end;
       end;
-    end;    
-    if (count = SHOWTIME * 2) then count:= 0
-    else inc(count);
+    end;
+    
     Waitframe;
   until (keyval = KEY_BACK);
 
