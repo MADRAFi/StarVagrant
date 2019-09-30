@@ -248,7 +248,7 @@ var
     'MADRAFi'~,
     ''~,
     'Graphics'~,
-    'Broniu  Kaz    '~,
+    'Broniu  Kaz'~,
     'MADRAFi'~,
     ''~,
     'Music'~,
@@ -2446,16 +2446,20 @@ end;
 
 procedure credits;
 var
-  a:array[0..0] of string;
+  a: array [0..0] of string;
+  tab: array [0..127] of byte absolute $ED58;
   ee: Boolean = false;
   tcount: Byte;
-  sign: Byte;
-	tab: array [0..255] of byte absolute $BE00;
-  add: array [0..255] of byte absolute $BF00;
+  // sign: Byte;
+	
+  // add: array [0..255] of byte absolute $BF00;
 
 
 const
   SHOWTIME = 400;
+
+  player0 : array[0..29] of byte = ($3C,$10,$C8,$3E,$F,$3E,$C8,$10,$3C,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00);
+
 
 procedure showArray;
 begin
@@ -2480,19 +2484,7 @@ begin
   
   ee:=true; // temp
   
-  // randomize;
-  for x:=0 to 255 do begin
-    // tab[x]:=peek($d20a);
-    // add[x]:=peek($d20a) and 3 + 1;
-    tab[x]:=random(255);
-    add[x]:=random(255) and 3 + 1;
-  end;
 
-  // colpm0:=$0e;
-  // pcolr0:=$0e;
-  sizep0:=0;
-  grafp0:=1;
-  
 
   repeat
     // offset:=32;
@@ -2537,11 +2529,43 @@ begin
       //   until y>160;  //4th row
       //   // offset:=8;
       // end;
-    
-      x:=vcount;
-      wsync:=0;
-      hposp0:=tab[x];
-      inc(tab[x], add[x]);
+        
+        pmbase:=Hi(PMG_ADDRESS);    
+        gractl:=3; // Turn on P/M graphics
+        // sdmctl:=ord(TDmactl.normal)+ord(TDmactl.players)+ord(TDmactl.enable);
+
+        // // Clear player 1 memory
+        fillchar(pointer(PMG_ADDRESS+512), 128, 0);
+        
+        // // copy player0 data into sprite 
+        Move(player0, pointer(PMG_ADDRESS+512+90), sizeof(player0));
+
+        // randomize;
+        for x:=0 to 127 do begin
+          tab[x]:=peek($d20a);
+        end;
+
+        sizep0:=1;  // Size of player 0 (double size)
+        pcolr0:=$18;   // Player 0 color
+        
+        sizem:=0;
+        pcolr3:=$0e;
+        gprior:=1;
+
+
+        
+
+        repeat until vcount=60;
+        repeat
+            x:=vcount;
+            inc(tab[x], (x and 3) + 1);            
+            wsync:=0;            
+            hposm3:=tab[x];
+            grafm:=128;
+        until vcount > 108;
+
+        hposp0:=50;
+      
     end;
 
     if (count = SHOWTIME * 2) then
@@ -2567,7 +2591,8 @@ begin
       end;
     end;
     
-    Waitframe;
+    // Waitframe;
+    // WHILE VCOUNT<>0 do begin end;
   until (keyval = KEY_BACK);
 
 
@@ -3049,6 +3074,9 @@ begin
   SystemOff;
   Randomize;
   SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
+  
+  sdmctl:=ord(TDmactl.normal)+ord(TDmactl.players)+ord(TDmactl.enable);
+
   CRT_Init(TXT_ADDRESS);
 
   //player.loc:=STARTLOCATION; //start location Port Olisar
