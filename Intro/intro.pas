@@ -18,8 +18,8 @@ var
     $74,$36,$fc,$00,   // 0
     $84,$88,$0e,$00,   // 1
     $24,$1a,$0e,$00,   // 2
-    $10,$14,$1a,$00    // 3
-    //$90,$96,$9c,$00    // 3    
+    $12,$18,$1e,$00
+    // $10,$14,$1a,$00    // 3
   );
   
   txtcolors : array [0..1] of Byte = (
@@ -29,7 +29,7 @@ var
   msx: TRMT;
   // txt: String;
   picnumber: Byte; //count from 0
-  y: Byte;
+  b,y: Byte;
   skip: Boolean;
   music: Boolean;
   count: Word;
@@ -49,15 +49,21 @@ begin
   y:= picnumber shl 2;
   repeat
     Waitframes(2);
-    If (gfxcolors[0] and %00001111 <> piccolors[y] and %00001111) then Inc(gfxcolors[0]) else gfxcolors[0]:=piccolors[y];
-    If (gfxcolors[1] and %00001111 <> piccolors[y+1] and %00001111) then Inc(gfxcolors[1]) else gfxcolors[1]:=piccolors[y+1];
-    If (gfxcolors[2] and %00001111 <> piccolors[y+2] and %00001111) then Inc(gfxcolors[2]) else gfxcolors[2]:=piccolors[y+2];
-    If (gfxcolors[3] and %00001111 <> piccolors[y+3] and %00001111) then Inc(gfxcolors[3]) else gfxcolors[3]:=piccolors[y+3];
+    // If (gfxcolors[0] and %00001111 <> piccolors[y] and %00001111) then Inc(gfxcolors[0]) else gfxcolors[0]:=piccolors[y];
+    // If (gfxcolors[1] and %00001111 <> piccolors[y+1] and %00001111) then Inc(gfxcolors[1]) else gfxcolors[1]:=piccolors[y+1];
+    // If (gfxcolors[2] and %00001111 <> piccolors[y+2] and %00001111) then Inc(gfxcolors[2]) else gfxcolors[2]:=piccolors[y+2];
+    // If (gfxcolors[3] and %00001111 <> piccolors[y+3] and %00001111) then Inc(gfxcolors[3]) else gfxcolors[3]:=piccolors[y+3];
+    for b:=0 to 3 do 
+      If ((gfxcolors[b] and %00001111) <= (piccolors[y+b] and %00001111)) then Inc(gfxcolors[b]) else gfxcolors[b]:=piccolors[y+b];
 
     If (txtcolors[0] and %00001111 <> TEXTCOLOR1 and %00001111) then Inc(txtcolors[0]) else txtcolors[0]:=TEXTCOLOR1;
     If (txtcolors[1] and %00001111 <> TEXTCOLOR2 and %00001111) then Inc(txtcolors[1]) else txtcolors[1]:=TEXTCOLOR2;
 
-  until (gfxcolors[0]=piccolors[y]) and (gfxcolors[1]=piccolors[y+1]) and (gfxcolors[2]=piccolors[y+2]) and (gfxcolors[3]=piccolors[y+3]) and (txtcolors[0]=TEXTCOLOR1) and (txtcolors[1]=TEXTCOLOR2);
+  until (gfxcolors[0]=piccolors[y]) and
+        (gfxcolors[1]=piccolors[y+1]) and
+        (gfxcolors[2]=piccolors[y+2]) and
+        (gfxcolors[3]=piccolors[y+3]) and
+        (txtcolors[0]=TEXTCOLOR1) and (txtcolors[1]=TEXTCOLOR2);
 end;
 
 procedure gfx_fadeout; //(hidetext: Boolean);
