@@ -2515,45 +2515,17 @@ begin
     
     if ee then
     begin
-      // if ((count mod 16)=0) then
-      // begin
-      //   // x:= Random(39);
-      //   // y:= Random(23);
-      //   // sign:=CRT_GetXY(x,y);
-      //   // if (sign <> 20) then
-      //   // begin
-      //   //   Inc(sign);
-      //   //   txt[0]:=char(1);
-      //   //   txt[1]:=char(sign+64); // add 64 to convert for antic
-      //   //   CRT_GotoXY(x,y);
-      //   //   CRT_Write(txt);
-      //   // end;
-        
-        
-      //   // color2:= COLOR_WHITE;
-      //   y:=120; // 3rd row 120/40=3
-      //   repeat
-      //     for x:=32 to 35 do   //32 to 35 character in a row
-      //     begin
-      //       sign:=y+x;
-      //       poke(TXT_ADDRESS + sign, (peek(TXT_ADDRESS + sign)  xor $80) + 0);
-      //     end;
-      //     Inc(y,40);
-      //   until y>160;  //4th row
-      //   // offset:=8;
-      // end;      
-
-        repeat until vcount=50;
-        repeat
-            x:=vcount;
-            c:=(x and 3) + 1;
-            inc(tab[x], c);
-            c:= 15 - (c shl 1);
-            wsync:=0;
-            hposm3:=tab[x];
-            colpm3:=c;
-            grafm:=128;
-        until vcount > 108;
+      repeat until vcount=50;
+      repeat
+          x:=vcount;
+          c:=(x and 3) + 1;
+          inc(tab[x], c);
+          c:= 15 - (c shl 1);
+          wsync:=0;
+          hposm3:=tab[x];
+          colpm3:=c;
+          grafm:=128;
+      until vcount > 108;
 
       if mcount = 2 then begin
         mcount:=0;
@@ -2561,7 +2533,7 @@ begin
       end;
       Inc(mcount);
       hposp0:=offset;   // Horizontal position of player 0
-        
+      hposm3:=0;  
     end
     else
     begin
@@ -2592,7 +2564,7 @@ begin
 
     end;
     
-    if (tcount = 2) and (gamestate = GAMEINPROGRESS) then ee:= true;   
+    if (tcount = 3) and (gamestate = GAMEINPROGRESS) then ee:= true;   
 
     If (CRT_Keypressed) then
     begin
@@ -2600,6 +2572,8 @@ begin
       case keyval of
         KEY_BACK:   begin
                       beep255; // vol10
+                      colpm0:=0;
+                      // hposp0:=0;
                       current_menu := MENU_TITLE;
                       gfx_fadeout(true);
                     end;
@@ -2607,7 +2581,7 @@ begin
     end;
     
   until (keyval = KEY_BACK);
-
+  // fillchar(pointer(PMG_ADDRESS+512), 128, 0);
 
 end;
 
