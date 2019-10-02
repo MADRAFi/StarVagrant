@@ -84,6 +84,7 @@ begin
   if music and not disablemusic then msx.play;
   asm {
       mwa #dli_title1 __dlivec
+      inw timer
       plr ; restore registers
   };
 end;

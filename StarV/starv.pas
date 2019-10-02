@@ -51,8 +51,9 @@ var
   msx: TCMC;
   current_menu: Byte;
   gamestate: TGameState;
-  music: Boolean;
-  disablemusic: Boolean;
+  music: Boolean; // flag to stop play music on IO operation
+  disablemusic: Boolean;  // Flag to disable music after user pressed key J
+  timer: Word; // time timer increaed in vbl
 
   {$i 'strings.inc'}
   {$i 'ships.inc'}
@@ -2448,15 +2449,16 @@ procedure credits;
 var
   a: array [0..0] of string;
   tab: array [0..127] of byte absolute $ED58;
-  ee: Boolean = false;
-  tcount: Byte;
-  // sign: Byte;
+  ee: Boolean; // check if to show easter egg
+  tcount: Byte;  // how many times counter
+  mcount: Byte;  // move counter to slown down
+  c: Byte;
 	
   // add: array [0..255] of byte absolute $BF00;
 
 
 const
-  SHOWTIME = 400;
+  SHOWTIME = 500;
 
   player0 : array[0..29] of byte = ($3C,$10,$C8,$3E,$F,$3E,$C8,$10,$3C,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00);
 
@@ -2479,26 +2481,37 @@ begin
   CRT_WriteRightAligned(24, strings[7]);
   gfx_fadein;
 
-  count:= 0;
+  ee:=false;
+  timer:=0;
   tcount:= 0;
+  mcount:=0;
   
-  ee:=true; // temp
+  // ee:=true; // temp
+
+
+  gractl:=3; // Turn on P/M graphics
+  pmbase:=Hi(PMG_ADDRESS);
+
+  // // Clear player 1 memory
+  fillchar(pointer(PMG_ADDRESS+512), 128, 0);
   
+  // // copy player0 data into sprite 
+  Move(player0, pointer(PMG_ADDRESS+512+80), sizeof(player0));
+
+  sizep0:=1;  // Size of player 0 (double size)
+  colpm0:=$18;   // Player 0 color
+  
+  sizem:=0;
+  colpm3:=$0e;
+  gprior:=1;
+
+  // randomize;
+  for x:=0 to 127 do begin
+    tab[x]:=peek($d20a);
+  end;
 
 
-  repeat
-    // offset:=32;
-    if (count = 0) and (ee = false) then
-    begin
-        a:=creditstxt;
-        showArray;
-    end;
-
-    if (count = SHOWTIME) and (ee = false) then
-    begin
-        a:=thankstxt;
-        showArray;
-    end;    
+  repeat    
     
     if ee then
     begin
@@ -2528,56 +2541,58 @@ begin
       //     Inc(y,40);
       //   until y>160;  //4th row
       //   // offset:=8;
-      // end;
-        
-        pmbase:=Hi(PMG_ADDRESS);    
-        gractl:=3; // Turn on P/M graphics
-        // sdmctl:=ord(TDmactl.normal)+ord(TDmactl.players)+ord(TDmactl.enable);
+      // end;      
 
-        // // Clear player 1 memory
-        fillchar(pointer(PMG_ADDRESS+512), 128, 0);
-        
-        // // copy player0 data into sprite 
-        Move(player0, pointer(PMG_ADDRESS+512+90), sizeof(player0));
-
-        // randomize;
-        for x:=0 to 127 do begin
-          tab[x]:=peek($d20a);
-        end;
-
-        sizep0:=1;  // Size of player 0 (double size)
-        pcolr0:=$18;   // Player 0 color
-        
-        sizem:=0;
-        pcolr3:=$0e;
-        gprior:=1;
-
-
-        
-
-        repeat until vcount=60;
+        repeat until vcount=50;
         repeat
             x:=vcount;
-            inc(tab[x], (x and 3) + 1);            
-            wsync:=0;            
+            c:=(x and 3) + 1;
+            inc(tab[x], c);
+            c:= 15 - (c shl 1);
+            wsync:=0;
             hposm3:=tab[x];
+            colpm3:=c;
             grafm:=128;
         until vcount > 108;
 
-        hposp0:=50;
-      
-    end;
-
-    if (count = SHOWTIME * 2) then
-    begin
-       count:= 0;
-       Inc(tcount);
+      if mcount = 2 then begin
+        mcount:=0;
+        Inc(offset);
+      end;
+      Inc(mcount);
+      hposp0:=offset;   // Horizontal position of player 0
+        
     end
-    else inc(count);
-    if tcount = 5 then ee:= true;
+    else
+    begin
+      // if (count = 0) then
+      if (timer = 0) then
+      begin
+          a:=creditstxt;
+          showArray;
+          // CRT_GotoXY(0,23);
+          // CRT_Write(tcount);
+      end;
 
+      // if (count = SHOWTIME) then
+      if (timer = SHOWTIME) then
+      begin
+          a:=thankstxt;
+          showArray;
+          // CRT_GotoXY(0,23);
+          // CRT_Write(tcount);
+      end;
+      // if (count = SHOWTIME * 2) then // reset counter to show back 1st screen
+      if (timer = SHOWTIME * 2) then // reset counter to show back 1st screen
+      begin
+        // count:= 0;
+        timer:=0;
+        Inc(tcount);
+      end;
 
+    end;
     
+    if (tcount = 2) and (gamestate = GAMEINPROGRESS) then ee:= true;   
 
     If (CRT_Keypressed) then
     begin
@@ -2591,8 +2606,6 @@ begin
       end;
     end;
     
-    // Waitframe;
-    // WHILE VCOUNT<>0 do begin end;
   until (keyval = KEY_BACK);
 
 
@@ -2754,7 +2767,6 @@ begin
   //CRT_Write(strings[0]); // copyright
   putStringAt(0,16,CRT_screenHeight - 2);
 
-  DMACTL:=$22; //%00100010;
   // Waitframe;
   gfx_fadein;
 
@@ -3075,7 +3087,9 @@ begin
   Randomize;
   SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
   
-  sdmctl:=ord(TDmactl.normal)+ord(TDmactl.players)+ord(TDmactl.enable);
+  // DMACTL:=$22;
+  DMACTL:=$2e;
+  
 
   CRT_Init(TXT_ADDRESS);
 
