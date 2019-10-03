@@ -2500,6 +2500,7 @@ begin
 
   sizep0:=1;  // Size of player 0 (double size)
   colpm0:=$18;   // Player 0 color
+  hposp0:=0; // starting position
   
   sizem:=0;
   colpm3:=$0e;
@@ -2573,7 +2574,7 @@ begin
         KEY_BACK:   begin
                       beep255; // vol10
                       colpm0:=0;
-                      // hposp0:=0;
+                      hposp0:=0;
                       current_menu := MENU_TITLE;
                       gfx_fadeout(true);
                     end;
