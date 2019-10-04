@@ -1,4 +1,30 @@
 
+// procedure nosound;assembler;
+// asm {
+//       lda #0
+//       sta $d208
+//       sta $d218
+
+//       ldy #3
+//       sty $d20f
+//       sty $d21f
+
+//       ldy #8
+//   lp  sta $d200,y
+//       sta $d210,y
+//       dey
+//       bpl lp
+// };
+// end;
+
+procedure nosound;
+begin
+  poke(voice1+1,0);
+  poke(voice2+1,0);
+  poke(voice3+1,0);
+  poke(voice4+1,0);
+end;
+
 procedure pic_openfile(myname: TString; mynum: Byte);
 begin
   tstr:='';
@@ -26,6 +52,7 @@ begin
     music:= false;
     waitframe;
     msx.pause; // interrupt_play;
+    nosound;
   end;
 
   If mytype = LOC then pic_openfile('LOC',num);

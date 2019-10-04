@@ -1,9 +1,12 @@
 // stale
 
 FREE_TOP = $AC00;
+// FREE_TOP = $AE80;
 
 PLAYER_ADDRESS = FREE_TOP;
 MODULE_ADDRESS = PLAYER_ADDRESS + $800;
+
+PMG_ADDRESS = $BC00;
 
 GFX_ADDRESS = $C000;
 TXT_ADDRESS = $D800;
@@ -25,7 +28,7 @@ MAXSHIPPARAMETERS = 8; // number of ship parameters in ship array
 MAXAVAILABLEITEMS = 12; // numer of concurrent items displayed
 MAXCARGOSLOTS = 10;  // number of cargo slots
 MAXAVAILABLEDESTINATIONS = 6;  // number of destinations fron location.
-MAXLOGOCHARS = 599;
+// MAXLOGOCHARS = 599;
 
 STARTUEC = 10000;
 STARTLOCATION = 0;

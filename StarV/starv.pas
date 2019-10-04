@@ -51,8 +51,9 @@ var
   msx: TCMC;
   current_menu: Byte;
   gamestate: TGameState;
-  music: Boolean;
-  disablemusic: Boolean;
+  music: Boolean; // flag to stop play music on IO operation
+  disablemusic: Boolean;  // Flag to disable music after user pressed key J
+  timer: Word; // time timer increaed in vbl
 
   {$i 'strings.inc'}
   {$i 'ships.inc'}
@@ -248,7 +249,7 @@ var
     'MADRAFi'~,
     ''~,
     'Graphics'~,
-    'Broniu  Kaz    '~,
+    'Broniu  Kaz'~,
     'MADRAFi'~,
     ''~,
     'Music'~,
@@ -368,7 +369,7 @@ const
   txtcolor = $1c;
   txtback = 0;
   // titlecolors : array [0..3] of Byte = ($10,$14,$1a,$00);
-  titlecolors : array [0..3] of Byte = ($10,$14,$1a,$00);
+  titlecolors : array [0..3] of Byte = ($12,$18,$1e,$00);
 
 
 begin
@@ -2445,9 +2446,22 @@ begin
 end;
 
 procedure credits;
-var a:array[0..0] of string;
+var
+  a: array [0..0] of string;
+  tab: array [0..127] of byte absolute $ED58;
+  ee: Boolean; // check if to show easter egg
+  tcount: Byte;  // how many times counter
+  mcount: Byte;  // move counter to slown down
+  c: Byte;
+	
+  // add: array [0..255] of byte absolute $BF00;
+
+
 const
-  SHOWTIME = 400;
+  SHOWTIME = 500;
+
+  player0 : array[0..29] of byte = ($3C,$10,$C8,$3E,$F,$3E,$C8,$10,$3C,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00);
+
 
 procedure showArray;
 begin
@@ -2460,43 +2474,115 @@ end;
 
 begin
   keyval:= 0;
-
+  
   draw_logo;
 
   // // help
   CRT_WriteRightAligned(24, strings[7]);
   gfx_fadein;
 
-  count:= 0;
-  repeat
-    if (count = 0) then
-    begin
-        a:=creditstxt;
-        showArray;
-    end;
+  ee:=false;
+  timer:=0;
+  tcount:= 0;
+  mcount:=0;
+  
+  // ee:=true; // temp
 
-    if (count = SHOWTIME) then
+
+  gractl:=3; // Turn on P/M graphics
+  pmbase:=Hi(PMG_ADDRESS);
+
+  // // Clear player 1 memory
+  fillchar(pointer(PMG_ADDRESS+512), 128, 0);
+  
+  // // copy player0 data into sprite 
+  Move(player0, pointer(PMG_ADDRESS+512+80), sizeof(player0));
+
+  sizep0:=1;  // Size of player 0 (double size)
+  colpm0:=$18;   // Player 0 color
+  hposp0:=0; // starting position
+  
+  sizem:=0;
+  colpm3:=$0e;
+  gprior:=1;
+
+  // randomize;
+  for x:=0 to 127 do begin
+    tab[x]:=peek($d20a);
+  end;
+
+
+  repeat    
+    
+    if ee then
     begin
-        a:=thankstxt;
-        showArray;
-    end;    
-     
+      repeat until vcount=50;
+      repeat
+          x:=vcount;
+          c:=(x and 3) + 1;
+          inc(tab[x], c);
+          c:= 15 - (c shl 1);
+          wsync:=0;
+          hposm3:=tab[x];
+          colpm3:=c;
+          grafm:=128;
+      until vcount > 108;
+
+      if mcount = 2 then begin
+        mcount:=0;
+        Inc(offset);
+      end;
+      Inc(mcount);
+      hposp0:=offset;   // Horizontal position of player 0
+      hposm3:=0;  
+    end
+    else
+    begin
+      // if (count = 0) then
+      if (timer = 0) then
+      begin
+          a:=creditstxt;
+          showArray;
+          // CRT_GotoXY(0,23);
+          // CRT_Write(tcount);
+      end;
+
+      // if (count = SHOWTIME) then
+      if (timer = SHOWTIME) then
+      begin
+          a:=thankstxt;
+          showArray;
+          // CRT_GotoXY(0,23);
+          // CRT_Write(tcount);
+      end;
+      // if (count = SHOWTIME * 2) then // reset counter to show back 1st screen
+      if (timer = SHOWTIME * 2) then // reset counter to show back 1st screen
+      begin
+        // count:= 0;
+        timer:=0;
+        Inc(tcount);
+      end;
+
+    end;
+    
+    if (tcount = 3) and (gamestate = GAMEINPROGRESS) then ee:= true;   
+
     If (CRT_Keypressed) then
     begin
       keyval := kbcode;
       case keyval of
         KEY_BACK:   begin
                       beep255; // vol10
+                      colpm0:=0;
+                      hposp0:=0;
                       current_menu := MENU_TITLE;
                       gfx_fadeout(true);
                     end;
       end;
-    end;    
-    if (count = SHOWTIME * 2) then count:= 0
-    else inc(count);
-    Waitframe;
+    end;
+    
   until (keyval = KEY_BACK);
-
+  // fillchar(pointer(PMG_ADDRESS+512), 128, 0);
 
 end;
 
@@ -2656,7 +2742,6 @@ begin
   //CRT_Write(strings[0]); // copyright
   putStringAt(0,16,CRT_screenHeight - 2);
 
-  DMACTL:=$22; //%00100010;
   // Waitframe;
   gfx_fadein;
 
@@ -2976,6 +3061,11 @@ begin
   SystemOff;
   Randomize;
   SetCharset (Hi(CHARSET_ADDRESS)); // when system is off
+  
+  // DMACTL:=$22;
+  DMACTL:=$2e;
+  
+
   CRT_Init(TXT_ADDRESS);
 
   //player.loc:=STARTLOCATION; //start location Port Olisar
