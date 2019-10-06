@@ -2493,17 +2493,17 @@ begin
   repeat        
     if ee then
     begin
-      // repeat until vcount=50;
-      // repeat
-      //     x:=vcount;
-      //     c:=(x and 3) + 1;
-      //     inc(tab[x], c);
-      //     c:= 15 - (c shl 1);
-      //     wsync:=0;
-      //     hposm3:=tab[x];
-      //     colpm3:=c;
-      //     grafm:=128;
-      // until vcount > 108;
+      repeat until vcount=50;
+      repeat
+          x:=vcount;
+          c:=(x and 3) + 1;
+          inc(tab[x], c);
+          c:= 15 - (c shl 1);
+          wsync:=0;
+          hposm3:=tab[x];
+          colpm3:=c;
+          grafm:=128;
+      until vcount > 108;
 
       if mcount = 2 then begin
         mcount:=0;
