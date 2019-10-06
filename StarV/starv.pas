@@ -427,6 +427,11 @@ begin
     CRT_Write(' '~);
 end;
 
+function random100:Byte;
+begin
+  Result:=Random(100);
+end;
+
 procedure navi_destinationUpdate(locationindex: Word);
 
 begin
@@ -544,7 +549,8 @@ begin
 
               // offset:=Round(Random * 50000);
               // player.uec:=player.uec + offset;
-              player.uec:=player.uec + (Random(100) * 500);  // Random % from 50000 UEC
+              // player.uec:=player.uec + (Random(100) * 500);  // Random % from 50000 UEC
+              player.uec:=player.uec + (random100 * 500);  // Random % from 50000 UEC
           end;
     5:    begin
             if ship.cargoquantity[0] > 0 then
@@ -554,9 +560,9 @@ begin
               if ship.cargoindex[y] > 0 then
               begin
                 txt:=strings[33];
-                // modify:=(1 - Random(100)/100);
+                // modify:=(1 - random100 / 100);
                 // ship.cargoquantity[y]:=Round(ship.cargoquantity[y] * modify);
-                count:=Random(100);
+                count:=random100;
                 ship.cargoquantity[y]:=ship.cargoquantity[y] - percentC(ship.cargoquantity[y]);
                 Dec(ship.scu,percentC(ship.cargoquantity[y]));
               end;
@@ -567,7 +573,7 @@ begin
 
             // offset:= Round(Random * 10000);
             // player.uec:=player.uec + offset;
-            player.uec:=player.uec + (Random(100) * 100);  // Random % from 10000 UEC
+            player.uec:=player.uec + (random100 * 100);  // Random % from 10000 UEC
 
           end;
     20:   begin
@@ -608,7 +614,7 @@ procedure calculateprices;
 var priceChange: word;
 
 begin
-  count:=Random(100);
+  count:=random100;
   priceChange:=percentc(itemprice[offset]);
   for y:=0 to NUMBEROFITEMS-1 do begin
     offset:= (NUMBEROFITEMS * player.loc)+y;
@@ -661,27 +667,18 @@ begin
         x:=Random(2);
         count:= Random(30);
         priceChange:=percentc(shipprices[offset]);
-        if x = 0 then
-        begin
-          // price drop
-          // modify:=(1 - percent);
-          // shipprices[offset]:=Round(shipprices[offset] * (1 - percent));
-          Dec(shipprices[offset],priceChange);
-
-          //newprice:=Round(shipprices[offset] * (1 - percent));
-          //shipprices[offset]:=Longword(shipprices[offset] * (1 - percent));
-        end
-        else
-        begin
-          // price increase
-          // modify:=(1 + percent);
-          // shipprices[offset]:=Round(shipprices[offset] * (1 + percent));
-          Inc(shipprices[offset],priceChange);
-
-          //newprice:=Round(shipprices[offset] * (1 + percent));
-          //shipprices[offset]:=Longword(shipprices[offset] * (1 + percent));
-        end;
-        // shipprices[offset]:=Round(shipprices[offset] * modify);
+        
+        
+        // if x = 0 then
+        // begin
+        //   Dec(shipprices[offset],priceChange);
+        // end
+        // else
+        // begin
+        //   Inc(shipprices[offset],priceChange);
+        // end;
+        if x = 0 then priceChange:= - priceChange;
+        Inc(shipprices[offset],priceChange);
 
 
         // CRT_GotoXY(0,6);
@@ -700,6 +697,7 @@ end;
   {$i 'lowmem.inc'} // lowmem procs to load pictures from disk 
 {$endif}
 
+
 procedure initWorld;
 
 var
@@ -710,18 +708,28 @@ begin
   for offset:=0 to (NUMBEROFITEMS-1) * (NUMBEROFLOCATIONS-1) do
   begin
     if (itemprice[offset] > 0) then
+    begin
       x:=Random(2); 
       count:=Random(25);
       priceChange:=percentc(itemprice[offset]);
-      if x = 0 then
-      begin
-        // price drop
-        Dec(itemprice[offset],priceChange);
-      end
-      else
-      begin
-        // price increase
-        Inc(itemprice[offset],priceChange);
+
+      // if x = 0 then
+      // begin
+      //   // price drop
+      //   Dec(itemprice[offset],priceChange);
+      // end
+      // else
+      // begin
+      //   // price increase
+      //   Inc(itemprice[offset],priceChange);
+
+
+      if (x = 0) then priceChange := - priceChange;  // price drop
+      Inc(itemprice[offset],priceChange);
+
+
+      
+      
     end;
   end;
     
