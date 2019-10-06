@@ -30,6 +30,10 @@ const
   DISTANCEUNIT = ' DU'~;
   COMMISSION = 3;
 
+  COL2START = 21;
+  COL2WIDTH = 19;
+  LOGOSIZE = 15;
+
 type
 {$i 'types.inc'}
 
@@ -249,7 +253,7 @@ var
     'MADRAFi'~,
     ''~,
     'Graphics'~,
-    'Broniu  Kaz'~,
+    'Broniu Kaz'~,
     'MADRAFi'~,
     ''~,
     'Music'~,
@@ -423,6 +427,11 @@ begin
     CRT_Write(' '~);
 end;
 
+function random100:Byte;
+begin
+  Result:=Random(100);
+end;
+
 procedure navi_destinationUpdate(locationindex: Word);
 
 begin
@@ -540,7 +549,8 @@ begin
 
               // offset:=Round(Random * 50000);
               // player.uec:=player.uec + offset;
-              player.uec:=player.uec + (Random(100) * 500);  // Random % from 50000 UEC
+              // player.uec:=player.uec + (Random(100) * 500);  // Random % from 50000 UEC
+              player.uec:=player.uec + (random100 * 500);  // Random % from 50000 UEC
           end;
     5:    begin
             if ship.cargoquantity[0] > 0 then
@@ -550,9 +560,9 @@ begin
               if ship.cargoindex[y] > 0 then
               begin
                 txt:=strings[33];
-                // modify:=(1 - Random(100)/100);
+                // modify:=(1 - random100 / 100);
                 // ship.cargoquantity[y]:=Round(ship.cargoquantity[y] * modify);
-                count:=Random(100);
+                count:=random100;
                 ship.cargoquantity[y]:=ship.cargoquantity[y] - percentC(ship.cargoquantity[y]);
                 Dec(ship.scu,percentC(ship.cargoquantity[y]));
               end;
@@ -563,7 +573,7 @@ begin
 
             // offset:= Round(Random * 10000);
             // player.uec:=player.uec + offset;
-            player.uec:=player.uec + (Random(100) * 100);  // Random % from 10000 UEC
+            player.uec:=player.uec + (random100 * 100);  // Random % from 10000 UEC
 
           end;
     20:   begin
@@ -604,7 +614,7 @@ procedure calculateprices;
 var priceChange: word;
 
 begin
-  count:=Random(100);
+  count:=random100;
   priceChange:=percentc(itemprice[offset]);
   for y:=0 to NUMBEROFITEMS-1 do begin
     offset:= (NUMBEROFITEMS * player.loc)+y;
@@ -657,27 +667,18 @@ begin
         x:=Random(2);
         count:= Random(30);
         priceChange:=percentc(shipprices[offset]);
-        if x = 0 then
-        begin
-          // price drop
-          // modify:=(1 - percent);
-          // shipprices[offset]:=Round(shipprices[offset] * (1 - percent));
-          Dec(shipprices[offset],priceChange);
-
-          //newprice:=Round(shipprices[offset] * (1 - percent));
-          //shipprices[offset]:=Longword(shipprices[offset] * (1 - percent));
-        end
-        else
-        begin
-          // price increase
-          // modify:=(1 + percent);
-          // shipprices[offset]:=Round(shipprices[offset] * (1 + percent));
-          Inc(shipprices[offset],priceChange);
-
-          //newprice:=Round(shipprices[offset] * (1 + percent));
-          //shipprices[offset]:=Longword(shipprices[offset] * (1 + percent));
-        end;
-        // shipprices[offset]:=Round(shipprices[offset] * modify);
+        
+        
+        // if x = 0 then
+        // begin
+        //   Dec(shipprices[offset],priceChange);
+        // end
+        // else
+        // begin
+        //   Inc(shipprices[offset],priceChange);
+        // end;
+        if x = 0 then priceChange:= - priceChange;
+        Inc(shipprices[offset],priceChange);
 
 
         // CRT_GotoXY(0,6);
@@ -696,6 +697,7 @@ end;
   {$i 'lowmem.inc'} // lowmem procs to load pictures from disk 
 {$endif}
 
+
 procedure initWorld;
 
 var
@@ -706,18 +708,28 @@ begin
   for offset:=0 to (NUMBEROFITEMS-1) * (NUMBEROFLOCATIONS-1) do
   begin
     if (itemprice[offset] > 0) then
+    begin
       x:=Random(2); 
       count:=Random(25);
       priceChange:=percentc(itemprice[offset]);
-      if x = 0 then
-      begin
-        // price drop
-        Dec(itemprice[offset],priceChange);
-      end
-      else
-      begin
-        // price increase
-        Inc(itemprice[offset],priceChange);
+
+      // if x = 0 then
+      // begin
+      //   // price drop
+      //   Dec(itemprice[offset],priceChange);
+      // end
+      // else
+      // begin
+      //   // price increase
+      //   Inc(itemprice[offset],priceChange);
+
+
+      if (x = 0) then priceChange := - priceChange;  // price drop
+      Inc(itemprice[offset],priceChange);
+
+
+      
+      
     end;
   end;
     
@@ -792,7 +804,7 @@ begin
   end;
   for y:=count to MAXCARGOSLOTS-1 do
   begin
-    //CRT_GotoXY(LISTSTART,TOPCARGOMARGIN+y-1);
+    //CRT_GotoXY(COL2START,TOPCARGOMARGIN+y-1);
     //WriteSpaces(LISTWIDTH); // -1 to clear from the end of list
     putSpacesAt(LISTWIDTH,LISTSTART,TOPCARGOMARGIN+y-1);
   end;
@@ -801,10 +813,6 @@ end;
 
 
 procedure ListItems(trade_mode: boolean);
-const
-  LISTSTART = 21;
-  LISTWIDTH = 19;
-
 
 var
   countstr: Tstring;
@@ -853,7 +861,7 @@ begin
       begin
 
         offset:=availableitems[y];
-        CRT_GotoXY(LISTSTART,4+count); //min count:=1 so we start at 4th row
+        CRT_GotoXY(COL2START,4+count); //min count:=1 so we start at 4th row
 
         CRT_Write(count);WriteSpace;
         tstr:= items[availableitems[y]-(player.loc * NUMBEROFITEMS)];
@@ -864,17 +872,17 @@ begin
         else finalprice:=itemprice[offset];
         countstr:=IntToStr(count);
         strnum:=IntToStr(finalprice);
-        WriteSpaces(LISTWIDTH-(Length(countstr)+1+Length(tstr))-Length(strnum)); // (count, space and string)-price
+        WriteSpaces(COL2WIDTH-(Length(countstr)+1+Length(tstr))-Length(strnum)); // (count, space and string)-price
         CRT_Write(Atascii2Antic(strnum));
         //CRT_WriteRightAligned(Atascii2Antic(IntToStr(finalprice)));
-        if (count = 1) and not trade_mode then CRT_Invert(LISTSTART,5,LISTWIDTH);
+        if (count = 1) and not trade_mode then CRT_Invert(COL2START,5,COL2WIDTH);
         inc(count);
       end
       else
       begin
-        //CRT_GotoXY(LISTSTART,4+y+1);
-        //WriteSpaces(LISTWIDTH);
-        putSpacesAt(LISTWIDTH, LISTSTART, 4+y+1);
+        //CRT_GotoXY(COL2START,4+y+1);
+        //WriteSpaces(COL2WIDTH);
+        putSpacesAt(COL2WIDTH, COL2START, 4+y+1);
       end;
 
     end;
@@ -1663,26 +1671,24 @@ begin
   txt:= concat(txt,strings[18]);
   txt:= concat(txt,Atascii2Antic(IntToStr(selecteditemtotal)));
   txt:= concat(txt,CURRENCY);
-  CRT_ClearRow(19);
-  CRT_WriteRightAligned(19,txt);
+  CRT_ClearRow(20);
+  CRT_WriteRightAligned(20,txt);
 end;
 
 
 procedure trade_UpdateUEC(uec: Longword);
 
 // const
-//   LISTSTART = 21;
-//   LISTWIDTH = 19;
+//   COL2START = 21;
+//   COL2WIDTH = 19;
 
 begin
-//    liststart:=(CRT_screenWidth shr 1)+1;
-//    listwidth:=CRT_screenWidth-liststart;
 
   // update player UEC (current session)
   strnum:=IntToStr(uec);
-  //CRT_GotoXY(LISTSTART+7,0); // +7 for Sell string
-  //WriteSpaces(LISTWIDTH-Length(strnum)-Length(CURRENCY)-7);
-  // putSpacesAt(LISTWIDTH-Length(strnum)-Length(CURRENCY)-7,LISTSTART+7,0);
+  //CRT_GotoXY(COL2START+7,0); // +7 for Sell string
+  //WriteSpaces(COL2WIDTH-Length(strnum)-Length(CURRENCY)-7);
+  // putSpacesAt(COL2WIDTH-Length(strnum)-Length(CURRENCY)-7,COL2START+7,0);
   
   // 19-Length(strnum)-4-7,21+7
   putSpacesAt(12-Length(strnum),24,0);
@@ -1692,41 +1698,22 @@ end;
 
 procedure trade_UpdateCargo;
 // updates Cargo Total in console_trade
-const
-  LISTSTART = 21;
+
 
 begin
-  //liststart:=(CRT_screenWidth shr 1)+1;
   // update cargo Total
-  tstr:=IntToStr(currentship.scu_max-currentship.scu);
-  //CRT_GotoXY(LISTSTART-(Length(tstr)+5),6); // -4 as 4 spaces will be drawn
-  //CRT_GotoXY(LISTSTART-8,6); // -8 to clear all space right after string Total Cargo
-  //WriteSpaces(4); // fixed 4 chars for cargo size
-  
-  // putSpacesAt(4,LISTSTART-8,6);
-  // CRT_GotoXY(LISTSTART-(Length(tstr)+5),6);
+  strnum:=IntToStr(currentship.scu_max-currentship.scu);
   putSpacesAt(4,13,6);
-  CRT_GotoXY(26-Length(tstr),6);
-  CRT_Write(Atascii2Antic(tstr)); CRT_Write(CARGOUNIT);CRT_Write('|'~);
+  CRT_GotoXY(COL2START-Length(strnum)-5,6);
+  CRT_Write(Atascii2Antic(strnum)); CRT_Write(CARGOUNIT);CRT_Write('|'~);
 end;
-
-// procedure switch_modes;
-// begin
-
-// end;
-
-// procedure accept_selection;
-// begin
-
-// end;
 
 procedure console_trade;
 
 const
   LISTTOPMARGIN = 5;
   CARGOTOPMARGIN = 8;
-  LISTSTART = 21;
-  LISTWIDTH = 19;
+
 
 var
   d: shortInt;
@@ -1739,16 +1726,11 @@ var
 
   l: Byte;
   itemindex: Byte = 0;
-  //listwidth: Byte = 19;
-  //liststart: Byte = 21;
-
 
   currentitemindex: Word;
   currentitemquantity: Word;
   currentitemprice: Word;
-
   currentuec: Longword;
-
 
   selecteditemtotal: Longword;
   selecteditemquantity: Word;
@@ -1773,9 +1755,6 @@ begin
   //cargoindex:= 0;
 
 
-  // liststart:=(CRT_screenWidth shr 1)+1;
-  // listwidth:=CRT_screenWidth-liststart;
-
   EnableVBLI(@vbl_console);
   EnableDLI(@dli_console);
   Waitframe;
@@ -1790,9 +1769,9 @@ begin
   CRT_Write(tstr);
   l:=Length(tstr);
 
-  //CRT_GotoXY(LISTWIDTH-1,0);
+  //CRT_GotoXY(COL2WIDTH-1,0);
   //WriteSpaces(1);
-  // putSpacesAt(1,LISTWIDTH-1,0);
+  // putSpacesAt(1,COL2WIDTH-1,0);
   putSpacesAt(1,18,0);
   CRT_Write(strings[8]); // Buy
   WriteSpace;
@@ -1809,7 +1788,7 @@ begin
   CRT_Write(strings[11]); // Available items
   CRT_GotoXY(0,3);
   CRT_Write('[ '~); CRT_Write(ships[currentship.sindex*MAXSHIPPARAMETERS]); CRT_Write(' ]'~);
-  // CRT_GotoXY(LISTSTART-2,3);
+  // CRT_GotoXY(COL2START-2,3);
   CRT_GotoXY(19,3);
   CRT_Write(' |'~);
   CRT_Write(strings[12]);CRT_WriteRightAligned(strings[13]); // commodity price
@@ -1820,8 +1799,8 @@ begin
   putStringAt(14,0,5);
   
   tstr:=IntToStr(currentship.scu_max);
-  // CRT_GotoXY(LISTSTART-(Length(tstr)+5),5);
-  CRT_GotoXY(26-Length(tstr),5);
+  // CRT_GotoXY(COL2START-(Length(tstr)+5),5);
+  CRT_GotoXY(COL2START-Length(tstr)-5,5);
   CRT_Write(Atascii2Antic(IntToStr(currentship.scu_max))); CRT_Write(CARGOUNIT);CRT_Write('|'~);
   //CRT_GotoXY(0,6);
   //CRT_Write(strings[15]); 
@@ -1843,7 +1822,7 @@ begin
 
   for y:=8 to 17 do
   begin
-      // CRT_GotoXY(LISTSTART-1,y);
+      // CRT_GotoXY(COL2START-1,y);
       CRT_GotoXY(20,y);
       CRT_Write('|'~);
   end;
@@ -1915,13 +1894,13 @@ begin
                       currentShip:= ship;
                       mode:= false;
 
-                      //CRT_GotoXY(LISTSTART-3,0);
+                      //CRT_GotoXY(COL2START-3,0);
                       //WriteSpaces(1);
-                      // putSpacesAt(1,LISTSTART-3,0);
+                      // putSpacesAt(1,COL2START-3,0);
                       putSpacesAt(1,18,0);
                       CRT_Write(strings[8]); // Buy
                       WriteSpace;WriteSpace;
-                      // CRT_Invert(LISTSTART-3,0,5);
+                      // CRT_Invert(COL2START-3,0,5);
                       CRT_Invert(18,0,5);
 
                       ListItems(false);
@@ -2001,14 +1980,14 @@ begin
                       begin
                         if checkItemPosition(itemindex+d) and (availableitems[itemindex+d] > 0) then
                         begin
-                          CRT_Invert(LISTSTART,itemindex + LISTTOPMARGIN,LISTWIDTH);
+                          CRT_Invert(COL2START,itemindex + LISTTOPMARGIN,COL2WIDTH);
                           itemindex:=itemindex+d;
-                          CRT_Invert(LISTSTART,itemindex + LISTTOPMARGIN,LISTWIDTH); // selecting the whole row with item
+                          CRT_Invert(COL2START,itemindex + LISTTOPMARGIN,COL2WIDTH); // selecting the whole row with item
                           currentitemquantity:=itemquantity[availableitems[itemindex]];
                           currentitemprice:=GetItemPrice(itemindex,false);
 //                          currentitemindex:=availableitems[itemindex];
                           currentitemindex:=availableitems[itemindex]-(NUMBEROFITEMS * player.loc);
-                          CRT_ClearRow(19);
+                          CRT_ClearRow(20);
                         end;
 
                         // CRT_GotoXY(0,12);
@@ -2024,12 +2003,12 @@ begin
                       else begin // when selling
                         if CheckCargoPosition(itemindex+d) and (currentShip.cargoindex[itemindex+d] > 0)  then
                         begin
-                          CRT_Invert(0,itemindex + CARGOTOPMARGIN,LISTWIDTH+1);
+                          CRT_Invert(0,itemindex + CARGOTOPMARGIN,COL2WIDTH+1);
                           itemindex:=itemindex+d;
                           currentitemquantity:=currentShip.cargoquantity[itemindex];
                           currentitemprice:=GetCargoPrice(itemindex);
                           currentitemindex:=currentShip.cargoindex[itemindex];
-                          CRT_Invert(0,itemindex + CARGOTOPMARGIN,LISTWIDTH+1); // selecting the whole row with item
+                          CRT_Invert(0,itemindex + CARGOTOPMARGIN,COL2WIDTH+1); // selecting the whole row with item
                           cargoPresent:=CheckCargoPresence(itemindex);
 
                           // CRT_GotoXY(19,12);
@@ -2314,7 +2293,7 @@ begin
                             // end;
 
                             // remove selected
-                            CRT_ClearRow(19);
+                            CRT_ClearRow(20);
 
                           end;
                         end;
@@ -2328,16 +2307,16 @@ begin
                       begin
                         beep200; //vol 10
                         mode:= not mode;
-                        CRT_ClearRow(19);
+                        CRT_ClearRow(20);
                         if not mode then
                         begin
-                          //CRT_GotoXY(LISTSTART-3,0);
+                          //CRT_GotoXY(COL2START-3,0);
                           //WriteSpaces(1);
-                          // putSpacesAt(1,LISTSTART-3,0);
+                          // putSpacesAt(1,COL2START-3,0);
                           putSpacesAt(1,18,0);
                           CRT_Write(strings[8]); // Buy
                           WriteSpace;WriteSpace;
-                          // CRT_Invert(LISTSTART-3,0,5);
+                          // CRT_Invert(COL2START-3,0,5);
                           CRT_Invert(18,0,5);
 
                           // // debug
@@ -2356,13 +2335,13 @@ begin
                           // itemindex:=0;
                         end
                         else begin // selling mode
-                          //CRT_GotoXY(LISTSTART-3,0);
+                          //CRT_GotoXY(COL2START-3,0);
                           //WriteSpaces(1);
-                          // putSpacesAt(1,LISTSTART-3,0);
+                          // putSpacesAt(1,COL2START-3,0);
                           putSpacesAt(1,18,0);
-                          CRT_Write(strings[9]); // Buy
+                          CRT_Write(strings[9]); // Sell
                           WriteSpace;
-                          // CRT_Invert(LISTSTART-3,0,6);
+                          // CRT_Invert(COL2START-3,0,6);
                           CRT_Invert(18,0,6);
 
                           //  // debug
@@ -2511,22 +2490,20 @@ begin
     tab[x]:=peek($d20a);
   end;
 
-
-  repeat    
-    
+  repeat        
     if ee then
     begin
-      repeat until vcount=50;
-      repeat
-          x:=vcount;
-          c:=(x and 3) + 1;
-          inc(tab[x], c);
-          c:= 15 - (c shl 1);
-          wsync:=0;
-          hposm3:=tab[x];
-          colpm3:=c;
-          grafm:=128;
-      until vcount > 108;
+      // repeat until vcount=50;
+      // repeat
+      //     x:=vcount;
+      //     c:=(x and 3) + 1;
+      //     inc(tab[x], c);
+      //     c:= 15 - (c shl 1);
+      //     wsync:=0;
+      //     hposm3:=tab[x];
+      //     colpm3:=c;
+      //     grafm:=128;
+      // until vcount > 108;
 
       if mcount = 2 then begin
         mcount:=0;
@@ -2854,6 +2831,8 @@ begin
   tstr:=concat(tstr,'   SAV');
   if (xBiosCheck <> 0) then
   begin
+    // CRT_GotoXY(0,20);
+    // CRT_Write('f:'~);CRT_Write(Antic2Atascii(tstr));
     xBiosOpenFile(tstr);
 
     if (xBiosIOresult = 0) then
@@ -2929,7 +2908,6 @@ end;
 
 procedure menu_save_load(mode: Boolean);
 
-const LOGOSIZE = 15;
 var
   slot, oldslot : Byte;
   selectPressed: Boolean = false;
@@ -3025,9 +3003,21 @@ begin
                           if (slot > 0 ) and not selectPressed then
                           begin
                             beep200; //vol 10
+                            if not disablemusic then
+                            begin  
+                              music:=false;
+                              WaitFrame;
+                              msx.pause;
+                              nosound;
+                            end;
                             if mode then disk_save(slot)
                             else disk_load(slot);
-                            sfx_init;
+                            if not disablemusic then
+                            begin  
+                              msx.cont;
+                              music:=true;
+                            end;
+                              sfx_init;
                             current_menu:=MENU_TITLE;
                           end;
                           selectPressed:= true;
@@ -3075,6 +3065,8 @@ begin
   msx.init;
   
   disablemusic:= false;
+  
+
   sfx_init;
   music:= true;
 

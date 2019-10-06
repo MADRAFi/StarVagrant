@@ -1,5 +1,5 @@
 strings: array [0..65] of String = (
-    'v.0.32 (c) 2019 MADsoft'~, // 0
+    'v.0.34 (c) 2019 MADsoft'~, // 0
     'N'*'ew Game'~,
     'Q'*'uit'~,
     '1'*' Navigation'~,
@@ -35,7 +35,7 @@ strings: array [0..65] of String = (
     'You saw some citizens in urgent need.   You decided to give away some goods.'~,
     'You were obligated to use military      escort due to recent pirate activities. You have paid standard service fee.'~,
     'It seems your lottery ticket won.       The prize has been transferred          to your account.'~, // 35
-    'Reserved'~,
+    ''~,
     'Name:'~,
     'Prod:'~,
     'Cargo:'~,
