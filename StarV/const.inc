@@ -27,9 +27,9 @@ NUMBEROFSHIPS = 12; // number of ships defined in ships array.
 MAXSHIPPARAMETERS = 8; // number of ship parameters in ship array
 MAXAVAILABLEITEMS = 12; // numer of concurrent items displayed
 MAXCARGOSLOTS = 10;  // number of cargo slots
-MAXAVAILABLEDESTINATIONS = 6;  // number of destinations fron location.
+MAXAVAILABLEDESTINATIONS = 6;  // number of destinations from location.
 
-STARTUEC = 5000;
+STARTUEC = 10000;
 STARTLOCATION = 0;
 
 // ***************************************************************************//
