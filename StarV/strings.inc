@@ -1,5 +1,5 @@
 strings: array [0..65] of String = (
-    'v.0.34 (c) 2019 MADsoft'~, // 0
+    'v.0.35 (c) 2019 MADsoft'~, // 0
     'N'*'ew Game'~,
     'Q'*'uit'~,
     '1'*' Navigation'~,
@@ -24,9 +24,9 @@ strings: array [0..65] of String = (
     'Distance:'~,
     '-Navigation'~,
     'J'*'-FTL Jump'~,
-    'No xBios found. Cannot load Pics'*~, // 25
-    ' Press any key '*~,
-    'You`ve bought that ship. Press any key.'*~,
+    'No xBios, No Pics'*~, // 25
+    ' Press any key. '*~,
+'You`ve bought that ship.'*~,
     'You have lost: '~,
     '  You have been boarded by pirates. You were brave and fought till you could.   They spared your life in exchange for   all of your cargo.'~,
     'There have been a system Multifunction. Explosion has damaged part of your      cargo.'~, // 30
@@ -35,7 +35,7 @@ strings: array [0..65] of String = (
     'You saw some citizens in urgent need.   You decided to give away some goods.'~,
     'You were obligated to use military      escort due to recent pirate activities. You have paid standard service fee.'~,
     'It seems your lottery ticket won.       The prize has been transferred          to your account.'~, // 35
-    ''~,
+    ' No more ships. '*~,
     'Name:'~,
     'Prod:'~,
     'Cargo:'~,
