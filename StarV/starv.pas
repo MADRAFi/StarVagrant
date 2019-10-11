@@ -2394,7 +2394,7 @@ var
 
   tcount: Byte;  // how many times counter
   mcount: Byte;  // move counter to slown down
-  
+
 	
   // add: array [0..255] of byte absolute $BF00;
 
@@ -2424,6 +2424,7 @@ begin
   gfx_fadein;
 
   visible:=false;
+  // visible:=true;
   timer:=0;
   tcount:= 0;
   mcount:=0;
@@ -2435,7 +2436,7 @@ begin
   fillchar(pointer(PMG_ADDRESS+512), 128, 0);
   
   // // copy player0 data into sprite 
-  Move(player0, pointer(PMG_ADDRESS+512+80), sizeof(player0));
+  Move(player0, pointer(PMG_ADDRESS+512+60), sizeof(player0));
 
   sizep0:=1;  // Size of player 0 (double size)
   colpm0:=$18;   // Player 0 color
@@ -2444,6 +2445,9 @@ begin
   sizem:=0;
   colpm3:=$0e;
   gprior:=1;
+
+  modify:=0;
+  p:=0;
 
   for x:=0 to 127 do begin
     tab[x]:=peek($d20a);
@@ -2466,35 +2470,35 @@ begin
 
       if mcount = 2 then begin
         mcount:=0;
-        Inc(offset);
+        Inc(p);
       end;
       Inc(mcount);
-      hposp0:=offset;   // Horizontal position of player 0
-      hposm3:=0;  
+      hposp0:=p;   // Horizontal position of player 0
+      hposm3:=0;
+      if p = 0 then
+      begin       
+        modify:= Random(20);
+        fillchar(pointer(PMG_ADDRESS+512), 128, 0);
+        Move(player0, pointer(PMG_ADDRESS+512+70+modify), sizeof(player0));
+      end;
+        // CRT_GotoXY(0,22);
+        // CRT_Write(p);
     end
     else
     begin
-      // if (count = 0) then
       if (timer = 0) then
       begin
           a:=creditstxt;
           showArray;
-          // CRT_GotoXY(0,23);
-          // CRT_Write(tcount);
       end;
 
-      // if (count = SHOWTIME) then
       if (timer = SHOWTIME) then
       begin
           a:=thankstxt;
           showArray;
-          // CRT_GotoXY(0,23);
-          // CRT_Write(tcount);
       end;
-      // if (count = SHOWTIME * 2) then // reset counter to show back 1st screen
       if (timer = SHOWTIME * 2) then // reset counter to show back 1st screen
       begin
-        // count:= 0;
         timer:=0;
         Inc(tcount);
       end;
