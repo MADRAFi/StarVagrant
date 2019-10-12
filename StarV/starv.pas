@@ -1832,12 +1832,13 @@ begin
 
   ListItems(false);
   ListCargo(false);
+  
   p:=0;
 
   // assign 1st item on the avaiable items
   currentitemquantity:=itemquantity[availableitems[p]];
   currentitemprice:=GetItemPrice(p,mode);
-  currentitemindex:=availableitems[p]-(NUMBEROFITEMS * player.loc);
+  currentitemindex:=availableitems[0]-(NUMBEROFITEMS * player.loc);
 
 
   repeat
@@ -1853,6 +1854,10 @@ begin
                  (selecteditemtotal + currentitemprice <= currentuec ) then selectitem := true;
           end else // when selling
               if cargoPresent then selectitem:= true;
+              // begin
+              // CRT_Gotoxy(0,20);
+              // CRT_Write('Cargo Not present'~);
+              // end;
 
       case keyval of
         KEY_CANCEL: begin
@@ -1875,9 +1880,9 @@ begin
                       selecteditemtotal:=0;
                       p:=0;
                       // assign 1st item on the avaiable items
-                      currentitemindex:=availableitems[p];
-                      currentitemquantity:=itemquantity[availableitems[p]];
-                      currentitemprice:=GetItemPrice(p,mode);
+                      currentitemindex:=availableitems[0];
+                      currentitemquantity:=itemquantity[availableitems[0]];
+                      currentitemprice:=GetItemPrice(0,mode);
 
 
                       // update player UEC (current session)
@@ -2307,7 +2312,12 @@ begin
 
                           ListItems(false);
                           ListCargo(false);
-                          // itemindex:=0;
+
+                          p:=0;
+                          currentitemquantity:=itemquantity[availableitems[0]];
+                          currentitemprice:=GetItemPrice(0,false);
+                          currentitemindex:=availableitems[0]-(NUMBEROFITEMS * player.loc);
+
                         end
                         else begin // selling mode
                           //CRT_GotoXY(COL2START-3,0);
@@ -2335,16 +2345,26 @@ begin
                           // currentitemquantity:=currentShip.cargoquantity[itemindex];
                           // currentitemprice:=GetCargoPrice(itemindex);
                           // currentitemindex:=currentShip.cargoindex[itemindex];
-                          cargoPresent:=CheckCargoPresence(p);
+                          cargoPresent:=CheckCargoPresence(0);
                           // selecteditemquantity:=0;
+                          
+                          currentitemquantity:=currentShip.cargoquantity[0];
+                          currentitemprice:=GetCargoPrice(0);
+                          currentitemindex:=currentShip.cargoindex[0];
 
                         end;
                         p:=0;
-                        currentitemquantity:=currentShip.cargoquantity[p];
-                        currentitemprice:=GetCargoPrice(p);
-                        currentitemindex:=currentShip.cargoindex[p];
+                        // cargoPresent:=CheckCargoPresence(0);
+                        // currentitemquantity:=currentShip.cargoquantity[0];
+                        // currentitemprice:=GetCargoPrice(0);
+                        // currentitemindex:=currentShip.cargoindex[0];
                         selecteditemquantity:=0;
                         optionPressed:=true;
+
+                        // CRT_GotoXY(0,21);
+                        // CRT_Write('ci_qty='~);CRT_Write(currentitemquantity);WriteSpace;CRT_Write('ci_idx='~);CRT_Write(currentitemindex);
+
+
                       end;
                     end;
       // KEY_OPTION6:
@@ -2357,8 +2377,8 @@ begin
       //               end;            
 
       end;
-      If (keyval = KEY_LEFT) or (keyval = KEY_RIGHT) or (keyval = KEY_CTRLLEFT) or (keyval = KEY_CTRLRIGHT) or
-         (keyval = KEY_SHIFTLEFT) or (keyval = KEY_SHIFTRIGHT) then trade_UpdateSelectedItem(selecteditemquantity,selecteditemtotal);
+      If ((keyval = KEY_LEFT) or (keyval = KEY_RIGHT) or (keyval = KEY_CTRLLEFT) or (keyval = KEY_CTRLRIGHT) or
+         (keyval = KEY_SHIFTLEFT) or (keyval = KEY_SHIFTRIGHT)) and selectitem then trade_UpdateSelectedItem(selecteditemquantity,selecteditemtotal);
     end
     else 
     begin
