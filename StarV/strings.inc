@@ -1,5 +1,5 @@
 strings: array [0..65] of String = (
-    'v.0.35 (c) 2019 MADsoft'~, // 0
+    'v.0.36 (c) 2019 MADsoft'~, // 0
     'N'*'ew Game'~,
     'Q'*'uit'~,
     '1'*' Navigation'~,
@@ -26,7 +26,7 @@ strings: array [0..65] of String = (
     'J'*'-FTL Jump'~,
     'No xBios, No Pics'*~, // 25
     ' Press any key. '*~,
-'You`ve bought that ship.'*~,
+    'You`ve bought that ship.'*~,
     'You have lost: '~,
     '  You have been boarded by pirates. You were brave and fought till you could.   They spared your life in exchange for   all of your cargo.'~,
     'There have been a system Multifunction. Explosion has damaged part of your      cargo.'~, // 30
@@ -62,8 +62,9 @@ strings: array [0..65] of String = (
     ' Not enough Quantum Fuel. '*~,  //60
     ' Your ship does not need refuel. '*~,
     ' Your ship has been refueled. '*~,
-    ' Not enough credits to 100% refuel '*~,
+    ' Not enough UEC to 100% refuel '*~,
     'Refuel:'~,   
     'Total:'~  //65
+    // 'to 100% refuel '*~
 
 );

@@ -62,6 +62,8 @@ var
   modify: Word;
   visible: Boolean;
 
+  irqen : byte absolute $D20E;
+
   {$i 'strings.inc'}
   {$i 'ships.inc'}
   {$i 'locations.inc'}
@@ -132,8 +134,8 @@ var
   itemprice: array [0..(NUMBEROFLOCATIONS * NUMBEROFITEMS)-1] of Word = (
     0,0,0,0,83,40,0,31,69,0,0,198,16,0,280,170,0,0,0,34,145,199,1,0,
     640,0,252,0,83,52,0,0,69,32,0,198,20,0,0,180,0,0,10,0,0,179,0,240,
-    0,0,280,0,0,0,23,0,0,32,21,0,13,15,0,221,14,0,0,34,0,0,0,256,
-    0,12,139,0,0,0,26,0,0,32,0,0,0,0,0,180,14,0,0,34,0,0,1,234,
+    0,0,280,0,0,0,23,0,0,32,21,0,13,15,0,221,14,0,0,34,0,0,0,184,
+    0,12,139,0,0,0,26,0,0,32,0,0,0,0,0,180,14,0,0,34,0,0,1,106,
     450,0,280,0,0,66,0,0,0,32,0,98,0,0,0,221,14,15,0,34,0,123,1,0,
     475,0,280,0,0,25,0,21,0,32,0,0,0,0,0,221,14,8,0,34,0,101,0,384,
     0,45,0,0,0,0,26,0,0,16,0,0,15,0,0,0,10,0,0,23,0,0,20,0,
@@ -156,15 +158,13 @@ var
     0,6,0,100,0,90,0,40,10,8,0,50,4,0,500,0,0,29,0,100,400,0,0,0,
     0,6,0,100,0,0,35,0,10,8,70,50,4,40,0,300,30,0,0,0,0,300,0,0
 
-
-
   );  // price matrix for items
 
   itemquantity: array [0..(NUMBEROFLOCATIONS * NUMBEROFITEMS)-1] of Word = (
     0,0,0,0,5000,5000,0,5000,0,0,0,0,65000,0,0,5000,0,0,0,5000,2000,0,10000,0,
     0,0,0,0,0,0,0,0,0,0,0,0,65000,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,5000,0,0,0,5000,0,2500,2500,0,0,0,0,0,0,0,0,10000,0,
-    0,2500,1000,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10000,1000,
+    0,2500,5000,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10000,2500,
     5000,0,0,0,0,2500,0,0,0,0,0,5000,0,0,0,0,0,2500,0,0,0,5000,10000,0,
     2500,0,0,0,0,2500,0,2500,0,0,0,0,0,0,0,0,0,5000,0,0,0,2500,10000,0,
     0,0,0,0,0,0,0,0,0,5000,0,0,2500,0,0,0,5000,0,0,2500,0,0,0,0,
@@ -186,6 +186,7 @@ var
     0,0,0,5000,0,0,0,0,5000,5000,0,5000,0,0,0,0,0,0,0,0,10000,0,65000,0,
     0,65000,0,0,0,0,0,0,65000,65000,0,65000,65000,0,0,0,0,0,0,0,0,0,0,0,
     0,65000,0,0,0,0,0,0,65000,65000,0,65000,65000,0,0,0,0,0,0,0,0,0,0,0
+
 
   ); // quantities of items
 
@@ -295,6 +296,8 @@ begin
   // sound init at pokey
   poke($d20f,3);
   poke($d208,0);
+
+  irqen:=0;  // disable IRQ after transmition
 end;
 
 procedure writeRuler(row:Byte);
@@ -1366,7 +1369,7 @@ begin
                               ship.qf:= ship.qf_max;
                               //CRT_GotoXY(0,5);
                               //CRT_Write(strings[27]);
-                              putStringAt(27,0,5);
+                              putStringAt(27,8,5);
 
                               // repeat until CRT_Keypressed;
                               // current_menu:=MENU_MAIN;
@@ -1455,6 +1458,7 @@ begin
         //CRT_GotoXY(3,6);
         //CRT_Write(strings[63]);
         putStringAt(63,3,6);
+        // putStringAt(66,19,6);
 
       end
       else 
@@ -1687,7 +1691,6 @@ var
   cargoPresent: Boolean = false;
   selectitem: Boolean = false;
 
-  l: Byte;
   itemindex: Byte = 0;
 
   currentitemindex: Word;
@@ -1730,7 +1733,7 @@ begin
   tstr:=locations[player.loc];
   CRT_GotoXY(0,0);
   CRT_Write(tstr);
-  l:=Length(tstr);
+  // p:=Length(tstr);
 
   //CRT_GotoXY(COL2WIDTH-1,0);
   //WriteSpaces(1);
@@ -2034,8 +2037,11 @@ begin
                       begin
                         Inc(selecteditemquantity);
                         selecteditemtotal:=selecteditemquantity * currentitemprice;
-                      end
-
+                      // end
+                      // else 
+                      // begin
+                      //   putStringAt(63,12,23);
+                      end;
                       //
                       // CRT_GotoXY(0,12);
                       // CRT_Write('selectitem='~);CRT_Write(selectitem);CRT_Write('           '~);
@@ -2063,11 +2069,14 @@ begin
                         begin
                           // selecteditemquantity:=trunc(currentuec / currentitemprice);
                           selecteditemquantity:=currentuec div currentitemprice;
-                          if selecteditemquantity > currentShip.scu_max-currentShip.scu then selecteditemquantity:=currentShip.scu_max-currentShip.scu;
+                          if selecteditemquantity > currentShip.scu_max-currentShip.scu then selecteditemquantity:=currentShip.scu_max-currentShip.scu
 //                          selecteditemtotal:=selecteditemquantity * currentitemprice;
+                          // else 
+                          // begin
+                          //   putStringAt(63,12,23);
+                          // end;
+  
                         end;
-  //                      else
-  //                       CRT_WriteRightAligned(19,strings[??]);
                       end
                       else  // selling mode
                       begin
@@ -2094,11 +2103,14 @@ begin
                           // selecteditemquantity:=trunc(currentuec / currentitemprice);
                           selecteditemquantity:=currentuec div currentitemprice;
                           if selecteditemquantity > currentShip.scu_max-currentShip.scu then
-                            selecteditemquantity:=currentShip.scu_max-currentShip.scu;
+                            selecteditemquantity:=currentShip.scu_max-currentShip.scu
 //                          selecteditemtotal:=selecteditemquantity * currentitemprice;
+                          // else 
+                          // begin
+                          //   putStringAt(63,12,6);
+                          // end;
+
                         end;
-  //                      else
-  //                       CRT_WriteRightAligned(19,strings[??]);
                       end
                       else  // selling mode
                       begin
