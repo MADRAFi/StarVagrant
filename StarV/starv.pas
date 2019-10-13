@@ -540,7 +540,8 @@ procedure randomEncounter;
 
 begin
   // y:=Random(34); // 20%
-  y:=Random(64);    // 10%
+  // y:=Random(64);    // 10%
+  y:=Random(85);    // 8%
 
   txt:='#';
   case y of
@@ -1032,7 +1033,7 @@ begin
   putStringAt(20,0,0);
 
   
-  CRT_Write(locations[player.loc]);
+CRT_Write(locations[player.loc]);
   //CRT_GotoXY(20,0);
   //CRT_Write(strings[23]); // Navigation:
 
@@ -1054,14 +1055,17 @@ begin
   CRT_Write(ship.qf * 100 div ship.qf_max); CRT_Write(' %'~);
 
   // Help Keys
-  CRT_GotoXY(0,7);
+  CRT_GotoXY(3,7);
   CRT_Write('1-6'*~); // Navigation options
-  putStringAt(23,3,7);
+  putStringAt(23,6,7);
 
-  WriteSpace;
-  CRT_Write(strings[24]);  // FTL Jump
-  WriteSpace;
-  CRT_Write(strings[7]); // Back
+  // WriteSpace;
+  // CRT_Write(strings[24]);  // FTL Jump
+  // WriteSpace;
+  // CRT_Write(strings[7]); // Back
+
+  putStringAt(24,20,7);     // FTL Jump
+  putStringAt(7,33,7);      // Back
 
   LoadDestinations;
 
@@ -1178,7 +1182,7 @@ begin
   CRT_GotoXY(5,1);
   offset:=tshp^.sindex * (MAXSHIPPARAMETERS);
   CRT_Write(ships[offset]);
-  putSpacesAt(7,6,2);
+  putSpacesAt(10,6,2);
   CRT_GotoXY(6,2);
   CRT_Write(tshp^.scu_max);CRT_Write(CARGOUNIT);
   putSpacesAt(12,6,3);
