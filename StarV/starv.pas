@@ -283,7 +283,7 @@ var
 {$i 'interrupts.inc'}
 
 
-procedure sfx_play(channel: Word; freq: Byte; vol: Byte );
+procedure sfx_play(channel: Byte; freq: Byte; vol: Byte );
 begin
   poke(channel,freq);
   poke(channel+1,vol);
@@ -1431,7 +1431,8 @@ begin
   fuelquantity:= 0;
   if (itemquantity[itemoffset] > 0) then
   begin
-    fuelprice:=itemprice[itemoffset] div 4;     // Fuel price is 1/4 of Hydrogen
+    // fuelprice:=itemprice[itemoffset] div 4;     // Fuel price is 1/4 of Hydrogen
+    fuelprice:=itemprice[itemoffset] div 2;     // Fuel price is 1/2 of Hydrogen
   end
   else
   begin    
