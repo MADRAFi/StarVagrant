@@ -1,5 +1,4 @@
-TPokeyVoice = (Voice1=$D200, Voice2=$D202, Voice3=$D204, Voice4=$D206);
-// TVoice = (Voice1=0, Voice2=1, Voice3=2, Voice4=3);
+// TPokeyVoice = (Voice1=$D200, Voice2=$D202, Voice3=$D204, Voice4=$D206);
 // TManufacture = (ARGO=0, DRAK=1, RSI=2, MISC=3, AEGIS=4, CRSD=5, ANVL=6, BANU=7);
 TPicType = (LOC=0, GFX=1);
 TGameState = (NEWGAME=0, GAMEINPROGRESS=1);

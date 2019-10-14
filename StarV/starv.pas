@@ -114,9 +114,9 @@ var
     $72,$78,$ee,$00,     // 16
     $94,$90,$fe,$00,     // 17
     $70,$74,$7c,$00,     // 18
-    $30,$34,$3c,$00,     // 19
+    $82,$88,$ee,$00,     // 19
     $82,$66,$6e,$00,     // 20
-    $70,$74,$7c,$00,     // 21
+    $70,$76,$7e,$00,     // 21
     $10,$14,$1c,$00,     // 22
     $24,$28,$2c,$00,     // 23
     $24,$20,$76,$00      // 24
@@ -283,7 +283,9 @@ var
 {$i 'interrupts.inc'}
 
 
-procedure sfx_play(channel: Byte; freq: Byte; vol: Byte );
+procedure sfx_play(freq: Byte; vol: Byte );
+const
+  channel = $D206;
 begin
   poke(channel,freq);
   poke(channel+1,vol);
@@ -318,7 +320,7 @@ begin
       CRT_Write(Chr(82));  // 18 + 64
     end;
 
-    sfx_play(voice4,77,202); // vol10
+    sfx_play(77,202); // vol10
 end;
 
 procedure WriteSpaces(len:Byte);
@@ -477,27 +479,27 @@ end;
 
 procedure beep80;
 begin
-    sfx_play(voice4,80,170);
+    sfx_play(80,170);
 end;
 
 procedure beep185;
 begin
-    sfx_play(voice4,185,202);
+    sfx_play(185,202);
 end;
 
 procedure beep200;
 begin
-    sfx_play(voice4,200,202);
+    sfx_play(200,202);
 end;
 
 procedure beep230;
 begin
-    sfx_play(voice4,230,202);
+    sfx_play(230,202);
 end;
 
 procedure beep255;
 begin
-    sfx_play(voice4,255,170);
+    sfx_play(255,170);
 end;
 
 
@@ -749,7 +751,7 @@ end;
 procedure start;
 
 begin
-  sfx_play(voice4,88,202); // vol10
+  sfx_play(88,202); // vol10
   gfx_fadeout(true);
   WaitFrame;
   
@@ -762,7 +764,7 @@ begin
   newLoc:= STARTLOCATION; //0;
   //end;
   
-  pic_load(LOC,player.loc);
+  pic_load(player.loc);
   
   initWorld;
 
@@ -1082,33 +1084,21 @@ CRT_Write(locations[player.loc]);
                           current_menu := MENU_MAIN;
                         end;
           KEY_OPTION1:  begin
-                          //sfx_play(voice4,230,202); //vol 10
-                          //destinationindex:=availabledestinations[0];
                           setDestIdx(availabledestinations[0]);
                         end;
           KEY_OPTION2:  begin
-                          //sfx_play(voice4,230,202); //vol 10
-                          //destinationindex:=availabledestinations[1];
                           setDestIdx(availabledestinations[1]);
                         end;
           KEY_OPTION3:  begin
-                          //sfx_play(voice4,230,202); //vol 10
-                          //destinationindex:=availabledestinations[2];
                           setDestIdx(availabledestinations[2]);
                         end;
           KEY_OPTION4:  begin
-                          //sfx_play(voice4,230,202); //vol 10
-                          //destinationindex:=availabledestinations[3];
                           setDestIdx(availabledestinations[3]);
                         end;
           KEY_OPTION5:  begin
-                          //sfx_play(voice4,230,202); //vol 10
-                          //destinationindex:=availabledestinations[4];
                           setDestIdx(availabledestinations[4]);
                         end;
           KEY_OPTION6:  begin
-                          //sfx_play(voice4,230,202); //vol 10
-                          //destinationindex:=availabledestinations[5];
                           setDestIdx(availabledestinations[5]);
                         end;
           KEY_JUMP:     begin
@@ -1789,7 +1779,7 @@ begin
       CRT_Write(Chr(82));  // 18+64 adding 64 for antic mode
     end;
   CRT_Write(Chr(68));    // 4+64
-  sfx_play(voice4,77,202); // vol10
+  sfx_play(77,202); // vol10
 
   for y:=8 to 17 do
   begin
@@ -2743,27 +2733,20 @@ begin
                             beep255; // vol10
                             current_menu:=MENU_MAIN;
                             gfx_fadeout(true);
-                            // pic_load(LOC,player.loc);
                           end;
                         end;
           KEY_OPTION1:  begin
-                          //sfx_play(voice4,230,202); //vol 10
-                          //gfx_fadeout(true);
                           beepnfade;
                           current_menu:=MENU_LOAD;
                         end;
           KEY_OPTION2:  begin
                           if gamestate = GAMEINPROGRESS then
                           begin
-                            //sfx_play(voice4,230,202); //vol 10
-                            //gfx_fadeout(true);
                             beepnfade;
                             current_menu:=MENU_SAVE;
                           end;  
                         end;
           KEY_CREDITS:  begin
-                          //sfx_play(voice4,230,202); //vol 10
-                          //gfx_fadeout(true);
                           beepnfade;
                           current_menu:=MENU_CREDITS;
                         end;
@@ -2968,33 +2951,18 @@ begin
                           current_menu := MENU_TITLE;
                         end;
           KEY_OPTION1:  begin
-                          //oldslot:=slot;
-                          //slot:=1;
-                          //sfx_play(voice4,230,202); //vol 10
                           setSlot(1);
                          end;
           KEY_OPTION2:  begin
-                          //oldslot:=slot;
-                          //slot:=2;
-                          //sfx_play(voice4,230,202); //vol 10
                           setSlot(2);
                         end;
           KEY_OPTION3:  begin
-                          //oldslot:=slot;
-                          //slot:=3;
-                          //sfx_play(voice4,230,202); //vol 10
                           setSlot(3);
                         end;
           KEY_OPTION4:  begin
-                          //oldslot:=slot;
-                          //slot:=4;
-                          //sfx_play(voice4,230,202); //vol 10
                           setSlot(4);
                         end;
           KEY_OPTION5:  begin
-                          //oldslot:=slot;
-                          //slot:=5;
-                          //sfx_play(voice4,230,202); //vol 10
                           setSlot(5);
                         end;
           KEY_SELECT:   begin
