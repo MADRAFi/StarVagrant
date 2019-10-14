@@ -627,9 +627,9 @@ begin
     offset:= (NUMBEROFITEMS * player.loc)+y;
 
     // Produce new items on certain LOCATIONS
-    if (itemquantity[offset] > 0) and (itemquantity[offset] <= 100) then
+    if (itemquantity[offset] > 0) and (itemquantity[offset] <= 1000) then
     begin
-      case loc of
+      case player.loc of
         2..9,13,14:   begin
                         Inc(itemquantity[offset],Random(500)); // adding up to 500 items
                       end;
@@ -668,7 +668,7 @@ begin
   if (count < 40) then // only 40% chance for ship's price change
   begin
     for y:=0 to NUMBEROFSHIPS-1 do begin
-      offset:= (NUMBEROFSHIPS * loc)+y;
+      offset:= (NUMBEROFSHIPS * player.loc)+y;
       if shipprices[offset] > shipprices[0] then // do not change price of starting ship
       begin
         x:=Random(2);
@@ -2420,7 +2420,7 @@ var
   tab: array [0..127] of byte absolute $ED58;
 
   tcount: Byte;  // how many times counter
-  mcount: Byte;  // move counter to slown down
+  // mcount: Byte;  // move counter to slown down
 
 	
   // add: array [0..255] of byte absolute $BF00;
@@ -2454,7 +2454,7 @@ begin
   // visible:=true;
   timer:=0;
   tcount:= 0;
-  mcount:=0;
+  // mcount:=0;
   
   gractl:=3; // Turn on P/M graphics
   pmbase:=Hi(PMG_ADDRESS);
@@ -2495,11 +2495,13 @@ begin
           grafm:=128;
       until vcount > 108;
 
-      if mcount = 2 then begin
-        mcount:=0;
-        Inc(p);
-      end;
-      Inc(mcount);
+      // if mcount = 2 then begin
+      //   mcount:=0;
+      //   Inc(p);
+      // end;
+      // Inc(mcount);
+      if (timer mod 2 = 0) then Inc(p);
+
       hposp0:=p;   // Horizontal position of player 0
       hposm3:=0;
       if p = 0 then

@@ -95,7 +95,7 @@ begin
   // simulate travel
   repeat
     Dec(distance);
-    if (distance mod 4 = 0) then Dec(ship.qf);
+    if (distance mod 5 = 0) then Dec(ship.qf);
     navi_distanceUpdate(distance);
     waitframes(ship.swait);
   until (distance = 0);
