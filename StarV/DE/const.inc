@@ -29,7 +29,7 @@ MAXAVAILABLEITEMS = 12; // numer of concurrent items displayed
 MAXCARGOSLOTS = 10;  // number of cargo slots
 MAXAVAILABLEDESTINATIONS = 6;  // number of destinations from location.
 
-STARTUEC = 10000;
+STARTUEC = 100000;
 STARTLOCATION = 0;
 
 // ***************************************************************************//
@@ -60,6 +60,7 @@ KEY_SHIFTRIGHT = 71;
 
 
 KEY_CANCEL = 18;  //c
+KEY_CONT = 18;    //c
 //KEY_OK = 8;      //o
 
 //----------------------------------------------------------------------------//

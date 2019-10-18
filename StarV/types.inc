@@ -1,14 +1,5 @@
-// TPokeyVoice = (Voice1=$D200, Voice2=$D202, Voice3=$D204, Voice4=$D206);
-// TPicType = (LOC=0, GFX=1);
-TGameState = (NEWGAME=0, GAMEINPROGRESS=1);
 
-  // TShipType = record
-  //   producer: TProducer;
-  //   sname: TString;
-  //   scu_max: Word;
-  //   speed: Byte;
-  //
-  // end;
+TGameState = (NEWGAME=0, GAMEINPROGRESS=1);
 
   TShip = record
     mcode: Byte; // manufacture ship code

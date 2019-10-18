@@ -23,8 +23,20 @@ uses atari, b_utils, b_system, b_crt, sysutils, xbios, cmc;
   *)
 
 const
-{$i 'const.inc'}
+{$IFDEF PL}
+  {$i 'PL/const.inc'}
+  {$r 'PL/charset.rc'}
+{$ENDIF}
+{$IFDEF DE}
+  {$i 'DE/const.inc'}
+  {$r 'DE/charset.rc'}
+{$ENDIF}
+{$IFDEF EN}
+  {$i 'EN/const.inc'}
+  {$r 'EN/charset.rc'}
+{$ENDIF}
 
+  COPYRIGHT = 'v.0.39 @ 2019 MADsoft'~;
   CURRENCY = ' UEC'~;
   CARGOUNIT = ' SCU'~ ;
   DISTANCEUNIT = ' DU'~;
@@ -64,10 +76,22 @@ var
 
   irqen : byte absolute $D20E;
 
-  {$i 'strings.inc'}
-  {$i 'ships.inc'}
-  {$i 'locations.inc'}
-  {$i 'items.inc'}
+{$IFDEF PL}
+    {$i 'PL/strings.inc'}
+    {$i 'PL/credits.inc'}
+{$ENDIF}
+{$IFDEF DE}
+    {$i 'DE/strings.inc'}
+    {$i 'DE/credits.inc'}
+{$ENDIF}
+{$IFDEF EN}
+  {$i 'EN/strings.inc'}
+  {$i 'EN/credits.inc'}
+{$ENDIF}
+
+  {$i 'EN/ships.inc'}
+  {$i 'EN/locations.inc'}
+  {$i 'EN/items.inc'}
 
 
 
@@ -249,33 +273,6 @@ var
 
   ); // ship prices
 
-  creditstxt: array [0..9] of String = (
-    'Programming'~,
-    'MADRAFi'~,
-    ''~,
-    'Graphics'~,
-    'Broniu Kaz'~,
-    'MADRAFi'~,
-    ''~,
-    'Music'~,
-    'Caruso'~,
-    ''~
-    
-);
-
-  thankstxt: array [0..9] of String = (
-    'Special thanks to:'~,
-    ''~,
-    'Bocianu for all the support'~,
-    ''~,
-    'XXL for xBios support'~,
-    'Tebe for providing MAD-Pascal help'~,
-    'Kaz for testing and advise'~,
-    'Dely for QA testing'~,
-    ''~,
-    ''~
-);
-
   availableitems: array [0..(MAXAVAILABLEITEMS-1)] of Word; // only 12 avaiable items
   availabledestinations: array [0..(MAXAVAILABLEDESTINATIONS-1)] of Word; // only 6 available destinations
   availableships: array [0..(NUMBEROFSHIPS-1)] of Word; // only available ships
@@ -284,6 +281,7 @@ var
 
 
 procedure sfx_play(freq: Byte; vol: Byte );
+// (Voice1=$D200, Voice2=$D202, Voice3=$D204, Voice4=$D206);
 const
   channel = $D206;
 begin
@@ -439,11 +437,8 @@ end;
 procedure navi_destinationUpdate(locationindex: Word);
 
 begin
-  //CRT_GotoXY(0,1);
-  //WriteSpaces(19); // max location lenght
+// max location lenght
   putSpacesAt(19,0,1);
-  //CRT_GotoXY(0,1);
-  //CRT_Write(strings[21]);
   putStringAt(21,0,1);
   CRT_Write(locations[locationindex-(player.loc * NUMBEROFLOCATIONS)]);
 end;
@@ -451,20 +446,27 @@ end;
 procedure navi_distanceUpdate(mydistance: Word);
 
 begin
-  //CRT_GotoXY(9,2);
-  //WriteSpaces(6); // max distance lenght + distance symbol
+  // max distance lenght + distance symbol
+
+{$IFDEF PL}
+  putSpacesAt(6,10,2);
+  CRT_GotoXY(10,2);
+{$ENDIF}
+{$IFDEF DE}
+  putSpacesAt(6,10,2);
+  CRT_GotoXY(10,2);
+{$ENDIF}
+{$IFDEF EN}
   putSpacesAt(6,9,2);
   CRT_GotoXY(9,2);
-  //CRT_Write(strings[22]);
+{$ENDIF}
+
   CRT_Write(mydistance); CRT_Write(DISTANCEUNIT);
-  //CRT_GotoXY(6,3);
-  //WriteSpaces(5);
+  
+  // QFuel amount
   putSpacesAt(5,6,3);
   CRT_GotoXY(6,3);
-  // CRT_Write(Trunc((ship.qf / ship.qf_max) * 100)); CRT_Write(' %'~);
   CRT_Write(ship.qf * 100 div ship.qf_max); CRT_Write(' %'~);
-  // CRT_GotoXY(0,5);
-  // CRT_Write(ship.swait);
 end;
 
 function getcargotypenum : Byte;
@@ -518,9 +520,9 @@ begin
     waitframe;
   end;
 
-  //CRT_GotoXY(12,6);
-  //CRT_Write(strings[26]); // press any key
-  putStringAt(26,12,6);
+  // press any key
+  // putStringAt(26,12,6);
+  CRT_WriteCentered(6,strings[26]);
 
   repeat
     Waitframe;
@@ -543,7 +545,8 @@ procedure randomEncounter;
 begin
   // y:=Random(34); // 20%
   // y:=Random(64);    // 10%
-  y:=Random(85);    // 8%
+  // y:=Random(85);    // 8%
+  y:=22;
 
   txt:='#';
   case y of
@@ -637,7 +640,7 @@ begin
     end;
 
     // Increase price if less then 5000
-    if (itemquantity[offset] > 0) and (itemquantity[offset] < 5000) and (itemprice[offset] > 0) and (count < 70 ) then
+    if (itemquantity[offset] > 0) and (itemquantity[offset] < 5000) and (itemprice[offset] > 0) and (p < 70 ) then
     begin
       // modify:=(1 + percent);
       // itemprice[offset]:=Round(itemprice[offset] * modify);
@@ -646,7 +649,7 @@ begin
     end;
 
     // Decrease price if more then 5000
-    if (itemquantity[offset] > 10000) and (itemquantity[offset] < 20000) and (itemprice[offset] > 0) and (count <= 30) then
+    if (itemquantity[offset] > 10000) and (itemquantity[offset] < 20000) and (itemprice[offset] > 0) and (p <= 30) then
     begin
       // modify:=(1 - percent);
       // itemprice[offset]:=Round(itemprice[offset] * modify);
@@ -655,7 +658,7 @@ begin
     end;
 
     // Simulate item sell
-    if (itemquantity[offset] > 20000) and (itemprice[offset] > 0) and (count <= 80) then
+    if (itemquantity[offset] > 20000) and (itemprice[offset] > 0) and (p <= 80) then
     begin
       // modify:=(1 - percent);
       // itemquantity[offset]:=Trunc(itemquantity[offset] * modify);
@@ -665,7 +668,7 @@ begin
 
   end;
 
-  if (count < 40) then // only 40% chance for ship's price change
+  if (p < 40) then // only 40% chance for ship's price change
   begin
     for y:=0 to NUMBEROFSHIPS-1 do begin
       offset:= (NUMBEROFSHIPS * player.loc)+y;
@@ -1035,7 +1038,7 @@ begin
   putStringAt(20,0,0);
 
   
-CRT_Write(locations[player.loc]);
+  CRT_Write(locations[player.loc]);
   //CRT_GotoXY(20,0);
   //CRT_Write(strings[23]); // Navigation:
 
@@ -1057,17 +1060,28 @@ CRT_Write(locations[player.loc]);
   CRT_Write(ship.qf * 100 div ship.qf_max); CRT_Write(' %'~);
 
   // Help Keys
+{$IFDEF PL}
+  CRT_GotoXY(2,7);
+  CRT_Write('1-6'*~); // Navigation options
+  putStringAt(23,5,7);
+  putStringAt(24,19,7);     // FTL Jump
+  putStringAt(7,32,7);      // Back
+{$ENDIF}
+{$IFDEF DE}
   CRT_GotoXY(3,7);
   CRT_Write('1-6'*~); // Navigation options
   putStringAt(23,6,7);
-
-  // WriteSpace;
-  // CRT_Write(strings[24]);  // FTL Jump
-  // WriteSpace;
-  // CRT_Write(strings[7]); // Back
-
   putStringAt(24,20,7);     // FTL Jump
   putStringAt(7,33,7);      // Back
+{$ENDIF}
+{$IFDEF EN}
+  CRT_GotoXY(3,7);
+  CRT_Write('1-6'*~); // Navigation options
+  putStringAt(23,6,7);
+  putStringAt(24,20,7);     // FTL Jump
+  putStringAt(7,33,7);      // Back
+{$ENDIF}
+
 
   LoadDestinations;
 
@@ -1160,11 +1174,62 @@ end;
 procedure DisplayShip;
 begin
   beep80;
-  CRT_ClearRow(5);
+  CRT_ClearRow(5);    // Clear any message was displaying before
 
   tshp:=shipmatrix[availableships[shipindex]];
   offset:=(NUMBEROFSHIPS * player.loc) + availableships[shipindex];          
-  CRT_ClearRow(5);   // Clear any message was displaying before
+
+{$IFDEF PL}
+  putSpacesAt(24,5,0);
+  CRT_GotoXY(5,0);
+  CRT_Write(prodmatrix[tshp^.mcode]);
+  putSpacesAt(14,6,1);
+  CRT_GotoXY(6,1);
+  offset:=tshp^.sindex * (MAXSHIPPARAMETERS);
+  CRT_Write(ships[offset]);
+  putSpacesAt(10,9,2);
+  CRT_GotoXY(9,2);
+  CRT_Write(tshp^.scu_max);CRT_Write(CARGOUNIT);
+  putSpacesAt(12,6,3);
+  CRT_GotoXY(5,3);
+  offset:=(NUMBEROFSHIPS * player.loc) + availableships[shipindex];
+  CRT_Write(shipprices[offset]);CRT_Write(CURRENCY);
+  putSpacesAt(8,32,1);
+  CRT_GotoXY(32,1);
+  CRT_Write(tshp^.speed);CRT_Write(strings[45]);
+  putSpacesAt(9,31,2);
+  CRT_GotoXY(31,2);
+  CRT_Write(tshp^.lenght);CRT_Write(strings[46]);
+  putSpacesAt(9,28,3);
+  CRT_GotoXY(28,3);
+  CRT_Write(tshp^.mass);CRT_Write(strings[47]);
+{$ENDIF}
+{$IFDEF DE}
+  putSpacesAt(24,5,0);
+  CRT_GotoXY(5,0);
+  CRT_Write(prodmatrix[tshp^.mcode]);
+  putSpacesAt(14,6,1);
+  CRT_GotoXY(6,1);
+  offset:=tshp^.sindex * (MAXSHIPPARAMETERS);
+  CRT_Write(ships[offset]);
+  putSpacesAt(10,9,2);
+  CRT_GotoXY(9,2);
+  CRT_Write(tshp^.scu_max);CRT_Write(CARGOUNIT);
+  putSpacesAt(12,6,3);
+  CRT_GotoXY(5,3);
+  offset:=(NUMBEROFSHIPS * player.loc) + availableships[shipindex];
+  CRT_Write(shipprices[offset]);CRT_Write(CURRENCY);
+  putSpacesAt(8,32,1);
+  CRT_GotoXY(32,1);
+  CRT_Write(tshp^.speed);CRT_Write(strings[45]);
+  putSpacesAt(9,31,2);
+  CRT_GotoXY(31,2);
+  CRT_Write(tshp^.lenght);CRT_Write(strings[46]);
+  putSpacesAt(9,28,3);
+  CRT_GotoXY(28,3);
+  CRT_Write(tshp^.mass);CRT_Write(strings[47]);
+{$ENDIF}
+{$IFDEF EN}
   putSpacesAt(24,5,0);
   CRT_GotoXY(5,0);
   CRT_Write(prodmatrix[tshp^.mcode]);
@@ -1187,7 +1252,9 @@ begin
   CRT_Write(tshp^.lenght);CRT_Write(strings[46]);
   putSpacesAt(9,28,3);
   CRT_GotoXY(28,3);
-  CRT_Write(tshp^.mass);CRT_Write(strings[47]);        
+  CRT_Write(tshp^.mass);CRT_Write(strings[47]);
+{$ENDIF}
+
 end;
 
 begin
@@ -1402,6 +1469,8 @@ end;
 
 procedure console_maint;
 
+const
+  status_row = 5;
 var
   // shipindex: Byte;
   selectPressed: Boolean = false;
@@ -1428,7 +1497,7 @@ begin
   begin    
     // There is no Hydrogen to refuel
     fuelprice:= 0;
-    CRT_WriteCentered(6,strings[60]);
+    CRT_WriteCentered(status_row,strings[60]);
   end;
   reqfuel:= 0;
   reqtotal:= 0;
@@ -1448,21 +1517,16 @@ begin
     begin
       if (player.uec > 0) then
       begin
-        // fuelquantity:= Trunc(player.uec / fuelprice);
         fuelquantity:= player.uec div fuelprice;
-        //CRT_GotoXY(3,6);
-        //CRT_Write(strings[63]);
-        putStringAt(63,3,6);
+        putStringAt(63,3,status_row);
         // putStringAt(66,19,6);
 
       end
       else 
       begin
         fuelquantity:= 0;
-        //CRT_GotoXY(6,6);
-        //CRT_Write(strings[48]);
-        putStringAt(48,6,6);
-        CRT_Write(CURRENCY);CRT_Invert(29,6,5);
+        putStringAt(48,6,status_row);
+        CRT_Write(CURRENCY);CRT_Invert(29,6,status_row);
       end;
     end;
   end;
@@ -1526,11 +1590,22 @@ begin
   CRT_Write(CURRENCY);
 
   // Help Keys
-  CRT_GotoXY(10,7);
+{$IFDEF PL}
+  CRT_GotoXY(7,7);
   CRT_Write('RETURN'*~);
-  CRT_Write(strings[19]);  // Confirm
-  WriteSpace;
-  CRT_Write(strings[7]);   // Back
+  putStringAt(19,13,7);  // Confirm
+  putStringAt(7,27,7);   // Back
+
+{$ENDIF}
+{$IFDEF DE}
+
+{$ENDIF}
+{$IFDEF EN}
+  CRT_GotoXY(7,7);
+  CRT_Write('RETURN'*~);
+  putStringAt(19,13,7);  // Confirm
+  putStringAt(7,27,7);   // Back
+{$ENDIF}
 
 
   keyval:= 0;
@@ -1538,7 +1613,7 @@ begin
 
     If (CRT_Keypressed) then
     begin
-        CRT_ClearRow(5);
+        CRT_ClearRow(status_row);
         keyval := kbcode;
         case keyval of
           KEY_BACK:     begin
@@ -1548,7 +1623,7 @@ begin
           KEY_SELECT: begin
                         if not selectPressed and (fuelprice > 0) then
                         begin
-                          CRT_ClearRow(6);
+                          CRT_ClearRow(status_row);
                           // CRT_GotoXY(6,6);
                           If (ship.qf < ship.qf_max) then
                           begin
@@ -1559,7 +1634,7 @@ begin
                               // player.uec:= newuec;
                               ship.qf:= ship.qf_max;
                               // CRT_GotoXY(6,6);
-                              CRT_WriteCentered(6,strings[62]);
+                              CRT_WriteCentered(status_row,strings[62]);
 
                               CRT_GotoXY(6,3);
                               CRT_Write('100 %'~);
@@ -1576,7 +1651,7 @@ begin
                                 // player.uec:= newuec;
 
                                 // CRT_GotoXY(6,6);
-                                CRT_WriteCentered(6,strings[62]);  
+                                CRT_WriteCentered(status_row,strings[62]);  
 
                                 CRT_GotoXY(6,3);
                                 // CRT_Write(Trunc((ship.qf / ship.qf_max) * 100)); CRT_Write(' %'~);
@@ -1588,9 +1663,9 @@ begin
                                 beep255; // vol10
                                 //CRT_GotoXY(6,6);
                                 //CRT_Write(strings[48]);
-                                putStringAt(48,6,6);
+                                putStringAt(48,6,status_row);
 
-                                CRT_Write(CURRENCY);CRT_Invert(29,6,5)
+                                CRT_Write(CURRENCY);CRT_Invert(29,6,status_row)
                               end; 
                             end;
                             // if (newuec > 0) then
@@ -1607,7 +1682,7 @@ begin
                             //Message that ship does not need refuel
                             beep255; // vol10
                             // CRT_GotoXY(4,6);
-                            CRT_WriteCentered(6,strings[61]);
+                            CRT_WriteCentered(status_row,strings[61]);
                           end;
                         end;
                         selectPressed:=true;
@@ -1715,64 +1790,103 @@ begin
 
   //cargoindex:= 0;
 
-
   EnableVBLI(@vbl_console);
   EnableDLI(@dli_console);
   Waitframe;
   DLISTL:= DISPLAY_LIST_ADDRESS_CONSOLE;
 
-  // for y:=0 to CRT_screenHeight do
-  //   CRT_ClearRow(y);
-  CRT_ClearRows(0,CRT_screenHeight);
 
+  CRT_ClearRows(0,CRT_screenHeight);
   tstr:=locations[player.loc];
   CRT_GotoXY(0,0);
   CRT_Write(tstr);
-  // p:=Length(tstr);
 
-  //CRT_GotoXY(COL2WIDTH-1,0);
-  //WriteSpaces(1);
-  // putSpacesAt(1,COL2WIDTH-1,0);
+{$IFDEF PL}
   putSpacesAt(1,18,0);
   CRT_Write(strings[8]); // Buy
   WriteSpace;
   // invert at start
   CRT_Invert(18,0,5);
+{$ENDIF}
+{$IFDEF DE}
+  putSpacesAt(1,18,0);
+  CRT_Write(strings[8]); // Buy
+  WriteSpace;
+  // invert at start
+  CRT_Invert(18,0,5);
+{$ENDIF}
+{$IFDEF EN}
+  putSpacesAt(1,18,0);
+  CRT_Write(strings[8]); // Buy
+  WriteSpace;
+  // invert at start
+  CRT_Invert(18,0,5);
+{$ENDIF}
 
   CRT_WriteRightAligned(concat(Atascii2Antic(IntToStr(currentuec)), CURRENCY));
-  //CRT_GotoXY(0,1);
+
   writeRuler(1);
-  //CRT_GotoXY(0,2);
-  //CRT_Write(strings[10]);
-  putStringAt(10,0,2);
-  CRT_Write('  |'~); // Delivery
+
+{$IFDEF PL}
+  putStringAt(10,2,2);
+  CRT_GotoXY(COL2START-1,2);
+  CRT_Write('|'~); // Delivery
   CRT_Write(strings[11]); // Available items
   CRT_GotoXY(0,3);
   CRT_Write('[ '~); CRT_Write(ships[currentship.sindex*MAXSHIPPARAMETERS]); CRT_Write(' ]'~);
-  // CRT_GotoXY(COL2START-2,3);
   CRT_GotoXY(19,3);
   CRT_Write(' |'~);
   CRT_Write(strings[12]);CRT_WriteRightAligned(strings[13]); // commodity price
-  //CRT_GotoXY(0,4);
   writeRuler(4);
-  //CRT_GotoXY(0,5);
-  //CRT_Write(strings[14]); //WriteSpaces(1);
   putStringAt(14,0,5);
   
   tstr:=IntToStr(currentship.scu_max);
-  // CRT_GotoXY(COL2START-(Length(tstr)+5),5);
   CRT_GotoXY(COL2START-Length(tstr)-5,5);
   CRT_Write(Atascii2Antic(IntToStr(currentship.scu_max))); CRT_Write(CARGOUNIT);CRT_Write('|'~);
-  //CRT_GotoXY(0,6);
-  //CRT_Write(strings[15]); 
   putStringAt(15,0,6);
+{$ENDIF}
+{$IFDEF DE}
+  putStringAt(10,2,2);
+  CRT_GotoXY(COL2START-1,2);
+  CRT_Write('|'~); // Delivery
+  CRT_Write(strings[11]); // Available items
+  CRT_GotoXY(0,3);
+  CRT_Write('[ '~); CRT_Write(ships[currentship.sindex*MAXSHIPPARAMETERS]); CRT_Write(' ]'~);
+  CRT_GotoXY(19,3);
+  CRT_Write(' |'~);
+  CRT_Write(strings[12]);CRT_WriteRightAligned(strings[13]); // commodity price
+  writeRuler(4);
+  putStringAt(14,0,5);
+  
+  tstr:=IntToStr(currentship.scu_max);
+  CRT_GotoXY(COL2START-Length(tstr)-5,5);
+  CRT_Write(Atascii2Antic(IntToStr(currentship.scu_max))); CRT_Write(CARGOUNIT);CRT_Write('|'~);
+  putStringAt(15,0,6);
+{$ENDIF}
+{$IFDEF EN}
+  putStringAt(10,0,2);
+  CRT_GotoXY(COL2START-1,2);
+  CRT_Write('|'~); // Delivery
+  CRT_Write(strings[11]); // Available items
+  CRT_GotoXY(0,3);
+  CRT_Write('[ '~); CRT_Write(ships[currentship.sindex*MAXSHIPPARAMETERS]); CRT_Write(' ]'~);
+  CRT_GotoXY(19,3);
+  CRT_Write(' |'~);
+  CRT_Write(strings[12]);CRT_WriteRightAligned(strings[13]); // commodity price
+  writeRuler(4);
+  putStringAt(14,0,5);
+  
+  tstr:=IntToStr(currentship.scu_max);
+  CRT_GotoXY(COL2START-Length(tstr)-5,5);
+  CRT_Write(Atascii2Antic(IntToStr(currentship.scu_max))); CRT_Write(CARGOUNIT);CRT_Write('|'~);
+  putStringAt(15,0,6);
+{$ENDIF}
+
 
   WriteSpace;
-
   trade_UpdateCargo;
 
   CRT_GotoXY(0,7);
-  // CRT_Write('--------------------+'~);
 
   for y:=0 to 19 do
     begin
@@ -1788,30 +1902,42 @@ begin
       CRT_Write('|'~);
   end;
 
-  //CRT_GotoXY(0,18);
   writeRuler(18);
 
 
-  // CRT_Write(StringOfChar('-'~,20));
-  // CRT_Write('+'~);
-  // CRT_Write(StringOfChar('-'~,19));
-
   // help
+{$IFDEF PL}
   CRT_GotoXY(1,22);
-  // txt:=concat(char(30+128),char(31+128));
-  // CRT_Write(Atascii2Antic(txt));
-  // CRT_Write(Chr(30+128+64)); CRT_Write(Chr(31+128+64)); // character code + 128 for inverse + 64 for antic code
+  // character code + 128 for inverse + 64 for antic code
   CRT_Write(Chr(222)); CRT_Write(Chr(223)); // character code + 128 for inverse + 64 for antic code
   CRT_Write('-x1 +'~);
   CRT_Write('CONTROL'*~);
   CRT_Write('-x100 +'~);
   CRT_Write('SHIFT'*~);
   CRT_Write(strings[50]); WriteSpaces(1);
-  CRT_Write(strings[16]); //WriteSpaces(1);
-  // CRT_Write(strings[17]);
-
-
-
+  CRT_Write(strings[16]); 
+  CRT_GotoXY(1,23);
+  CRT_Write('SPACE'*~);
+  CRT_Write('-'~);
+  CRT_Write(strings[8]);
+  CRT_Write('/'~);
+  CRT_Write(strings[9]);
+  WriteSpace;
+  CRT_Write('RETURN'*~);
+  CRT_Write(strings[19]);
+  WriteSpace;
+  CRT_Write(strings[7]);
+{$ENDIF}
+{$IFDEF DE}
+  CRT_GotoXY(1,22);
+  // character code + 128 for inverse + 64 for antic code
+  CRT_Write(Chr(222)); CRT_Write(Chr(223)); // character code + 128 for inverse + 64 for antic code
+  CRT_Write('-x1 +'~);
+  CRT_Write('CONTROL'*~);
+  CRT_Write('-x100 +'~);
+  CRT_Write('SHIFT'*~);
+  CRT_Write(strings[50]); WriteSpaces(1);
+  CRT_Write(strings[16]); 
   CRT_GotoXY(3,23);
   CRT_Write('SPACE'*~);
   CRT_Write('-'~);
@@ -1823,7 +1949,29 @@ begin
   CRT_Write(strings[19]);
   WriteSpace;
   CRT_Write(strings[7]);
-
+{$ENDIF}
+{$IFDEF EN}
+  CRT_GotoXY(1,22);
+  // character code + 128 for inverse + 64 for antic code
+  CRT_Write(Chr(222)); CRT_Write(Chr(223)); // character code + 128 for inverse + 64 for antic code
+  CRT_Write('-x1 +'~);
+  CRT_Write('CONTROL'*~);
+  CRT_Write('-x100 +'~);
+  CRT_Write('SHIFT'*~);
+  CRT_Write(strings[50]); WriteSpaces(1);
+  CRT_Write(strings[16]); 
+  CRT_GotoXY(3,23);
+  CRT_Write('SPACE'*~);
+  CRT_Write('-'~);
+  CRT_Write(strings[8]);
+  CRT_Write('/'~);
+  CRT_Write(strings[9]);
+  WriteSpace;
+  CRT_Write('RETURN'*~);
+  CRT_Write(strings[19]);
+  WriteSpace;
+  CRT_Write(strings[7]);
+{$ENDIF}
 
   ListItems(false);
   ListCargo(false);
@@ -2566,40 +2714,67 @@ begin
   //gfx_fadeout(true);
 
   // gfx_fadein;
-   // gfxcolors[0]:=piccolors[y];
-   // gfxcolors[1]:=piccolors[y+1];
-   // gfxcolors[2]:=piccolors[y+2];
-   // gfxcolors[3]:=piccolors[y+3];
-
-  CRT_ClearRows(0,7);
-
-  //CRT_GotoXY(14,0);
-  //CRT_Write(strings[3]); // Navigation
-  putStringAt(3,14,0);
-  //CRT_GotoXY(14,1);
-  //CRT_Write(strings[4]); // Trade
-  putStringAt(4,14,1);
-  //CRT_GotoXY(14,2);
-  //CRT_Write(strings[5]); // Maint
-  putStringAt(5,14,2);
+  // gfxcolors[0]:=piccolors[y];
+  // gfxcolors[1]:=piccolors[y+1];
+  // gfxcolors[2]:=piccolors[y+2];
+  // gfxcolors[3]:=piccolors[y+3];
+  
   // load ship to be able to check if they are available
   LoadShips;
-
   // show ship console only when there are ships avaiable (price > 0 for 1st ship at a location)
   offset:=(NUMBEROFSHIPS * player.loc) + availableships[0];
   // offset:=(NUMBEROFLOCATIONS * player.loc) + 12; // check hydrogen
+  
 
+  CRT_ClearRows(0,7);
+{$IFDEF PL}
+  // Navigation
+  putStringAt(3,11,0);
+  // Trade
+  putStringAt(4,11,1);
+  // Maint
+  putStringAt(5,11,2);
+  
   if shipprices[offset] > 0 then
   begin
-    //CRT_GotoXY(14,3);
-    //CRT_Write(strings[6]); // Ship Hangar
-    putStringAt(6,14,3);
-
+    // Ship Hangar
+    putStringAt(6,11,3);
   end;
-  //CRT_GotoXY(18,4);
-  //CRT_Write(strings[7]); // Back
+  // Back
+  putStringAt(7,16,4);
+{$ENDIF}
+{$IFDEF DE}
+  // Navigation
+  putStringAt(3,11,0);
+  // Trade
+  putStringAt(4,11,1);
+  // Maint
+  putStringAt(7,11,2);
+  
+  if shipprices[offset] > 0 then
+  begin
+    // Ship Hangar
+    putStringAt(6,16,3);
+  end;
+  // Back
+  putStringAt(6,17,4);
+{$ENDIF}
+{$IFDEF EN}
+  // Navigation
+  putStringAt(3,14,0);
+  // Trade
+  putStringAt(4,14,1);
+  // Maint
+  putStringAt(5,14,2);
+  
+  if shipprices[offset] > 0 then
+  begin
+    // Ship Hangar
+    putStringAt(6,14,3);
+  end;
+  // Back
   putStringAt(7,18,4);
-
+{$ENDIF}
 
 
   // count:= 1;
@@ -2669,15 +2844,75 @@ begin
   draw_logo;
 
   y:=15;
-  //CRT_GotoXY(16,y);
-  //CRT_Write(strings[1]); // New game;
-  putStringAt(1,16,y);
+{$IFDEF PL}
+  putStringAt(1,16,y);  // new game
 
   Inc(y);
   if gamestate = GAMEINPROGRESS then
   begin
-    //CRT_GotoXY(16,y);
-    //CRT_Write(strings[51]); // Continue game;
+    // Continue game;
+    putStringAt(51,15,y);
+
+    Inc(y);
+    CRT_GotoXY(15,y);
+    CRT_Write('1'*~); WriteSpace; CRT_Write(strings[53]); // Load
+    Inc(y);
+    CRT_GotoXY(15,y);
+    CRT_Write('2'*~); WriteSpace; CRT_Write(strings[52]); // Save
+    Inc(y);
+  end
+  else
+  begin
+    CRT_GotoXY(15,y);
+    CRT_Write('1'*~); WriteSpace; CRT_Write(strings[53]); // Load
+    Inc(y);
+  end;
+  // Credits
+  putStringAt(58,17,y);
+
+  // CRT_Invert(18,y,1);
+  Inc(y);
+  // Quit;
+  putStringAt(2,17,y);
+{$ENDIF}
+{$IFDEF DE}
+  putStringAt(1,16,y);  // new game
+
+  Inc(y);
+  if gamestate = GAMEINPROGRESS then
+  begin
+    // Continue game;
+    putStringAt(51,16,y);
+
+    Inc(y);
+    CRT_GotoXY(16,y);
+    CRT_Write('1'*~); WriteSpace; CRT_Write(strings[53]); // Load
+    Inc(y);
+    CRT_GotoXY(16,y);
+    CRT_Write('2'*~); WriteSpace; CRT_Write(strings[52]); // Save
+    Inc(y);
+  end
+  else
+  begin
+    CRT_GotoXY(16,y);
+    CRT_Write('1'*~); WriteSpace; CRT_Write(strings[53]); // Load
+    Inc(y);
+  end;
+  // Credits
+  putStringAt(58,17,y);
+
+  // CRT_Invert(18,y,1);
+  Inc(y);
+  // Quit;
+  putStringAt(2,17,y);
+{$ENDIF}
+{$IFDEF EN}
+  putStringAt(1,16,y);  // new game
+
+  Inc(y);
+  if gamestate = GAMEINPROGRESS then
+  begin
+    // Continue game;
     putStringAt(51,16,y);
 
     Inc(y);
@@ -2698,16 +2933,17 @@ begin
   //CRT_Write(strings[58]);  // Credits
   putStringAt(58,16,y);
 
-  CRT_Invert(17,y,1);
+  // CRT_Invert(17,y,1);
   Inc(y);
   //CRT_GotoXY(18,y);
   //CRT_Write(strings[2]); // Quit;
   putStringAt(2,18,y);
+{$ENDIF}
 
 
-  //CRT_GotoXY(16,CRT_screenHeight - 2);
-  //CRT_Write(strings[0]); // copyright
-  putStringAt(0,16,CRT_screenHeight - 2);
+  CRT_GotoXY(16,CRT_screenHeight - 2);
+  CRT_Write(COPYRIGHT); // copyright
+  // putStringAt(0,16,CRT_screenHeight - 2);
 
   // Waitframe;
   gfx_fadein;
@@ -2729,12 +2965,12 @@ begin
       keyval := kbcode;
       case keyval of
           KEY_NEW:      start;
-          KEY_CANCEL:   begin // continue game
+          KEY_CONT:   begin // continue game
                           if gamestate = GAMEINPROGRESS then
                           begin
                             beep255; // vol10
-                            current_menu:=MENU_MAIN;
                             gfx_fadeout(true);
+                            current_menu:=MENU_MAIN;
                           end;
                         end;
           KEY_OPTION1:  begin
@@ -2909,17 +3145,15 @@ begin
   if mode then txt:=strings[52]  // save mode
   else txt:=strings[53];          // load mode
 
-  //CRT_GotoXY(10,LOGOSIZE);
-  //WriteSpaces(8);
-  putSpacesAt(8,10,LOGOSIZE);
+  p:=Length(txt);
+  x:=(CRT_screenWidth-p - 16) div 2;
+  putSpacesAt(8,x,LOGOSIZE);
   CRT_Write(txt);WriteSpaces(8); // Save
-  CRT_Invert(10,LOGOSIZE,Length(txt)+16); // plus all 16 spaces
+  CRT_Invert(x,LOGOSIZE,p+16); // plus all 16 spaces
   txt:=strings[54];
-  count:=Length(txt);
+  // count:=Length(txt);
   for y:=1 to 5 do
   begin
-    //CRT_GotoXY(14,y + LOGOSIZE);
-    //WriteSpaces(3);
     putSpacesAt(3,14,y + LOGOSIZE);
     CRT_Write(txt);CRT_Write(y);WriteSpaces(3);
   end;
@@ -2995,8 +3229,8 @@ begin
         
         if (slot > 0) then
         begin
-          If (oldslot > 0) then CRT_Invert(14,oldslot + LOGOSIZE,count+8);
-          CRT_Invert(14,slot + LOGOSIZE,count+8);
+          If (oldslot > 0) then CRT_Invert(14,oldslot + LOGOSIZE,p+8);
+          CRT_Invert(14,slot + LOGOSIZE,p+8);
         end;
     end
     else

@@ -1,5 +1,5 @@
 strings: array [0..65] of String = (
-    'v.0.38 (c) 2019 MADsoft'~, // 0
+    'MADsoft'~, // 0
     'N'*'ew Game'~,
     'Q'*'uit'~,
     '1'*' Navigation'~,
@@ -29,7 +29,7 @@ strings: array [0..65] of String = (
     'You`ve bought that ship.'*~,
     'You have lost: '~,
     '  You have been boarded by pirates. You were brave and fought till you could.   They spared your life in exchange for   all of your cargo.'~,
-    'There have been a system Multifunction. Explosion has damaged part of your      cargo.'~, // 30
+    'There have been a system maltifunction. Explosion has damaged part of your      cargo.'~, // 30
     'You have been robed by some thugs.      You have lost all your money.'~,
     '   You have taken a Passenger with you. He payed you some extra cash for a ride.'~,
     'You saw some citizens in urgent need.   You decided to give away some goods.'~,

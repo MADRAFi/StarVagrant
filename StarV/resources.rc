@@ -25,7 +25,7 @@
 ;
 ; remove # to uncomment and use examples below:
 
-CHARSET_ADDRESS rcdata 'assets/Nvdi8.fnt'
+;CHARSET_ADDRESS rcdata 'assets/Nvdi8.fnt'
 LOGO_CHARSET_ADDRESS rcdata 'assets/Logo.fnt'
 LOGODATA_ADDRESS rcdata 'assets/Logo.scr'
 
@@ -38,5 +38,4 @@ DISPLAY_LIST_ADDRESS_CONSOLE rcasm 'dlist_console.asm'
 ; music module
 PLAYER_ADDRESS  CMCPLAY
 MODULE_ADDRESS  CMC 'assets/svmusic1.cmc'
-;MODULE_ADDRESS  CMC 'assets/lostp.cmc'
 
