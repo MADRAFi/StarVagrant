@@ -30,7 +30,7 @@ DL_JMP = %00000001; // Order to jump
 DL_JVB = %01000001; // Jump to begining
 
 ; It's always useful to include your program global constants here
-    icl 'EN/const.inc'
+    icl 'const.inc'
 
 ; and declare display list itself
 

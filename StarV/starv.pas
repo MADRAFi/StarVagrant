@@ -23,16 +23,18 @@ uses atari, b_utils, b_system, b_crt, sysutils, xbios, cmc;
   *)
 
 const
+{$i 'const.inc'}
+
 {$IFDEF PL}
-  {$i 'PL/const.inc'}
+  {$i 'PL/keys.inc'}
   {$r 'PL/charset.rc'}
 {$ENDIF}
 {$IFDEF DE}
-  {$i 'DE/const.inc'}
+  {$i 'DE/keys.inc'}
   {$r 'DE/charset.rc'}
 {$ENDIF}
 {$IFDEF EN}
-  {$i 'EN/const.inc'}
+  {$i 'EN/keys.inc'}
   {$r 'EN/charset.rc'}
 {$ENDIF}
 
@@ -3031,7 +3033,7 @@ begin
 
     Waitframe;
 
-  until (keyval = KEY_QUIT) or (keyval = KEY_NEW) or startPressed or (keyval = KEY_CANCEL) or ((keyval = KEY_OPTION2) and (gamestate = GAMEINPROGRESS)) or (keyval = KEY_OPTION1) or (keyval = KEY_CREDITS);
+  until (keyval = KEY_QUIT) or (keyval = KEY_NEW) or startPressed or (keyval = KEY_CONT) or ((keyval = KEY_OPTION2) and (gamestate = GAMEINPROGRESS)) or (keyval = KEY_OPTION1) or (keyval = KEY_CREDITS);
 end;
 
 procedure writeStatus(x,snum1,snum2,snum3:byte);
