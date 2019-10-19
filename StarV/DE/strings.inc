@@ -1,70 +1,70 @@
 strings: array [0..65] of String = (
     'MADsoft'~, // 0
     'N'*'eues Spiel'~,
-    'V'*'erlassen'~,
+    'V'*'erla'#96'en'~,
     '1'*' Navigation'~,
     '2'*' Handel Konsole'~,
-    '3'*' Reparieren/Auftanken Pad'~, // 5
+    '3'*' Auftanken Pad'~, // 5
     '4'*' Shiffsdepot'~,
-    'Z'*#14'rick'~,
-    'Kafuen'~,
+    'Z'*'ur'#14'ck'~,
+    'Kaufen'~,
     'Verkaufen'~,
-    ' Delivery Location'~, // 10
-    '  Available Items'~,
-    'commodity'~,
-    'price'~,
-    'Total Cargo'~,
-    'Empty Cargo'~, // 15
-    'C'*'ancel'~,
+    'Lieferort'~, // 10
+    'Verf'#14'gbare Artikel'~,
+    'Ware'~,
+    'Preise'~,
+    'Kapazit'#123't'~,
+    'Leerer Raum'~, // 15
+    'A'*'bbrechen'~,
     'O'*'K'~,
-    ' for '~,
-    '-Confirm'~,
-    'Loc:'~, // 20
+    ' f'#14'r '~,
+    '-Best'#123'tigen'~,
+    'Sta:'~, // 20
     'Nav:'~,
-    'Distance:'~,
+    'Abstand:'~,
     '-Navigation'~,
-    'J'*'-FTL Jump'~,
-    'No xBios, No Pics'*~, // 25
-    ' Press any key. '*~,
-    'You`ve bought that ship.'*~,
-    'You have lost: '~,
-    '  You have been boarded by pirates. You were brave and fought till you could.   They spared your life in exchange for   all of your cargo.'~,
-    'There have been a system Multifunction. Explosion has damaged part of your      cargo.'~, // 30
-    'You have been robed by some thugs.      You have lost all your money.'~,
-    '   You have taken a Passenger with you. He payed you some extra cash for a ride.'~,
-    'You saw some citizens in urgent need.   You decided to give away some goods.'~,
-    'You were obligated to use military      escort due to recent pirate activities. You have paid standard service fee.'~,
-    'It seems your lottery ticket won.       The prize has been transferred          to your account.'~, // 35
-    ' No more ships. '*~,
+    'S'*'-FTL Springe'~,
+    'Kein xBios, Kein Bilder'*~, // 25
+    ' Dr'#14'cke irgendeine Taste. '*~,
+    ' Du hast das Schiff gekauft. '*~,
+    ''~,
+    'Sie wurden von Piraten bestiegen. Du warst mutig und hast gek'#123'mpft, bis du konntest. Sie haben Ihr Leben im Austausch f'#14'r all Ihre Fracht geschont.'~,
+    'Es hat ein System Multifunction gegeben. Die Explosion hat einen Teil Ihrer Ladung besch'#123'digt.'~, // 30
+    'Sie wurden von einigen Schl'#123'gern gekleidet. Sie haben Ihr ganzes Geld verloren.'~,
+    'Du hast einen Pa'#96'agier mitgenommen. Er hat dir extra Geld f'#14'r eine Fahrt bezahlt.'~,
+    'Du hast einige dringend ben'#15'tigte       B'#14'rgergesehen. Sie haben beschlo'#96'en,   einige Waren zu verschenken.'~,
+    'Du wirst aufgrund der j'#14'ngsten          Piratenaktivit'#123'ten zur milit'#123'rischen    Eskorte verpflichtet. Du hast           die Standard-Servicegeb'#14'hr bezahlt.'~,
+    'Es scheint, das Ihr Lottoschein gewonnenhat. Der Preis wurde auf Ihr Konto      '#14'berwiesen.'~, // 35
+    ' Keine Schiffe mehr. '*~,
     'Name:'~,
     'Prod:'~,
-    'Cargo:'~,
-    'Price:'~, // 40
+    'Kargo:'~,
+    'Preis:'~, // 40
     'Speed:'~,
-    'Length:'~,
-    'Mass:'~,
-    '-Choose'~,
+    'L'#123'nge:'~,
+    'Masse:'~,
+    '-W'#123'hlen'~,
     ' m/s'~, // 45
-    ' meters'~,
-    ' tons'~,
-    ' You do not have enough'*~,
-    ' You already own that ship. '*~,
-    '-All'~, // 50
-    'C'*'ontinue'~,
-    'Save'~,
-    'Load'~,
+    ' meter'~,
+    ' tonnen'~,
+    ' Du hast nicht genug'*~,
+    ' Du besitzt dieses Schiff bereits. '*~,
+    '-Alles'~, // 50
+    'F'*'ortsetzen'~,
+    'Speichern'~,
+    'Laden'~,
     'Slot '~,
-    ' error'~, // 55
-    ' successfull'~,
-    'Open file '~,
-    'A'#52'toren'~,
+    ' fehler'~, // 55
+    ' erfolgreich'~,
+    'Datei '#15'ffnen '~,
+    'A'#245'toren'~,
     'QFuel:'~,
-    ' Not enough Quantum Fuel. '*~,  //60
-    ' Your ship does not need refuel. '*~,
-    ' Your ship has been refueled. '*~,
-    ' Not enough UEC to 100% refuel '*~,
-    'Refuel:'~,   
-    'Total:'~  //65
-    // 'to 100% refuel '*~
+    ' Nicht genug Quantentreibstoff. '*~,  //60
+    ' Ihr Schiff mu'#96' nicht betankt werden. '*~,
+    ' Ihr Schiff wurde betankt. '*~,
+    ' Nicht genug UEC, um 100% zu tanken. '*~,
+    'Tanken:'~,   
+    'Gesamt:'~  //65
 
 );
+

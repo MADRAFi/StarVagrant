@@ -81,19 +81,22 @@ var
 {$IFDEF PL}
     {$i 'PL/strings.inc'}
     {$i 'PL/credits.inc'}
+    {$i 'PL/items.inc'}
 {$ENDIF}
 {$IFDEF DE}
     {$i 'DE/strings.inc'}
     {$i 'DE/credits.inc'}
+    {$i 'DE/items.inc'}
 {$ENDIF}
 {$IFDEF EN}
   {$i 'EN/strings.inc'}
   {$i 'EN/credits.inc'}
+  {$i 'EN/items.inc'}
 {$ENDIF}
 
-  {$i 'EN/ships.inc'}
-  {$i 'EN/locations.inc'}
-  {$i 'EN/items.inc'}
+  {$i 'ships.inc'}
+  {$i 'locations.inc'}
+  
 
 
 
@@ -455,8 +458,8 @@ begin
   CRT_GotoXY(10,2);
 {$ENDIF}
 {$IFDEF DE}
-  putSpacesAt(6,10,2);
-  CRT_GotoXY(10,2);
+  putSpacesAt(6,8,2);
+  CRT_GotoXY(8,2);
 {$ENDIF}
 {$IFDEF EN}
   putSpacesAt(6,9,2);
@@ -548,7 +551,7 @@ begin
   // y:=Random(34); // 20%
   // y:=Random(64);    // 10%
   // y:=Random(85);    // 8%
-  y:=22;
+  y:=5;
 
   txt:='#';
   case y of
@@ -1019,6 +1022,7 @@ end;
 
 
 procedure console_navigation;
+
 var
   //y: byte;
   destinationindex: Word;
@@ -1070,10 +1074,10 @@ begin
   putStringAt(7,32,7);      // Back
 {$ENDIF}
 {$IFDEF DE}
-  CRT_GotoXY(3,7);
+  CRT_GotoXY(2,7);
   CRT_Write('1-6'*~); // Navigation options
-  putStringAt(23,6,7);
-  putStringAt(24,20,7);     // FTL Jump
+  putStringAt(23,5,7);
+  putStringAt(24,18,7);     // FTL Jump
   putStringAt(7,33,7);      // Back
 {$ENDIF}
 {$IFDEF EN}
@@ -1168,7 +1172,8 @@ procedure noMoreShip;
 begin
   beep255; // vol10
   CRT_ClearRow(5);
-  putStringAt(36,13,5);
+  // putStringAt(36,13,5);
+  CRT_WriteCentered(5,strings[36]);
   x:=0; //reused variable
 end;
 
@@ -1210,25 +1215,25 @@ begin
   putSpacesAt(24,5,0);
   CRT_GotoXY(5,0);
   CRT_Write(prodmatrix[tshp^.mcode]);
-  putSpacesAt(14,6,1);
-  CRT_GotoXY(6,1);
+  putSpacesAt(14,5,1);
+  CRT_GotoXY(5,1);
   offset:=tshp^.sindex * (MAXSHIPPARAMETERS);
   CRT_Write(ships[offset]);
-  putSpacesAt(10,9,2);
-  CRT_GotoXY(9,2);
+  putSpacesAt(10,6,2);
+  CRT_GotoXY(6,2);
   CRT_Write(tshp^.scu_max);CRT_Write(CARGOUNIT);
   putSpacesAt(12,6,3);
-  CRT_GotoXY(5,3);
+  CRT_GotoXY(6,3);
   offset:=(NUMBEROFSHIPS * player.loc) + availableships[shipindex];
   CRT_Write(shipprices[offset]);CRT_Write(CURRENCY);
-  putSpacesAt(8,32,1);
-  CRT_GotoXY(32,1);
+  putSpacesAt(8,29,1);
+  CRT_GotoXY(29,1);
   CRT_Write(tshp^.speed);CRT_Write(strings[45]);
-  putSpacesAt(9,31,2);
-  CRT_GotoXY(31,2);
+  putSpacesAt(9,29,2);
+  CRT_GotoXY(29,2);
   CRT_Write(tshp^.lenght);CRT_Write(strings[46]);
-  putSpacesAt(9,28,3);
-  CRT_GotoXY(28,3);
+  putSpacesAt(11,29,3);
+  CRT_GotoXY(29,3);
   CRT_Write(tshp^.mass);CRT_Write(strings[47]);
 {$ENDIF}
 {$IFDEF EN}
@@ -1328,15 +1333,21 @@ begin
   CRT_Write(strings[47]);
 
   // Help Keys
+{$IFDEF PL}
   CRT_GotoXY(5,7);
-  // txt:=concat(char(30),char(31));
-  // CRT_Write(Atascii2Antic(txt));
+{$ENDIF}
+{$IFDEF DE}
+  CRT_GotoXY(2,7);
+{$ENDIF}
+{$IFDEF EN}
+  CRT_GotoXY(5,7);
+{$ENDIF}
   CRT_Write(Chr(30+128+64)); CRT_Write(Chr(31+128+64)); // character code + 128 for inverse + 64 for antic code
   CRT_Write(strings[44]);  // Choose
-  WriteSpace;
+  WriteSpaces(2);
   CRT_Write('RETURN'*~);
   CRT_Write(strings[19]);  // Confirm
-  WriteSpace;
+  WriteSpaces(2);
   CRT_Write(strings[7]);   // Back
 
   // CRT_GotoXY(0,0);
@@ -1432,7 +1443,8 @@ begin
                               ship.qf:= ship.qf_max;
                               //CRT_GotoXY(0,5);
                               //CRT_Write(strings[27]);
-                              putStringAt(27,8,5);
+                              // putStringAt(27,8,5);
+                              CRT_WriteCentered(5,strings[27]);
 
                               // repeat until CRT_Keypressed;
                               // current_menu:=MENU_MAIN;
@@ -1443,15 +1455,26 @@ begin
                               beep255; // vol10
                               //CRT_GotoXY(6,5);
                               //CRT_Write(strings[48]);
+{$IFDEF PL}
                               putStringAt(48,6,5);
                               CRT_Write(CURRENCY);CRT_Invert(29,5,5)
+{$ENDIF}
+{$IFDEF DE}
+                              putStringAt(48,7,5);
+                              CRT_Write(CURRENCY);CRT_Invert(27,5,5)
+{$ENDIF}
+{$IFDEF EN}
+                              putStringAt(48,6,5);
+                              CRT_Write(CURRENCY);CRT_Invert(29,5,5)
+{$ENDIF}
                             end;
                           end
                           else
                           begin
                             //Message that ship is already owned
                             beep255; // vol10
-                            putStringAt(49,6,5);
+                            // putStringAt(49,6,5);
+                            CRT_WriteCentered(5,strings[49]);
                           end;
                         end;
                         selectPressed:=true;
@@ -1597,10 +1620,12 @@ begin
   CRT_Write('RETURN'*~);
   putStringAt(19,13,7);  // Confirm
   putStringAt(7,27,7);   // Back
-
 {$ENDIF}
 {$IFDEF DE}
-
+  CRT_GotoXY(7,7);
+  CRT_Write('RETURN'*~);
+  putStringAt(19,13,7);  // Confirm
+  putStringAt(7,27,7);   // Back
 {$ENDIF}
 {$IFDEF EN}
   CRT_GotoXY(7,7);
@@ -1705,15 +1730,24 @@ end;
 procedure trade_UpdateSelectedItem(selecteditemquantity:Word;selecteditemtotal:Longword);
 
 begin
+{$IFDEF PL}
+  x:=20;
+{$ENDIF}
+{$IFDEF DE}
+  x:=19;
+{$ENDIF}
+{$IFDEF EN}
+  x:=20;
+{$ENDIF}
+
   txt:=Atascii2Antic(IntToStr(selecteditemquantity));
   txt:= concat(txt,CARGOUNIT);
   txt:= concat(txt,strings[18]);
   txt:= concat(txt,Atascii2Antic(IntToStr(selecteditemtotal)));
   txt:= concat(txt,CURRENCY);
-  CRT_ClearRow(20);
-  CRT_WriteRightAligned(20,txt);
+  CRT_ClearRow(x);
+  CRT_WriteRightAligned(x,txt);
 end;
-
 
 procedure trade_UpdateUEC(uec: Longword);
 
@@ -1811,11 +1845,11 @@ begin
   CRT_Invert(18,0,5);
 {$ENDIF}
 {$IFDEF DE}
-  putSpacesAt(1,18,0);
+  putSpacesAt(1,16,0);
   CRT_Write(strings[8]); // Buy
   WriteSpace;
   // invert at start
-  CRT_Invert(18,0,5);
+  CRT_Invert(16,0,8);
 {$ENDIF}
 {$IFDEF EN}
   putSpacesAt(1,18,0);
@@ -1848,7 +1882,7 @@ begin
   putStringAt(15,0,6);
 {$ENDIF}
 {$IFDEF DE}
-  putStringAt(10,2,2);
+  putStringAt(10,0,2);
   CRT_GotoXY(COL2START-1,2);
   CRT_Write('|'~); // Delivery
   CRT_Write(strings[11]); // Available items
@@ -1931,16 +1965,16 @@ begin
   CRT_Write(strings[7]);
 {$ENDIF}
 {$IFDEF DE}
-  CRT_GotoXY(1,22);
+  CRT_GotoXY(0,21);
   // character code + 128 for inverse + 64 for antic code
   CRT_Write(Chr(222)); CRT_Write(Chr(223)); // character code + 128 for inverse + 64 for antic code
-  CRT_Write('-x1 +'~);
+  CRT_Write('-1 +'~);
   CRT_Write('CONTROL'*~);
-  CRT_Write('-x100 +'~);
+  CRT_Write('-100 +'~);
   CRT_Write('SHIFT'*~);
   CRT_Write(strings[50]); WriteSpaces(1);
   CRT_Write(strings[16]); 
-  CRT_GotoXY(3,23);
+  CRT_GotoXY(0,22);
   CRT_Write('SPACE'*~);
   CRT_Write('-'~);
   CRT_Write(strings[8]);
@@ -1949,8 +1983,9 @@ begin
   WriteSpace;
   CRT_Write('RETURN'*~);
   CRT_Write(strings[19]);
-  WriteSpace;
-  CRT_Write(strings[7]);
+  // WriteSpace;
+  // CRT_Write(strings[7]);
+  CRT_WriteRightAligned(23,strings[7]);
 {$ENDIF}
 {$IFDEF EN}
   CRT_GotoXY(1,22);
@@ -2435,15 +2470,25 @@ begin
                         CRT_ClearRow(20);
                         if not mode then
                         begin
-                          //CRT_GotoXY(COL2START-3,0);
-                          //WriteSpaces(1);
-                          // putSpacesAt(1,COL2START-3,0);
+{$IFDEF PL}
                           putSpacesAt(1,18,0);
                           CRT_Write(strings[8]); // Buy
                           WriteSpace;WriteSpace;
-                          // CRT_Invert(COL2START-3,0,5);
                           CRT_Invert(18,0,5);
-
+{$ENDIF}
+{$IFDEF DE}
+                          putSpacesAt(11,15,0);
+                          CRT_GotoXY(17,0);
+                          CRT_Write(strings[8]); // Buy
+                          // WriteSpace;WriteSpace;
+                          CRT_Invert(16,0,8);
+{$ENDIF}
+{$IFDEF EN}
+                          putSpacesAt(1,18,0);
+                          CRT_Write(strings[8]); // Buy
+                          WriteSpace;WriteSpace;
+                          CRT_Invert(18,0,5);
+{$ENDIF}
                           // // debug
                           // for y:=0 to MAXAVAILABLEITEMS-1 do
                           // begin
@@ -2465,14 +2510,25 @@ begin
 
                         end
                         else begin // selling mode
-                          //CRT_GotoXY(COL2START-3,0);
-                          //WriteSpaces(1);
-                          // putSpacesAt(1,COL2START-3,0);
+
+{$IFDEF PL}
                           putSpacesAt(1,18,0);
                           CRT_Write(strings[9]); // Sell
                           WriteSpace;
-                          // CRT_Invert(COL2START-3,0,6);
                           CRT_Invert(18,0,6);
+{$ENDIF}
+{$IFDEF DE}
+                          putSpacesAt(11,15,0);
+                          CRT_GotoXY(16,0);
+                          CRT_Write(strings[9]); // Sell
+                          CRT_Invert(15,0,11);
+{$ENDIF}
+{$IFDEF EN}
+                          putSpacesAt(1,18,0);
+                          CRT_Write(strings[9]); // Sell
+                          WriteSpace;
+                          CRT_Invert(18,0,6);
+{$ENDIF}
 
                           //  // debug
                           //  for y:=0 to MAXAVAILABLEITEMS-1 do
@@ -2751,15 +2807,15 @@ begin
   // Trade
   putStringAt(4,11,1);
   // Maint
-  putStringAt(7,11,2);
+  putStringAt(5,11,2);
   
   if shipprices[offset] > 0 then
   begin
     // Ship Hangar
-    putStringAt(6,16,3);
+    putStringAt(6,11,3);
   end;
   // Back
-  putStringAt(6,17,4);
+  putStringAt(7,16,4);
 {$ENDIF}
 {$IFDEF EN}
   // Navigation
@@ -2901,7 +2957,7 @@ begin
     Inc(y);
   end;
   // Credits
-  putStringAt(58,17,y);
+  putStringAt(58,18,y);
 
   // CRT_Invert(18,y,1);
   Inc(y);
@@ -2943,7 +2999,7 @@ begin
 {$ENDIF}
 
 
-  CRT_GotoXY(16,CRT_screenHeight - 2);
+  CRT_GotoXY(16,CRT_screenHeight - 1);
   CRT_Write(COPYRIGHT); // copyright
   // putStringAt(0,16,CRT_screenHeight - 2);
 
@@ -3161,9 +3217,9 @@ begin
   end;
 
   // Help Keys
-  CRT_GotoXY(0,CRT_screenHeight - 2);
+  CRT_GotoXY(0,CRT_screenHeight - 1);
   CRT_Write('1-5'*~); // Navigation options
-  putStringAt(23,3,CRT_screenHeight - 2);
+  putStringAt(23,3,CRT_screenHeight - 1);
   WriteSpace;
   CRT_Write('RETURN'*~);
   CRT_Write(strings[19]);  // Confirm
