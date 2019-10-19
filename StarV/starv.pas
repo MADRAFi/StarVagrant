@@ -550,8 +550,8 @@ procedure randomEncounter;
 begin
   // y:=Random(34); // 20%
   // y:=Random(64);    // 10%
-  // y:=Random(85);    // 8%
-  y:=5;
+  y:=Random(85);    // 8%
+  // y:=5;
 
   txt:='#';
   case y of

@@ -28,13 +28,13 @@ strings: array [0..65] of String = (
     ' Drücke irgendeine Taste. '*~,
     ' Du hast das Schiff gekauft. '*~,
     ''~,
-    'Sie wurden von Piraten bestiegen. Du warst mutig und hast gekämpft, bis du konntest. Sie haben Ihr Leben im Austausch für all Ihre Fracht geschont.'~,
-    'Es hat ein System Multifunction gegeben. Die Explosion hat einen Teil Ihrer Ladung beschädigt.'~, // 30
-    'Sie wurden von einigen Schlägern gekleidet. Sie haben Ihr ganzes Geld verloren.'~,
-    'Du hast einen Passagier mitgenommen. Er hat dir extra Geld für eine Fahrt bezahlt.'~,
-    'Du hast einige dringend benötigte       Bürgergesehen. Sie haben beschlossen,   einige Waren zu verschenken.'~,
+    'Du wurdest von Piraten bestiegen.       Du warst mutig und hast gekämpft,       bis du konntest. Sie haben Ihr Leben    im Austausch für all Ihre Fracht        geschont.'~,
+    'Es hat ein System Multifunction gegeben.Die Explosion hat einen Teil Ihrer      Ladung beschädigt.'~, // 30
+    'Du wirst von einigen Schlägern          gekleidet. Sie haben Ihr ganzes Geld    verloren.'~,
+    'Du hast einen Passagier mitgenommen.    Er hat dir extra Geld für eine Fahrt    bezahlt.'~,
+    'Du hast einige dringend benötigte       Bürgergesehen. Du hast beschlossen,      einige Waren zu verschenken.'~,
     'Du wirst aufgrund der jüngsten          Piratenaktivitäten zur militärischen    Eskorte verpflichtet. Du hast           die Standard-Servicegebühr bezahlt.'~,
-    'Es scheint, das Ihr Lottoschein gewonnenhat. Der Preis wurde auf Ihr Konto      überwiesen.'~, // 35
+    'Es scheint, das Ihr Lottoschein         gewonnenhat. Der Preis wurde auf Ihr    Konto überwiesen.'~, // 35
     ' Keine Schiffe mehr. '*~,
     'Name:'~,
     'Prod:'~,
