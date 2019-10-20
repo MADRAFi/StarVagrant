@@ -1,5 +1,5 @@
   creditstxt: array [0..9] of String = (
-    'Pomys'#12' i programowanie'~,
+    'Programowanie'~,
     'MADRAFi'~,
     ''~,
     'Grafika'~,
@@ -18,8 +18,8 @@
     'Bocianu za ca'#12'e udzielone wsparcie'~,
     ''~,
     'XXL za pomoc z xBios'~,
-    'Tebe za udzielone wsparcie z MAD-Pascalem'~,
-    'Kaz za testowanie i doradzanie'~,
+    'Tebe za topowe wsparcie MAD-Pascala'~,
+    'Kaz za testy i doradzanie'~,
     'Dely za testy QA'~,
     ''~,
     ''~

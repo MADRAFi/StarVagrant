@@ -67,30 +67,3 @@ strings: array [0..65] of String = (
     'Łącznie:'~  //65
 
 );
-
-  creditstxt: array [0..9] of String = (
-    'Pomysł i programowanie'~,
-    'MADRAFi'~,
-    ''~,
-    'Grafika'~,
-    'Broniu Kaz'~,
-    'MADRAFi'~,
-    ''~,
-    'Muzyka'~,
-    'Caruso'~,
-    ''~
-    
-);
-
-  thankstxt: array [0..9] of String = (
-    'Specjalne podziękowania:'~,
-    ''~,
-    'Bocianu za całe udzielone wsparcie'~,
-    ''~,
-    'XXL za pomoc z xBios'~,
-    'Tebe za udzielenie pomocy z MAD-Pascal'~,
-    'Kaz za testowanie i doradzanie'~,
-    'Dely za testy QA'~,
-    ''~,
-    ''~
-);

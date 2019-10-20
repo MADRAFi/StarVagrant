@@ -2656,8 +2656,11 @@ begin
   CRT_WriteRightAligned(24, strings[7]);
   gfx_fadein;
 
+{$IFNDEF DEBUG}
   visible:=false;
-  // visible:=true;
+{$ELSE}
+  visible:=true;
+{$ENDIF}
   timer:=0;
   tcount:= 0;
   // mcount:=0;
@@ -2689,6 +2692,7 @@ begin
   repeat        
     if visible then
     begin
+{$IFDEF NOT DEBUG}
       repeat until vcount=50;
       repeat
           x:=vcount;
@@ -2716,6 +2720,7 @@ begin
         fillchar(pointer(PMG_ADDRESS+512), 128, 0);
         Move(player0, pointer(PMG_ADDRESS+512+70+modify), sizeof(player0));
       end;
+{$ENDIF}      
         // CRT_GotoXY(0,22);
         // CRT_Write(p);
     end
@@ -3188,11 +3193,14 @@ procedure menu_save_load(mode: Boolean);
 var
   slot, oldslot : Byte;
   selectPressed: Boolean = false;
+  optionPressed: Boolean = false;
 
 procedure setSlot(snum:byte);
 begin
-    oldslot:=slot;
+    if (oldslot > 0) then CRT_Invert(14,oldslot + LOGOSIZE,12);
     slot:=snum;
+    oldslot:=slot;
+    CRT_Invert(14,slot + LOGOSIZE,12);
     beep230; //vol 10
 end;
 
@@ -3212,18 +3220,27 @@ begin
   // count:=Length(txt);
   for y:=1 to 5 do
   begin
-    putSpacesAt(3,14,y + LOGOSIZE);
-    CRT_Write(txt);CRT_Write(y);WriteSpaces(3);
+    // putSpacesAt(3,14,y + LOGOSIZE);
+    CRT_GotoXY(17,y + LOGOSIZE);
+    CRT_Write(txt);CRT_Write(y); //WriteSpaces(3);
   end;
 
   // Help Keys
+{$IFDEF PL}
   CRT_GotoXY(0,CRT_screenHeight - 1);
+{$ENDIF}
+{$IFDEF DE}
+  CRT_GotoXY(1,CRT_screenHeight - 1);
+{$ENDIF}
+{$IFDEF EN}
+  CRT_GotoXY(0,CRT_screenHeight - 1);
+{$ENDIF}
   CRT_Write('1-5'*~); // Navigation options
   putStringAt(23,3,CRT_screenHeight - 1);
-  WriteSpace;
+  WriteSpace; //s(2);
   CRT_Write('RETURN'*~);
   CRT_Write(strings[19]);  // Confirm
-  WriteSpace;
+  WriteSpace; //s(2);
   CRT_Write(strings[7]); // Back
 
 
@@ -3232,6 +3249,7 @@ begin
   slot:=0;
   oldslot:=0;
   selectPressed:=false;
+  optionPressed:=false;
 
   keyval:= 0;
   repeat
@@ -3245,19 +3263,24 @@ begin
                           current_menu := MENU_TITLE;
                         end;
           KEY_OPTION1:  begin
-                          setSlot(1);
-                         end;
+                          if not optionPressed  then setSlot(1);
+                          optionPressed:=true;
+                        end;
           KEY_OPTION2:  begin
-                          setSlot(2);
+                          if not optionPressed  then setSlot(2);
+                          optionPressed:=true;
                         end;
           KEY_OPTION3:  begin
-                          setSlot(3);
+                          if not optionPressed  then setSlot(3);
+                          optionPressed:=true;
                         end;
           KEY_OPTION4:  begin
-                          setSlot(4);
+                          if not optionPressed  then setSlot(4);
+                          optionPressed:=true;
                         end;
           KEY_OPTION5:  begin
-                          setSlot(5);
+                          if not optionPressed then setSlot(5);
+                          optionPressed:=true;
                         end;
           KEY_SELECT:   begin
                           if (slot > 0 ) and not selectPressed then
@@ -3284,18 +3307,16 @@ begin
                         end;
 
         end;
-        
-        if (slot > 0) then
-        begin
-          If (oldslot > 0) then CRT_Invert(14,oldslot + LOGOSIZE,p+8);
-          CRT_Invert(14,slot + LOGOSIZE,p+8);
-        end;
+
     end
     else
     begin
       selectPressed:=false;
+      optionPressed:=false;
     end;
     Waitframe;
+
+    CRT_GotoXY(0,21); CRT_write('slot='~);CRT_Write(slot);
 
   until (keyval = KEY_BACK) or (current_menu=MENU_TITLE);
 end;
