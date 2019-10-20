@@ -57,7 +57,7 @@ strings: array [0..65] of String = (
     ' error'~, // 55
     ' successfull'~,
     'Open file '~,
-    'Credits'~,
+    'C'#242'edits'~,
     'QFuel:'~,
     ' Not enough Quantum Fuel. '*~,  //60
     ' Your ship does not need refuel. '*~,

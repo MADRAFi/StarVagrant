@@ -57,7 +57,7 @@ strings: array [0..65] of String = (
     ' b'#12''#2'd'~, // 55
     ' udane'~,
     'Otw'#15'rz plik '~,
-    'Autorzy'~,
+    'A'#245'torzy'~,
     'QFuel:'~,
     ' Za ma'#12'o paliwa kwantowego. '*~,  //60
     ' Tw'#15'j statek nie wymaga tankowania. '*~,
