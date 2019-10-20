@@ -1,11 +1,22 @@
+program SVIntro;
 {$librarypath '../../../MADS/lib/'}
 {$librarypath '../../../MADS/base/'}
 {$librarypath '../../../MADS/blibs/'}
 
-uses atari, b_utils, b_system, b_crt, sysutils, rmt; //cmc;
+uses atari, b_utils, b_system, b_crt, sysutils, rmt;
 
 const
 {$i const.inc}
+
+{$IFDEF PL}
+  {$r 'PL/charset.rc'}
+{$ENDIF}
+{$IFDEF DE}
+  {$r 'DE/charset.rc'}
+{$ENDIF}
+{$IFDEF EN}
+  {$r 'EN/charset.rc'}
+{$ENDIF}
 
 {$r resources.rc}
 
@@ -14,18 +25,25 @@ var
    $04,$0a,$0e,$00
   );
 
+{$IFDEF DEMO}
+piccolors: array [0..(4*NUMBEROFPICS)-1] of Byte = (
+    $74,$36,$fc,$00,   // 0
+    $84,$88,$0e,$00,   // 1
+    $24,$1a,$0e,$00,   // 2
+    $62,$68,$7c,$00
+  );
+{$ELSE}
   piccolors: array [0..(4*NUMBEROFPICS)-1] of Byte = (
     $74,$36,$fc,$00,   // 0
     $84,$88,$0e,$00,   // 1
     $24,$1a,$0e,$00,   // 2
     $12,$18,$1e,$00
-    // $10,$14,$1a,$00    // 3
   );
-  
+{$ENDIF}
+
   txtcolors : array [0..1] of Byte = (
     $00,$00
   );
-  // msx: TCMC;
   msx: TRMT;
   // txt: String;
   picnumber: Byte; //count from 0
@@ -35,8 +53,15 @@ var
   count: Word;
   firstDLI: pointer;
 
-
-{$i strings.inc}
+{$IFDEF PL}
+  {$i 'PL/strings.inc'}
+{$ENDIF}
+{$IFDEF DE}
+  {$i 'DE/strings.inc'}
+{$ENDIF}
+{$IFDEF EN}
+  {$i 'EN/strings.inc'}
+{$ENDIF}
 
 {$i interrupts.inc}
 
@@ -122,7 +147,6 @@ begin
   // Initialize player
   msx.player:=pointer(PLAYER_ADDRESS);
   msx.modul:=pointer(MODULE_ADDRESS);
-  // msx.init;
   msx.init(0);
 
   skip:= false;
@@ -138,12 +162,6 @@ begin
   // clear screen memory
   fillbyte(pointer(TXT_ADDRESS), 1320, 0);
 
-  // count:= 0;
-  // repeat 
-  //   inc(count);
-  //   waitframe;
-  //   if CRT_Keypressed then skip:= true;
-  // until skip or (count > 300);
   wait(75);
 
   if skip = false then begin
@@ -153,12 +171,6 @@ begin
     gfx_fadein;
   end;
 
-  // count:= 0;
-  // repeat 
-  //   inc(count);
-  //   waitframe;
-  //   if CRT_Keypressed then skip:= true;
-  // until skip or (count > 450);
   wait(450);
 
   if skip = false then begin
@@ -168,12 +180,6 @@ begin
     gfx_fadein;
   end;
 
-  // count:= 0;
-  // repeat 
-  //   inc(count);
-  //   waitframe;
-  //   if CRT_Keypressed then skip:= true;
-  // until skip or (count > 450);
   wait(450);
 
   if skip = false then begin
@@ -196,12 +202,6 @@ begin
     gfx_fadein;
   end;
 
-  // count:= 0;
-  // repeat 
-  //   inc(count);
-  //   waitframe;
-  //   if CRT_Keypressed then skip:= true;
-  // until skip or (count > 450);
   wait(450);
 
   if skip = false then begin
@@ -223,12 +223,6 @@ begin
     gfx_fadein;
   end;
 
-  // count:= 0;
-  // repeat 
-  //   inc(count);
-  //   waitframe;
-  //   if CRT_Keypressed then skip:= true;
-  // until (skip = true) or (count > 450);
   wait(450);
 
   if skip = false then begin
@@ -250,12 +244,6 @@ begin
     gfx_fadein;
   end;
 
-  // count:= 0;
-  // repeat 
-  //   inc(count);
-  //   waitframe;
-  //   if CRT_Keypressed then skip:= true;
-  // until skip or (count > 450);
   wait(450);
 
   if skip = false then begin
@@ -273,13 +261,6 @@ begin
     CRT_Write(strings[10]);
     gfx_fadein;
   end;
-
-  // count:= 0;
-  // repeat 
-  //   inc(count);
-  //   waitframe;
-  //   if CRT_Keypressed then skip:= true;
-  // until skip or (count > 450);
 
   wait(450);
   if skip = false then begin
@@ -309,7 +290,15 @@ begin
     waitframe;
     if count = 50 then
     begin
+{$IFDEF PL}
+    CRT_Invert(2,25,34);
+{$ENDIF}
+{$IFDEF DE}
     CRT_Invert(5,25,29);
+{$ENDIF}
+{$IFDEF EN}
+    CRT_Invert(5,25,29);
+{$ENDIF}
     count:= 0;
     end;
     if CRT_Keypressed then skip:= true;
