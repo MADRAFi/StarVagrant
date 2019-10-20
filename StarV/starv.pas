@@ -3316,7 +3316,7 @@ begin
     end;
     Waitframe;
 
-    CRT_GotoXY(0,21); CRT_write('slot='~);CRT_Write(slot);
+    // CRT_GotoXY(0,21); CRT_write('slot='~);CRT_Write(slot);
 
   until (keyval = KEY_BACK) or (current_menu=MENU_TITLE);
 end;
