@@ -1378,8 +1378,8 @@ begin
   CRT_GotoXY(6,1);
   offset:=tshp^.sindex * (MAXSHIPPARAMETERS);
   CRT_Write(ships[offset]);
-  putSpacesAt(10,9,2);
-  CRT_GotoXY(9,2);
+  putSpacesAt(10,10,2);
+  CRT_GotoXY(10,2);
   CRT_Write(tshp^.scu_max);CRT_Write(CARGOUNIT);
   putSpacesAt(12,6,3);
   CRT_GotoXY(5,3);
@@ -1918,7 +1918,7 @@ procedure trade_UpdateSelectedItem(selecteditemquantity:Word;selecteditemtotal:L
 
 begin
 {$IFDEF PL}
-  x:=20;
+  x:=19;
 {$ENDIF}
 {$IFDEF DE}
   x:=19;
@@ -2025,11 +2025,11 @@ begin
   CRT_Write(tstr);
 
 {$IFDEF PL}
-  putSpacesAt(1,18,0);
+  putSpacesAt(1,17,0);
   CRT_Write(strings[8]); // Buy
   WriteSpace;
   // invert at start
-  CRT_Invert(18,0,5);
+  CRT_Invert(17,0,7);
 {$ENDIF}
 {$IFDEF DE}
   putSpacesAt(1,16,0);
@@ -2130,7 +2130,7 @@ begin
 
   // help
 {$IFDEF PL}
-  CRT_GotoXY(1,22);
+  CRT_GotoXY(1,21);
   // character code + 128 for inverse + 64 for antic code
   CRT_Write(Chr(222)); CRT_Write(Chr(223)); // character code + 128 for inverse + 64 for antic code
   CRT_Write('-x1 +'~);
@@ -2139,7 +2139,7 @@ begin
   CRT_Write('SHIFT'*~);
   CRT_Write(strings[50]); WriteSpaces(1);
   CRT_Write(strings[16]); 
-  CRT_GotoXY(1,23);
+  CRT_GotoXY(1,22);
   CRT_Write('SPACE'*~);
   CRT_Write('-'~);
   CRT_Write(strings[8]);
@@ -2148,8 +2148,9 @@ begin
   WriteSpace;
   CRT_Write('RETURN'*~);
   CRT_Write(strings[19]);
-  WriteSpace;
-  CRT_Write(strings[7]);
+  // WriteSpace;
+  // CRT_Write(strings[7]);
+  CRT_WriteRightAligned(23,strings[7]);
 {$ENDIF}
 {$IFDEF DE}
   CRT_GotoXY(0,21);
@@ -2658,10 +2659,11 @@ begin
                         if not mode then
                         begin
 {$IFDEF PL}
-                          putSpacesAt(1,18,0);
+                          putSpacesAt(11,15,0);
+                          CRT_GotoXY(18,0);
                           CRT_Write(strings[8]); // Buy
-                          WriteSpace;WriteSpace;
-                          CRT_Invert(18,0,5);
+                          // WriteSpace;WriteSpace;
+                          CRT_Invert(17,0,7);
 {$ENDIF}
 {$IFDEF DE}
                           putSpacesAt(11,15,0);
@@ -2699,10 +2701,11 @@ begin
                         else begin // selling mode
 
 {$IFDEF PL}
-                          putSpacesAt(1,18,0);
+                          putSpacesAt(11,15,0);
+                          CRT_GotoXY(16,0);
                           CRT_Write(strings[9]); // Sell
                           WriteSpace;
-                          CRT_Invert(18,0,6);
+                          CRT_Invert(15,0,10);
 {$ENDIF}
 {$IFDEF DE}
                           putSpacesAt(11,15,0);
@@ -3108,16 +3111,16 @@ begin
     putStringAt(51,15,y);
 
     Inc(y);
-    CRT_GotoXY(16,y);
+    CRT_GotoXY(15,y);
     CRT_Write('1'*~); WriteSpace; CRT_Write(strings[53]); // Load
     Inc(y);
-    CRT_GotoXY(16,y);
+    CRT_GotoXY(15,y);
     CRT_Write('2'*~); WriteSpace; CRT_Write(strings[52]); // Save
     Inc(y);
   end
   else
   begin
-    CRT_GotoXY(16,y);
+    CRT_GotoXY(15,y);
     CRT_Write('1'*~); WriteSpace; CRT_Write(strings[53]); // Load
     Inc(y);
   end;
@@ -3290,13 +3293,20 @@ begin
   until (keyval = KEY_QUIT) or (keyval = KEY_NEW) or startPressed or (keyval = KEY_CONT) or ((keyval = KEY_OPTION2) and (gamestate = GAMEINPROGRESS)) or (keyval = KEY_OPTION1) or (keyval = KEY_CREDITS);
 end;
 
-procedure writeStatus(x,snum1,snum2,snum3:byte);
+procedure writeStatus(snum1,snum2:Byte);
 begin
     //CRT_GotoXY(x,20);
     //CRT_Write(strings[snum1]);
-    putStringAt(snum1,x,21);
-    CRT_Write(strings[snum2]);CRT_Invert(x-1,21,CRT_WhereX-x+1);
-    CRT_Write('.'~*);CRT_Write(strings[snum3]);
+
+    // putStringAt(snum1,x,21);
+    // CRT_Write(strings[snum2]);CRT_Invert(x-1,21,CRT_WhereX-x+1);
+    // CRT_Write('.'~*);//CRT_Write(strings[snum3]);
+    tstr:=concat(strings[snum1],strings[snum2]);
+    p:=Length(tstr);
+    x:=(CRT_screenWidth - p) div 2;
+    CRT_WriteCentered(21,tstr);CRT_Invert(x-2,21,p + 2);
+    // CRT_GotoXY(0,22);
+    // CRT_Write()
 end;
 
 procedure disk_save(num: Byte);
@@ -3319,14 +3329,14 @@ begin
       begin
         //CRT_GotoXY(5,20); // success
         //CRT_Write('Save Successfull. Press any key'~);
-        writeStatus(5,52,56,26);
+        writeStatus(52,56);
         //CRT_Write(strings[52]);CRT_Write(strings[56]);CRT_Write('.'~*);CRT_Write(strings[26]);
       end
       else
       begin
         //CRT_GotoXY(7,20); // error
         //CRT_WriteXY(0,5,'Save error. Press any key'~);
-        writeStatus(7,52,55,26);
+        writeStatus(52,55);
         //CRT_Write(strings[52]);CRT_Write(strings[55]);CRT_Write('.'~*);CRT_Write(strings[26]);
       end;
       xBiosFlushBuffer;
@@ -3335,7 +3345,7 @@ begin
     begin
       //CRT_GotoXY(5,20); // error opening
       //CRT_WriteXY(0,5,'Open file error. Press any key'~*);
-      writeStatus(5,57,55,26);
+      writeStatus(57,55);
       //CRT_Write(strings[57]);CRT_Write(strings[55]);CRT_Write('.'~*);CRT_Write(strings[26]);
     end;
   end;
@@ -3363,14 +3373,14 @@ begin
       begin
 
         //CRT_GotoXY(5,20); // success
-        writeStatus(5,53,56,26);
+        writeStatus(53,56);
         //CRT_Write(strings[53]);CRT_Write(strings[56]);CRT_Write('.'~*);CRT_Write(strings[26]);
         gamestate:=GAMEINPROGRESS;
       end
       else
       begin
         //CRT_GotoXY(7,20); // error
-        writeStatus(7,53,55,26);
+        writeStatus(53,55);
         //CRT_Write(strings[53]);CRT_Write(strings[55]);CRT_Write('.'~*);CRT_Write(strings[26]);
       end;
       xBiosFlushBuffer;
@@ -3378,7 +3388,7 @@ begin
     else
     begin
       //CRT_GotoXY(5,20); // error opening
-      writeStatus(5,57,55,26);
+      writeStatus(57,55);
       //CRT_Write(strings[57]);CRT_Write(strings[55]);CRT_Write('.'~*);CRT_Write(strings[26]);
     end;
   end;
@@ -3493,7 +3503,7 @@ begin
                             end;
                             if mode then disk_save(slot)
                             else disk_load(slot);
-                            current_menu:=MENU_TITLE;
+                            // current_menu:=MENU_TITLE;
                           end;
                           selectPressed:= true;
                         end;
