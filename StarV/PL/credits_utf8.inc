@@ -1,5 +1,5 @@
   creditstxt: array [0..9] of String = (
-    'Pomysł i programowanie'~,
+    'Programowanie'~,
     'MADRAFi'~,
     ''~,
     'Grafika'~,

@@ -67,18 +67,13 @@ begin
     xBiosLoadLz4Data(Pointer(GFX_ADDRESS));
     // xBiosFlushBuffer;
   end;
-  if not disablemusic then
-  begin  
-    msx.cont; // continue_play;
-    music:= true;
-  end;
-  sfx_init;
+  music_restart;
 end;
 
 procedure navi_ftljump(distance: Word);
 
 begin
-  CRT_ClearRow(6);
+  CRT_ClearRow(7);
   for y:=0 to MAXAVAILABLEDESTINATIONS-1 do
   begin
     CRT_GotoXY(20,0+y); // liststart

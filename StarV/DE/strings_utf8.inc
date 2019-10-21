@@ -47,7 +47,7 @@ strings: array [0..65] of String = (
     ' m/s'~, // 45
     ' meter'~,
     ' tonnen'~,
-    ' Du hast nicht genug'*~,
+    ' Du hast nicht genug Kredite '*~,
     ' Du besitzt dieses Schiff bereits. '*~,
     '-Alles'~, // 50
     'F'*'ortsetzen'~,

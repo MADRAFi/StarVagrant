@@ -47,7 +47,7 @@ strings: array [0..65] of String = (
     ' m/s'~, // 45
     ' metry'~,
     ' tony'~,
-    ' Nie masz wystarczająco dużo'*~,
+    ' Nie masz wystarczająco dużo kredytów. '*~,
     ' Już posiadasz ten statek. '*~,
     '-Cały'~, // 50
     'K'*'ontynuacja'~,
@@ -62,7 +62,7 @@ strings: array [0..65] of String = (
     ' Za mało paliwa kwantowego. '*~,  //60
     ' Twój statek nie wymaga tankowania. '*~,
     ' Twój statek został zatankowany. '*~,
-    ' Za mało UEC do 100% tankowania. '*~,
+    ' Za mało kredytów do 100% tankowania. '*~,
     'Paliwo:'~,   
     'Łącznie:'~  //65
 

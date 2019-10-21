@@ -47,7 +47,7 @@ strings: array [0..65] of String = (
     ' m/s'~, // 45
     ' meters'~,
     ' tons'~,
-    ' You do not have enough'*~,
+    ' You do not have enough credits. '*~,
     ' You already own that ship. '*~,
     '-All'~, // 50
     'C'*'ontinue'~,
@@ -62,7 +62,7 @@ strings: array [0..65] of String = (
     ' Not enough Quantum Fuel. '*~,  //60
     ' Your ship does not need refuel. '*~,
     ' Your ship has been refueled. '*~,
-    ' Not enough UEC to 100% refuel '*~,
+    ' Not enough credits to 100% refuel. '*~,
     'Refuel:'~,   
     'Total:'~  //65
     // 'to 100% refuel '*~

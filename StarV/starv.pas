@@ -45,7 +45,7 @@ const
 {$IFDEF DEMO}
   COPYRIGHT = 'Silly Venture 2019'~;
 {$ELSE}
-  COPYRIGHT = 'v.0.39 @ 2019 MADsoft'~;
+  COPYRIGHT = 'v.0.40 @ 2019 MADsoft'~;
 {$ENDIF}
 
   CURRENCY = ' UEC'~;
@@ -88,14 +88,14 @@ var
   irqen : byte absolute $D20E;
 
 {$IFDEF PL}
-    {$i 'PL/strings.inc'}
-    {$i 'PL/credits.inc'}
-    {$i 'PL/items.inc'}
+  {$i 'PL/strings.inc'}
+  {$i 'PL/credits.inc'}
+  {$i 'PL/items.inc'}
 {$ENDIF}
 {$IFDEF DE}
-    {$i 'DE/strings.inc'}
-    {$i 'DE/credits.inc'}
-    {$i 'DE/items.inc'}
+  {$i 'DE/strings.inc'}
+  {$i 'DE/credits.inc'}
+  {$i 'DE/items.inc'}
 {$ENDIF}
 {$IFDEF EN}
   {$i 'EN/strings.inc'}
@@ -248,7 +248,7 @@ itemprice: array [0..(NUMBEROFLOCATIONS * NUMBEROFITEMS)-1] of Word = (
     0,0,0,
     0,0,0,
     0,9000,0,
-    0,6000,12990
+    1000,6000,12990
 
   ); // ship prices
 
@@ -410,13 +410,13 @@ itemprice: array [0..(NUMBEROFLOCATIONS * NUMBEROFITEMS)-1] of Word = (
     0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,45000,0,0,0,0,0,400000,
     0,9000,0,18000,29999,0,50000,0,0,0,0,0,
-    0,6000,12990,20100,0,0,0,0,124900,0,300000,0,
+    1000,6000,12990,20100,0,0,0,0,124900,0,300000,0,
     0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,31500,0,75000,62000,124900,0,300000,0,
     0,8000,11999,22700,32000,0,0,0,124900,166000,330000,0,
     0,0,0,0,0,0,0,0,0,0,0,0,
-    1000,5000,11900,18000,29000,0,50000,59000,124000,130000,300000,0,
+    0,5000,11900,18000,29000,0,50000,59000,124000,130000,300000,0,
     0,0,0,0,0,0,0,0,0,0,0,0,
     0,4000,10000,16000,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,
@@ -467,6 +467,16 @@ begin
   poke($d208,0);
 
   irqen:=0;  // disable IRQ after transmition
+end;
+
+procedure music_restart;
+begin
+  if not disablemusic then
+  begin  
+    msx.cont;
+    music:=true;
+  end;
+  sfx_init;
 end;
 
 procedure writeRuler(row:Byte);
@@ -724,7 +734,6 @@ end;
 
 procedure randomEncounter;
 
-
 begin
   // y:=Random(34); // 20%
 {$IFDEF DEMO}
@@ -733,25 +742,22 @@ begin
   y:=Random(85);    // 8%
 {$ENDIF}
 
-
-// y:=5;
+// y:=1;
 
   txt:='#';
   case y of
 
     1:    begin
-            if player.uec > 0 then
+            p:= 5; // fee is 5%
+            modify:= percentC(player.uec);
+            if player.uec > modify then
             begin
               txt:=strings[34];
-              player.uec:=player.uec - 2500;
+              player.uec:=player.uec - modify;
             end;
           end;
     3:    begin
               txt:=strings[35];
-
-              // offset:=Round(Random * 50000);
-              // player.uec:=player.uec + offset;
-              // player.uec:=player.uec + (Random(100) * 500);  // Random % from 50000 UEC
               player.uec:=player.uec + (random100 * 500);  // Random % from 50000 UEC
           end;
     5:    begin
@@ -762,8 +768,6 @@ begin
               if ship.cargoindex[y] > 0 then
               begin
                 txt:=strings[33];
-                // modify:=(1 - random100 / 100);
-                // ship.cargoquantity[y]:=Round(ship.cargoquantity[y] * modify);
                 p:=random100;
                 modify:=percentC(ship.cargoquantity[y]);
                 ship.cargoquantity[y]:=ship.cargoquantity[y] - modify;
@@ -773,9 +777,6 @@ begin
           end;
     10:   begin
             txt:=strings[32];
-
-            // offset:= Round(Random * 10000);
-            // player.uec:=player.uec + offset;
             player.uec:=player.uec + (random100 * 100);  // Random % from 10000 UEC
 
           end;
@@ -1612,6 +1613,7 @@ begin
                           begin
                             beep230; //vol 10
                             currentshipprice:=shipprices[(NUMBEROFSHIPS * player.loc) + ship.sindex];
+                            // CRT_WriteCentered(6,Atascii2Antic(IntToStr(currentshipprice)));
                             if player.uec + currentshipprice >= shipprices[offset] then
                             begin
                               // sell current ship
@@ -1638,18 +1640,19 @@ begin
                               beep255; // vol10
                               //CRT_GotoXY(6,5);
                               //CRT_Write(strings[48]);
-{$IFDEF PL}
-                              putStringAt(48,6,5);
-                              CRT_Write(CURRENCY);CRT_Invert(29,5,5)
-{$ENDIF}
-{$IFDEF DE}
-                              putStringAt(48,7,5);
-                              CRT_Write(CURRENCY);CRT_Invert(27,5,5)
-{$ENDIF}
-{$IFDEF EN}
-                              putStringAt(48,6,5);
-                              CRT_Write(CURRENCY);CRT_Invert(29,5,5)
-{$ENDIF}
+// {$IFDEF PL}
+//                               putStringAt(48,6,5);
+//                               CRT_Write(CURRENCY);CRT_Invert(29,5,5)
+// {$ENDIF}
+// {$IFDEF DE}
+//                               putStringAt(48,7,5);
+//                               CRT_Write(CURRENCY);CRT_Invert(27,5,5)
+// {$ENDIF}
+// {$IFDEF EN}
+//                               putStringAt(48,6,5);
+//                               CRT_Write(CURRENCY);CRT_Invert(29,5,5)
+// {$ENDIF}
+                              CRT_WriteCentered(5,strings[48]);
                             end;
                           end
                           else
@@ -1690,10 +1693,9 @@ var
   itemoffset: Word;
   
 
-begin
-  beep230; //vol 10
-  CRT_ClearRows(0,7);
 
+procedure recalc_hydrogen;
+begin
   itemoffset:=(NUMBEROFITEMS * player.loc) + 12; // check hydrogen
   fuelquantity:= 0;
   if (itemquantity[itemoffset] > 0) then
@@ -1709,42 +1711,44 @@ begin
   end;
   reqfuel:= 0;
   reqtotal:= 0;
-  // CRT_GotoXY(0,6);
-  // CRT_Write('offset:'~);CRT_Write(itemoffset);CRT_Write(' iprice:'~);CRT_Write(iprice);CRT_Write(' fuelprice:'~);CRT_Write(fuelprice);
-  
+
   If (ship.qf < ship.qf_max) then
   begin
-    reqfuel:=ship.qf_max - ship.qf;
-    reqtotal:= reqfuel * fuelprice;
-    if (player.uec  >= reqtotal) then
-    begin
-     fuelquantity:=ship.qf_max - ship.qf;
-
-    end
-    else 
-    begin
-      if (player.uec > 0) then
+      reqfuel:=ship.qf_max - ship.qf;
+      reqtotal:= reqfuel * fuelprice;
+      if (player.uec  >= reqtotal) then
       begin
-        fuelquantity:= player.uec div fuelprice;
-        putStringAt(63,3,status_row);
-        // putStringAt(66,19,6);
-
+      fuelquantity:=ship.qf_max - ship.qf;
       end
       else 
       begin
-        fuelquantity:= 0;
-        putStringAt(48,6,status_row);
-        CRT_Write(CURRENCY);CRT_Invert(29,6,status_row);
+        if (player.uec > 0) then
+        begin
+          fuelquantity:= player.uec div fuelprice;
+          // putStringAt(63,3,status_row);
+          CRT_WriteCentered(status_row,strings[63]);
+        end
+        else 
+        begin
+          fuelquantity:= 0;
+          // putStringAt(48,6,status_row);
+          // CRT_Write(CURRENCY);CRT_Invert(29,6,status_row);
+          CRT_WriteCentered(status_row,strings[48]);
+        end;
       end;
-    end;
   end;
-  // else 
-  // begin
-  //   fuelquantity:=0;
-  // end;
 
   // recalculate fuel total
   fueltotal:= fuelquantity * fuelprice;
+
+end;
+
+begin
+  selectPressed:=false;
+  beep230; //vol 10
+  CRT_ClearRows(0,7);
+
+  recalc_hydrogen;
 
   CRT_WriteRightAligned(0,concat(Atascii2Antic(IntToStr(player.uec)), CURRENCY));
 
@@ -1823,7 +1827,7 @@ begin
 
     If (CRT_Keypressed) then
     begin
-        CRT_ClearRow(status_row);
+        // CRT_ClearRow(status_row);
         keyval := kbcode;
         case keyval of
           KEY_BACK:     begin
@@ -1831,12 +1835,13 @@ begin
                           current_menu := MENU_MAIN;
                         end;
           KEY_SELECT: begin
-                        if not selectPressed and (fuelprice > 0) then
+                        if not selectPressed and (fuelprice > 0) and (player.uec > 0) then
                         begin
-                          CRT_ClearRow(status_row);
+                          
                           // CRT_GotoXY(6,6);
                           If (ship.qf < ship.qf_max) then
                           begin
+                            CRT_ClearRow(status_row);
                             beep230; //vol 10
                             if (player.uec  >= reqtotal) then
                             begin
@@ -1871,11 +1876,9 @@ begin
                               else
                               begin
                                 beep255; // vol10
-                                //CRT_GotoXY(6,6);
-                                //CRT_Write(strings[48]);
-                                putStringAt(48,6,status_row);
-
-                                CRT_Write(CURRENCY);CRT_Invert(29,6,status_row)
+                                // putStringAt(48,6,status_row);
+                                // CRT_Write(CURRENCY);CRT_Invert(29,status_row,5)
+                                CRT_WriteCentered(status_row,strings[48]);
                               end; 
                             end;
                             // if (newuec > 0) then
@@ -1895,6 +1898,7 @@ begin
                             CRT_WriteCentered(status_row,strings[61]);
                           end;
                         end;
+                        recalc_hydrogen;
                         selectPressed:=true;
                       end;
 
@@ -3088,6 +3092,7 @@ var
 begin
   startPressed:=false;
   musicPressed:=false;
+  visible:=false;
 
   gfx_fadeout(true);
   draw_logo;
@@ -3333,8 +3338,9 @@ begin
       writeStatus(5,57,55,26);
       //CRT_Write(strings[57]);CRT_Write(strings[55]);CRT_Write('.'~*);CRT_Write(strings[26]);
     end;
-    repeat until CRT_Keypressed;
   end;
+  music_restart;
+  // repeat until CRT_Keypressed;
 end;
 
 procedure disk_load(num: Byte);
@@ -3351,11 +3357,15 @@ begin
       xBiosSetLength(60); // 5+15+20+20 both variable size ( all in records)
       xBiosLoadData(@player);
       xBiosLoadData(@ship);
+      newloc:=player.loc;
+      pic_load(newLoc);
       if (xBiosIOresult = 0) then
       begin
+
         //CRT_GotoXY(5,20); // success
         writeStatus(5,53,56,26);
         //CRT_Write(strings[53]);CRT_Write(strings[56]);CRT_Write('.'~*);CRT_Write(strings[26]);
+        gamestate:=GAMEINPROGRESS;
       end
       else
       begin
@@ -3371,9 +3381,9 @@ begin
       writeStatus(5,57,55,26);
       //CRT_Write(strings[57]);CRT_Write(strings[55]);CRT_Write('.'~*);CRT_Write(strings[26]);
     end;
-
-    repeat until CRT_Keypressed;
   end;
+  music_restart;
+  // repeat until CRT_Keypressed;
 end;
 
 procedure menu_save_load(mode: Boolean);
@@ -3483,12 +3493,6 @@ begin
                             end;
                             if mode then disk_save(slot)
                             else disk_load(slot);
-                            if not disablemusic then
-                            begin  
-                              msx.cont;
-                              music:=true;
-                            end;
-                              sfx_init;
                             current_menu:=MENU_TITLE;
                           end;
                           selectPressed:= true;
