@@ -22,7 +22,7 @@ items: array [0..NUMBEROFITEMS-1] of TString = (
 'Stymulanty'~,
 'Tytan'~,
 'Wolfram'~,
-''#4'cieki'~,
+''#25'cieki'~,
 'Czarny Odlot'~
 
 );

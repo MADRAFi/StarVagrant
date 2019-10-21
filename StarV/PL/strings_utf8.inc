@@ -1,5 +1,5 @@
 strings: array [0..65] of String = (
-    'v.0.38 (c) 2019 MADsoft'~, // 0
+    'MADsoft'~, // 0
     'N'*'owa Gra'~,
     'W'*'yjście'~,
     '1'*' Nawigacja'~,
@@ -7,14 +7,14 @@ strings: array [0..65] of String = (
     '3'*' Napraw/Zatankuj'~, // 5
     '4'*' Baza Statków'~,
     'P'*'owrót'~,
-    'Kup'~,
-    'Sprz'~,
-    '   Miejsce dostawy'~, // 10
+    'Kupuj'~,
+    'Sprzedaj'~,
+    'Miejsce dostawy'~, // 10
     ' Przedmioty'~,
-    'towar'~,
-    ' cena'~,
-    'Cały Ładunek'~,
-    'Pusty Ładunek'~, // 15
+    'Towar'~,
+    'Cena'~,
+    'Ładowność'~,
+    'Puste'~, // 15
     'A'*'nuluj'~,
     'O'*'K'~,
     '  za '~,
@@ -23,24 +23,24 @@ strings: array [0..65] of String = (
     'Naw:'~,
     'Odległość:'~,
     '-Nawigacja'~,
-    'J'*'-Skok FTL'~,
+    #179'kok FTL'~,
     'Brak xBios, Brak Grafik'*~, // 25
-    ' Wciśnij dowolny klawisz. '*~,
+    ' Naciśnij dowolny klawisz. '*~,
     ' Kupiłeś wybrany statek. '*~,
     ''~,
     'Zostałeś zaatakowany przez piratów.     Byłeś odważny i walczyłeś ile mogłeś.   Oszczędzili twoje życie w zamian za cały twój ładunek.'~,
     'Wystąpiła usterka systemu. Wybuch       uszkodził część twojego ładunku.'~, // 30
     'Zostałeś okradziony przez bandytów.     Straciłeś wszystkie swoje pieniądze.'~,
     'Zabrałeś ze sobą Pasażera. Zapłacił ci  za transport dodatkową gotówkę.'~,
-    'Zobaczyłeś obywateli w pilnej potrzebie. Zdecydowałeś się im pomóc i rozdać część towarów.'~,
+    'Zobaczyłeś obywateli w pilnej potrzebie.Zdecydowałeś się im pomóc i oddając     część towarów.'~,
     'Zostałeć zobowiązany do użycia eskorty  wojskowej z powodu niedawnych działań   piratów. Zapłaciłeś standardową opłatę  serwisową.'~,
     'Wygląda na to, że Twój bilet na loterię wygrał. Nagroda została przesłana               na Twoje konto.'~, // 35
     ' Brak statków. '*~,
-    'Nazw:'~,
+    'Nazwa:'~,
     'Prod:'~,
-    'Ładow:'~,
-    'Cena :'~, // 40
-    'Prędk:'~,
+    'Ładowność:'~,
+    'Cena:'~, // 40
+    'Prędkość:'~,
     'Długość:'~,
     'Masa:'~,
     '-Wybór'~,
@@ -51,11 +51,11 @@ strings: array [0..65] of String = (
     ' Już posiadasz ten statek. '*~,
     '-Cały'~, // 50
     'K'*'ontynuacja'~,
-    'Zapisz'~,
-    'Wczytaj'~,
+    'Zapisanie'~,
+    'Wczytanie'~,
     'Slot '~,
-    ' błąd'~, // 55
-    ' udane'~,
+    ' błędne.'~, // 55
+    ' udane.'~,
     'Otwórz plik '~,
     'A'#245'torzy'~,
     'QFuel:'~,

@@ -24,7 +24,7 @@ def convertPL(newdata):
     newdata = newdata.replace("Ł","'#123'")
     newdata = newdata.replace("Ń","'#13'")
     newdata = newdata.replace("Ó","'#16'")
-    newdata = newdata.replace("Ś","'#4'")
+    newdata = newdata.replace("Ś","'#25'")
     newdata = newdata.replace("Ź","'#32'")
     newdata = newdata.replace("Ż","'#24'")
     # newdata = newdata.replace("'',",",")

@@ -4,8 +4,8 @@ strings: array [0..11] of String = (
     'Po ośmiu latach w armii nareszcie'~,         // screen 3
     'zakończyłeś swój kontrakt.'~,                // screen 3
     'Od dawna marzyłeś o własnym'~,               // screen 4
-    'przedsięwzięciu i możliwości robienia'~,   // screen 4
-    'co się chce.'~,                              // screen 4
+    'przedsięwzięciu i pełnej niezależności.'~,   // screen 4
+    ''~,                                          // screen 4
     'Za otrzymany czek byłeś w stanie kupić'~,    // screen 5
     'najtańszy statek i jeszcze zostało Ci'~,       // screen 5
     'trochę gotówki.'~,                           // screen 5
