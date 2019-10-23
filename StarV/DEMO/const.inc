@@ -20,16 +20,16 @@ DISPLAY_LIST_ADDRESS_MENU = DISPLAY_LIST_ADDRESS_TITLE + $100;
 DISPLAY_LIST_ADDRESS_CONSOLE = DISPLAY_LIST_ADDRESS_MENU + $100;
 LOGODATA_ADDRESS = DISPLAY_LIST_ADDRESS_CONSOLE + $100;
 // ***************************************************************************//
-NUMBEROFLOCATIONS = 25; // number of locations defined in locations.asm. Needs to match.
+NUMBEROFLOCATIONS = 13; // number of locations defined in locations.asm. Needs to match.
 NUMBEROFITEMS = 24; // number of items defined in items.asm. Needs to match.
-NUMBEROFSHIPS = 12; // number of ships defined in ships array.
+NUMBEROFSHIPS = 3; // number of ships defined in ships array.
 
 MAXSHIPPARAMETERS = 8; // number of ship parameters in ship array
 MAXAVAILABLEITEMS = 12; // numer of concurrent items displayed
 MAXCARGOSLOTS = 10;  // number of cargo slots
 MAXAVAILABLEDESTINATIONS = 6;  // number of destinations from location.
 
-STARTUEC = 10000;
+STARTUEC = 6000;
 STARTLOCATION = 0;
 
 // ***************************************************************************//

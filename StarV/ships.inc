@@ -18,7 +18,7 @@ ships: array [0..(NUMBEROFSHIPS * MAXSHIPPARAMETERS)-1] of TString = (
 prodmatrix: array [0..7] of TString = (
   'Ergon Astro'~,
   'Drago Interplanetary'~,
-  'Vostok Comapny'~,
+  'Vostok Company'~,
   'Mitsui Industries'~,
   'Aero Dynamics'~,
   'Aerospace Crusaders'~,

@@ -19,13 +19,17 @@
 
 procedure nosound;
 begin
-  poke(voice1+1,0);
-  poke(voice2+1,0);
-  poke(voice3+1,0);
-  poke(voice4+1,0);
+  poke($D200+1,0);
+  poke($D202+1,0);
+  poke($D204+1,0);
+  poke($D206+1,0);
 end;
 
-procedure pic_openfile(myname: TString; mynum: Byte);
+procedure pic_openfile(mynum: Byte);
+
+const
+  myname = 'LOC';
+
 begin
   tstr:='';
   if (mynum < 10) then tstr:=concat(myname,'0')
@@ -45,7 +49,7 @@ begin
 
 end;
 
-procedure pic_load(mytype: Byte; num: Byte);
+procedure pic_load(num: Byte);
 begin
   if not disablemusic then
   begin
@@ -55,7 +59,7 @@ begin
     nosound;
   end;
 
-  If mytype = LOC then pic_openfile('LOC',num);
+  pic_openfile(num);
   // else pic_openfile('GFX',num);
   //if (xBiosCheck = 1) and (xBiosIOresult = 0) then
   if (xBiosCheck <> 0) and (xBiosIOresult = 0) then
@@ -63,35 +67,30 @@ begin
     xBiosLoadLz4Data(Pointer(GFX_ADDRESS));
     // xBiosFlushBuffer;
   end;
-  if not disablemusic then
-  begin  
-    msx.cont; // continue_play;
-    music:= true;
-  end;
-  sfx_init;
+  music_restart;
 end;
 
 procedure navi_ftljump(distance: Word);
 
 begin
-  CRT_ClearRow(6);
+  CRT_ClearRow(7);
   for y:=0 to MAXAVAILABLEDESTINATIONS-1 do
   begin
     CRT_GotoXY(20,0+y); // liststart
     WriteSpaces(18); // clear rows
   end;
 
-  sfx_play(voice4, 236,202); // vol 10
+  sfx_play(236,202); // vol 10
 
   gfx_fadeout(false);
   waitframe;
-  pic_load(LOC,newLoc);
+  pic_load(newLoc);
   
 
   // simulate travel
   repeat
     Dec(distance);
-    Dec(ship.qf);
+    if (distance mod 5 = 0) then Dec(ship.qf);
     navi_distanceUpdate(distance);
     waitframes(ship.swait);
   until (distance = 0);

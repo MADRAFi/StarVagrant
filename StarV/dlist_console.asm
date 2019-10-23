@@ -29,7 +29,7 @@ DL_MODE_320x192G2 = $F;
 DL_JMP = %00000001; // Order to jump
 DL_JVB = %01000001; // Jump to begining
 
-; It's always useful to include you program global constants here
+; It's always useful to include your program global constants here
     icl 'const.inc'
 
 ; and declare display list itself
