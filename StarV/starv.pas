@@ -25,9 +25,13 @@ uses atari, b_utils, b_system, b_crt, sysutils, xbios, cmc;
 const
 {$IFDEF DEMO}
   {$i 'DEMO/const.inc'}
+  COPYRIGHT = 'Silly Venture 2019'~;
 {$ELSE}  
   {$i 'const.inc'}
+  COPYRIGHT = 'v.0.40 @ 2019 MADsoft'~;
 {$ENDIF}
+
+{$r 'resources.rc'}
 
 {$IFDEF PL}
   {$i 'PL/keys.inc'}
@@ -42,12 +46,6 @@ const
   {$r 'EN/charset.rc'}
 {$ENDIF}
 
-{$IFDEF DEMO}
-  COPYRIGHT = 'Silly Venture 2019'~;
-{$ELSE}
-  COPYRIGHT = 'v.0.40 @ 2019 MADsoft'~;
-{$ENDIF}
-
   CURRENCY = ' UEC'~;
   CARGOUNIT = ' SCU'~ ;
   DISTANCEUNIT = ' DU'~;
@@ -59,8 +57,6 @@ const
 
 type
 {$i 'types.inc'}
-
-{$r 'resources.rc'}
 
 var
   keyval : Byte = 0;
@@ -134,8 +130,8 @@ var
     $16,$12,$1e,$00,    // 1
     $c2,$c8,$ce,$00,    // 2
     $14,$1a,$ee,$00,    // 3
-    $a0,$de,$c6,$00,    // 4
-    $96,$82,$9c,$00,    // 5
+    $72,$78,$ee,$00,     // 4 //16
+    $a0,$de,$c6,$00,    // 5 //4
     $10,$18,$1e,$00,    // 6
     $22,$28,$ee,$00,    // 7
     $a0,$d2,$e8,$00,    // 8
@@ -146,7 +142,7 @@ var
     // $10,$14,$1c,$00,    // 13
     // $86,$8a,$80,$00,    // 14
     // $de,$72,$76,$00,    // 15
-    // $72,$78,$ee,$00,     // 16
+    // $96,$82,$9c,$00,    // 16 //5
     // $94,$90,$fe,$00,     // 17
     // $70,$74,$7c,$00,     // 18
     // $82,$88,$ee,$00,     // 19
@@ -283,8 +279,8 @@ itemprice: array [0..(NUMBEROFLOCATIONS * NUMBEROFITEMS)-1] of Word = (
     $16,$12,$1e,$00,    // 1
     $c2,$c8,$ce,$00,    // 2
     $14,$1a,$ee,$00,    // 3
-    $a0,$de,$c6,$00,    // 4
-    $96,$82,$9c,$00,    // 5
+    $72,$78,$ee,$00,     // 4 16
+    $a0,$de,$c6,$00,    // 5 //4
     $10,$18,$1e,$00,    // 6
     $22,$28,$ee,$00,    // 7
     $a0,$d2,$e8,$00,    // 8
@@ -295,7 +291,7 @@ itemprice: array [0..(NUMBEROFLOCATIONS * NUMBEROFITEMS)-1] of Word = (
     $10,$14,$1c,$00,    // 13
     $86,$8a,$80,$00,    // 14
     $de,$72,$76,$00,    // 15
-    $72,$78,$ee,$00,     // 16
+    $96,$82,$9c,$00,    // 16 //5
     $94,$90,$fe,$00,     // 17
     $70,$74,$7c,$00,     // 18
     $82,$88,$ee,$00,     // 19
@@ -1518,7 +1514,7 @@ begin
 
   // Help Keys
 {$IFDEF PL}
-  CRT_GotoXY(5,7);
+  CRT_GotoXY(3,7);
 {$ENDIF}
 {$IFDEF DE}
   CRT_GotoXY(2,7);
@@ -3420,10 +3416,12 @@ begin
   else txt:=strings[53];          // load mode
 
   p:=Length(txt);
-  x:=(CRT_screenWidth-p - 16) div 2;
-  putSpacesAt(8,x,LOGOSIZE);
-  CRT_Write(txt);WriteSpaces(8); // Save
-  CRT_Invert(x,LOGOSIZE,p+16); // plus all 16 spaces
+  y:=20-p;
+  x:=(CRT_screenWidth-p - y) div 2;
+  CRT_GotoXY(x+(y div 2),LOGOSIZE);
+  // putSpacesAt(y div 2,x,LOGOSIZE);
+  CRT_Write(txt);//WriteSpaces(y div 2); // Save
+  CRT_Invert(x,LOGOSIZE,p+y); // plus all 16 spaces
   txt:=strings[54];
   // count:=Length(txt);
   for y:=1 to 5 do
@@ -3435,7 +3433,7 @@ begin
 
   // Help Keys
 {$IFDEF PL}
-  CRT_GotoXY(0,CRT_screenHeight - 1);
+  CRT_GotoXY(2,CRT_screenHeight - 1);
 {$ENDIF}
 {$IFDEF DE}
   CRT_GotoXY(1,CRT_screenHeight - 1);
@@ -3444,7 +3442,7 @@ begin
   CRT_GotoXY(0,CRT_screenHeight - 1);
 {$ENDIF}
   CRT_Write('1-5'*~); // Navigation options
-  putStringAt(23,3,CRT_screenHeight - 1);
+  putStringAt(23,CRT_WhereX,CRT_screenHeight - 1);
   WriteSpace; //s(2);
   CRT_Write('RETURN'*~);
   CRT_Write(strings[19]);  // Confirm

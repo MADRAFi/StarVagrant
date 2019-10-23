@@ -20,7 +20,7 @@ strings: array [0..65] of String = (
     '  za '~,
     '-Potwierd'#11''~,
     'Lok:'~, // 20
-    'Naw:'~,
+    'Cel:'~,
     'Odleg'#12'o'#9''#3':'~,
     '-Nawigacja'~,
     #211'kok FTL'~,
