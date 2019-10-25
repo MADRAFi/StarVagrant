@@ -28,7 +28,7 @@ const
   COPYRIGHT = 'Silly Venture 2019'~;
 {$ELSE}  
   {$i 'const.inc'}
-  COPYRIGHT = 'v.0.40 @ 2019 MADsoft'~;
+  COPYRIGHT = 'v.0.41 @ 2019 MADsoft'~;
 {$ENDIF}
 
 {$r 'resources.rc'}
@@ -139,16 +139,16 @@ var
     $40,$56,$2c,$00,    // 10
     $42,$2c,$38,$00,    // 11
     $26,$B4,$2e,$00  //,    // 12
-    // $10,$14,$1c,$00,    // 13
+    // $50,$68,$7e,$00,    // 13
     // $86,$8a,$80,$00,    // 14
     // $de,$72,$76,$00,    // 15
     // $96,$82,$9c,$00,    // 16 //5
     // $94,$90,$fe,$00,     // 17
-    // $70,$74,$7c,$00,     // 18
+    // $2e,$24,$18,$00,     // 18
     // $82,$88,$ee,$00,     // 19
     // $82,$66,$6e,$00,     // 20
     // $70,$76,$7e,$00,     // 21
-    // $10,$14,$1c,$00,     // 22
+    // $d2,$d8,$fc,$00,     // 22
     // $24,$28,$2c,$00,     // 23
     // $24,$20,$76,$00      // 24
   );
@@ -288,16 +288,16 @@ itemprice: array [0..(NUMBEROFLOCATIONS * NUMBEROFITEMS)-1] of Word = (
     $40,$56,$2c,$00,    // 10
     $42,$2c,$38,$00,    // 11
     $26,$B4,$2e,$00,    // 12
-    $10,$14,$1c,$00,    // 13
+    $50,$68,$7e,$00,    // 13
     $86,$8a,$80,$00,    // 14
     $de,$72,$76,$00,    // 15
     $96,$82,$9c,$00,    // 16 //5
     $94,$90,$fe,$00,     // 17
-    $70,$74,$7c,$00,     // 18
+    $2e,$24,$18,$00,     // 18
     $82,$88,$ee,$00,     // 19
     $82,$66,$6e,$00,     // 20
     $70,$76,$7e,$00,     // 21
-    $10,$14,$1c,$00,     // 22
+    $d2,$d8,$fc,$00,     // 22
     $24,$28,$2c,$00,     // 23
     $24,$20,$76,$00      // 24
   );
@@ -2322,7 +2322,15 @@ begin
                           currentitemprice:=GetItemPrice(p,false);
 //                          currentitemindex:=availableitems[itemindex];
                           currentitemindex:=availableitems[p]-(NUMBEROFITEMS * player.loc);
+{$IFDEF PL}
+                          CRT_ClearRow(19);
+{$ENDIF}
+{$IFDEF DE}
+                          CRT_ClearRow(19);
+{$ENDIF}
+{$IFDEF EN}
                           CRT_ClearRow(20);
+{$ENDIF}
                         end;
 
                         // CRT_GotoXY(0,12);
@@ -3138,7 +3146,7 @@ begin
     putStringAt(51,16,y);
 
     Inc(y);
-    CRT_GotoXY(16,y);
+    CRT_GotoXY(18,y);
     CRT_Write('1'*~); WriteSpace; CRT_Write(strings[53]); // Load
     Inc(y);
     CRT_GotoXY(16,y);
@@ -3147,7 +3155,7 @@ begin
   end
   else
   begin
-    CRT_GotoXY(16,y);
+    CRT_GotoXY(18,y);
     CRT_Write('1'*~); WriteSpace; CRT_Write(strings[53]); // Load
     Inc(y);
   end;
@@ -3439,7 +3447,7 @@ begin
   CRT_GotoXY(1,CRT_screenHeight - 1);
 {$ENDIF}
 {$IFDEF EN}
-  CRT_GotoXY(0,CRT_screenHeight - 1);
+  CRT_GotoXY(3,CRT_screenHeight - 1);
 {$ENDIF}
   CRT_Write('1-5'*~); // Navigation options
   putStringAt(23,CRT_WhereX,CRT_screenHeight - 1);

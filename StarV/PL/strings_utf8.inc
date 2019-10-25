@@ -17,7 +17,7 @@ strings: array [0..65] of String = (
     'Puste'~, // 15
     'A'*'nuluj'~,
     'O'*'K'~,
-    '  za '~,
+    ' za '~,
     '-Potwierdź'~,
     'Lok:'~, // 20
     'Cel:'~,
