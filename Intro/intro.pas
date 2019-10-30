@@ -263,6 +263,7 @@ begin
   end;
 
   wait(450);
+
   if skip = false then begin
     gfx_fadeout;
     picnumber:=3;
@@ -291,10 +292,10 @@ begin
     if count = 50 then
     begin
 {$IFDEF PL}
-    CRT_Invert(2,25,34);
+    CRT_Invert(3,25,34);
 {$ENDIF}
 {$IFDEF DE}
-    CRT_Invert(5,25,29);
+    CRT_Invert(1,25,38);
 {$ENDIF}
 {$IFDEF EN}
     CRT_Invert(5,25,29);

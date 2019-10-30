@@ -3,7 +3,7 @@ items: array [0..NUMBEROFITEMS-1] of TString = (
 'Graphene'~,
 'Agricult Sup.'~,
 'Synth Comp'~,
-'Aluminum'~,
+'Aluminium'~,
 'Astatine'~,
 'Beryllium'~,
 'Chlorine'~,

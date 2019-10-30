@@ -28,13 +28,13 @@ strings: array [0..65] of String = (
     ' Dr'#14'cke irgendeine Taste. '*~,
     ' Du hast das Schiff gekauft. '*~,
     ''~,
-    'Sie wurden von Piraten bestiegen. Du warst mutig und hast gek'#123'mpft, bis du konntest. Sie haben Ihr Leben im Austausch f'#14'r all Ihre Fracht geschont.'~,
-    'Es hat ein System Multifunction gegeben. Die Explosion hat einen Teil Ihrer Ladung besch'#123'digt.'~, // 30
-    'Sie wurden von einigen Schl'#123'gern gekleidet. Sie haben Ihr ganzes Geld verloren.'~,
-    'Du hast einen Pa'#96'agier mitgenommen. Er hat dir extra Geld f'#14'r eine Fahrt bezahlt.'~,
-    'Du hast einige dringend ben'#15'tigte       B'#14'rgergesehen. Sie haben beschlo'#96'en,   einige Waren zu verschenken.'~,
-    'Du wirst aufgrund der j'#14'ngsten          Piratenaktivit'#123'ten zur milit'#123'rischen    Eskorte verpflichtet. Du hast           die Standard-Servicegeb'#14'hr bezahlt.'~,
-    'Es scheint, das Ihr Lottoschein gewonnenhat. Der Preis wurde auf Ihr Konto      '#14'berwiesen.'~, // 35
+    'Piraten haben dich attackiert. Du warst mutig und hast gek'#123'mpft so lange es     gingSie haben dein Leben im Austausch   f'#14'r all deine Fracht geschont.'~,
+    'Es hat einen Systemfehler gegeben.      Die Explosion hat einen Teil deiner     Ladung besch'#123'digt.'~, // 30
+    'Banditen haben dich bestohlen. Du hast   dein ganzes Geld verloren.'~,
+    'Du hast einen Pa'#96'agier mitgenommen.     Er hat dir zus'#123'tzliches Geld f'#14'r ein    Transport gegeben.'~,
+    'Du hast gesehen, da'#96' die B'#14'rger         in Not sind. Du hast dich f'#14'r die Hilfe entschieden und hast einen Teil deiner  Waren verteilt.'~,
+    'Wegen j'#14'ngster Aktivit'#123'ten der Piraten   wurdest du verpflichtet, eine           milit'#123'rische Eskorte zu verwenden.      Du hast Standard-Geb'#14'hren daf'#14'r bezahlt.'~,
+    'Es scheint, da'#96' dein Lottoschein        gewonnen hat. Der Gewinn wurde auf dein Konto '#14'berwiesen.'~, // 35
     ' Keine Schiffe mehr. '*~,
     'Name:'~,
     'Prod:'~,
@@ -47,7 +47,7 @@ strings: array [0..65] of String = (
     ' m/s'~, // 45
     ' meter'~,
     ' tonnen'~,
-    ' Du hast nicht genug'*~,
+    ' Du hast nicht genug Kredite '*~,
     ' Du besitzt dieses Schiff bereits. '*~,
     '-Alles'~, // 50
     'F'*'ortsetzen'~,
