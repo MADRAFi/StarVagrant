@@ -2809,7 +2809,8 @@ begin
   EnableDLI(@dli_title1);
   Waitframe;
   DLISTL:= DISPLAY_LIST_ADDRESS_TITLE;
-
+  
+  // fillbyte(pointer(TXT_ADDRESS), 10, 0);
   CRT_ClearRows(0,CRT_screenHeight);
   move(pointer(LOGODATA_ADDRESS), pointer(TXT_ADDRESS), 600);
 end;

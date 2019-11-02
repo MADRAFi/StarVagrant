@@ -58,7 +58,8 @@ procedure dli_title4;assembler;interrupt;
         };
 end;
 
-procedure dli_title5;assembler;interrupt;
+procedure dli_title5;interrupt;
+begin
     asm {
         pha ; store registers
         ;sta ATARI.WSYNC
@@ -70,21 +71,35 @@ procedure dli_title5;assembler;interrupt;
         ;sta ATARI.WSYNC
         mva #.hi(CHARSET_ADDRESS) ATARI.chbase
 ;        sta ATARI.WSYNC
-
+    };
+    if music and not disablemusic then msx.play;  
+    asm {
 
         pla ; restore registers
-        };
+    };
 end;
 
-procedure vbl_title;interrupt;
-begin
+// procedure vbl_title;interrupt;
+// begin
+//   asm {
+//       phr ; store registers
+//   };
+//   if music and not disablemusic then msx.play;
+//   asm {
+//       mwa #dli_title1 __dlivec
+//       inw timer
+//       plr ; restore registers
+//   };
+// end;
+
+procedure vbl_title;assembler;interrupt;
+
   asm {
       phr ; store registers
-  };
-  if music and not disablemusic then msx.play;
-  asm {
+
       mwa #dli_title1 __dlivec
       inw timer
+
       plr ; restore registers
   };
 end;
