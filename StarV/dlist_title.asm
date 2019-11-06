@@ -46,5 +46,5 @@ dl_start
     dta DL_MODE_40x24T5
     dta DL_DLI + DL_MODE_40x24T5
     :9 dta DL_MODE_40x24T2
-    dta DL_BLANK8 
+    ;dta DL_BLANK8 
     dta DL_JVB, a(dl_start)                                       ; // jump to beginning
