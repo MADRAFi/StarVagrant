@@ -2840,7 +2840,7 @@ begin
       for y:=0 to 8 do
       begin
         If y < 8 then CRT_ClearRow(y + 15)
-        else putSpacesAt(32, 4, y + 15);
+        else putSpacesAt(28, 6, y + 15);
         CRT_WriteCentered(y + 15, a[y]);
       end;
 end;  
