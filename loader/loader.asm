@@ -113,27 +113,27 @@ adr2      ldx #0
           mva #1 xBiosIOresult
 @         rts
 
-.proc	systemoff
+; .proc	systemoff
 
-	lda:rne vcount
+; 	lda:rne vcount
 
-	sei
-	inc nmien
-	mva #$fe portb
+; 	sei
+; 	inc nmien
+; 	mva #$fe portb
 
-	rts
-.endp
+; 	rts
+; .endp
 
-.proc	systemon
+; .proc	systemon
 
-	lda:rne vcount
+; 	lda:rne vcount
 
-	mva #$ff portb
-	dec nmien
-	cli
+; 	mva #$ff portb
+; 	dec nmien
+; 	cli
 
-	rts
-.endp
+; 	rts
+; .endp
 
 ;-------------------------------------------------------------------------------
 dlist

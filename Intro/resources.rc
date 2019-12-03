@@ -25,9 +25,7 @@
 ;
 ; remove # to uncomment and use examples below:
 
-;CHARSET_ADDRESS rcdata 'assets/Nvdi8.fnt'
 
-;CHAR_ADDRESS_PIC1_F1 rcdata 'assets/gfx_cpy.dat'
 CHAR_ADDRESS_PIC1_F1 rcdata 'assets/intro1.fnt'
 CHAR_ADDRESS_PIC2_F1 rcdata 'assets/intro2.fnt'
 CHAR_ADDRESS_PIC3_F1 rcdata 'assets/intro3.fnt'

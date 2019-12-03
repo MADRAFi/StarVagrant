@@ -58,51 +58,75 @@ procedure dli_title4;assembler;interrupt;
         };
 end;
 
-procedure dli_title5;interrupt;
-begin
+procedure dli_title5;assembler;interrupt;
     asm {
         pha ; store registers
-        ;sta ATARI.WSYNC
+
         mva adr.txtcolors ATARI.colpf0
         mva #00 ATARI.colpf2
         mva #00 ATARI.colbk
         mva adr.txtcolors+1 ATARI.colpf1
-        
-        ;sta ATARI.WSYNC
         mva #.hi(CHARSET_ADDRESS) ATARI.chbase
-;        sta ATARI.WSYNC
-    };
-    if music and not disablemusic then msx.play;  
-    asm {
 
         pla ; restore registers
     };
 end;
 
+procedure vbl_title;interrupt;
+begin
+  asm {
+        phr ; store registers
+        mwa #dli_title1 __dlivec
+        inw timer
+  };
+  if music and not disablemusic then msx.play;
+  asm {
+        plr ; restore registers
+  };
+end;
+
 // procedure vbl_title;interrupt;
 // begin
 //   asm {
-//       phr ; store registers
+//         phr ; store registers
+//         mwa #dli_title1 __dlivec
+//         inw timer
+//         plr ; restore registers
 //   };
 //   if music and not disablemusic then msx.play;
+// end;
+
+
+// procedure dli_title5;interrupt;
+// begin
+//     asm {
+//         pha ; store registers
+
+//         mva adr.txtcolors ATARI.colpf0
+//         mva #00 ATARI.colpf2
+//         mva #00 ATARI.colbk
+//         mva adr.txtcolors+1 ATARI.colpf1
+//         mva #.hi(CHARSET_ADDRESS) ATARI.chbase
+
+//         pla ; restore registers
+//     };
+//     if music and not disablemusic then msx.play;  
+// end;
+
+
+// procedure vbl_title;assembler;interrupt;
+
 //   asm {
+//       phr ; store registers
+
 //       mwa #dli_title1 __dlivec
 //       inw timer
+
 //       plr ; restore registers
 //   };
 // end;
 
-procedure vbl_title;assembler;interrupt;
 
-  asm {
-      phr ; store registers
-
-      mwa #dli_title1 __dlivec
-      inw timer
-
-      plr ; restore registers
-  };
-end;
 
 // procedure vbl_title;interrupt;
 // var

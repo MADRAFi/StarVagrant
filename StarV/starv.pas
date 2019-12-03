@@ -2835,9 +2835,12 @@ const
 
 procedure showArray;
 begin
-      CRT_ClearRows(15,CRT_screenHeight - 1);
-      for y:=0 to 9 do
+      // CRT_ClearRows(15,CRT_screenHeight - 1);
+
+      for y:=0 to 8 do
       begin
+        If y < 8 then CRT_ClearRow(y + 15)
+        else putSpacesAt(28, 6, y + 15);
         CRT_WriteCentered(y + 15, a[y]);
       end;
 end;  
@@ -2848,7 +2851,7 @@ begin
   draw_logo;
 
   // // help
-  CRT_WriteRightAligned(24, strings[7]);
+  CRT_WriteRightAligned(23, strings[7]);
   gfx_fadein;
 
 {$IFNDEF DEBUG}
@@ -2939,7 +2942,8 @@ begin
         timer:=0;
         Inc(tcount);
       end;
-
+      // help
+      // CRT_WriteRightAligned(23, strings[7]);
     end;
     
     if (tcount = 3) and (gamestate = GAMEINPROGRESS) then visible:= true;   

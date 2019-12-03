@@ -1,4 +1,4 @@
-  creditstxt: array [0..9] of String = (
+  creditstxt: array [0..8] of String = (
     'Programming'~,
     'MADRAFi'~,
     ''~,
@@ -7,12 +7,11 @@
     'MADRAFi'~,
     ''~,
     'Music'~,
-    'Caruso'~,
-    ''~
+    'Caruso'~
     
 );
 
-  thankstxt: array [0..9] of String = (
+  thankstxt: array [0..8] of String = (
     'Special thanks to:'~,
     ''~,
     'Bocianu for all the support'~,
@@ -21,6 +20,5 @@
     'Tebe for providing MAD-Pascal help'~,
     'Kaz for testing and advise'~,
     'Dely for QA testing'~,
-    ''~,
     ''~
 );
