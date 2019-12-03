@@ -1,7 +1,7 @@
 
 items: array [0..NUMBEROFITEMS-1] of TString = (
 'Graphen'~,
-'D'#14'ngemittel'~,
+'Düngemittel'~,
 'Synth Comp'~,
 'Aluminum'~,
 'Astatin'~,

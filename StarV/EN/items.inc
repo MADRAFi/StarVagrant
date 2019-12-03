@@ -1,7 +1,7 @@
 
 items: array [0..NUMBEROFITEMS-1] of TString = (
 'Graphene'~,
-'Agricult Sup.'~,
+'Fertilizers'~,
 'Synth Comp'~,
 'Aluminium'~,
 'Astatine'~,
@@ -16,7 +16,7 @@ items: array [0..NUMBEROFITEMS-1] of TString = (
 'Iodine'~,
 'Tennessine'~,
 'Medical Sup.'~,
-'Processed Food'~,
+'Food'~,
 'Quartz'~,
 'Scrap'~,
 'Stims'~,
