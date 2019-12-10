@@ -86,15 +86,16 @@ ANTIC_MODE_WIDE equ %00100011;
 
 
 
-          icl 'atari.hea'
+          icl '..\..\..\MADS\base\atari.hea'
 
         ;   org $d301
         ;   .byte $fe
 
 CHARSET_ADDRESS equ $E400; // same as in intro and game
           org CHARSET_ADDRESS
-          ins '../StarV/assets/Nvdi8.fnt'
+          ins '../StarV/assets/starv_en.fnt'
           org $0580
+        ;   org $BF00
 
 introfile .byte c'INTRO   XEX' ; 11 characters ATASCII (8.3 without the dot, space padded)
 gamefile .byte c'STARV   XEX'
@@ -142,53 +143,58 @@ dlist
           .byte DL_JVB, a(dlist)
 
 vmem
-	        .byte "    LOADING... Star Vagrant.            "
+	        .byte "    LOADING....Star Vagrant.        "
 
-;initialize  clc
-;            cld
-;            lda PORTB
-;            ora #$02
-;            sta PORTB
-;            rts
+initialize
+        sei
+        lda #0
+        sta NMIEN
+        sta xIRQEN
+        sta IRQEN
+
+        lda #$fe
+        sta portb
+
+        lda xHSPEED
+        bmi @+
+        sta xSPEED
+@
+        jmp xBIOS_SET_DEFAULT_DEVICE
 
 main
 
-          ;jsr systemoff
+sync    lda VCOUNT
+        bne sync
+
+        mva #.hi(CHARSET_ADDRESS) chbase
+        mva #28 colpf1
+        mva #0 colpf0
+        mva #0 colpf2
+        mva #0 colpf3
+        mva #0 colbak
+        mwa #dlist dlistl
+        mva #ANTIC_MODE_NARROW DMACTL
+
+intro   mva <introfile adr1+1
+        mva >introfile adr2+1
+        jsr loadfile
 
 
-sync     lda VCOUNT
-         bne sync
+        mva #.hi(CHARSET_ADDRESS) chbase
+        mva #28 colpf1
+        mva #0 colpf0
+        mva #0 colpf2
+        mva #0 colpf3
+        mva #0 colbak
+        mwa #dlist dlistl
+        mva #ANTIC_MODE_NARROW DMACTL
 
-         mva #.hi(CHARSET_ADDRESS) chbase
-         mva #28 colpf1
-         mva #0 colpf0
-         mva #0 colpf2
-         mva #0 colpf3
-         mva #0 colbak
-         mwa #dlist dlistl
-         mva #ANTIC_MODE_NARROW DMACTL
-
-intro    mva <introfile adr1+1
-         mva >introfile adr2+1
-         jsr loadfile
+game    mva <gamefile adr1+1
+        mva >gamefile adr2+1
+        jmp loadfile
 
 
-         mva #.hi(CHARSET_ADDRESS) chbase
-         mva #28 colpf1
-         mva #0 colpf0
-         mva #0 colpf2
-         mva #0 colpf3
-         mva #0 colbak
-         mwa #dlist dlistl
-         mva #ANTIC_MODE_NARROW DMACTL
-
-game     mva <gamefile adr1+1
-         mva >gamefile adr2+1
-         jmp loadfile
-
-          ;jmp systemon
-
-;          ini initialize
-          run main
+        ini initialize
+        run main
 
 .print "Loader:", main, "..", *

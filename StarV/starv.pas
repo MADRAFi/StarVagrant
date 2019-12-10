@@ -28,7 +28,7 @@ const
   COPYRIGHT = 'Silly Venture 2019'~;
 {$ELSE}  
   {$i 'const.inc'}
-  COPYRIGHT = 'v.1.0 @ 2019 MADsoft'~;
+  COPYRIGHT = 'v.1.1 @ 2019 MADsoft'~;
 {$ENDIF}
 
 {$r 'resources.rc'}
@@ -2818,7 +2818,7 @@ end;
 procedure credits;
 var
   a: array [0..0] of string;
-  tab: array [0..127] of byte absolute $ED58;
+  tab: array [0..127] of byte; // absolute $BE80;
 
   tcount: Byte;  // how many times counter
   // mcount: Byte;  // move counter to slown down
