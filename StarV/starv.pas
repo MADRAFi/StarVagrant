@@ -28,7 +28,7 @@ const
   COPYRIGHT = 'Silly Venture 2019'~;
 {$ELSE}  
   {$i 'const.inc'}
-  COPYRIGHT = 'v.1.1 @ 2019 MADsoft'~;
+  COPYRIGHT = 'v.1.2 @ 2019 MADsoft'~;
 {$ENDIF}
 
 {$r 'resources.rc'}

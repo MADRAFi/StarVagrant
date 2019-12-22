@@ -84,12 +84,7 @@ ANTIC_MODE_WIDE equ %00100011;
 
 ;myport_b equ PORTB_BASIC_OFF + PORTB_SELFTEST_OFF + %01111100;
 
-
-
           icl '..\..\..\MADS\base\atari.hea'
-
-        ;   org $d301
-        ;   .byte $fe
 
 CHARSET_ADDRESS equ $E400; // same as in intro and game
           org CHARSET_ADDRESS
@@ -154,12 +149,7 @@ initialize
 
         lda #$fe
         sta portb
-
-        lda xHSPEED
-        bmi @+
-        sta xSPEED
-@
-        jmp xBIOS_SET_DEFAULT_DEVICE
+        mva #0 DMACTL
 
 main
 
@@ -180,14 +170,14 @@ intro   mva <introfile adr1+1
         jsr loadfile
 
 
-        mva #.hi(CHARSET_ADDRESS) chbase
-        mva #28 colpf1
-        mva #0 colpf0
-        mva #0 colpf2
-        mva #0 colpf3
-        mva #0 colbak
-        mwa #dlist dlistl
-        mva #ANTIC_MODE_NARROW DMACTL
+        ; mva #.hi(CHARSET_ADDRESS) chbase
+        ; mva #28 colpf1
+        ; mva #0 colpf0
+        ; mva #0 colpf2
+        ; mva #0 colpf3
+        ; mva #0 colbak
+        ; mwa #dlist dlistl
+        ; mva #ANTIC_MODE_NARROW DMACTL
 
 game    mva <gamefile adr1+1
         mva >gamefile adr2+1
