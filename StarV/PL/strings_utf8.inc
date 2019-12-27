@@ -23,7 +23,7 @@ strings: array [0..65] of String = (
     'Cel:'~,
     'Odległość:'~,
     '-Nawigacja'~,
-    #211'kok FTL'~,
+    #179'kok FTL'~,
     'Brak xBios, Brak Grafik'*~, // 25
     ' Naciśnij dowolny klawisz. '*~,
     ' Kupiłeś wybrany statek. '*~,
