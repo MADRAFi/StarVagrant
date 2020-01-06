@@ -28,7 +28,7 @@ const
   COPYRIGHT = 'Silly Venture 2019'~;
 {$ELSE}  
   {$i 'const.inc'}
-  COPYRIGHT = 'v.1.2 @ 2019 MADsoft'~;
+  COPYRIGHT = 'v.1.3 @ 2019 MADsoft'~;
 {$ENDIF}
 
 {$r 'resources.rc'}
@@ -744,6 +744,7 @@ begin
   case y of
 
     1:    begin
+            // military escort
             p:= 5; // fee is 5%
             modify:= percentC(player.uec);
             if player.uec > modify then
@@ -753,10 +754,12 @@ begin
             end;
           end;
     3:    begin
+              // lottery ticket
               txt:=strings[35];
               player.uec:=player.uec + (random100 * 500);  // Random % from 50000 UEC
           end;
     5:    begin
+            // Some cargo giveaway
             if ship.cargoquantity[0] > 0 then
             begin
               count:=getcargotypenum;
@@ -772,18 +775,25 @@ begin
             end;
           end;
     10:   begin
+            // Passanger transport
             txt:=strings[32];
             player.uec:=player.uec + (random100 * 100);  // Random % from 10000 UEC
 
           end;
     20:   begin
+          // Bandits, all money lost
             if player.uec > 0 then
             begin
-              txt:=strings[31];
-              player.uec:=0;
+              case player.loc of
+                20..24: begin
+                          txt:=strings[31];
+                          player.uec:=0;
+                        end;
+              end;                      
             end;
           end;
     22:   begin
+            // System Multifunction, some cargo lost
             if ship.cargoquantity[0] > 0 then
             begin
               txt:=strings[30];
@@ -794,12 +804,17 @@ begin
             end;
           end;
     24:   begin
+            // Pirate Attack, all cargo lost
             if ship.cargoindex[0] > 0 then
             begin
-              txt:=strings[29];
-              eraseArray(0,MAXCARGOSLOTS-1, @ship.cargoindex);
-              eraseArray(0,MAXCARGOSLOTS-1, @ship.cargoquantity);
-              ship.scu:=0;
+              case player.loc of
+                1..3,9,10,17,23,24: begin
+                                      txt:=strings[29];
+                                      eraseArray(0,MAXCARGOSLOTS-1, @ship.cargoindex);
+                                      eraseArray(0,MAXCARGOSLOTS-1, @ship.cargoquantity);
+                                      ship.scu:=0;
+                                    end;
+              end;
             end;
           end;
   end;
@@ -807,6 +822,12 @@ begin
 end;
 
 procedure calculateprices;
+
+const
+    PRICEMAX = 999;
+    PRICEMIN = 1;
+    QUANTITYMIN = 1;
+    QUANTITYMAX = 65000;
 
 begin
   p:=random100;
@@ -819,7 +840,7 @@ begin
     begin
       case player.loc of
         2..9,13,14:   begin
-                        Inc(itemquantity[offset],Random(500)); // adding up to 500 items
+                        if (itemquantity[offset] < QUANTITYMAX) then Inc(itemquantity[offset],Random(500)); // adding up to 500 items
                       end;
       end;
     end;
@@ -830,7 +851,7 @@ begin
       // modify:=(1 + percent);
       // itemprice[offset]:=Round(itemprice[offset] * modify);
       // itemprice[offset]:=Round(itemprice[offset] * (1 + percent));
-      Inc(itemprice[offset],modify);
+      if itemprice[offset] <= PRICEMAX then Inc(itemprice[offset],modify);
     end;
 
     // Decrease price if more then 5000
@@ -839,7 +860,7 @@ begin
       // modify:=(1 - percent);
       // itemprice[offset]:=Round(itemprice[offset] * modify);
       // itemprice[offset]:=Round(itemprice[offset] * (1 - percent))
-      Dec(itemprice[offset],modify);
+      if (itemprice[offset] <= PRICEMIN) and (itemprice[offset] > modify) then  Dec(itemprice[offset],modify);
     end;
 
     // Simulate item sell
@@ -848,7 +869,8 @@ begin
       // modify:=(1 - percent);
       // itemquantity[offset]:=Trunc(itemquantity[offset] * modify);
       // itemquantity[offset]:=Trunc(itemquantity[offset] * (1 - percent));
-      Dec(itemquantity[offset],percentc(itemquantity[offset]));
+      modify:=percentc(itemquantity[offset]);
+      if (itemquantity[offset] > QUANTITYMIN) and (itemquantity[offset] > modify) then Dec(itemquantity[offset],modify);
     end;
 
   end;
@@ -863,15 +885,6 @@ begin
         p:=Random(30);
         modify:=percentc(shipprices[offset]);
         
-        
-        // if x = 0 then
-        // begin
-        //   Dec(shipprices[offset],modify);
-        // end
-        // else
-        // begin
-        //   Inc(shipprices[offset],modify);
-        // end;
         if x = 0 then modify:= - modify;
         Inc(shipprices[offset],modify);
 
@@ -905,23 +918,9 @@ begin
       p:=Random(25);
       modify:=percentc(itemprice[offset]);
 
-      // if x = 0 then
-      // begin
-      //   // price drop
-      //   Dec(itemprice[offset],modify);
-      // end
-      // else
-      // begin
-      //   // price increase
-      //   Inc(itemprice[offset],modify);
-
-
       if (x = 0) then modify := - modify;  // price drop
       Inc(itemprice[offset],modify);
 
-
-      
-      
     end;
   end;
     
