@@ -12,3 +12,7 @@ Star Vagrant will provide many hours of challenging entertainment. Despite limit
 
 ### Challenging gameplay.
 You may encounter unpredictable events during your travel. Earn as much as you can, buy bigger, better ships and discover optimal trade routes.
+
+
+### Links
+Page: http://madsoft.us
