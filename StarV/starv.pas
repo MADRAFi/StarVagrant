@@ -28,7 +28,7 @@ const
   COPYRIGHT = 'Silly Venture 2019'~;
 {$ELSE}  
   {$i 'const.inc'}
-  COPYRIGHT = 'v.1.4 @ 2019 MADsoft'~;
+  COPYRIGHT = 'v.1.5 @ 2019 MADsoft'~;
 {$ENDIF}
 
 {$r 'resources.rc'}
@@ -831,9 +831,15 @@ const
 
 begin
   p:=random100;
-  modify:=percentc(itemprice[offset]);
+  
+  // CRT_GotoXY(0,20);
+  // CRT_Write('p='); CRT_Write(p);
+  // CRT_GotoXY(0,21);
+  // CRT_Write('modify='); CRT_Write(modify);
+
   for y:=0 to NUMBEROFITEMS-1 do begin
     offset:= (NUMBEROFITEMS * player.loc)+y;
+    modify:=percentc(itemprice[offset]);
 
     // Produce new items on certain LOCATIONS
     if (itemquantity[offset] > 0) and (itemquantity[offset] <= 1000) then
@@ -851,7 +857,10 @@ begin
       // modify:=(1 + percent);
       // itemprice[offset]:=Round(itemprice[offset] * modify);
       // itemprice[offset]:=Round(itemprice[offset] * (1 + percent));
-      if itemprice[offset] <= PRICEMAX then Inc(itemprice[offset],modify);
+      if itemprice[offset] + modify < PRICEMAX then Inc(itemprice[offset],modify)
+      // Inc(itemprice[offset],modify);
+      // CRT_GotoXY(0,22);
+      // CRT_Write('price='); CRT_Write(itemprice[offset]);
     end;
 
     // Decrease price if more then 5000
@@ -860,7 +869,7 @@ begin
       // modify:=(1 - percent);
       // itemprice[offset]:=Round(itemprice[offset] * modify);
       // itemprice[offset]:=Round(itemprice[offset] * (1 - percent))
-      if (itemprice[offset] <= PRICEMIN) and (itemprice[offset] > modify) then  Dec(itemprice[offset],modify);
+      if (itemprice[offset] - modify > PRICEMIN) then Dec(itemprice[offset],modify);
     end;
 
     // Simulate item sell
@@ -870,7 +879,7 @@ begin
       // itemquantity[offset]:=Trunc(itemquantity[offset] * modify);
       // itemquantity[offset]:=Trunc(itemquantity[offset] * (1 - percent));
       modify:=percentc(itemquantity[offset]);
-      if (itemquantity[offset] > QUANTITYMIN) and (itemquantity[offset] > modify) then Dec(itemquantity[offset],modify);
+      if (itemquantity[offset] - modify > QUANTITYMIN) then Dec(itemquantity[offset],modify);
     end;
 
   end;
