@@ -28,7 +28,7 @@ const
   COPYRIGHT = 'Silly Venture 2019'~;
 {$ELSE}  
   {$i 'const.inc'}
-  COPYRIGHT = 'v.1.3 @ 2019 MADsoft'~;
+  COPYRIGHT = 'v.1.4 @ 2019 MADsoft'~;
 {$ENDIF}
 
 {$r 'resources.rc'}
@@ -3358,7 +3358,6 @@ begin
     end;
   end;
   music_restart;
-  // repeat until CRT_Keypressed;
 end;
 
 procedure disk_load(num: Byte);
@@ -3391,7 +3390,7 @@ begin
         writeStatus(53,55);
         //CRT_Write(strings[53]);CRT_Write(strings[55]);CRT_Write('.'~*);CRT_Write(strings[26]);
       end;
-      xBiosFlushBuffer;
+      // xBiosFlushBuffer;
     end
     else
     begin
@@ -3401,7 +3400,6 @@ begin
     end;
   end;
   music_restart;
-  // repeat until CRT_Keypressed;
 end;
 
 procedure menu_save_load(mode: Boolean);
