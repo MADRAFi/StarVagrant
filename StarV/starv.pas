@@ -1177,7 +1177,7 @@ begin
   begin
     //finalprice:=Trunc(price * (1-commission))
     // Result:=Round(itemprice[offset] * (1-commission))
-    Result:=itemprice[offset] - (itemprice[offset] * COMMISSION div 100)
+    Result:=itemprice[offset] - ((itemprice[offset] * COMMISSION) div 100)
   end
   else
   begin
@@ -1194,7 +1194,7 @@ begin
   // translate cargo item index into offset to read price in location.
   offset:=(NUMBEROFITEMS * player.loc) + currentship.cargoindex[itemindex];
   // Result:=Round(itemprice[offset] * (1-commission));
-  Result:=itemprice[offset] - (itemprice[offset] * COMMISSION div 100);
+  Result:=itemprice[offset] - ((itemprice[offset] * COMMISSION) div 100);
 end;
 
 function CheckCargoPresence(itemindex: Byte): Boolean;
@@ -2377,6 +2377,14 @@ begin
                       end;
                       selecteditemtotal:=0;
                       selecteditemquantity:=0;
+
+                      // CRT_GotoXY(0,19);
+                      // offset:=(NUMBEROFITEMS * player.loc) + currentship.cargoindex[p];
+                      // CRT_Write('itemprice:'~);CRT_Write(itemprice[offset]);
+                      // CRT_GotoXY(0,20);
+                      // modify:=(itemprice[offset] * COMMISSION) div 100;
+                      // // modify:=itemprice[offset] - COMMISSION;
+                      // CRT_Write('modify:'~);CRT_Write(modify);
                       Waitframes(2);
                     end;
         KEY_LEFT:   begin
