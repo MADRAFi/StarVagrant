@@ -884,7 +884,7 @@ begin
 
   end;
 
-  if (p < 40) then // only 40% chance for ship's price change
+  if (p < 60) then // only 40% chance for ship's price change
   begin
     for y:=0 to NUMBEROFSHIPS-1 do begin
       offset:= (NUMBEROFSHIPS * player.loc)+y;
