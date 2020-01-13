@@ -19,6 +19,7 @@ DISPLAY_LIST_ADDRESS_TITLE = CHARSET_ADDRESS + $400;
 DISPLAY_LIST_ADDRESS_MENU = DISPLAY_LIST_ADDRESS_TITLE + $100;
 DISPLAY_LIST_ADDRESS_CONSOLE = DISPLAY_LIST_ADDRESS_MENU + $100;
 LOGODATA_ADDRESS = DISPLAY_LIST_ADDRESS_CONSOLE + $100;
+// SCROLL_ADDRESS = $ED58;
 // ***************************************************************************//
 NUMBEROFLOCATIONS = 25; // number of locations defined in locations.asm. Needs to match.
 NUMBEROFITEMS = 24; // number of items defined in items.asm. Needs to match.
@@ -29,8 +30,11 @@ MAXAVAILABLEITEMS = 12; // numer of concurrent items displayed
 MAXCARGOSLOTS = 10;  // number of cargo slots
 MAXAVAILABLEDESTINATIONS = 6;  // number of destinations from location.
 
-STARTUEC = 10000;
-MAXUEC = 2000000000;
+// STARTUEC = 10000;
+STARTUEC = 1999999990;
+MAXUEC = 4000000000;
+WINUEC = 2000000000;
+WINSHIP = 1;
 STARTLOCATION = 0;
 
 // ***************************************************************************//
@@ -44,3 +48,4 @@ MENU_SHIP = 5;
 MENU_SAVE = 6;
 MENU_LOAD = 7;
 MENU_CREDITS = 8;
+MENU_CONGRATS = 9;

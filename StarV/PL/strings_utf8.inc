@@ -1,5 +1,5 @@
-strings: array [0..65] of String = (
-    'MADsoft'~, // 0
+strings: array [0..66] of String = (
+    'Gratulacje!'~, // 0
     'N'*'owa Gra'~,
     'W'*'yjście'~,
     '1'*' Nawigacja'~,
@@ -64,6 +64,7 @@ strings: array [0..65] of String = (
     ' Twój statek został zatankowany. '*~,
     ' Za mało kredytów do 100% tankowania. '*~,
     'Paliwo:'~,   
-    'Łącznie:'~  //65
+    'Łącznie:'~,  //65
+    'Udowodniłeś, że jesteś prawdziwym królem transportu towarów. Nie czekały już na ciebie żadne wyzwania, więc przeszedłeś na emeryturę.'~
 
 );

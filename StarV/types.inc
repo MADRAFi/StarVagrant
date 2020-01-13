@@ -1,5 +1,5 @@
 
-TGameState = (NEWGAME=0, GAMEINPROGRESS=1);
+TGameState = (NEWGAME=0, GAMEINPROGRESS=1, GAMEFINISHED=2);
 
   TShip = record
     mcode: Byte; // manufacture ship code

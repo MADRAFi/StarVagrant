@@ -98,4 +98,6 @@ begin
   randomEncounter;
   calculateprices;
   player.loc:=newLoc;
+  if (ship.sindex >= WINSHIP) and (player.uec >= WINUEC) then current_menu:=MENU_CONGRATS
+  else current_menu:=MENU_MAIN;
 end;
