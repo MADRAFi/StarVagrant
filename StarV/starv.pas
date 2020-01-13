@@ -28,7 +28,7 @@ const
   COPYRIGHT = 'Silly Venture 2019'~;
 {$ELSE}  
   {$i 'const.inc'}
-  COPYRIGHT = 'v.1.5 @ 2019 MADsoft'~;
+  COPYRIGHT = 'v.1.6 @ 2019 MADsoft'~;
 {$ENDIF}
 
 {$r 'resources.rc'}
@@ -728,6 +728,11 @@ begin
     result:=v * p div 100;
 end;  
 
+procedure checkUECMax;
+begin            
+  if (player.uec + modify > MAXUEC) then player.uec:=MAXUEC
+  else player.uec:=player.uec + modify;
+end;
 
 procedure randomEncounter;
 
@@ -739,7 +744,7 @@ begin
   y:=Random(85);    // 8%
 {$ENDIF}
 
-// y:=1;
+// y:=3;
 
   txt:='#';
   case y of
@@ -757,7 +762,12 @@ begin
     3:    begin
               // lottery ticket
               txt:=strings[35];
-              player.uec:=player.uec + (random100 * 500);  // Random % from 50000 UEC
+              modify:= random100 * 500; // Random % from 50000 UEC
+              
+              // player.uec:=player.uec + modify;  
+              // if (player.uec + modify > MAXUEC) then player.uec:=MAXUEC
+              // else player.uec:=player.uec + modify;
+              checkUECMax;
           end;
     5:    begin
             // Some cargo giveaway
@@ -778,8 +788,11 @@ begin
     10:   begin
             // Passanger transport
             txt:=strings[32];
-            player.uec:=player.uec + (random100 * 100);  // Random % from 10000 UEC
-
+            modify:=random100 * 100;   // Random % from 10000 UEC
+            // player.uec:=player.uec + modify;
+            // if (player.uec + modify > MAXUEC) then player.uec:=MAXUEC
+            // else player.uec:=player.uec + modify;
+            checkUECMax;
           end;
     20:   begin
           // Bandits, all money lost
@@ -2607,7 +2620,8 @@ begin
                             If currentShip.cargoquantity[p] = 0 then currentShip.cargoindex[p]:= 0; // erasing item form cargoindex
 
                             // update UEC on screen not on player
-                            currentuec:=currentuec + selecteditemtotal;
+                            if (currentuec + selecteditemtotal > MAXUEC) then currentuec:=MAXUEC
+                            else currentuec:=currentuec + selecteditemtotal;
 
                             for y:=0 to MAXCARGOSLOTS-1 do
                             begin

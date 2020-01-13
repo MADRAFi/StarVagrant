@@ -30,6 +30,7 @@ MAXCARGOSLOTS = 10;  // number of cargo slots
 MAXAVAILABLEDESTINATIONS = 6;  // number of destinations from location.
 
 STARTUEC = 10000;
+MAXUEC = 2000000000;
 STARTLOCATION = 0;
 
 // ***************************************************************************//
