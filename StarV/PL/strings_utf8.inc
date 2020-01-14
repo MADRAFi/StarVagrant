@@ -65,6 +65,6 @@ strings: array [0..66] of String = (
     ' Za mało kredytów do 100% tankowania. '*~,
     'Paliwo:'~,   
     'Łącznie:'~,  //65
-    'Udowodniłeś, że jesteś prawdziwym królem transportu towarów. Nie czekały już na ciebie żadne wyzwania, więc przeszedłeś na emeryturę.'~
+    'Udowodniłeś, że jesteś prawdziwym królemtransportu. Nie mając wyzwań przeszedłeśna emeryturę.'~
 
 );

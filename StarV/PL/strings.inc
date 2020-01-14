@@ -65,6 +65,6 @@ strings: array [0..66] of String = (
     ' Za ma'#12'o kredyt'#15'w do 100% tankowania. '*~,
     'Paliwo:'~,   
     ''#123''#2'cznie:'~,  //65
-    'Udowodni'#12'e'#9', '#26'e jeste'#9' prawdziwym kr'#15'lem transportu towar'#15'w. Nie czeka'#12'y ju'#26' na ciebie '#26'adne wyzwania, wi'#5'c przeszed'#12'e'#9' na emerytur'#5'.'~
+    'Udowodni'#12'e'#9', '#26'e jeste'#9' prawdziwym kr'#15'lemtransportu. Nie maj'#2'c wyzwa'#14' przeszed'#12'e'#9'na emerytur'#5'.'~
 
 );

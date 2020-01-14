@@ -1,4 +1,4 @@
-  creditstxt: array [0..8] of String = (
+  creditstxt: array [0..8] of TString = (
     'Programowanie'~,
     'MADRAFi'~,
     ''~,

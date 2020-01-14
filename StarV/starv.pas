@@ -80,7 +80,7 @@ var
   timer: Word; // timer increaed in vbl
   modify: Word;
   visible: Boolean;
-  tab: array [0..127] of byte; // array to store starfield
+  tab: array [0..127] of byte absolute $BE80; // array to store starfield
 
 
   irqen : byte absolute $D20E;
@@ -551,8 +551,8 @@ var
   titlecolors : array [0..3] of Byte;
 
 const
-  txtcolor = $1c;
-  txtback = 0;
+  TXTCOLOR = $1c;
+  TXTBACK = 0;
   // titlecolors : array [0..3] of Byte = ($10,$14,$1a,$00);
 {$IFDEF DEMO}
   titlecolors1 : array [0..3] of Byte = ($62,$68,$7c,$00); // standard purple colors
@@ -563,13 +563,9 @@ const
 {$ENDIF}
 
 begin
-// {$IFDEF DEMO}
   if visible or (current_menu = MENU_CONGRATS ) then titlecolors:=titlecolors2
   else titlecolors:=titlecolors1;
-// {$ELSE}
-//   if visible then titlecolors:=titlecolors2
-//   else titlecolors:=titlecolors1;
-// {$ENDIF}
+
 
   // gfxcolors[0]:=0;
   // gfxcolors[1]:=0;
@@ -593,8 +589,8 @@ begin
     for x:=0 to 3 do 
       If ((gfxcolors[x] and %00001111) <= (targetcolors[x] and %00001111)) then Inc(gfxcolors[x]) else gfxcolors[x]:=targetcolors[x];
 
-    If ((txtcolors[0] and %00001111) <= (txtback and %00001111)) then inc(txtcolors[0]) else txtcolors[0]:=txtback;
-    If ((txtcolors[1] and %00001111) <= (txtcolor and %00001111)) then inc(txtcolors[1]) else txtcolors[1]:=txtcolor;
+    If ((txtcolors[0] and %00001111) <= (TXTBACK and %00001111)) then inc(txtcolors[0]) else txtcolors[0]:=TXTBACK;
+    If ((txtcolors[1] and %00001111) <= (TXTCOLOR and %00001111)) then inc(txtcolors[1]) else txtcolors[1]:=TXTCOLOR;
 
   until (gfxcolors[0]=targetcolors[0]) and
         (gfxcolors[1]=targetcolors[1]) and
@@ -928,11 +924,11 @@ begin
   end;
 end;
 
-{$ifdef highmem }
-  {$i 'highmem.inc'}
-{$else}
+// {$ifdef highmem }
+//   {$i 'highmem.inc'}
+// {$else}
   {$i 'lowmem.inc'} // lowmem procs to load pictures from disk 
-{$endif}
+// {$endif}
 
 
 procedure initWorld;
@@ -2857,6 +2853,23 @@ begin
   move(pointer(LOGODATA_ADDRESS), pointer(TXT_ADDRESS), 600);
 end;
 
+procedure draw_stars;
+begin
+    repeat until vcount=50;
+    repeat
+        x:=vcount;
+        y:=(x and 3) + 1;
+        inc(tab[x], y);
+        y:= 15 - (y shl 1);
+        wsync:=0;
+        hposm3:=tab[x];
+        colpm3:=y;
+        grafm:=128;
+    until vcount > 108;
+    
+    hposm3:=0;
+end;
+
 procedure credits;
 var
   a: array [0..0] of string;
@@ -2940,22 +2953,11 @@ begin
         Inc(tcount);
       end;
 
-      repeat until vcount=50;
-      repeat
-          x:=vcount;
-          y:=(x and 3) + 1;
-          inc(tab[x], y);
-          y:= 15 - (y shl 1);
-          wsync:=0;
-          hposm3:=tab[x];
-          colpm3:=y;
-          grafm:=128;
-      until vcount > 108;
+      draw_stars;
 
       if (timer mod 2 = 0) then Inc(p);
-
       hposp0:=p;   // Horizontal position of player 0
-      hposm3:=0;
+
       if p = 0 then
       begin       
         modify:= Random(20);
@@ -3036,19 +3038,7 @@ begin
   colpm3:=$0e;  
   repeat
 
-    repeat until vcount=50;
-    repeat
-        x:=vcount;
-        y:=(x and 3) + 1;
-        inc(tab[x], y);
-        y:= 15 - (y shl 1);
-        wsync:=0;
-        hposm3:=tab[x];
-        colpm3:=y;
-        grafm:=128;
-    until vcount > 108;
-    
-    hposm3:=0;
+    draw_stars;
 
     If (CRT_Keypressed) then
     begin
