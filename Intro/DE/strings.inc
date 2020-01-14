@@ -13,7 +13,7 @@ strings: array [0..11] of String = (
     ' Dr'#14'cke die Leertaste um fortzufahren '*~
 );
 
-  creditstxt: array [0..9] of String = (
+  creditstxt: array [0..8] of TString = (
     'Programmierung'~,
     'MADRAFi'~,
     ''~,
@@ -22,8 +22,7 @@ strings: array [0..11] of String = (
     'MADRAFi'~,
     ''~,
     'Musik'~,
-    'Caruso'~,
-    ''~
+    'Caruso'~
     
 );
 
