@@ -67,8 +67,8 @@ piccolors: array [0..(4*NUMBEROFPICS)-1] of Byte = (
 
 procedure gfx_fadein;
 const
-  TEXTCOLOR1 = $00;
-  TEXTCOLOR2 = $1c;
+  TXTCOLOR = $1c;
+  TXTBACK = 0;
 
 begin
   y:= picnumber shl 2;
@@ -81,14 +81,13 @@ begin
     for b:=0 to 3 do 
       If ((gfxcolors[b] and %00001111) <= (piccolors[y+b] and %00001111)) then Inc(gfxcolors[b]) else gfxcolors[b]:=piccolors[y+b];
 
-    If (txtcolors[0] and %00001111 <> TEXTCOLOR1 and %00001111) then Inc(txtcolors[0]) else txtcolors[0]:=TEXTCOLOR1;
-    If (txtcolors[1] and %00001111 <> TEXTCOLOR2 and %00001111) then Inc(txtcolors[1]) else txtcolors[1]:=TEXTCOLOR2;
+    If (txtcolors[0] and %00001111 <> TXTBACK and %00001111) then Inc(txtcolors[0]) else txtcolors[0]:=TXTBACK;
+    If (txtcolors[1] and %00001111 <> TXTCOLOR and %00001111) then Inc(txtcolors[1]) else txtcolors[1]:=TXTCOLOR;
 
   until (gfxcolors[0]=piccolors[y]) and
         (gfxcolors[1]=piccolors[y+1]) and
         (gfxcolors[2]=piccolors[y+2]) and
-        (gfxcolors[3]=piccolors[y+3]) and
-        (txtcolors[0]=TEXTCOLOR1) and (txtcolors[1]=TEXTCOLOR2);
+        (gfxcolors[3]=piccolors[y+3]);
 end;
 
 procedure gfx_fadeout; //(hidetext: Boolean);
