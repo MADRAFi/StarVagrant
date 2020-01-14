@@ -65,7 +65,7 @@ strings: array [0..66] of String = (
     ' Nicht genug UEC, um 100% zu tanken. '*~,
     'Tanken:'~,   
     'Gesamt:'~,  //65
-    'Du bist K'#15'nig des Warentransports       erwiesen. Ohne Herausforderungen du hastin den Ruhestand getreten.'~
+    'Du bist ein wahrer Transportk'#15'nig. Das  hast du bewiesen. Auf dich warten keine neue Herausforderungen. Du gehst in den Ruhestand.'~
 
 );
 
