@@ -746,7 +746,7 @@ begin
   y:=Random(85);    // 8%
 {$ENDIF}
 
-y:=3;
+// y:=3;
 
   txt:='#';
   case y of
