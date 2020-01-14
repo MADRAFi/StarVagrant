@@ -13,7 +13,7 @@ strings: array [0..11] of String = (
     ' Naci'#9'nij spacj'#5', aby kontynuowa'#3' '*~
 );
 
-  creditstxt: array [0..9] of String = (
+  creditstxt: array [0..8] of TString = (
     'Programowanie'~,
     'MADRAFi'~,
     ''~,
@@ -22,7 +22,6 @@ strings: array [0..11] of String = (
     'MADRAFi'~,
     ''~,
     'Muzyka'~,
-    'Caruso'~,
-    ''~
+    'Caruso'~
     
 );

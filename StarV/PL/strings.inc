@@ -1,5 +1,5 @@
-strings: array [0..65] of String = (
-    'MADsoft'~, // 0
+strings: array [0..66] of String = (
+    'Gratulacje!'~, // 0
     'N'*'owa Gra'~,
     'W'*'yj'#9'cie'~,
     '1'*' Nawigacja'~,
@@ -10,7 +10,7 @@ strings: array [0..65] of String = (
     'Kupuj'~,
     'Sprzedaj'~,
     'Miejsce dostawy'~, // 10
-    '    Przedmioty'~,
+    ' Przedmioty'~,
     'Towar'~,
     'Cena'~,
     ''#123'adowno'#9''#3''~,
@@ -64,6 +64,7 @@ strings: array [0..65] of String = (
     ' Tw'#15'j statek zosta'#12' zatankowany. '*~,
     ' Za ma'#12'o kredyt'#15'w do 100% tankowania. '*~,
     'Paliwo:'~,   
-    ''#123''#2'cznie:'~  //65
+    ''#123''#2'cznie:'~,  //65
+    'Udowodni'#12'e'#9', '#26'e jeste'#9' prawdziwym kr'#15'lemtransportu. Nie maj'#2'c wyzwa'#14' przeszed'#12'e'#9'na emerytur'#5'.'~
 
 );

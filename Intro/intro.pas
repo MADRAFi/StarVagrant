@@ -65,68 +65,45 @@ piccolors: array [0..(4*NUMBEROFPICS)-1] of Byte = (
 
 {$i interrupts.inc}
 
+procedure gfx_fadeout; //(hidetext: Boolean);
+var
+hidetext: boolean = true;
+begin
+
+  repeat
+    Waitframes(2);
+    for b:=0 to 3 do 
+              If (gfxcolors[b] and %00001111 <> 0) then Dec(gfxcolors[b]) else gfxcolors[b]:=0;
+
+      If (txtcolors[0] and %00001111 <> 0) then Dec(txtcolors[0]) else txtcolors[0]:=0;
+      If (txtcolors[1] and %00001111 <> 0) then Dec(txtcolors[1]) else txtcolors[1]:=0;
+
+until ((gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3])=0);
+  //  until ((gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3])=0) and ((txtcolors[0] or txtcolors[1])=0);
+  //  waitframes(10);
+end;
+
+
 procedure gfx_fadein;
 const
-  TEXTCOLOR1 = $00;
-  TEXTCOLOR2 = $1c;
+  TXTCOLOR = $1c;
+  TXTBACK = 0;
 
 begin
   y:= picnumber shl 2;
   repeat
     Waitframes(2);
-    // If (gfxcolors[0] and %00001111 <> piccolors[y] and %00001111) then Inc(gfxcolors[0]) else gfxcolors[0]:=piccolors[y];
-    // If (gfxcolors[1] and %00001111 <> piccolors[y+1] and %00001111) then Inc(gfxcolors[1]) else gfxcolors[1]:=piccolors[y+1];
-    // If (gfxcolors[2] and %00001111 <> piccolors[y+2] and %00001111) then Inc(gfxcolors[2]) else gfxcolors[2]:=piccolors[y+2];
-    // If (gfxcolors[3] and %00001111 <> piccolors[y+3] and %00001111) then Inc(gfxcolors[3]) else gfxcolors[3]:=piccolors[y+3];
     for b:=0 to 3 do 
       If ((gfxcolors[b] and %00001111) <= (piccolors[y+b] and %00001111)) then Inc(gfxcolors[b]) else gfxcolors[b]:=piccolors[y+b];
 
-    If (txtcolors[0] and %00001111 <> TEXTCOLOR1 and %00001111) then Inc(txtcolors[0]) else txtcolors[0]:=TEXTCOLOR1;
-    If (txtcolors[1] and %00001111 <> TEXTCOLOR2 and %00001111) then Inc(txtcolors[1]) else txtcolors[1]:=TEXTCOLOR2;
+    If ((txtcolors[0] and %00001111) <= (TXTBACK and %00001111)) then Inc(txtcolors[0]) else txtcolors[0]:=TXTBACK;
+    If ((txtcolors[1] and %00001111) <= (TXTCOLOR and %00001111)) then Inc(txtcolors[1]) else txtcolors[1]:=TXTCOLOR;
 
-  until (gfxcolors[0]=piccolors[y]) and
+  until ((gfxcolors[0]=piccolors[y]) and
         (gfxcolors[1]=piccolors[y+1]) and
         (gfxcolors[2]=piccolors[y+2]) and
-        (gfxcolors[3]=piccolors[y+3]) and
-        (txtcolors[0]=TEXTCOLOR1) and (txtcolors[1]=TEXTCOLOR2);
+        (gfxcolors[3]=piccolors[y+3])) or ((txtcolors[0]=TXTBACK) and (txtcolors[1]=TXTCOLOR));
 end;
-
-procedure gfx_fadeout; //(hidetext: Boolean);
-begin
-
-  repeat
-    Waitframes(2);
-    If (gfxcolors[0] and %00001111 <> 0) then Dec(gfxcolors[0]) else gfxcolors[0]:=0;
-    If (gfxcolors[1] and %00001111 <> 0) then Dec(gfxcolors[1]) else gfxcolors[1]:=0;
-    If (gfxcolors[2] and %00001111 <> 0) then Dec(gfxcolors[2]) else gfxcolors[2]:=0;
-    If (gfxcolors[3] and %00001111 <> 0) then Dec(gfxcolors[3]) else gfxcolors[3]:=0;
-    // If hidetext then
-    // begin
-      If (txtcolors[0] and %00001111 <> 0) then Dec(txtcolors[0]) else txtcolors[0]:=0;
-      If (txtcolors[1] and %00001111 <> 0) then Dec(txtcolors[1]) else txtcolors[1]:=0;
-    // end;
-  until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3] or txtcolors[0] or txtcolors[1]) = 0;
-  // until (gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3]) = 0;
-
-end;
-
-// procedure back_to_loader;assembler;
-//   asm {
-//         clc
-//         rts
-//       };
-// end;
-
-// procedure SystemOn;assembler;
-//   asm {
-//         lda:rne vcount
-//         mva #$ff portb
-//         dec nmien
-//         cli
-
-//         rts
-//     };
-// end;
 
 procedure wait(time:Word);
 begin
@@ -136,6 +113,12 @@ begin
     waitframe;
     if CRT_Keypressed then skip:= true;
   until skip or (count > time);
+end;
+
+procedure CRT_ClearRows(start: Byte;num: Byte);
+begin
+  for y:=start to num do
+    CRT_ClearRow(y);
 end;
 
 begin
@@ -273,15 +256,17 @@ begin
     firstDLI:=@dli_pic4_f1;
 
 
-    move(pointer(SCREEN_ADDRESS_PIC4), pointer(TXT_ADDRESS), 1200);
+    // move(pointer(SCREEN_ADDRESS_PIC4), pointer(TXT_ADDRESS), 1200);
+    CRT_ClearRows(0,CRT_screenHeight);
+    move(pointer(SCREEN_ADDRESS_PIC4), pointer(TXT_ADDRESS), 600);
 
-    for y:=0 to 9 do
+    for y:=0 to 8 do
       begin
-        CRT_ClearRow(y + 15);
+        // CRT_ClearRow(y + 15);
         CRT_WriteCentered(y + 15, creditstxt[y]);
       end;
-    CRT_ClearRow(25);  
-    CRT_WriteCentered(25,strings[11]);
+    // CRT_ClearRow(25);  
+    CRT_WriteCentered(24,strings[11]);
     gfx_fadein;
   end;
 
@@ -292,13 +277,13 @@ begin
     if count = 50 then
     begin
 {$IFDEF PL}
-    CRT_Invert(3,25,34);
+    CRT_Invert(2,24,34);
 {$ENDIF}
 {$IFDEF DE}
-    CRT_Invert(1,25,38);
+    CRT_Invert(0,24,38);
 {$ENDIF}
 {$IFDEF EN}
-    CRT_Invert(5,25,29);
+    CRT_Invert(5,24,29);
 {$ENDIF}
     count:= 0;
     end;

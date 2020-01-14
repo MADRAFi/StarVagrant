@@ -1,5 +1,5 @@
-strings: array [0..65] of String = (
-    'MADsoft'~, // 0
+strings: array [0..66] of String = (
+    'Glückwunsch!'~, // 0
     'N'*'eues Spiel'~,
     'V'*'erlassen'~,
     '1'*' Navigation'~,
@@ -28,13 +28,13 @@ strings: array [0..65] of String = (
     ' Drücke irgendeine Taste. '*~,
     ' Du hast das Schiff gekauft. '*~,
     ''~,
-    'Piraten haben dich attackiert. Du warst mutig und hast gekämpft so lange es     gingSie haben dein Leben im Austausch   für all deine Fracht geschont.'~,
-    'Es hat einen Systemfehler gegeben.      Die Explosion hat einen Teil deiner     Ladung beschädigt.'~, // 30
-    'Banditen haben dich bestohlen. Du hast   dein ganzes Geld verloren.'~,
-    'Du hast einen Passagier mitgenommen.     Er hat dir zusätzliches Geld für ein    Transport gegeben.'~,
-    'Du hast gesehen, dass die Bürger         in Not sind. Du hast dich für die Hilfe entschieden und hast einen Teil deiner  Waren verteilt.'~,
-    'Wegen jüngster Aktivitäten der Piraten   wurdest du verpflichtet, eine           militärische Eskorte zu verwenden.      Du hast Standard-Gebühren dafür bezahlt.'~,
-    'Es scheint, dass dein Lottoschein        gewonnen hat. Der Gewinn wurde auf dein Konto überwiesen.'~, // 35
+    'Piraten haben dich attackiert. Du warst mutig und hast gekämpft so lange es gingSie haben dein Leben im Austausch für   deine Fracht geschont.'~,
+    'Es hat einen Systemfehler gegeben. Die  Explosion hat einen Teil deiner Ladung  beschädigt.'~, // 30
+    'Banditen haben dich bestohlen. Du hast  dein ganzes Geld verloren.'~,
+    'Du hast einen Passagier mitgenommen.    Er hat dir zusätzliches Geld für ein    Transport gegeben.'~,
+    'Du hast gesehen, dass die Bürger        in Not sind. Du hast dich für die Hilfe entschieden und hast einen Teil deiner  Waren verteilt.'~,
+    'Wegen jüngster Aktivitäten der Piraten  wurdest du verpflichtet, eine           militärische Eskorte zu verwenden.      Du hast Standard-Gebühren dafür bezahlt.'~,
+    'Es scheint, dass dein Lottoschein       gewonnen hat. Der Gewinn wurde auf dein Konto überwiesen.'~, // 35
     ' Keine Schiffe mehr. '*~,
     'Name:'~,
     'Prod:'~,
@@ -64,6 +64,7 @@ strings: array [0..65] of String = (
     ' Ihr Schiff wurde betankt. '*~,
     ' Nicht genug UEC, um 100% zu tanken. '*~,
     'Tanken:'~,   
-    'Gesamt:'~  //65
+    'Gesamt:'~,  //65
+    'Du bist ein wahrer Transportkönig. Das  hast du bewiesen. Auf dich warten keine neue Herausforderungen. Du gehst in den Ruhestand.'~
 
 );

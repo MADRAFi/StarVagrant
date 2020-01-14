@@ -13,7 +13,7 @@ strings: array [0..11] of String = (
     ' Press space bar to continue '*~
 );
 
-  creditstxt: array [0..9] of String = (
+  creditstxt: array [0..8] of TString = (
     'Programming'~,
     'MADRAFi'~,
     ''~,
@@ -22,7 +22,6 @@ strings: array [0..11] of String = (
     'MADRAFi'~,
     ''~,
     'Music'~,
-    'Caruso'~,
-    ''~
+    'Caruso'~
     
 );

@@ -1,5 +1,5 @@
-strings: array [0..65] of String = (
-    'MADsoft'~, // 0
+strings: array [0..66] of String = (
+    'Congratulation!'~, // 0
     'N'*'ew Game'~,
     'Q'*'uit'~,
     '1'*' Navigation'~,
@@ -27,7 +27,7 @@ strings: array [0..65] of String = (
     'No xBios, No Pics'*~, // 25
     ' Press any key. '*~,
     'You`ve bought that ship.'*~,
-    'You have lost: '~,
+    ''~,
     '  You have been boarded by pirates. You were brave and fought till you could.   They spared your life in exchange for   all of your cargo.'~,
     'There have been a system maltifunction. Explosion has damaged part of your      cargo.'~, // 30
     'You have been robed by some thugs.      You have lost all your money.'~,
@@ -64,7 +64,7 @@ strings: array [0..65] of String = (
     ' Your ship has been refueled. '*~,
     ' Not enough credits to 100% refuel. '*~,
     'Refuel:'~,   
-    'Total:'~  //65
-    // 'to 100% refuel '*~
+    'Total:'~,  //65
+    'You have proven to be real king of the  commodity transportation. There were no  more challanges waiting for you, so you have retired.'~
 
 );

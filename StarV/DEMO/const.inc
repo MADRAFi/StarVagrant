@@ -30,6 +30,9 @@ MAXCARGOSLOTS = 10;  // number of cargo slots
 MAXAVAILABLEDESTINATIONS = 6;  // number of destinations from location.
 
 STARTUEC = 10000;
+MAXUEC = 4000000000;
+WINUEC = 1000000;
+WINSHIP = 2;
 STARTLOCATION = 0;
 
 // ***************************************************************************//
@@ -43,3 +46,4 @@ MENU_SHIP = 5;
 MENU_SAVE = 6;
 MENU_LOAD = 7;
 MENU_CREDITS = 8;
+MENU_CONGRATS = 9;

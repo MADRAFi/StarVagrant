@@ -28,7 +28,7 @@ const
   COPYRIGHT = 'Silly Venture 2019'~;
 {$ELSE}  
   {$i 'const.inc'}
-  COPYRIGHT = 'v.1.3 @ 2019 MADsoft'~;
+  COPYRIGHT = 'v.1.6 @ 2019 MADsoft'~;
 {$ENDIF}
 
 {$r 'resources.rc'}
@@ -80,6 +80,8 @@ var
   timer: Word; // timer increaed in vbl
   modify: Word;
   visible: Boolean;
+  tab: array [0..127] of byte absolute $BE80; // array to store starfield
+
 
   irqen : byte absolute $D20E;
 
@@ -381,9 +383,9 @@ itemprice: array [0..(NUMBEROFLOCATIONS * NUMBEROFITEMS)-1] of Word = (
     50,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,25,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,500,0,0,0,0,0,0,0,150,0,95,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,150,0,80,180,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,150,0,80,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,80,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,95,180,0,0,220,300,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,95,0,0,0,220,300,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,220,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,300,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,600,0,0,0,0,0,0,0,0,0,0,0,0,0,720,
@@ -391,32 +393,33 @@ itemprice: array [0..(NUMBEROFLOCATIONS * NUMBEROFITEMS)-1] of Word = (
 
 
 
+
   ); // distance between locations
 
   shipprices: array [0..(NUMBEROFLOCATIONS * NUMBEROFSHIPS)-1] of longword = (
     1000,0,0,0,0,0,0,0,0,0,0,0,
-    0,9000,12990,22700,32000,0,75000,62000,0,0,330000,0,
+    0,9000,12990,22700,52000,0,500000,620000,0,0,3300000,0,
     0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,
-    0,8000,11999,22700,32000,0,0,0,124900,166000,330000,0,
+    0,8000,11999,22700,52000,0,0,0,1249000,1660000,3300000,0,
     0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,59500,0,130000,0,0,
+    0,0,0,0,0,0,0,595000,1000000,1300000,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,45000,0,0,0,0,0,400000,
-    0,9000,0,18000,29999,0,50000,0,0,0,0,0,
-    1000,6000,12990,20100,0,0,0,0,124900,0,300000,0,
+    0,0,0,0,0,100000,0,0,0,0,0,4000000,
+    0,9000,0,18000,29999,0,500000,0,0,0,0,0,
+    1000,6000,12990,20100,0,0,0,0,1249000,0,3000000,0,
     0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,31500,0,75000,62000,124900,0,300000,0,
-    0,8000,11999,22700,32000,0,0,0,124900,166000,330000,0,
+    0,0,0,0,48500,0,299000,620000,1249000,0,3000000,0,
+    0,8000,11999,22700,52000,0,0,0,1249000,1660000,3300000,0,
     0,0,0,0,0,0,0,0,0,0,0,0,
-    0,5000,11900,18000,29000,0,50000,59000,124000,130000,300000,0,
+    0,5000,11900,18000,29000,0,250000,590000,1240000,1300000,3000000,0,
     0,0,0,0,0,0,0,0,0,0,0,0,
-    0,4000,10000,16000,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,
-    0,9000,12990,22700,32000,0,75000,62000,0,0,330000,0,
+    0,4000,10000,16000,0,100000,0,0,0,0,0,0,
+    0,0,0,0,0,100000,0,0,0,0,0,0,
+    0,9000,12990,22700,52000,100000,350000,620000,0,0,3300000,0,
     0,5000,10000,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0
 
@@ -548,8 +551,8 @@ var
   titlecolors : array [0..3] of Byte;
 
 const
-  txtcolor = $1c;
-  txtback = 0;
+  TXTCOLOR = $1c;
+  TXTBACK = 0;
   // titlecolors : array [0..3] of Byte = ($10,$14,$1a,$00);
 {$IFDEF DEMO}
   titlecolors1 : array [0..3] of Byte = ($62,$68,$7c,$00); // standard purple colors
@@ -560,20 +563,18 @@ const
 {$ENDIF}
 
 begin
-// {$IFDEF DEMO}
-  if visible then titlecolors:=titlecolors2
+  if visible or (current_menu = MENU_CONGRATS ) then titlecolors:=titlecolors2
   else titlecolors:=titlecolors1;
-// {$ELSE}
-//   if visible then titlecolors:=titlecolors2
-//   else titlecolors:=titlecolors1;
-// {$ENDIF}
+
 
   // gfxcolors[0]:=0;
   // gfxcolors[1]:=0;
   // gfxcolors[2]:=0;
   // gfxcolors[3]:=0;
   y:= newLoc shl 2; // x 4 for number of colors
-  if (current_menu = MENU_TITLE) or (current_menu = MENU_SAVE) or (current_menu = MENU_LOAD) or (current_menu = MENU_CREDITS) then
+  if (current_menu = MENU_TITLE) or 
+    (current_menu = MENU_SAVE) or (current_menu = MENU_LOAD) or 
+    (current_menu = MENU_CREDITS) or (current_menu = MENU_CONGRATS) then
   begin
     targetcolors:=titlecolors;
   end
@@ -588,8 +589,8 @@ begin
     for x:=0 to 3 do 
       If ((gfxcolors[x] and %00001111) <= (targetcolors[x] and %00001111)) then Inc(gfxcolors[x]) else gfxcolors[x]:=targetcolors[x];
 
-    If ((txtcolors[0] and %00001111) <= (txtback and %00001111)) then inc(txtcolors[0]) else txtcolors[0]:=txtback;
-    If ((txtcolors[1] and %00001111) <= (txtcolor and %00001111)) then inc(txtcolors[1]) else txtcolors[1]:=txtcolor;
+    If ((txtcolors[0] and %00001111) <= (TXTBACK and %00001111)) then inc(txtcolors[0]) else txtcolors[0]:=TXTBACK;
+    If ((txtcolors[1] and %00001111) <= (TXTCOLOR and %00001111)) then inc(txtcolors[1]) else txtcolors[1]:=TXTCOLOR;
 
   until (gfxcolors[0]=targetcolors[0]) and
         (gfxcolors[1]=targetcolors[1]) and
@@ -716,6 +717,7 @@ begin
   repeat
     Waitframe;
   until CRT_Keypressed;
+  gfx_fadeout(true);
 
 end;
 
@@ -727,6 +729,12 @@ begin
     result:=v * p div 100;
 end;  
 
+procedure checkUECMax;
+begin            
+  if (player.uec + modify > MAXUEC) then player.uec:=MAXUEC
+  else player.uec:=player.uec + modify;
+  if (ship.sindex >= WINSHIP) and (player.uec >= WINUEC) then current_menu:=MENU_CONGRATS;
+end;
 
 procedure randomEncounter;
 
@@ -738,7 +746,7 @@ begin
   y:=Random(85);    // 8%
 {$ENDIF}
 
-// y:=1;
+// y:=3;
 
   txt:='#';
   case y of
@@ -756,7 +764,12 @@ begin
     3:    begin
               // lottery ticket
               txt:=strings[35];
-              player.uec:=player.uec + (random100 * 500);  // Random % from 50000 UEC
+              modify:= random100 * 500; // Random % from 50000 UEC
+              
+              // player.uec:=player.uec + modify;  
+              // if (player.uec + modify > MAXUEC) then player.uec:=MAXUEC
+              // else player.uec:=player.uec + modify;
+              checkUECMax;
           end;
     5:    begin
             // Some cargo giveaway
@@ -777,8 +790,11 @@ begin
     10:   begin
             // Passanger transport
             txt:=strings[32];
-            player.uec:=player.uec + (random100 * 100);  // Random % from 10000 UEC
-
+            modify:=random100 * 100;   // Random % from 10000 UEC
+            // player.uec:=player.uec + modify;
+            // if (player.uec + modify > MAXUEC) then player.uec:=MAXUEC
+            // else player.uec:=player.uec + modify;
+            checkUECMax;
           end;
     20:   begin
           // Bandits, all money lost
@@ -831,9 +847,15 @@ const
 
 begin
   p:=random100;
-  modify:=percentc(itemprice[offset]);
+  
+  // CRT_GotoXY(0,20);
+  // CRT_Write('p='); CRT_Write(p);
+  // CRT_GotoXY(0,21);
+  // CRT_Write('modify='); CRT_Write(modify);
+
   for y:=0 to NUMBEROFITEMS-1 do begin
     offset:= (NUMBEROFITEMS * player.loc)+y;
+    modify:=percentc(itemprice[offset]);
 
     // Produce new items on certain LOCATIONS
     if (itemquantity[offset] > 0) and (itemquantity[offset] <= 1000) then
@@ -851,7 +873,10 @@ begin
       // modify:=(1 + percent);
       // itemprice[offset]:=Round(itemprice[offset] * modify);
       // itemprice[offset]:=Round(itemprice[offset] * (1 + percent));
-      if itemprice[offset] <= PRICEMAX then Inc(itemprice[offset],modify);
+      if itemprice[offset] + modify < PRICEMAX then Inc(itemprice[offset],modify)
+      // Inc(itemprice[offset],modify);
+      // CRT_GotoXY(0,22);
+      // CRT_Write('price='); CRT_Write(itemprice[offset]);
     end;
 
     // Decrease price if more then 5000
@@ -860,7 +885,7 @@ begin
       // modify:=(1 - percent);
       // itemprice[offset]:=Round(itemprice[offset] * modify);
       // itemprice[offset]:=Round(itemprice[offset] * (1 - percent))
-      if (itemprice[offset] <= PRICEMIN) and (itemprice[offset] > modify) then  Dec(itemprice[offset],modify);
+      if (itemprice[offset] - modify > PRICEMIN) then Dec(itemprice[offset],modify);
     end;
 
     // Simulate item sell
@@ -870,12 +895,12 @@ begin
       // itemquantity[offset]:=Trunc(itemquantity[offset] * modify);
       // itemquantity[offset]:=Trunc(itemquantity[offset] * (1 - percent));
       modify:=percentc(itemquantity[offset]);
-      if (itemquantity[offset] > QUANTITYMIN) and (itemquantity[offset] > modify) then Dec(itemquantity[offset],modify);
+      if (itemquantity[offset] - modify > QUANTITYMIN) then Dec(itemquantity[offset],modify);
     end;
 
   end;
 
-  if (p < 40) then // only 40% chance for ship's price change
+  if (p < 60) then // only 40% chance for ship's price change
   begin
     for y:=0 to NUMBEROFSHIPS-1 do begin
       offset:= (NUMBEROFSHIPS * player.loc)+y;
@@ -899,11 +924,11 @@ begin
   end;
 end;
 
-{$ifdef highmem }
-  {$i 'highmem.inc'}
-{$else}
+// {$ifdef highmem }
+//   {$i 'highmem.inc'}
+// {$else}
   {$i 'lowmem.inc'} // lowmem procs to load pictures from disk 
-{$endif}
+// {$endif}
 
 
 procedure initWorld;
@@ -1168,7 +1193,7 @@ begin
   begin
     //finalprice:=Trunc(price * (1-commission))
     // Result:=Round(itemprice[offset] * (1-commission))
-    Result:=itemprice[offset] - (itemprice[offset] * COMMISSION div 100)
+    Result:=itemprice[offset] - ((itemprice[offset] * COMMISSION) div 100)
   end
   else
   begin
@@ -1185,7 +1210,7 @@ begin
   // translate cargo item index into offset to read price in location.
   offset:=(NUMBEROFITEMS * player.loc) + currentship.cargoindex[itemindex];
   // Result:=Round(itemprice[offset] * (1-commission));
-  Result:=itemprice[offset] - (itemprice[offset] * COMMISSION div 100);
+  Result:=itemprice[offset] - ((itemprice[offset] * COMMISSION) div 100);
 end;
 
 function CheckCargoPresence(itemindex: Byte): Boolean;
@@ -1311,7 +1336,7 @@ begin
                               beep200; //vol 10
                               newLoc:=destinationindex-(player.loc * NUMBEROFLOCATIONS);
                               navi_ftljump(distance);
-                              current_menu:=MENU_MAIN;
+
                             end
                             else
                             begin
@@ -1366,7 +1391,7 @@ begin
   offset:=(NUMBEROFSHIPS * player.loc) + availableships[shipindex];          
 
 {$IFDEF PL}
-  putSpacesAt(24,5,0);
+  putSpacesAt(21,5,0);
   CRT_GotoXY(5,0);
   CRT_Write(prodmatrix[tshp^.mcode]);
   putSpacesAt(14,6,1);
@@ -1391,7 +1416,7 @@ begin
   CRT_Write(tshp^.mass);CRT_Write(strings[47]);
 {$ENDIF}
 {$IFDEF DE}
-  putSpacesAt(24,5,0);
+  putSpacesAt(21,5,0);
   CRT_GotoXY(5,0);
   CRT_Write(prodmatrix[tshp^.mcode]);
   putSpacesAt(14,5,1);
@@ -1416,7 +1441,7 @@ begin
   CRT_Write(tshp^.mass);CRT_Write(strings[47]);
 {$ENDIF}
 {$IFDEF EN}
-  putSpacesAt(24,5,0);
+  putSpacesAt(21,5,0);
   CRT_GotoXY(5,0);
   CRT_Write(prodmatrix[tshp^.mcode]);
   putSpacesAt(14,5,1);
@@ -2303,7 +2328,12 @@ begin
 
 
                       player.uec:= currentuec;
-                      current_menu := MENU_MAIN;
+                      if (ship.sindex >= WINSHIP) and (player.uec >= WINUEC) then current_menu:=MENU_CONGRATS
+                      else current_menu := MENU_MAIN;
+                              // CRT_GotoXY(0,20);
+                              // CRT_Write('sindex='~);CRT_Write(currentShip.sindex);
+                              // repeat until CRT_KeyPressed;
+                      
                       //gfx_fadeout(true);
                     end;
         KEY_UP, KEY_DOWN:
@@ -2368,6 +2398,14 @@ begin
                       end;
                       selecteditemtotal:=0;
                       selecteditemquantity:=0;
+
+                      // CRT_GotoXY(0,19);
+                      // offset:=(NUMBEROFITEMS * player.loc) + currentship.cargoindex[p];
+                      // CRT_Write('itemprice:'~);CRT_Write(itemprice[offset]);
+                      // CRT_GotoXY(0,20);
+                      // modify:=(itemprice[offset] * COMMISSION) div 100;
+                      // // modify:=itemprice[offset] - COMMISSION;
+                      // CRT_Write('modify:'~);CRT_Write(modify);
                       Waitframes(2);
                     end;
         KEY_LEFT:   begin
@@ -2589,7 +2627,8 @@ begin
                             If currentShip.cargoquantity[p] = 0 then currentShip.cargoindex[p]:= 0; // erasing item form cargoindex
 
                             // update UEC on screen not on player
-                            currentuec:=currentuec + selecteditemtotal;
+                            if (currentuec + selecteditemtotal > MAXUEC) then currentuec:=MAXUEC
+                            else currentuec:=currentuec + selecteditemtotal;
 
                             for y:=0 to MAXCARGOSLOTS-1 do
                             begin
@@ -2814,10 +2853,27 @@ begin
   move(pointer(LOGODATA_ADDRESS), pointer(TXT_ADDRESS), 600);
 end;
 
+procedure draw_stars;
+begin
+    repeat until vcount=50;
+    repeat
+        x:=vcount;
+        y:=(x and 3) + 1;
+        inc(tab[x], y);
+        y:= 15 - (y shl 1);
+        wsync:=0;
+        hposm3:=tab[x];
+        colpm3:=y;
+        grafm:=128;
+    until vcount > 108;
+    
+    hposm3:=0;
+end;
+
 procedure credits;
 var
   a: array [0..0] of string;
-  tab: array [0..127] of byte; // absolute $BE80;
+  // tab: array [0..127] of byte; // absolute $BE80;
 
   tcount: Byte;  // how many times counter
   // mcount: Byte;  // move counter to slown down
@@ -2882,9 +2938,9 @@ begin
   modify:=0;
   p:=0;
 
-  for x:=0 to 127 do begin
-    tab[x]:=peek($d20a);
-  end;
+  // for x:=0 to 127 do begin
+  //   tab[x]:=peek($d20a);
+  // end;
 
   repeat        
     if visible then
@@ -2897,22 +2953,11 @@ begin
         Inc(tcount);
       end;
 
-      repeat until vcount=50;
-      repeat
-          x:=vcount;
-          y:=(x and 3) + 1;
-          inc(tab[x], y);
-          y:= 15 - (y shl 1);
-          wsync:=0;
-          hposm3:=tab[x];
-          colpm3:=y;
-          grafm:=128;
-      until vcount > 108;
+      draw_stars;
 
       if (timer mod 2 = 0) then Inc(p);
-
       hposp0:=p;   // Horizontal position of player 0
-      hposm3:=0;
+
       if p = 0 then
       begin       
         modify:= Random(20);
@@ -2964,6 +3009,51 @@ begin
     
   until (keyval = KEY_BACK);
   // fillchar(pointer(PMG_ADDRESS+512), 128, 0);
+
+end;
+
+procedure congrats;
+
+begin
+
+  keyval:= 0;
+  
+  draw_logo;
+
+  CRT_WriteCentered(15, strings[0]);  //15
+  putStringAt(66,0,17);
+
+  // txt:= strings[66]; // read scroll text
+  // move(txt[1],pointer(SCROLL_ADDRESS+42),sizeOf(txt)); // copy text to vram
+
+  // // help
+  CRT_WriteRightAligned(23, strings[7]);
+  gfx_fadein;
+
+
+  // a:=creditstxt;
+  // showArray;
+
+  sizem:=0;
+  colpm3:=$0e;  
+  repeat
+
+    draw_stars;
+
+    If (CRT_Keypressed) then
+    begin
+      keyval := kbcode;
+      case keyval of
+        KEY_BACK:   begin
+                      beep255; // vol10
+                      current_menu := MENU_TITLE;
+                      gamestate:= GAMEFINISHED;
+                      gfx_fadeout(true);
+                    end;
+      end;
+    end;
+    
+  until (keyval = KEY_BACK);
 
 end;
 
@@ -3358,7 +3448,6 @@ begin
     end;
   end;
   music_restart;
-  // repeat until CRT_Keypressed;
 end;
 
 procedure disk_load(num: Byte);
@@ -3391,7 +3480,7 @@ begin
         writeStatus(53,55);
         //CRT_Write(strings[53]);CRT_Write(strings[55]);CRT_Write('.'~*);CRT_Write(strings[26]);
       end;
-      xBiosFlushBuffer;
+      // xBiosFlushBuffer;
     end
     else
     begin
@@ -3401,7 +3490,6 @@ begin
     end;
   end;
   music_restart;
-  // repeat until CRT_Keypressed;
 end;
 
 procedure menu_save_load(mode: Boolean);
@@ -3578,6 +3666,11 @@ begin
     tshp^.swait:=StrToInt(ships[offset+7]);
   end;
 
+  // initiate starfield
+  for x:=0 to 127 do begin
+    tab[x]:=peek($d20a);
+  end;
+
   gamestate:= NEWGAME;
   current_menu := MENU_TITLE;
 
@@ -3592,6 +3685,7 @@ begin
       MENU_SAVE:  menu_save_load(true);
       MENU_LOAD:  menu_save_load(false);
       MENU_CREDITS: credits;
+      MENU_CONGRATS: congrats;
     end;
     repeat Waitframe until not CRT_Keypressed;
 
