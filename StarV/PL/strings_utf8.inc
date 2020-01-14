@@ -25,7 +25,7 @@ strings: array [0..66] of String = (
     '-Nawigacja'~,
     #179'kok FTL'~,
     'Brak xBios, Brak Grafik'*~, // 25
-    ' Naciśnij dowolny klawisz. '*~,
+    ' Naciśnij dowolny klawisz '*~,
     ' Kupiłeś wybrany statek. '*~,
     ''~,
     'Zostałeś zaatakowany przez piratów.     Byłeś odważny i walczyłeś ile mogłeś.   Oszczędzili twoje życie w zamian za cały twój ładunek.'~,

@@ -25,7 +25,7 @@ strings: array [0..66] of String = (
     '-Navigation'~,
     'J'*'-FTL Jump'~,
     'No xBios, No Pics'*~, // 25
-    ' Press any key. '*~,
+    ' Press any key '*~,
     'You`ve bought that ship.'*~,
     ''~,
     '  You have been boarded by pirates. You were brave and fought till you could.   They spared your life in exchange for   all of your cargo.'~,

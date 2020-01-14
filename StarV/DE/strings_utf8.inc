@@ -25,7 +25,7 @@ strings: array [0..66] of String = (
     '-Navigation'~,
     'S'*'-FTL Springe'~,
     'Kein xBios, Kein Bilder'*~, // 25
-    ' Drücke irgendeine Taste. '*~,
+    ' Drücke irgendeine Taste '*~,
     ' Du hast das Schiff gekauft. '*~,
     ''~,
     'Piraten haben dich attackiert. Du warst mutig und hast gekämpft so lange es gingSie haben dein Leben im Austausch für   deine Fracht geschont.'~,
