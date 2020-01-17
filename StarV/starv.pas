@@ -25,7 +25,7 @@ uses atari, b_utils, b_system, b_crt, sysutils, xbios, cmc;
 const
 {$IFDEF DEMO}
   {$i 'DEMO/const.inc'}
-  COPYRIGHT = 'Silly Venture 2019'~;
+  COPYRIGHT = 'v.1.6 @ Silly Venture 2019'~;
 {$ELSE}  
   {$i 'const.inc'}
   COPYRIGHT = 'v.1.6 @ 2019 MADsoft'~;
@@ -80,8 +80,11 @@ var
   timer: Word; // timer increaed in vbl
   modify: Word;
   visible: Boolean;
-  tab: array [0..127] of byte absolute $BE80; // array to store starfield
-
+  {$IFDEF DEMO}
+  tab: array [0..127] of byte; // array to store starfield
+  {$ELSE}
+  tab: array [0..127] of byte absolute $BAD0;// array to store starfield
+  {$ENDIF}
 
   irqen : byte absolute $D20E;
 
