@@ -25,10 +25,10 @@ uses atari, b_utils, b_system, b_crt, sysutils, xbios, cmc;
 const
 {$IFDEF DEMO}
   {$i 'DEMO/const.inc'}
-  COPYRIGHT = 'v.1.6 @ Silly Venture 2019'~;
+  COPYRIGHT = 'v.1.7 @ Silly Venture 2019'~;
 {$ELSE}  
   {$i 'const.inc'}
-  COPYRIGHT = 'v.1.6 @ 2019 MADsoft'~;
+  COPYRIGHT = 'v.1.7 @ 2019 MADsoft'~;
 {$ENDIF}
 
 {$r 'resources.rc'}
