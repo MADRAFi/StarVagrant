@@ -65,6 +65,6 @@ strings: array [0..66] of String = (
     ' Not enough credits to 100% refuel. '*~,
     'Refuel:'~,   
     'Total:'~,  //65
-    'You have proven to be real king of the  commodity transportation. There were no  more challanges waiting for you, so you have retired.'~
+    'You have proven to be the real king of  the commodity transportation. There wereno more challenges waiting for you,     so you have retired.'~
 
 );

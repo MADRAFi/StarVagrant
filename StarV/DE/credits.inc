@@ -19,7 +19,7 @@
     'XXL f'#14'r xBios-Unterst'#14'tzung'~,
     'Tebe f'#14'r MAD-Pascal hilfe zu gaben'~,
     'Kaz f'#14'r Testen und Beratung'~,
-    'Dely f'#14'r QS-Tests'~,
+    'Dely und CharlieChaplin f'#14'r QS-Tests'~,
     ''~
 );
 

@@ -19,6 +19,6 @@
     'XXL za pomoc z xBios'~,
     'Tebe za topowe wsparcie MAD-Pascala'~,
     'Kaz za testy i doradzanie'~,
-    'Dely za testy QA'~,
+    'Dely i CharlieChaplin za testy QA'~,
     ''~
 );

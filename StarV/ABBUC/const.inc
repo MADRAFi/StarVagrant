@@ -32,7 +32,7 @@ MAXAVAILABLEDESTINATIONS = 6;  // number of destinations from location.
 STARTUEC = 10000;
 MAXUEC = 4000000000;
 WINUEC = 10000000;
-WINSHIP = 2;
+WINSHIP = 10;
 STARTLOCATION = 0;
 
 // ***************************************************************************//

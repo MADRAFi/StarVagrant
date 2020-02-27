@@ -735,7 +735,6 @@ begin
   // gfxcolors[1]:=0;
   // gfxcolors[2]:=0;
   // gfxcolors[3]:=0;
-  y:= newLoc shl 2; // x 4 for number of colors
   if (current_menu = MENU_TITLE) or 
     (current_menu = MENU_SAVE) or (current_menu = MENU_LOAD) or 
     (current_menu = MENU_CREDITS) or (current_menu = MENU_CONGRATS) then
@@ -744,6 +743,7 @@ begin
   end
   else
   begin
+    y:= newLoc shl 2; // x 4 for number of colors
     for x:=0 to 3 do 
       targetcolors[x]:=piccolors[y+x];
   end;
@@ -751,7 +751,7 @@ begin
   repeat
     Waitframes(2);
     for x:=0 to 3 do 
-      If ((gfxcolors[x] and %00001111) <= (targetcolors[x] and %00001111)) then Inc(gfxcolors[x]) else gfxcolors[x]:=targetcolors[x];
+      If ((gfxcolors[x] and %00001111) < (targetcolors[x] and %00001111)) then Inc(gfxcolors[x]) else gfxcolors[x]:=targetcolors[x];
 
     If ((txtcolors[0] and %00001111) <= (TXTBACK and %00001111)) then inc(txtcolors[0]) else txtcolors[0]:=TXTBACK;
     If ((txtcolors[1] and %00001111) <= (TXTCOLOR and %00001111)) then inc(txtcolors[1]) else txtcolors[1]:=TXTCOLOR;
@@ -3183,7 +3183,6 @@ end;
 procedure congrats;
 
 begin
-
   keyval:= 0;
   
   draw_logo;
@@ -3196,14 +3195,11 @@ begin
 
   // // help
   CRT_WriteRightAligned(23, strings[7]);
-  gfx_fadein;
-
-
-  // a:=creditstxt;
-  // showArray;
 
   sizem:=0;
   colpm3:=$0e;  
+  gfx_fadein;
+
   repeat
 
     draw_stars;
@@ -3220,7 +3216,7 @@ begin
                     end;
       end;
     end;
-    
+    waitframe;
   until (keyval = KEY_BACK);
 
 end;
