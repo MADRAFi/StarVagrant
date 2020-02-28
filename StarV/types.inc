@@ -7,8 +7,8 @@ TGameState = (NEWGAME=0, GAMEINPROGRESS=1, GAMEFINISHED=2);
     swait: Byte; // ship wait time
     scu_max: Word;
     scu: Word;
-    speed: Byte;
-    lenght: Byte;
+    speed: Word;
+    lenght: Word;
     mass: Word;
     qf_max: Word;
     qf : Word;  // quantum fuel
