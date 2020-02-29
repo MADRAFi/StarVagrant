@@ -18,9 +18,7 @@
     ''~,
     'XXL f'#14'r xBios-Unterst'#14'tzung'~,
     'Tebe f'#14'r MAD-Pascal hilfe zu gaben'~,
-    'Kaz f'#14'r Testen und Beratung'~,
+    'Kaz f'#14'r Beratung'~,
     'Dely und CharlieChaplin f'#14'r QS-Tests'~,
     ''~
 );
-
-//um Hilfe bei MAD-Pascal

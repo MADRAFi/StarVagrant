@@ -702,13 +702,13 @@ begin
   repeat
     Waitframes(2);
     for x:=0 to 3 do 
-        If (gfxcolors[x] and %00001111 <> 0) then Dec(gfxcolors[x]) else gfxcolors[x]:=0;
+        If (gfxcolors[x] and %00001111 > 0) then Dec(gfxcolors[x]) else gfxcolors[x]:=0;
     If hidetext then
     begin
-      If (txtcolors[0] and %00001111 <> 0) then Dec(txtcolors[0]) else txtcolors[0]:=0;
-      If (txtcolors[1] and %00001111 <> 0) then Dec(txtcolors[1]) else txtcolors[1]:=0;
+      If (txtcolors[0] and %00001111 > 0) then Dec(txtcolors[0]) else txtcolors[0]:=0;
+      If (txtcolors[1] and %00001111 > 0) then Dec(txtcolors[1]) else txtcolors[1]:=0;
     end;
-  until ((gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3])=0) and ((hidetext = false) or ((txtcolors[0] or txtcolors[1])=0));
+   until (gfxcolors[0]=0) and (gfxcolors[1]=0) and (gfxcolors[2]=0) and (gfxcolors[3]=0) and ((hidetext=false) or ((hidetext = true) and (txtcolors[0]=0) and (txtcolors[1]=0)));
   waitframes(10);
 end;
 
@@ -806,15 +806,15 @@ begin
   // max distance lenght + distance symbol
 
 {$IFDEF PL}
-  putSpacesAt(6,10,2);
+  putSpacesAt(7,10,2);
   CRT_GotoXY(10,2);
 {$ENDIF}
 {$IFDEF DE}
-  putSpacesAt(6,8,2);
-  CRT_GotoXY(8,2);
+  putSpacesAt(7,11,2);
+  CRT_GotoXY(11,2);
 {$ENDIF}
 {$IFDEF EN}
-  putSpacesAt(6,9,2);
+  putSpacesAt(7,9,2);
   CRT_GotoXY(9,2);
 {$ENDIF}
 
@@ -917,7 +917,7 @@ begin
   {$ENDIF}
 {$ENDIF}
 
-// y:=3;
+// y:=1;
 
   txt:='#';
   case y of
@@ -2159,6 +2159,30 @@ begin
   CRT_Write(Atascii2Antic(strnum)); CRT_Write(CARGOUNIT);CRT_Write('|'~);
 end;
 
+procedure switch_to_buy;
+begin
+{$IFDEF PL}
+                          putSpacesAt(11,15,0);
+                          CRT_GotoXY(18,0);
+                          CRT_Write(strings[8]); // Buy
+                          // WriteSpace;WriteSpace;
+                          CRT_Invert(17,0,7);
+{$ENDIF}
+{$IFDEF DE}
+                          putSpacesAt(11,15,0);
+                          CRT_GotoXY(17,0);
+                          CRT_Write(strings[8]); // Buy
+                          // WriteSpace;WriteSpace;
+                          CRT_Invert(16,0,8);
+{$ENDIF}
+{$IFDEF EN}
+                          putSpacesAt(1,18,0);
+                          CRT_Write(strings[8]); // Buy
+                          WriteSpace;WriteSpace;
+                          CRT_Invert(18,0,5);
+{$ENDIF}
+end;
+
 procedure console_trade;
 
 const
@@ -2215,27 +2239,28 @@ begin
   CRT_GotoXY(0,0);
   CRT_Write(tstr);
 
-{$IFDEF PL}
-  putSpacesAt(1,17,0);
-  CRT_Write(strings[8]); // Buy
-  WriteSpace;
-  // invert at start
-  CRT_Invert(17,0,7);
-{$ENDIF}
-{$IFDEF DE}
-  putSpacesAt(1,16,0);
-  CRT_Write(strings[8]); // Buy
-  WriteSpace;
-  // invert at start
-  CRT_Invert(16,0,8);
-{$ENDIF}
-{$IFDEF EN}
-  putSpacesAt(1,18,0);
-  CRT_Write(strings[8]); // Buy
-  WriteSpace;
-  // invert at start
-  CRT_Invert(18,0,5);
-{$ENDIF}
+// {$IFDEF PL}
+//   putSpacesAt(1,17,0);
+//   CRT_Write(strings[8]); // Buy
+//   WriteSpace;
+//   // invert at start
+//   CRT_Invert(17,0,7);
+// {$ENDIF}
+// {$IFDEF DE}
+//   putSpacesAt(1,16,0);
+//   CRT_Write(strings[8]); // Buy
+//   WriteSpace;
+//   // invert at start
+//   CRT_Invert(16,0,8);
+// {$ENDIF}
+// {$IFDEF EN}
+//   putSpacesAt(1,18,0);
+//   CRT_Write(strings[8]); // Buy
+//   WriteSpace;
+//   // invert at start
+//   CRT_Invert(18,0,5);
+// {$ENDIF}
+  switch_to_buy;
 
   CRT_WriteRightAligned(concat(Atascii2Antic(IntToStr(currentuec)), CURRENCY));
 
@@ -2427,12 +2452,31 @@ begin
                       //CRT_GotoXY(COL2START-3,0);
                       //WriteSpaces(1);
                       // putSpacesAt(1,COL2START-3,0);
-                      putSpacesAt(1,18,0);
-                      CRT_Write(strings[8]); // Buy
-                      WriteSpace;WriteSpace;
-                      // CRT_Invert(COL2START-3,0,5);
-                      CRT_Invert(18,0,5);
-
+                      // putSpacesAt(1,18,0);
+                      // CRT_Write(strings[8]); // Buy
+                      // WriteSpace;WriteSpace;
+                      // // CRT_Invert(COL2START-3,0,5);
+                      // CRT_Invert(18,0,5);
+{$IFDEF PL}
+                          putSpacesAt(11,15,0);
+                          CRT_GotoXY(18,0);
+                          CRT_Write(strings[8]); // Buy
+                          // WriteSpace;WriteSpace;
+                          CRT_Invert(17,0,7);
+{$ENDIF}
+{$IFDEF DE}
+                          putSpacesAt(11,15,0);
+                          CRT_GotoXY(17,0);
+                          CRT_Write(strings[8]); // Buy
+                          // WriteSpace;WriteSpace;
+                          CRT_Invert(16,0,8);
+{$ENDIF}
+{$IFDEF EN}
+                          putSpacesAt(1,18,0);
+                          CRT_Write(strings[8]); // Buy
+                          WriteSpace;WriteSpace;
+                          CRT_Invert(18,0,5);
+{$ENDIF}
                       ListItems(false);
                       ListCargo(false);
                       selecteditemquantity:=0;
@@ -2871,26 +2915,7 @@ begin
                         CRT_ClearRow(20);
                         if not mode then
                         begin
-{$IFDEF PL}
-                          putSpacesAt(11,15,0);
-                          CRT_GotoXY(18,0);
-                          CRT_Write(strings[8]); // Buy
-                          // WriteSpace;WriteSpace;
-                          CRT_Invert(17,0,7);
-{$ENDIF}
-{$IFDEF DE}
-                          putSpacesAt(11,15,0);
-                          CRT_GotoXY(17,0);
-                          CRT_Write(strings[8]); // Buy
-                          // WriteSpace;WriteSpace;
-                          CRT_Invert(16,0,8);
-{$ENDIF}
-{$IFDEF EN}
-                          putSpacesAt(1,18,0);
-                          CRT_Write(strings[8]); // Buy
-                          WriteSpace;WriteSpace;
-                          CRT_Invert(18,0,5);
-{$ENDIF}
+                          switch_to_buy;
                           // // debug
                           // for y:=0 to MAXAVAILABLEITEMS-1 do
                           // begin
