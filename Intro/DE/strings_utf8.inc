@@ -1,6 +1,6 @@
 strings: array [0..11] of String = (
     'Das Jahr 2419,'~,                                    // screen 1
-    'UEE kämpft immer noch.'~,                        // screen 2
+    'Das V.I.E. kämpft immer noch.'~,                        // screen 2
     'Nach 8 Jahren in der Armee hast du'~,            // screen 3
     'endlich deinen Vertrag beendet.'~,               // screen 3
     'Seit Langem hast du von einem eigenen'~,         // screen 4
