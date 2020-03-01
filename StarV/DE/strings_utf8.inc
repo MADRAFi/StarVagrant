@@ -5,7 +5,7 @@ strings: array [0..66] of String = (
     '1'*' Navigation'~,
     '2'*' Handelskonsole'~,
     '3'*' Auftanken'~, // 5
-    '4'*' Shiffsdepot'~,
+    '4'*' Schiffsdepot'~,
     'Z'*'urück'~,
     'Kaufen'~,
     'Verkaufen'~,
@@ -31,10 +31,10 @@ strings: array [0..66] of String = (
     'Piraten haben dich attackiert. Du warst mutig und hast gekämpft bis zum Ende.   Sie haben dein Leben im Austausch für   deine Fracht verschont.'~,
     'Es hat einen Systemfehler gegeben. Die  Explosion hat einen Teil deiner Ladung  beschädigt.'~, // 30
     'Banditen haben dich bestohlen. Du hast  dein ganzes Geld verloren.'~,
-    'Du hast einen Passagier mitgenommen.    Er hat dir zusätzliches Geld für ein    Transport gegeben.'~,
-    'Du hast gesehen, das|s die Bürger         in Not sind. Du hast dich für schnelle  Hilfe entschieden und einen Teil deiner Waren verteilt.'~,
-    'Wegen jüngster Aktivitäten der Piraten  wurdest du verpflichtet, eine           militärische Eskorte zu verwenden.      Du hast Standard-Gebühren dafür bezahlt.'~,
-    'Es scheint, das|s dein Lottoschein        gewonnen hat. Der Gewinn wurde auf dein Konto überwiesen.'~, // 35
+    'Du hast einen Passagier mitgenommen.    Er hat dir zusätzliches Geld für den    Transport gegeben.'~,
+    'Du hast gesehen, dass die Bürger        in Not sind. Du hast dich für schnelle  Hilfe entschieden und einen Teil deiner Waren verteilt.'~, 
+    'Wegen jüngster Piraterie-Aktivitäten    wurdest du verpflichtet eine            militärische Eskorte zu verwenden.      Du hast die Standardgebühr dafür        gezahlt.'~,
+    'Es scheint, dass dein Lottoschein       gewonnen hat. Der Gewinn wurde auf dein Konto überwiesen.'~, // 35
     ' Keine Schiffe mehr. '*~,
     'Name:'~,
     'Prod:'~,
