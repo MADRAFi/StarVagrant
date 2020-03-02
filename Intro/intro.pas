@@ -22,7 +22,7 @@ const
 
 var
   gfxcolors: array [0..3] of Byte = (
-   $04,$0a,$0e,$00
+   $00,$00,$00,$00
   );
 
 {$IFDEF DEMO}
@@ -73,13 +73,13 @@ begin
   repeat
     Waitframes(2);
     for b:=0 to 3 do 
-              If (gfxcolors[b] and %00001111 <> 0) then Dec(gfxcolors[b]) else gfxcolors[b]:=0;
+              If (gfxcolors[b] and %00001111 > 0) then Dec(gfxcolors[b]) else gfxcolors[b]:=0;
 
-      If (txtcolors[0] and %00001111 <> 0) then Dec(txtcolors[0]) else txtcolors[0]:=0;
-      If (txtcolors[1] and %00001111 <> 0) then Dec(txtcolors[1]) else txtcolors[1]:=0;
+      If (txtcolors[0] and %00001111 > 0) then Dec(txtcolors[0]) else txtcolors[0]:=0;
+      If (txtcolors[1] and %00001111 > 0) then Dec(txtcolors[1]) else txtcolors[1]:=0;
 
-until ((gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3])=0);
-  //  until ((gfxcolors[0] or gfxcolors[1] or gfxcolors[2] or gfxcolors[3])=0) and ((txtcolors[0] or txtcolors[1])=0);
+  // until ((gfxcolors[0]=0) and (gfxcolors[1]=0) and (gfxcolors[2]=0) and (gfxcolors[3]=0));
+   until ((gfxcolors[0]=0) and (gfxcolors[1]=0) and (gfxcolors[2]=0) and (gfxcolors[3]=0) and (txtcolors[0]=0) and (txtcolors[1]=0));
   //  waitframes(10);
 end;
 
@@ -94,7 +94,7 @@ begin
   repeat
     Waitframes(2);
     for b:=0 to 3 do 
-      If ((gfxcolors[b] and %00001111) <= (piccolors[y+b] and %00001111)) then Inc(gfxcolors[b]) else gfxcolors[b]:=piccolors[y+b];
+      If ((gfxcolors[b] and %00001111) < (piccolors[y+b] and %00001111)) then Inc(gfxcolors[b]) else gfxcolors[b]:=piccolors[y+b];
 
     If ((txtcolors[0] and %00001111) <= (TXTBACK and %00001111)) then Inc(txtcolors[0]) else txtcolors[0]:=TXTBACK;
     If ((txtcolors[1] and %00001111) <= (TXTCOLOR and %00001111)) then Inc(txtcolors[1]) else txtcolors[1]:=TXTCOLOR;
@@ -102,7 +102,7 @@ begin
   until ((gfxcolors[0]=piccolors[y]) and
         (gfxcolors[1]=piccolors[y+1]) and
         (gfxcolors[2]=piccolors[y+2]) and
-        (gfxcolors[3]=piccolors[y+3])) or ((txtcolors[0]=TXTBACK) and (txtcolors[1]=TXTCOLOR));
+        (gfxcolors[3]=piccolors[y+3])); // or ((txtcolors[0]=TXTBACK) and (txtcolors[1]=TXTCOLOR));
 end;
 
 procedure wait(time:Word);
@@ -171,8 +171,9 @@ begin
 
 
     Waitframe;
-    firstDLI:=@dli_pic1_f1;
     DLISTL:= DISPLAY_LIST_ADDRESS_PIC1;
+    firstDLI:=@dli_pic1_f1;
+
 
     // fillbyte(pointer(TXT_ADDRESS), 1380, 0);
     move(pointer(SCREEN_ADDRESS_PIC1), pointer(TXT_ADDRESS), 1200);
@@ -192,8 +193,9 @@ begin
     picnumber:=1;
 
     Waitframe;
-    firstDLI:=@dli_pic2_f1;
     DLISTL:= DISPLAY_LIST_ADDRESS_PIC2;
+    firstDLI:=@dli_pic2_f1;
+
 
     move(pointer(SCREEN_ADDRESS_PIC2), pointer(TXT_ADDRESS), 1200);
 
@@ -213,8 +215,9 @@ begin
     picnumber:=2;
     
     Waitframe;
-    firstDLI:=@dli_pic3_f1;
     DLISTL:= DISPLAY_LIST_ADDRESS_PIC3;
+    firstDLI:=@dli_pic3_f1;
+
 
     move(pointer(SCREEN_ADDRESS_PIC3), pointer(TXT_ADDRESS), 1200);
 
@@ -233,8 +236,8 @@ begin
     gfx_fadeout;
 
     Waitframe;
-    firstDLI:=@dli_title;
     DLISTL:= DISPLAY_LIST_ADDRESS_TITLE;
+    firstDLI:=@dli_title;
 
     // clear screen memory
     fillbyte(pointer(TXT_ADDRESS), 1320, 0);
@@ -280,7 +283,7 @@ begin
     CRT_Invert(2,24,34);
 {$ENDIF}
 {$IFDEF DE}
-    CRT_Invert(0,24,38);
+    CRT_Invert(1,24,38);
 {$ENDIF}
 {$IFDEF EN}
     CRT_Invert(5,24,29);

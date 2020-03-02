@@ -1,11 +1,11 @@
 strings: array [0..66] of String = (
     'Gl'#14'ckwunsch!'~, // 0
     'N'*'eues Spiel'~,
-    'V'*'erla'#96'en'~,
+    'V'*'erlassen'~,
     '1'*' Navigation'~,
-    '2'*' Handel Konsole'~,
-    '3'*' Auftanken Pad'~, // 5
-    '4'*' Shiffsdepot'~,
+    '2'*' Handelskonsole'~,
+    '3'*' Auftanken'~, // 5
+    '4'*' Schiffsdepot'~,
     'Z'*'ur'#14'ck'~,
     'Kaufen'~,
     'Verkaufen'~,
@@ -21,32 +21,32 @@ strings: array [0..66] of String = (
     '-Best'#123'tigen'~,
     'Sta:'~, // 20
     'Nav:'~,
-    'Abstand:'~,
+    'Entfernung:'~,
     '-Navigation'~,
-    'S'*'-FTL Springe'~,
-    'Kein xBios, Kein Bilder'*~, // 25
-    ' Dr'#14'cke irgendeine Taste. '*~,
+    'S'*'-FTL Sprung'~,
+    'Keine xBios, Kein Bilder'*~, // 25
+    ' Dr'#14'cke irgendeine Taste '*~,
     ' Du hast das Schiff gekauft. '*~,
     ''~,
-    'Piraten haben dich attackiert. Du warst mutig und hast gek'#123'mpft so lange es gingSie haben dein Leben im Austausch f'#14'r   deine Fracht geschont.'~,
+    'Piraten haben dich attackiert. Du warst mutig und hast gek'#123'mpft bis zum Ende.   Sie haben dein Leben im Austausch f'#14'r   deine Fracht verschont.'~,
     'Es hat einen Systemfehler gegeben. Die  Explosion hat einen Teil deiner Ladung  besch'#123'digt.'~, // 30
     'Banditen haben dich bestohlen. Du hast  dein ganzes Geld verloren.'~,
-    'Du hast einen Pa'#96'agier mitgenommen.    Er hat dir zus'#123'tzliches Geld f'#14'r ein    Transport gegeben.'~,
-    'Du hast gesehen, da'#96' die B'#14'rger        in Not sind. Du hast dich f'#14'r die Hilfe entschieden und hast einen Teil deiner  Waren verteilt.'~,
-    'Wegen j'#14'ngster Aktivit'#123'ten der Piraten  wurdest du verpflichtet, eine           milit'#123'rische Eskorte zu verwenden.      Du hast Standard-Geb'#14'hren daf'#14'r bezahlt.'~,
-    'Es scheint, da'#96' dein Lottoschein       gewonnen hat. Der Gewinn wurde auf dein Konto '#14'berwiesen.'~, // 35
+    'Du hast einen Passagier mitgenommen.    Er hat dir zus'#123'tzliches Geld f'#14'r den    Transport gegeben.'~,
+    'Du hast gesehen, dass die B'#14'rger        in Not sind. Du hast dich f'#14'r schnelle  Hilfe entschieden und einen Teil deiner Waren verteilt.'~, 
+    'Wegen j'#14'ngster Piraterie-Aktivit'#123'ten    wurdest du verpflichtet eine            milit'#123'rische Eskorte zu verwenden.      Du hast die Standardgeb'#14'hr daf'#14'r        gezahlt.'~,
+    'Es scheint, dass dein Lottoschein       gewonnen hat. Der Gewinn wurde auf dein Konto '#14'berwiesen.'~, // 35
     ' Keine Schiffe mehr. '*~,
     'Name:'~,
     'Prod:'~,
-    'Kargo:'~,
+    'Fracht:'~,
     'Preis:'~, // 40
-    'Speed:'~,
+    'Tempo:'~,
     'L'#123'nge:'~,
     'Masse:'~,
     '-W'#123'hlen'~,
     ' m/s'~, // 45
     ' meter'~,
-    ' tonnen'~,
+    ' Tonnen'~,
     ' Du hast nicht genug Kredite '*~,
     ' Du besitzt dieses Schiff bereits. '*~,
     '-Alles'~, // 50

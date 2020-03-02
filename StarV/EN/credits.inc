@@ -19,6 +19,6 @@
     'XXL for xBios support'~,
     'Tebe for providing MAD-Pascal help'~,
     'Kaz for testing and advise'~,
-    'Dely for QA testing'~,
+    'Dely and CharlieChaplin for QA testing'~,
     ''~
 );

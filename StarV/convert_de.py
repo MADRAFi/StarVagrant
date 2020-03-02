@@ -16,8 +16,8 @@ def convertPL(newdata):
     newdata = newdata.replace("Ä","'#81'")
     newdata = newdata.replace("Ö","'#16'")
     newdata = newdata.replace("Ü","'#13'")
-    newdata = newdata.replace("ss","'#96'")
-    newdata = newdata.replace("s|s","ss")
+    newdata = newdata.replace("s|s","'#96'")
+    # newdata = newdata.replace("ss","ss")
     
     # newdata = newdata.replace(",''",",")
     # newdata = newdata.replace(",,",",")
