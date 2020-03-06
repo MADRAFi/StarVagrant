@@ -27,14 +27,14 @@ const
 
 {$IFDEF DEMO}
   {$i 'DEMO/const.inc'}
-  COPYRIGHT = 'v.1.7 @ Silly Venture 2019'~;
+  COPYRIGHT = 'v.1.8 @ Silly Venture 2019'~;
 {$ELSE}
   {$IFDEF ABBUC}
     {$i 'ABBUC/const.inc'}
-    COPYRIGHT = 'v.1.7 @ 2020 ABBUC DEMO'~;
+    COPYRIGHT = 'v.1.8 @ 2020 ABBUC DEMO'~;
   {$ELSE}
     {$i 'const.inc'}
-    COPYRIGHT = 'v.1.7 @ 2019 MADsoft'~;
+    COPYRIGHT = 'v.1.8 @ 2019 MADsoft'~;
   {$ENDIF}
 {$ENDIF}
 
@@ -2801,7 +2801,16 @@ begin
                                 if currentship.cargoindex[y] = currentitemindex then
                                 begin
                                   // found same cargo
-                                  currentShip.cargoquantity[y]:=currentShip.cargoquantity[y] + selecteditemquantity;
+
+                                    // CRT_GotoXY(0,19);
+                                    // CRT_Write('cur_itemidx='~);CRT_Write(currentitemindex);CRT_Write('           '~);
+                                    // CRT_GotoXY(0,20);
+                                    // CRT_Write(' '~);CRT_Write(selecteditemquantity);CRT_Write('           '~);
+
+                                    // CRT_GotoXY(0,21);
+                                    // CRT_Write('y='~);CRT_Write(y);CRT_Write('           '~);
+                                    Inc(currentShip.cargoquantity[y], selecteditemquantity);
+                                  // currentShip.cargoquantity[y]:=currentShip.cargoquantity[y] + selecteditemquantity;
                                   break;
                                 end;
                               end;
@@ -2818,14 +2827,14 @@ begin
                             trade_UpdateCargo;
 
                             // remove selection
-                            currentitemprice:=GetCargoPrice(p);
+                            // currentitemprice:=GetCargoPrice(y);
                             
                             // currentitemindex:=currentShip.cargoindex[itemindex];
-                            currentitemindex:=availableitems[p];
-                            currentitemquantity:=itemquantity[availableitems[p]];
+                            // currentitemindex:=availableitems[y];
+                            // currentitemquantity:=itemquantity[availableitems[y]];
 
-                            selecteditemquantity:= 0;
-                            selecteditemtotal:= 0;
+                            // selecteditemquantity:= 0;
+                            // selecteditemtotal:= 0;
                       //              itemindex:=0;
 
                             // repeat until CRT_KeyPressed;
@@ -2836,7 +2845,9 @@ begin
                             //   CRT_GotoXY(21,11+y);
                             //   CRT_Write('cargoindex='~);CRT_Write(currentship.cargoindex[y]);CRT_Write('        '~);
                             // end;
-
+                            
+                            // remove selected
+                            CRT_ClearRow(20);
 
                           end;
                         end
@@ -2856,23 +2867,25 @@ begin
                             begin
                               if currentShip.cargoquantity[y] = 0 then
                               begin
-                                // for l:=y to MAXCARGOSLOTS-1 do
-                                // begin
-                                //   if (l < MAXCARGOSLOTS-1) then
-                                //   begin
-                                //     currentShip.cargoindex[l]:=currentShip.cargoindex[l+1];
-                                //     currentShip.cargoquantity[l]:=currentShip.cargoquantity[l+1];
-                                //   end
-                                //   else
-                                //   begin
-                                //     currentShip.cargoindex[l]:=0;
-                                //     currentShip.cargoquantity[l]:=0;
-                                //   end;
-                                // end;
-                                move (currentShip.cargoindex[y+1],currentShip.cargoindex[y],High(currentShip.cargoindex)-y);
-                                move (currentShip.cargoquantity[y+1],currentShip.cargoquantity[y],High(currentShip.cargoquantity)-y);
-                                currentShip.cargoindex[High(currentShip.cargoindex)]:=0;
-                                currentShip.cargoquantity[High(currentShip.cargoquantity)]:=0;
+                                for x:=y to MAXCARGOSLOTS-1 do
+                                begin
+                                  if (x < MAXCARGOSLOTS-1) then
+                                  begin
+                                    currentShip.cargoindex[x]:=currentShip.cargoindex[x+1];
+                                    currentShip.cargoquantity[x]:=currentShip.cargoquantity[x+1];
+                                  end
+                                  else
+                                  begin
+                                    currentShip.cargoindex[x]:=0;
+                                    currentShip.cargoquantity[x]:=0;
+                                  end;
+                                end;
+
+                                // old code which does not work (cloning last position item)
+                                // move (currentShip.cargoindex[y+1],currentShip.cargoindex[y],High(currentShip.cargoindex)-y);
+                                // move (currentShip.cargoquantity[y+1],currentShip.cargoquantity[y],High(currentShip.cargoquantity)-y);
+                                // currentShip.cargoindex[High(currentShip.cargoindex)]:=0;
+                                // currentShip.cargoquantity[High(currentShip.cargoquantity)]:=0;
                               end;
                             end;
 
