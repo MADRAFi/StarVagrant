@@ -1186,22 +1186,29 @@ begin
     offset:=currentship.cargoindex[y];
     if offset > 0 then
     begin
-      CRT_GotoXY(LISTSTART,7+count); //min count:=1 so we start at 8th row
-      tstr:= items[offset];
+      // CRT_GotoXY(LISTSTART,7+count); //min count:=1 so we start at 8th row
+      CRT_GotoXY(LISTSTART,8 + y); //min count:=1 so we start at 8th row
+      tstr:= items[offset-1]; // -1 for correcting stored itemindex (we are adding 1 to use itemindex 0 as empty space)
       CRT_Write(tstr);
       strnum:=IntToStr(currentship.cargoquantity[y]);
       WriteSpaces(LISTWIDTH-Length(tstr)-Length(strnum));
       CRT_Write(Atascii2Antic(strnum));
-      if (count = 1) and trade_mode then CRT_Invert(LISTSTART,8,LISTWIDTH);
-      Inc(count);
+      if (y = 0) and trade_mode then CRT_Invert(LISTSTART,8,LISTWIDTH);
+      // if (count = 1) and trade_mode then CRT_Invert(LISTSTART,8,LISTWIDTH);
+      // Inc(count);
+    end
+    else
+    begin
+      CRT_GotoXY(COL2START,TOPCARGOMARGIN+y);
+      putSpacesAt(LISTWIDTH,LISTSTART,TOPCARGOMARGIN+y);
     end;
   end;
-  for y:=count to MAXCARGOSLOTS-1 do
-  begin
-    //CRT_GotoXY(COL2START,TOPCARGOMARGIN+y-1);
-    //WriteSpaces(LISTWIDTH); // -1 to clear from the end of list
-    putSpacesAt(LISTWIDTH,LISTSTART,TOPCARGOMARGIN+y-1);
-  end;
+  // for y:=count to MAXCARGOSLOTS-1 do
+  // begin
+  //   //CRT_GotoXY(COL2START,TOPCARGOMARGIN+y-1);
+  //   //WriteSpaces(LISTWIDTH); // -1 to clear from the end of list
+  //   putSpacesAt(LISTWIDTH,LISTSTART,TOPCARGOMARGIN+y-1);
+  // end;
 
 end;
 
@@ -1386,7 +1393,7 @@ function GetCargoPrice(itemindex: Byte): Word;
 
 begin
   // translate cargo item index into offset to read price in location.
-  offset:=(NUMBEROFITEMS * player.loc) + currentship.cargoindex[itemindex];
+  offset:=(NUMBEROFITEMS * player.loc) + currentship.cargoindex[itemindex]-1; // -1 for correcting stored itemindex in cargo
   // Result:=Round(itemprice[offset] * (1-commission));
   Result:=itemprice[offset] - ((itemprice[offset] * COMMISSION) div 100);
 end;
@@ -2161,7 +2168,7 @@ procedure trade_UpdateCargo;
 begin
   // update cargo Total
   strnum:=IntToStr(currentship.scu_max-currentship.scu);
-  putSpacesAt(4,13,6);
+  putSpacesAt(4,12,6);
   CRT_GotoXY(COL2START-Length(strnum)-5,6);
   CRT_Write(Atascii2Antic(strnum)); CRT_Write(CARGOUNIT);CRT_Write('|'~);
 end;
@@ -2200,6 +2207,7 @@ const
 var
   d: shortInt;
   mode: Boolean = false;
+  cargofull: Boolean = false; // when false update info (uec, cargo)
 
   optionPressed: Boolean = false;
   selectPressed: Boolean = false;
@@ -2220,6 +2228,7 @@ var
 
 
 begin
+  cargofull:=false;
   currentuec:= player.uec;
   currentShip:= ship;
   selecteditemtotal:= 0;
@@ -2586,8 +2595,8 @@ begin
 
                         // CRT_GotoXY(0,12);
                         // CRT_Write('cur_itemprice='~);CRT_Write(currentitemprice);CRT_Write('      '~);
-                        // CRT_GotoXY(0,13);
-                        // CRT_Write('itemindex='~);CRT_Write(itemindex);CRT_Write('      '~);
+                        // CRT_GotoXY(0,19);
+                        // CRT_Write('citemindex='~);CRT_Write(currentitemindex);CRT_Write('      '~);
                         // CRT_GotoXY(0,14);
                         // CRT_Write('cur_itemindex='~);CRT_Write(currentitemindex);CRT_Write('      '~);
                         //CRT_GotoXY(0,15);
@@ -2763,6 +2772,7 @@ begin
                     begin
                       if not selectPressed then
                       begin
+
                         if not mode then // buying mode
                         begin
                           if (selecteditemquantity > 0) then
@@ -2779,11 +2789,12 @@ begin
 
 
                             beep200; //vol 10
+                            cargofull:=false;
                             for y:=0 to MAXCARGOSLOTS-1 do
                             begin
                               if (currentShip.cargoindex[y] = 0) then
                               begin
-                                currentShip.cargoindex[y]:=currentitemindex;
+                                currentShip.cargoindex[y]:=currentitemindex + 1; // +1 to increase item index in cargo, 0 means empty slot in ship cargo
                                 currentShip.cargoquantity[y]:=selecteditemquantity;
                                                                 
                                 // CRT_GotoXY(0,19);
@@ -2798,7 +2809,7 @@ begin
                               end
                               else begin
                                 // some item exists
-                                if currentship.cargoindex[y] = currentitemindex then
+                                if currentship.cargoindex[y] - 1 = currentitemindex then
                                 begin
                                   // found same cargo
 
@@ -2812,10 +2823,18 @@ begin
                                     Inc(currentShip.cargoquantity[y], selecteditemquantity);
                                   // currentShip.cargoquantity[y]:=currentShip.cargoquantity[y] + selecteditemquantity;
                                   break;
-                                end;
+                                end
+                                else
+                                  if y = MAXCARGOSLOTS-1 then 
+                                  begin
+                                    cargofull:=true;
+                                    beep230;
+                                  end;
                               end;
                             end;
 
+                            if not cargofull then
+                            begin
                             // update UEC on screen not on player
                             currentuec:=currentuec - selecteditemtotal;
 
@@ -2847,8 +2866,8 @@ begin
                             // end;
                             
                             // remove selected
-                            CRT_ClearRow(20);
-
+                              CRT_ClearRow(20);
+                            end;
                           end;
                         end
                         else begin // Selling mode
