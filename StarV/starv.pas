@@ -2225,7 +2225,11 @@ var
   selecteditemquantity: Word;
 
 
-
+procedure check_itemtotal;
+begin
+  if selecteditemquantity > currentitemquantity then selecteditemquantity:= currentitemquantity;
+  selecteditemtotal:=selecteditemquantity * currentitemprice;
+end;
 
 begin
   cargofull:=false;
@@ -2681,12 +2685,12 @@ begin
                       if selectitem then
                       begin
                         Inc(selecteditemquantity);
-                        selecteditemtotal:=selecteditemquantity * currentitemprice;
                       // end
                       // else 
                       // begin
                       //   putStringAt(63,12,23);
                       end;
+                      check_itemtotal;
                       //
                       // CRT_GotoXY(0,12);
                       // CRT_Write('selectitem='~);CRT_Write(selectitem);CRT_Write('           '~);
@@ -2707,6 +2711,7 @@ begin
                           (selecteditemquantity + 100 < currentShip.scu_max-currentShip.scu) and
                           (selecteditemtotal + (100 * currentitemprice) <= currentuec) then
                         begin
+                          // if selecteditemquantity < 100 then selecteditemquantity:=0;
                           selecteditemquantity:= selecteditemquantity + 100;
 //                          selecteditemtotal:=selecteditemquantity * currentitemprice;
                         end
@@ -2714,7 +2719,8 @@ begin
                         begin
                           // selecteditemquantity:=trunc(currentuec / currentitemprice);
                           selecteditemquantity:=currentuec div currentitemprice;
-                          if selecteditemquantity > currentShip.scu_max-currentShip.scu then selecteditemquantity:=currentShip.scu_max-currentShip.scu
+                          if selecteditemquantity > currentShip.scu_max-currentShip.scu then selecteditemquantity:=currentShip.scu_max-currentShip.scu;
+                          // if selecteditemquantity > currentitemquantity then selecteditemquantity:= currentitemquantity;
 //                          selecteditemtotal:=selecteditemquantity * currentitemprice;
                           // else 
                           // begin
@@ -2736,7 +2742,7 @@ begin
 //                          selecteditemtotal:=selecteditemquantity * currentitemprice;
                         end;
                       end;
-                      selecteditemtotal:=selecteditemquantity * currentitemprice;
+                      check_itemtotal;
                     end;
 
         KEY_SHIFTRIGHT:
@@ -2765,7 +2771,7 @@ begin
 //                          selecteditemtotal:=selecteditemquantity * currentitemprice;
                         end;
                       end;
-                      selecteditemtotal:=selecteditemquantity * currentitemprice;
+                      check_itemtotal;
                     end;
 
         KEY_SELECT:
