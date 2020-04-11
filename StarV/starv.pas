@@ -1219,7 +1219,7 @@ var
   countstr: Tstring;
 
 begin
-
+  eraseArray(0,MAXAVAILABLEITEMS-1, @availableitems);
 //load items
   x:=0;
   for y:=0 to NUMBEROFITEMS-1 do
@@ -1247,7 +1247,7 @@ begin
         end;
       end;
     end;
-  eraseArray(x,MAXAVAILABLEITEMS-1, @availableitems);
+  // eraseArray(x,MAXAVAILABLEITEMS-1, @availableitems);
 
   // list items
   x:=1;
