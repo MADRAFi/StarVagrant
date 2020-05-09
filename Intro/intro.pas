@@ -280,7 +280,7 @@ begin
     if count = 50 then
     begin
 {$IFDEF PL}
-    CRT_Invert(2,24,34);
+    CRT_Invert(3,24,34);
 {$ENDIF}
 {$IFDEF DE}
     CRT_Invert(1,24,38);
