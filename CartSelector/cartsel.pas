@@ -31,7 +31,7 @@ var
   music: Boolean;
   firstDLI: pointer;
   optionPressed: Boolean;
-  filename: TString;
+
 
 strings: array [0..2] of String = (
     '1'*' English'~,
@@ -105,7 +105,8 @@ end;
 
 
 begin
-  //fadeoff;
+  Randomize;
+  gfx_fadeout;
   SystemOff;
   SetCharset (Hi(CHARSET_ADDRESS3)); // when system is off
   CRT_Init(GFX_ADDRESS);
@@ -155,7 +156,8 @@ begin
 
   // initiate starfield
   for x:=0 to 127 do begin
-    tab[x]:=peek($d20a);
+    // tab[x]:=peek($d20a);
+    tab[x]:=Random(128); // and 128;
   end;
 
 
@@ -214,20 +216,29 @@ begin
 
   gfx_fadeout;
   // turn off PMG objects
-  colpm0:=0;
+  // colpm0:=0;
   // hposp0:=0;
 
   music:= false;
   msx.stop;
   waitframe;
 
-  // case b of
-  //   1: filename:= 'STARV   XEX';
-  //   2: filename:= 'STARV   XEX';
-  //   3: filename:= 'STARV   XEX';
-  // end;
-  // xBiosLoadFile(filename);
-  // waitframe;
+  case b of
+    1: asm {
+        lda #1
+    };
+    2: asm {
+        lda #2
+    };
+    3: asm {
+        lda #3
+    };
+  end;
+
+  while true do
+  begin
+    waitframe;
+  end;
 
   // DisableDLI;
   // DisableVBLI;
